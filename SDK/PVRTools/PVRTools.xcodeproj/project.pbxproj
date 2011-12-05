@@ -1,0 +1,231 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		238C7DDB148C5ABD0087974A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 238C7DDA148C5ABD0087974A /* Foundation.framework */; };
+		238C7DE1148C5ABD0087974A /* PVRTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 238C7DE0148C5ABD0087974A /* PVRTools.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		238C7DD7148C5ABD0087974A /* libPVRTools.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVRTools.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		238C7DDA148C5ABD0087974A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		238C7DDE148C5ABD0087974A /* PVRTools-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PVRTools-Prefix.pch"; sourceTree = "<group>"; };
+		238C7DDF148C5ABD0087974A /* PVRTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PVRTools.h; sourceTree = "<group>"; };
+		238C7DE0148C5ABD0087974A /* PVRTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PVRTools.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		238C7DD4148C5ABD0087974A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				238C7DDB148C5ABD0087974A /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		238C7DCC148C5ABD0087974A = {
+			isa = PBXGroup;
+			children = (
+				238C7DDC148C5ABD0087974A /* PVRTools */,
+				238C7DD9148C5ABD0087974A /* Frameworks */,
+				238C7DD8148C5ABD0087974A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		238C7DD8148C5ABD0087974A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				238C7DD7148C5ABD0087974A /* libPVRTools.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		238C7DD9148C5ABD0087974A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				238C7DDA148C5ABD0087974A /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		238C7DDC148C5ABD0087974A /* PVRTools */ = {
+			isa = PBXGroup;
+			children = (
+				238C7DDF148C5ABD0087974A /* PVRTools.h */,
+				238C7DE0148C5ABD0087974A /* PVRTools.m */,
+				238C7DDD148C5ABD0087974A /* Supporting Files */,
+			);
+			path = PVRTools;
+			sourceTree = "<group>";
+		};
+		238C7DDD148C5ABD0087974A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				238C7DDE148C5ABD0087974A /* PVRTools-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		238C7DD5148C5ABD0087974A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		238C7DD6148C5ABD0087974A /* PVRTools */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 238C7DE4148C5ABD0087974A /* Build configuration list for PBXNativeTarget "PVRTools" */;
+			buildPhases = (
+				238C7DD3148C5ABD0087974A /* Sources */,
+				238C7DD4148C5ABD0087974A /* Frameworks */,
+				238C7DD5148C5ABD0087974A /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PVRTools;
+			productName = PVRTools;
+			productReference = 238C7DD7148C5ABD0087974A /* libPVRTools.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		238C7DCE148C5ABD0087974A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = 238C7DD1148C5ABD0087974A /* Build configuration list for PBXProject "PVRTools" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 238C7DCC148C5ABD0087974A;
+			productRefGroup = 238C7DD8148C5ABD0087974A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				238C7DD6148C5ABD0087974A /* PVRTools */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		238C7DD3148C5ABD0087974A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				238C7DE1148C5ABD0087974A /* PVRTools.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		238C7DE2148C5ABD0087974A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		238C7DE3148C5ABD0087974A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		238C7DE5148C5ABD0087974A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/PVRTools.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PVRTools/PVRTools-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		238C7DE6148C5ABD0087974A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/PVRTools.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PVRTools/PVRTools-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		238C7DD1148C5ABD0087974A /* Build configuration list for PBXProject "PVRTools" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				238C7DE2148C5ABD0087974A /* Debug */,
+				238C7DE3148C5ABD0087974A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		238C7DE4148C5ABD0087974A /* Build configuration list for PBXNativeTarget "PVRTools" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				238C7DE5148C5ABD0087974A /* Debug */,
+				238C7DE6148C5ABD0087974A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 238C7DCE148C5ABD0087974A /* Project object */;
+}

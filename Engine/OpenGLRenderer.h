@@ -110,6 +110,7 @@ public:
 	//public functions
 	
 	void Init(f32 screenWidth, f32 screenHeight);
+	void LoadPOD(const char* fileName);
 	void CleanUp();
 	bool GetFadeFinished();
 	void ClearRenderables();

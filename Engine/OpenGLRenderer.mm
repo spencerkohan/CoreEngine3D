@@ -19,6 +19,7 @@
 #include "GameDefines.h"
 #include "zlib.h"
 #include "png.h"
+//#include "../../SDK/PowerVR/PVRTools.h"
 
 //DEBUG MODELS
 #include "DEBUGMODEL_Circle.h"
@@ -4180,6 +4181,11 @@ void OpenGLRenderer::SortParticleQueues()
 			pBucket->m_particleQueue[j + 1] = particleV;	
 		}
 	}
+}
+
+void OpenGLRenderer::LoadPOD(const char* fileName)
+{
+	
 }
 
 
