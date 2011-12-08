@@ -25,6 +25,8 @@
 #include "MaterialDeclarations.h"
 #include "ArrayUtil.h"
 
+#include "PVRTModelPOD.h"
+
 #define GAUSSIAN_NUMSAMPLES 6
 #define MAX_TRAILS 64
 #define MAX_PARTICLES 512
@@ -110,7 +112,7 @@ public:
 	//public functions
 	
 	void Init(f32 screenWidth, f32 screenHeight);
-	void LoadPOD(const char* fileName);
+	bool InitRenderableFromPOD(RenderableObject3D* pRenderable, const char* fileName,  mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
 	void CleanUp();
 	bool GetFadeFinished();
 	void ClearRenderables();
@@ -168,6 +170,7 @@ public:
 private:
 	
 	//private functions
+	CPVRTModelPOD* LoadPOD(const char* fileName);
 	void SetMaterial(RenderMaterial material);
 	void PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PostProcessDrawArea drawArea, GLuint* texture0, GLuint* texture1, GLuint* texture2);
 	void PrintOpenGLError(const char* callerName);
@@ -183,7 +186,7 @@ private:
 	
 	f32 ComputeGaussianValue(f32 x, f32 stdDevSq);
 	void ComputeGaussianWeights(f32* out_pWeights, s32 numWeights, f32 standardDeviationSquared);
-	void EnableAttributes(VertexFormat format);
+	void EnableAttributes(const ModelData* pModelData);
 	void BindVertexArrayObject(const PrimitiveData* pPrimitive);
 	void BindIndexData(const PrimitiveData* pPrimitive);
 	void AddUniform_Unique(RenderMaterial renderMaterial, const char* nameOfUniformInShader,UniformType uniformType, u32 amount);

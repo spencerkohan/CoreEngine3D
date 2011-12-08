@@ -24,6 +24,7 @@
 #include "RenderLayer.h"
 #include "RenderFlags.h"
 #include "ViewFlags.h"
+//#include "PVRTModelPOD.h"
 
 #define MAX_SHARED_CONST_UNIFORM_VALUES 4
 #define MAX_SHARED_UNIFORM_VALUES 8
@@ -73,6 +74,8 @@ typedef enum {
 	ATTRIB_TEXCOORD2,
     ATTRIB_TANGENT,
     ATTRIB_BINORMAL,
+	ATTRIB_BONEINDEX,
+	ATTRIB_BONEWEIGHT,
 	NUM_ATTRIBUTES
 } Attributes;
 
@@ -86,6 +89,8 @@ typedef enum {
 	ATTRIBFLAG_TEXCOORD2 = 1 << 7,
     ATTRIBFLAG_TANGENT = 1 << 8,
     ATTRIBFLAG_BINORMAL = 1 << 9,
+	ATTRIBFLAG_BONEINDEX = 1 << 10,
+	ATTRIBFLAG_BONEWEIGHT = 1 << 11,
 	NUM_ATTRIBUTEFLAGS
 } AttributeFlags;
 
@@ -310,6 +315,7 @@ typedef enum {
 	VertexFormat_VT,
 	VertexFormat_VN,
 	VertexFormat_V,
+	VertexFormat_POD_Skinned,
 } VertexFormat;
 
 typedef struct
@@ -326,7 +332,17 @@ typedef struct
 
 typedef struct
 {
-	VertexFormat format;
+	Attributes attribute;
+	u16 type;
+	u8 size;
+	u8 offset;
+}AttributeData;
+
+typedef struct
+{
+	const AttributeData* attributeArray;
+	u32 numAttributes;
+	u32 stride;
 	const char* modelName;
 	PrimitiveData* primitiveArray;
 	u32 numPrimitives;
@@ -536,9 +552,9 @@ typedef struct
 	RenderLayer renderLayer;    //4 bytes
 	u32 viewFlags;  //4 bytes
 	const char* debugName;  //4 bytes
-	vec3 spawnPos;  //12 bytes
 	u32 sortValue;  //4 bytes
     u32 postRenderLayerSortValue; //4 bytes (optional)
+	//CPVRTModelPOD* pPod;
 	f32 localUniformData[MAX_LOCALDATA_SLOTS_FOR_RENDERABLE];
 } RenderableObject3D;
 

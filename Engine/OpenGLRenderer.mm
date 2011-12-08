@@ -19,7 +19,6 @@
 #include "GameDefines.h"
 #include "zlib.h"
 #include "png.h"
-//#include "../../SDK/PowerVR/PVRTools.h"
 
 //DEBUG MODELS
 #include "DEBUGMODEL_Circle.h"
@@ -132,7 +131,7 @@ const GLfloat squareTexCoords[] = {
 
 static Material g_Materials[NumRenderMaterials];
 static GLuint texture_pointSpriteAtlas = 0;
-//static GLuint texture_default = 0;
+static GLuint texture_default = 0;
 
 void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 {
@@ -249,7 +248,7 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 	m_lastUsedMaterial = (RenderMaterial) RENDERMATERIAL_INVALID;
     
 	// Load all the textures
-	//LoadTexture("texdefault.png", ImageType_PNG, &texture_default, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+	LoadTexture("texdefault.png", ImageType_PNG, &texture_default, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 	LoadTexture("ParticleAtlas_01.png", ImageType_PNG, &texture_pointSpriteAtlas, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 	
 	//Create VBO buffers for terrain
@@ -597,7 +596,7 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableObject3D** renderableOb
 				else
 				{
 					glBindBuffer(GL_ARRAY_BUFFER, currPrim->vertexArrayObjectID);
-					EnableAttributes(pModelData->format);
+					EnableAttributes(pModelData);
 				}
 			}
 			
@@ -1828,7 +1827,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
             else
             {
                 glBindBuffer(GL_ARRAY_BUFFER, pCurrPrim->vertexArrayObjectID);
-                EnableAttributes(pModelData->format);
+                EnableAttributes(pModelData);
             }
             
             glDrawArrays(pCurrPrim->drawMethod, 0, pCurrPrim->numVerts);
@@ -1985,7 +1984,7 @@ void OpenGLRenderer::RegisterModel(ModelData* pModelData)
         //If we're using VAO, enable the attributes here once and never again
         if (m_supportsFeaturesFromiOS4)
         {
-            EnableAttributes(pModelData->format);
+            EnableAttributes(pModelData);
 			
             //Make sure nothing randomly writes to our new VAO
 #ifdef PLATFORM_IOS
@@ -2374,6 +2373,7 @@ void OpenGLRenderer::InitRenderableObject3D(RenderableObject3D* renderableObject
 		return;
 	}
 	
+	//renderableObject->pPod = NULL;
 	renderableObject->pModel = pModel;
 	renderableObject->materialID = materialID;
 	renderableObject->flags = renderFlags|RenderFlag_Initialized;
@@ -3020,7 +3020,7 @@ void OpenGLRenderer::ShakeScreen(f32 shakeAmount,f32 shakeSpeed, f32 shakeTime)
 void OpenGLRenderer::CleanUp()
 {
 	glDeleteTextures(1,&texture_pointSpriteAtlas);
-	//glDeleteTextures(1,&texture_default);
+	glDeleteTextures(1,&texture_default);
 }
 
 
@@ -3665,6 +3665,16 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 	{
 		glBindAttribLocation(shaderProgram, ATTRIB_BINORMAL, "in_binormal");
 	}
+	if (attribs & ATTRIBFLAG_BONEINDEX)
+	{
+		glBindAttribLocation(shaderProgram, ATTRIB_BINORMAL, "in_boneindex");
+	}
+	if (attribs & ATTRIBFLAG_BONEWEIGHT)
+	{
+		glBindAttribLocation(shaderProgram, ATTRIB_BINORMAL, "in_boneweight");
+	}
+	
+
 
 	// link program
 	if (!LinkProgram(shaderProgram))
@@ -3967,104 +3977,17 @@ void OpenGLRenderer::ComputeGaussianWeights(f32* out_pWeights, s32 numWeights, f
 }
 
 
-void OpenGLRenderer::EnableAttributes(VertexFormat format)
+void OpenGLRenderer::EnableAttributes(const ModelData* pModelData)
 {
-	switch (format)
-    {
-        case VertexFormat_V:
-        {
-            const u32 stride = 12;
-            
-            glEnableVertexAttribArray(ATTRIB_VERTEX);
-            glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(0));
-            
-            break;
-        }
-        case VertexFormat_VC:
-        {
-            const u32 stride = 28;
-            
-            glEnableVertexAttribArray(ATTRIB_VERTEX);
-            glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(0));
-            
-            glEnableVertexAttribArray(ATTRIB_COLOR);
-            glVertexAttribPointer(ATTRIB_COLOR, 4, GL_FLOAT, 0, stride, BUFFER_OFFSET(12));
-            
-            break;
-        }
-        case VertexFormat_VT:
-        {
-            const u32 stride = 20;
-            
-            glEnableVertexAttribArray(ATTRIB_VERTEX);
-            glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(0));
-			
-            glEnableVertexAttribArray(ATTRIB_TEXCOORD);
-            glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, 0, stride, BUFFER_OFFSET(12));
-            
-            break;
-        }
-        case VertexFormat_VNT:
-        {
-            const u32 stride = 32;
-            
-            glEnableVertexAttribArray(ATTRIB_VERTEX);
-            glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(0));
-            
-            glEnableVertexAttribArray(ATTRIB_NORMAL);
-            glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(12));
-            
-            glEnableVertexAttribArray(ATTRIB_TEXCOORD);
-            glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, 0, stride, BUFFER_OFFSET(24));
-            
-            break;
-        }
-        case VertexFormat_VTNT:
-        {
-            const u32 stride = 44;
-            
-            glEnableVertexAttribArray(ATTRIB_VERTEX);
-            glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(0));
-            
-            glEnableVertexAttribArray(ATTRIB_TANGENT);
-            glVertexAttribPointer(ATTRIB_TANGENT, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(12));
-			
-            glEnableVertexAttribArray(ATTRIB_NORMAL);
-            glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(24));
-            
-            glEnableVertexAttribArray(ATTRIB_TEXCOORD);
-            glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, 0, stride, BUFFER_OFFSET(36));
-            
-            break;
-        }
-        case VertexFormat_VTBNT:
-        {
-            const u32 stride = 56;
-            
-            glEnableVertexAttribArray(ATTRIB_VERTEX);
-            glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(0));
-            
-            glEnableVertexAttribArray(ATTRIB_TANGENT);
-            glVertexAttribPointer(ATTRIB_TANGENT, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(12));
-            
-            glEnableVertexAttribArray(ATTRIB_BINORMAL);
-            glVertexAttribPointer(ATTRIB_BINORMAL, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(24));
-            
-            glEnableVertexAttribArray(ATTRIB_NORMAL);
-            glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, 0, stride, BUFFER_OFFSET(36));
-            
-            glEnableVertexAttribArray(ATTRIB_TEXCOORD);
-            glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, 0, stride, BUFFER_OFFSET(48));
-            
-            break;
-        }
-        default:
-        {
-            //printf("** INSANE ERROR! ** UNSUPPORTED VERTEX FORMAT!\n");
-            return;
-        }
-    }
+	const u32 stride = pModelData->stride;
 	
+	for(u32 i=0; i<pModelData->numAttributes; ++i)
+	{
+		const AttributeData* pAttrib = &pModelData->attributeArray[i];
+		glEnableVertexAttribArray(pAttrib->attribute);
+		glVertexAttribPointer(pAttrib->attribute, pAttrib->size, pAttrib->type, 0, stride, BUFFER_OFFSET(pAttrib->offset));
+	}
+		
     PrintOpenGLError("After enabling attributes");
 }
 
@@ -4183,9 +4106,99 @@ void OpenGLRenderer::SortParticleQueues()
 	}
 }
 
-void OpenGLRenderer::LoadPOD(const char* fileName)
+CPVRTModelPOD* OpenGLRenderer::LoadPOD(const char* fileName)
 {
+	CPVRTModelPOD* newPod = new CPVRTModelPOD;
 	
+	EPVRTError readResult = newPod->ReadFromFile(GetPathToFile(fileName));
+	
+	if(readResult == PVR_SUCCESS)
+	{
+		return newPod;
+	}
+	
+	delete newPod;
+	
+	return NULL;
+}
+
+
+bool OpenGLRenderer::InitRenderableFromPOD(RenderableObject3D* pRenderable, const char* fileName,  mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+{
+	CPVRTModelPOD* newPod = LoadPOD(fileName);
+	
+	if(newPod)
+	{
+		//pRenderable->pPod = newPod;
+		
+		pRenderable->flags |= RenderFlag_Initialized;
+		pRenderable->customTexture0 = &texture_default;
+		pRenderable->customTexture1 = NULL;
+		pRenderable->materialID = MT_TextureOnlySimple;
+		pRenderable->postRenderLayerSortValue = 0;
+		pRenderable->renderLayer = renderLayer;
+		pRenderable->viewFlags = viewFlags;
+		
+		
+		if(matrix4x4 == NULL)
+		{
+			mat4f_LoadIdentity(pRenderable->worldMat);
+		}
+		else
+		{
+			mat4f_Copy(pRenderable->worldMat,matrix4x4);
+		}
+		
+		ModelData* pModelData = new ModelData;
+		//pModelData->format = VertexFormat_POD_Skinned;
+		pModelData->numPrimitives = newPod->nNumMesh;
+		pModelData->modelName = NULL;
+		pModelData->primitiveArray = new PrimitiveData[newPod->nNumMesh];
+		pModelData->modelName = NULL;
+		
+		pRenderable->pModel = pModelData;
+		
+		for (unsigned int i = 0; i < newPod->nNumMesh; ++i)
+		{
+			PrimitiveData* pCurrData = &pModelData->primitiveArray[i];
+			
+			glGenBuffers(newPod->nNumMesh, &pCurrData->vertexArrayObjectID);
+			
+			// Load vertex data into buffer object
+			SPODMesh& Mesh = newPod->pMesh[i];
+			unsigned int vertexBufferSize = Mesh.nNumVertex * Mesh.sVertex.nStride;
+			
+			pCurrData->drawMethod = GL_TRIANGLES;
+			
+			
+			glBindBuffer(GL_ARRAY_BUFFER, pCurrData->vertexArrayObjectID);
+			glBufferData(GL_ARRAY_BUFFER, vertexBufferSize, Mesh.pInterleaved, GL_STATIC_DRAW);
+			
+			pCurrData->vertexData = (f32*)Mesh.pInterleaved;
+			pCurrData->sizeOfVertexData = vertexBufferSize;			
+			
+			// Load index data into buffer object if available
+			pCurrData->indexBufferID = 0;
+			
+			if (Mesh.sFaces.pData)
+			{
+				glGenBuffers(1, &pCurrData->indexBufferID);
+				unsigned int indexDataSize = PVRTModelPODCountIndices(Mesh) * sizeof(GLshort);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pCurrData->indexBufferID);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexDataSize, Mesh.sFaces.pData, GL_STATIC_DRAW);
+				
+				pCurrData->indexData = (GLushort*)Mesh.sFaces.pData;
+				pCurrData->sizeOfIndexData = indexDataSize;
+			}
+		}
+		
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		return true;
+	}
+	
+	return false;
 }
 
 

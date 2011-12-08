@@ -1,0 +1,23 @@
+//Author: Jody McAdams
+//Website: http://www.jodymcadams.com
+//Company Website: http://www.gamejellyonline.com
+
+#ifdef GL_ES
+// define default precision for float, vec, mat.
+precision highp float;
+#endif
+
+varying vec2 texcoord;
+varying vec4 color;
+
+uniform sampler2D texture0;
+
+void main()
+{
+	gl_FragColor = texture2D(texture0, texcoord) * color;
+    
+    if(gl_FragColor.a == 0.0)
+    {
+        discard;
+    }
+}
