@@ -20,7 +20,9 @@
 #include "zlib.h"
 #include "png.h"
 
+#if defined PLATFORM_OSX 
 #include <OpenGL/glu.h>
+#endif
 
 #include "MaterialDeclarations.h"
 
@@ -139,6 +141,38 @@ static GLuint texture_default = 0;
 
 void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 {
+
+#ifdef PLATFORM_IOS
+	GLuint framebuffer;
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	
+	GLuint colorRenderbuffer;
+	glGenRenderbuffers(1, &colorRenderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
+	
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB565, screenWidth, screenHeight);
+	
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
+	
+	GLuint depthRenderbuffer;
+	glGenRenderbuffers(1, &depthRenderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, screenWidth, screenHeight);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
+	
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER) ;
+	if(status != GL_FRAMEBUFFER_COMPLETE) {
+		NSLog(@"failed to make complete framebuffer object %x", status);
+	}
+#else
+	
+#endif
+	
+	
+	
+	PrintOpenGLError("At init!");
+	
 	mat4f_LoadIdentity(m_identityMat);
 	
 	screenWidth_points = screenWidth;
@@ -255,6 +289,8 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 	
 	m_lastUsedMaterial = (RenderMaterial) RENDERMATERIAL_INVALID;
     
+	PrintOpenGLError("Before loading textures");
+	
 	// Load all the textures
 	LoadTexture("bluefalcon.png", ImageType_PNG, &texture_default, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 	LoadTexture("ParticleAtlas_01.png", ImageType_PNG, &texture_pointSpriteAtlas, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
@@ -3304,6 +3340,7 @@ void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 		printf("GL error: %d (0x%x)\n\n", iErr, iErr);
 	}*/
 	
+#if defined PLATFORM_OSX 
 	GLenum errCode;
 	const GLubyte *errString;
 	
@@ -3311,6 +3348,7 @@ void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 		errString = gluErrorString(errCode);
 		fprintf (stderr, "OpenGL Error: %s\n", errString);
 	}
+#endif
 }
 
 
@@ -3618,6 +3656,8 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 	}
 
 	PrintOpenGLError("Before texture uniforms.");
+	
+	glUseProgram(shaderProgram);
 	
 	//TODO: make this only set up as many as the material uses (if it even matters)
 	GLuint uniform_texture0 = glGetUniformLocation(shaderProgram,"texture0");
@@ -4129,7 +4169,7 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 			pCurrGeom->pWorldMat = pScene->worldMat;
 			pCurrGeom->customTexture0 = &texture_default;
 			pCurrGeom->customTexture1 = 0;
-			pCurrGeom->flags = RenderFlag_Visible|RenderFlag_DisableCulling|RenderFlag_Initialized;
+			pCurrGeom->flags = RenderFlag_Visible|RenderFlag_Initialized|RenderFlag_DisableBlending;
 			pCurrGeom->materialID = MT_TextureOnlySimple;
 			pCurrGeom->postRenderLayerSortValue = 0;
 			pCurrGeom->renderLayer = RenderLayer_Normal;
@@ -4149,9 +4189,9 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 				
 				pCurrAttrib->attribute = ATTRIB_VERTEX;
 				pCurrAttrib->type = GL_FLOAT;
-				pCurrAttrib->size = Mesh.sVertex.n*sizeof(GL_FLOAT);
+				pCurrAttrib->size = Mesh.sVertex.n;
 				pCurrAttrib->offset = attribOffset;
-				attribOffset += pCurrAttrib->size; //TODO: won't hold up if you change to non-floats
+				attribOffset += pCurrAttrib->size*sizeof(GL_FLOAT); //TODO: won't hold up if you change to non-floats
 				
 				++pModelData->numAttributes;
 			}
@@ -4162,9 +4202,9 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 				
 				pCurrAttrib->attribute = ATTRIB_NORMAL;
 				pCurrAttrib->type = GL_FLOAT;
-				pCurrAttrib->size = Mesh.sNormals.n*sizeof(GL_FLOAT);
+				pCurrAttrib->size = Mesh.sNormals.n;
 				pCurrAttrib->offset = attribOffset;
-				attribOffset += pCurrAttrib->size; //TODO: won't hold up if you change to non-floats
+				attribOffset += pCurrAttrib->size*sizeof(GL_FLOAT); //TODO: won't hold up if you change to non-floats
 				
 				++pModelData->numAttributes;
 			}
@@ -4175,9 +4215,9 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 				
 				pCurrAttrib->attribute = ATTRIB_TANGENT;
 				pCurrAttrib->type = GL_FLOAT;
-				pCurrAttrib->size = Mesh.sTangents.n*sizeof(GL_FLOAT);
+				pCurrAttrib->size = Mesh.sTangents.n;
 				pCurrAttrib->offset = attribOffset;
-				attribOffset += pCurrAttrib->size; //TODO: won't hold up if you change to non-floats
+				attribOffset += pCurrAttrib->size*sizeof(GL_FLOAT); //TODO: won't hold up if you change to non-floats
 				
 				++pModelData->numAttributes;
 			}
@@ -4188,9 +4228,9 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 				
 				pCurrAttrib->attribute = ATTRIB_BINORMAL;
 				pCurrAttrib->type = GL_FLOAT;
-				pCurrAttrib->size = Mesh.sBinormals.n*sizeof(GL_FLOAT);
+				pCurrAttrib->size = Mesh.sBinormals.n;
 				pCurrAttrib->offset = attribOffset;
-				attribOffset += pCurrAttrib->size; //TODO: won't hold up if you change to non-floats
+				attribOffset += pCurrAttrib->size*sizeof(GL_FLOAT); //TODO: won't hold up if you change to non-floats
 				
 				++pModelData->numAttributes;
 			}
@@ -4202,11 +4242,9 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 				pCurrAttrib->attribute = ATTRIB_TEXCOORD;
 				pCurrAttrib->type = GL_FLOAT;
 				
-				const u32 actualSize = Mesh.psUVW->n*sizeof(GL_FLOAT);
-				
-				pCurrAttrib->size = 2*sizeof(GL_FLOAT);
+				pCurrAttrib->size = Mesh.psUVW->n;
 				pCurrAttrib->offset = attribOffset;
-				attribOffset += actualSize; //TODO: won't hold up if you change to non-floats or nNumUVW is more than 1
+				attribOffset += pCurrAttrib->size*sizeof(GL_FLOAT); //TODO: won't hold up if you change to non-floats or nNumUVW is more than 1
 				
 				++pModelData->numAttributes;
 			}
@@ -4217,9 +4255,9 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 				
 				pCurrAttrib->attribute = ATTRIB_COLOR;
 				pCurrAttrib->type = GL_FLOAT;
-				pCurrAttrib->size = Mesh.sVtxColours.n*sizeof(GL_FLOAT);
+				pCurrAttrib->size = Mesh.sVtxColours.n;
 				pCurrAttrib->offset = attribOffset;
-				attribOffset += pCurrAttrib->size; //TODO: no idea if this is 16 bytes!
+				attribOffset += pCurrAttrib->size*sizeof(GL_FLOAT); //TODO: no idea if this is 16 bytes!
 				
 				++pModelData->numAttributes;
 			}
@@ -4230,9 +4268,9 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 				
 				pCurrAttrib->attribute = ATTRIB_BONEWEIGHT;
 				pCurrAttrib->type = GL_FLOAT;
-				pCurrAttrib->size = Mesh.sBoneWeight.n*sizeof(GL_FLOAT);
+				pCurrAttrib->size = Mesh.sBoneWeight.n;
 				pCurrAttrib->offset = attribOffset;
-				attribOffset += pCurrAttrib->size; //TODO: won't hold up if you change to non-floats
+				attribOffset += pCurrAttrib->size*sizeof(GL_FLOAT); //TODO: won't hold up if you change to non-floats
 				
 				++pModelData->numAttributes;
 			}
@@ -4243,7 +4281,7 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 				
 				pCurrAttrib->attribute = ATTRIB_BONEINDEX;
 				pCurrAttrib->type = GL_FLOAT;
-				pCurrAttrib->size = Mesh.sBoneIdx.n*sizeof(GL_FLOAT);
+				pCurrAttrib->size = Mesh.sBoneIdx.n;
 				pCurrAttrib->offset = attribOffset;
 				
 				++pModelData->numAttributes;
@@ -4275,7 +4313,7 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 				
 				pCurrData->indexData = (GLushort*)Mesh.sFaces.pData;
 				pCurrData->sizeOfIndexData = indexDataSize;
-				
+				/*
 				//DEBUG!
 				printf("\n****************\nNum indices: %d, Triangles: %d\n****************\n",pModelData->primitiveArray[0].numVerts,pModelData->primitiveArray[0].numVerts/3);
 				for(int indexIDX=0; indexIDX<pModelData->primitiveArray[0].numVerts; ++indexIDX)
@@ -4287,7 +4325,7 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 					vec3* pPos = (vec3*)&pData[0];
 					vec2* pUV = (vec2*)&pData[12];
 					printf("Vert: V:<%f,%f,%f>, T:<%f,%f>\n",pPos->x,pPos->y,pPos->z,pUV->x,pUV->y);
-				}
+				}*/
 			}
 			
 			RegisterModel(pModelData);
@@ -4448,10 +4486,8 @@ bool LoadPngImage(const char* fileName, int &outWidth, int &outHeight, bool &out
 	
     for (unsigned int i = 0;  i < height;  ++i)
 	{
-		//row_pointers[height - 1 - i] = image_data + i*rowbytes;
-		row_pointers[i] = image_data + i*rowbytes;
+		row_pointers[height - 1 - i] = image_data + i*rowbytes;
 	}
-	
 	
     /* now we can go ahead and just read the whole image */
     png_read_image(png_ptr, row_pointers);
