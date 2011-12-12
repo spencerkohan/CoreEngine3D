@@ -20,6 +20,8 @@
 #include "zlib.h"
 #include "png.h"
 
+#include <OpenGL/glu.h>
+
 #include "MaterialDeclarations.h"
 
 //DEBUG MODELS
@@ -3296,10 +3298,18 @@ void OpenGLRenderer::PostProcess(RenderMaterial ppMaterial, RenderTarget* render
 
 void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 {
-	int iErr = glGetError();
+	/*int iErr = glGetError();
 	if (iErr != GL_NO_ERROR)
 	{
 		printf("GL error: %d (0x%x)\n\n", iErr, iErr);
+	}*/
+	
+	GLenum errCode;
+	const GLubyte *errString;
+	
+	if ((errCode = glGetError()) != GL_NO_ERROR) {
+		errString = gluErrorString(errCode);
+		fprintf (stderr, "OpenGL Error: %s\n", errString);
 	}
 }
 
@@ -4267,13 +4277,13 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 				pCurrData->sizeOfIndexData = indexDataSize;
 				
 				//DEBUG!
-				printf("\n****************\nNum indices: %d, Triangles: %d\n****************\n",pModelData->primitiveArray->numVerts,pModelData->primitiveArray->numVerts/3);
-				for(int indexIDX=0; indexIDX<pModelData->primitiveArray->numVerts; ++indexIDX)
+				printf("\n****************\nNum indices: %d, Triangles: %d\n****************\n",pModelData->primitiveArray[0].numVerts,pModelData->primitiveArray[0].numVerts/3);
+				for(int indexIDX=0; indexIDX<pModelData->primitiveArray[0].numVerts; ++indexIDX)
 				{
-					const u32 index = pModelData->primitiveArray->indexData[indexIDX];
+					const u32 index = pModelData->primitiveArray[0].indexData[indexIDX];
 					printf("Index %d: %d\n",indexIDX,index);
 					
-					u8* pData = &pModelData->primitiveArray->vertexData[index*pModelData->stride];
+					u8* pData = &pModelData->primitiveArray[0].vertexData[index*pModelData->stride];
 					vec3* pPos = (vec3*)&pData[0];
 					vec2* pUV = (vec2*)&pData[12];
 					printf("Vert: V:<%f,%f,%f>, T:<%f,%f>\n",pPos->x,pPos->y,pPos->z,pUV->x,pUV->y);
@@ -4282,8 +4292,6 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 			
 			RegisterModel(pModelData);
 		}
-		
-		
 		
 		return true;
 	}
