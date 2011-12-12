@@ -19,6 +19,7 @@
 #include "GameDefines.h"
 #include "zlib.h"
 #include "png.h"
+#include "SOIL.h"
 
 #if defined PLATFORM_OSX 
 #include <OpenGL/glu.h>
@@ -292,7 +293,7 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 	PrintOpenGLError("Before loading textures");
 	
 	// Load all the textures
-	LoadTexture("bluefalcon.png", ImageType_PNG, &texture_default, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+	LoadTexture("TempTexture.tga", ImageType_TGA, &texture_default, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 	LoadTexture("ParticleAtlas_01.png", ImageType_PNG, &texture_pointSpriteAtlas, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 	
 	//Create VBO buffers for terrain
@@ -2972,6 +2973,18 @@ void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, GLuin
 	
     switch (imageType)
     {
+		case ImageType_TGA:
+		{
+			*pGLTexture = SOIL_load_OGL_texture
+			(
+			 GetPathToFile(fileName),
+			 SOIL_LOAD_AUTO,
+			 SOIL_CREATE_NEW_ID,
+			 SOIL_FLAG_INVERT_Y
+			 );
+			
+			break;
+		}
         case ImageType_PNG:
         {
 			int width,height;

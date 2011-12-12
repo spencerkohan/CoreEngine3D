@@ -530,7 +530,8 @@ typedef struct
 typedef enum
 {
     ImageType_PVR,
-    ImageType_PNG
+    ImageType_PNG,
+	ImageType_TGA,
 } ImageType;
 
 typedef enum
