@@ -2961,7 +2961,7 @@ void OpenGLRenderer::CleanUp()
 }
 
 
-void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, GLuint* pGLTexture, GLuint filterMode, GLuint wrapModeU, GLuint wrapModeV)
+void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, GLuint* pGLTexture, GLuint filterMode, GLuint wrapModeU, GLuint wrapModeV, bool flipY)
 {
 	//You're not allowed to load different textures into one location
     //You're not allowed to load into NULL
@@ -2978,7 +2978,7 @@ void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, GLuin
 			bool hasAlpha;
 			GLubyte *textureImage;
 			
-			const bool success = LoadPngImage(GetPathToFile(fileName), width, height, hasAlpha, &textureImage);
+			const bool success = LoadPngImage(GetPathToFile(fileName), width, height, hasAlpha, &textureImage, flipY);
 			
 			if(success)
 			{
@@ -4340,7 +4340,7 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fil
 
 //helpers
 
-bool LoadPngImage(const char* fileName, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData)
+bool LoadPngImage(const char* fileName, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData, bool flipY)
 {
 	FILE         *infile;         /* PNG file pointer */
 	png_structp   png_ptr;        /* internally used by libpng */
@@ -4484,10 +4484,22 @@ bool LoadPngImage(const char* fileName, int &outWidth, int &outHeight, bool &out
 	
     /* set the individual row_pointers to point at the correct offsets */
 	
-    for (unsigned int i = 0;  i < height;  ++i)
+	if(flipY)
 	{
-		row_pointers[height - 1 - i] = image_data + i*rowbytes;
+		for (unsigned int i = 0;  i < height;  ++i)
+		{
+			row_pointers[i] = image_data + i*rowbytes;
+		}
 	}
+	else
+	{
+		for (unsigned int i = 0;  i < height;  ++i)
+		{
+			row_pointers[height - 1 - i] = image_data + i*rowbytes;
+		}
+	}
+	
+    
 	
     /* now we can go ahead and just read the whole image */
     png_read_image(png_ptr, row_pointers);
