@@ -29,7 +29,6 @@
 
 #ifdef PLATFORM_IOS
 #import <OpenGLES/ES2/gl.h>
-#import <OpenGLES/ES2/glext.h>
 #endif
 	
 	#define APIENTRY
@@ -1969,10 +1968,6 @@ int query_cubemap_capability( void )
 
 int query_DXT_capability( void )
 {
-#ifdef PLATFORM_IOS
-		has_DXT_capability = SOIL_CAPABILITY_NONE;
-		return has_DXT_capability;
-#else
 	/*	check for the capability	*/
 	if( has_DXT_capability == SOIL_CAPABILITY_UNKNOWN )
 	{
@@ -1993,7 +1988,10 @@ int query_DXT_capability( void )
 						(
 							"glCompressedTexImage2DARB"
 						);
-			#elifdef PLATFORM_MACOSX
+			#elif defined(PLATFORM_IOS)
+				/*	not there, flag the failure	*/
+				has_DXT_capability = SOIL_CAPABILITY_NONE;
+			#elif defined(PLATFORM_OSX)
 				/*	I can't test this Apple stuff!	*/
 				CFBundleRef bundle;
 				CFURLRef bundleURL =
@@ -2044,5 +2042,4 @@ int query_DXT_capability( void )
 	}
 	/*	let the user know if we can do DXT or not	*/
 	return has_DXT_capability;
-#endif
 }
