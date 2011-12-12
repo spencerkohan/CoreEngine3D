@@ -38,6 +38,7 @@ const char* g_MaterialNames[NumRenderMaterials] =
     "MT_VertWithColorInputAndTexture",
     "MT_TextureWithColor",
 	"MT_WiggleUsingTexcoordV",
+	"MT_SkinnedWithNormalMapping",
 	"PPMT_Add",
 	"PPMT_BlendUsingTexture",
 	"PPMT_Copy",

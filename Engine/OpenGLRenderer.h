@@ -112,12 +112,12 @@ public:
 	//public functions
 	
 	void Init(f32 screenWidth, f32 screenHeight);
-	bool InitRenderableFromPOD(RenderableObject3D* pRenderable, const char* fileName,  mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
+	bool InitSceneFromPOD(RenderableScene3D* pScene, const char* fileName,  mat4f matrix4x4, u32 viewFlags);
 	void CleanUp();
 	bool GetFadeFinished();
 	void ClearRenderables();
 	void ClearOneFrameGeometry();
-	void RenderLoop(u32 camViewIDX,RenderableObject3D** renderableObjectArray, u32 numRenderableObjects);
+	void RenderLoop(u32 camViewIDX,RenderableGeometry3D** renderableObjectArray, u32 numRenderableObjects);
 	void RenderEffects();
 	void SetClearColor(f32 r, f32 g, f32 b);
 	void SetGravityDir(const vec3* pNewGravityDir);
@@ -127,13 +127,13 @@ public:
 	bool UpdateTextureFromData(GLuint* out_textureName, const void* data, u32 texWidth, u32 texHeight, u32 format, u32 type);
 	void RegisterModel(ModelData* pModelData);
 	void AddRenderableObject3DToList(RenderableObject3D* pRenderable);
+	void AddRenderableScene3DToList(RenderableScene3D* pRenderableScene);
 	void AddParticleToQueue(Particle3D* pParticle, vec3* pPosition, vec3* pCallbackPos, ParticleBuckets particleBucket);
 	void SpawnParticles(vec3* pPosition, const vec3* pColor, const ParticleSettings* particleSettings, s32 numParticles);
 	void UpdateParticleQueues(f32 timeElapsed);
 	void UpdateTrails(f32 timeElapsed);
 	void InitRenderableObject3D(RenderableObject3D* renderableObject, ModelData* pModel, RenderMaterial materialID, GLuint* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
-	void SortRenderableObject3DList();
-	void DEBUG_PrintRenderables();
+	void SortRenderableGeometry3DList();
 	void CreateMaterials();
 	void SetViewMatrixForIndex(f32* pCameraMatrix, u32 viewIndex);
 	void SetViewPos(vec3* pCamPos, u32 viewIndex);
@@ -237,7 +237,7 @@ private:
 	vec4 m_fadeColor;
 	vec3 m_fadeToScreenColor;
 	u32 m_currViewIndex;
-	u32 m_numRenderableObject3Ds;
+	u32 m_numRenderableGeom3Ds;
 	u32 m_numRenderableUIObjects;
 	bool m_renderableObject3DsNeedSorting;
 	bool m_renderableUINeedSorting;
@@ -255,8 +255,8 @@ private:
     GLuint m_currTextureInTextureUnit[5];
     GLuint m_currTextureUnit;
     SinCosBucket m_sinCosBuckets[NUM_SINCOS_BUCKETS];
-    RenderableObject3D* m_renderableObject3DList[MAX_RENDERABLE_3D_OBJECTS];
-	RenderableObject3D* m_renderableUIList[MAX_RENDERABLE_UI_OBJECTS];
+    RenderableGeometry3D* m_renderableGeometry3DList[MAX_RENDERABLE_3D_OBJECTS];
+	RenderableGeometry3D* m_renderableUIList[MAX_RENDERABLE_UI_OBJECTS];
     RendererParticleBucket m_particleBuckets[NumParticleBuckets];
     GLuint trailShaderUniform_accumulatedTime;
     GLuint trailShaderUniform_scrollAmountU;
@@ -305,9 +305,9 @@ private:
 //Helpers
 char* FileToCharArray(const char* filename);
 bool LoadPngImage(const char *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData);
-s32 RenderableObject3DCompare_SortByZ(const void* lhs, const void* rhs);
-s32 RenderableObject3DCompare_SortByNegativeZ(const void* lhs, const void* rhs);
-s32 RenderableObject3DCompare_SortValue(const void* lhs, const void* rhs);
+s32 RenderableGeometry3DCompare_SortByZ(const void* lhs, const void* rhs);
+s32 RenderableGeometry3DCompare_SortByNegativeZ(const void* lhs, const void* rhs);
+s32 RenderableGeometry3DCompare_SortValue(const void* lhs, const void* rhs);
 void PackFloat16(float myFloat, float* out_x, float* out_y);
 float UnpackFloat16(float x, float y);
 void DoubleRenderTarget_Flip(DoubleRenderTarget* doubleRenderTarget);

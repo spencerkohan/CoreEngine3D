@@ -321,7 +321,7 @@ typedef enum {
 typedef struct
 {
 	u32 drawMethod;
-	f32* vertexData;
+	u8* vertexData;
 	GLushort* indexData;
 	u32 numVerts;
 	u32 sizeOfVertexData;
@@ -340,7 +340,7 @@ typedef struct
 
 typedef struct
 {
-	const AttributeData* attributeArray;
+	AttributeData* attributeArray;
 	u32 numAttributes;
 	u32 stride;
 	const char* modelName;
@@ -542,7 +542,7 @@ typedef enum
 
 typedef struct
 {
-	f32 worldMat[16];   //16 bytes
+	f32* pWorldMat;
 	ModelData* pModel;  //4 bytes
 	RenderMaterial materialID;  //4 bytes
 	f32* uniqueUniformValues[MAX_UNIQUE_UNIFORM_VALUES];    //32 bytes
@@ -556,7 +556,22 @@ typedef struct
     u32 postRenderLayerSortValue; //4 bytes (optional)
 	//CPVRTModelPOD* pPod;
 	f32 localUniformData[MAX_LOCALDATA_SLOTS_FOR_RENDERABLE];
+} RenderableGeometry3D;
+
+
+typedef struct
+{
+	f32 worldMat[16];   //16 bytes
+	RenderableGeometry3D geom;
 } RenderableObject3D;
+
+
+typedef struct
+{
+	f32 worldMat[16];   //16 bytes
+	RenderableGeometry3D* pGeom;
+	u32 numGeom;
+} RenderableScene3D;
 
 typedef enum
 {

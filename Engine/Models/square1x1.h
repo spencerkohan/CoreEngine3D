@@ -14,7 +14,7 @@ static const u32 g_Square1x1_numberOfPrimitives = 1;
 static const u32 g_Square1x1_numberOfAttributes = 3;
 
 static PrimitiveData  g_Square1x1_PrimitiveArray[g_Square1x1_numberOfPrimitives]={
-	{GL_TRIANGLE_STRIP,(f32*)g_Square1x1_VertexData0,NULL,g_Square1x1_numberOfVertices,sizeof(g_Square1x1_VertexData0),0,0,0},
+	{GL_TRIANGLE_STRIP,(u8*)g_Square1x1_VertexData0,NULL,g_Square1x1_numberOfVertices,sizeof(g_Square1x1_VertexData0),0,0,0},
 };
 
 static AttributeData g_Square1x1_AttributesArray[g_Square1x1_numberOfAttributes]=

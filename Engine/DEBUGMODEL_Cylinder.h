@@ -49,9 +49,9 @@ static const u32 g_DEBUGMODEL_Cylinder_numberOfPrimitives = 3;
 static const u32 g_DEBUGMODEL_Cylinder_numberOfAttributes = 1;
 
 static PrimitiveData  g_DEBUGMODEL_Cylinder_PrimitiveArray[g_DEBUGMODEL_Cylinder_numberOfPrimitives]={
-	{GL_LINE_LOOP,(f32*)g_DEBUGMODEL_Cylinder_VertexData0,NULL,g_DEBUGMODEL_Cylinder_numberOfVertices_Circle,sizeof(g_DEBUGMODEL_Cylinder_VertexData0),0,0,0},
-    {GL_LINE_LOOP,(f32*)g_DEBUGMODEL_Cylinder_VertexData1,NULL,g_DEBUGMODEL_Cylinder_numberOfVertices_Circle,sizeof(g_DEBUGMODEL_Cylinder_VertexData1),0,0,0},
-    {GL_LINES,(f32*)g_DEBUGMODEL_Cylinder_VertexData2,NULL,g_DEBUGMODEL_Cylinder_numberOfVertices_Sides,sizeof(g_DEBUGMODEL_Cylinder_VertexData2),0,0,0},
+	{GL_LINE_LOOP,(u8*)g_DEBUGMODEL_Cylinder_VertexData0,NULL,g_DEBUGMODEL_Cylinder_numberOfVertices_Circle,sizeof(g_DEBUGMODEL_Cylinder_VertexData0),0,0,0},
+    {GL_LINE_LOOP,(u8*)g_DEBUGMODEL_Cylinder_VertexData1,NULL,g_DEBUGMODEL_Cylinder_numberOfVertices_Circle,sizeof(g_DEBUGMODEL_Cylinder_VertexData1),0,0,0},
+    {GL_LINES,(u8*)g_DEBUGMODEL_Cylinder_VertexData2,NULL,g_DEBUGMODEL_Cylinder_numberOfVertices_Sides,sizeof(g_DEBUGMODEL_Cylinder_VertexData2),0,0,0},
 };
 
 static AttributeData g_DEBUGMODEL_Cylinder_AttributesArray[g_DEBUGMODEL_Cylinder_numberOfAttributes]=

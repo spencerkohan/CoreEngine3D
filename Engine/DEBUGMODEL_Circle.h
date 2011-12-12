@@ -11,7 +11,7 @@ static const float g_DEBUGMODEL_Circle_VertexData0[] = {
 #define g_DEBUGMODEL_Circle_numberOfAttributes 1
 
 static PrimitiveData  g_DEBUGMODEL_Circle_PrimitiveArray[g_DEBUGMODEL_Circle_numberOfPrimitives]={
-	{GL_LINE_LOOP,(f32*)g_DEBUGMODEL_Circle_VertexData0,NULL,g_DEBUGMODEL_Circle_numberOfVertices,sizeof(g_DEBUGMODEL_Circle_VertexData0),0,0,0},
+	{GL_LINE_LOOP,(u8*)g_DEBUGMODEL_Circle_VertexData0,NULL,g_DEBUGMODEL_Circle_numberOfVertices,sizeof(g_DEBUGMODEL_Circle_VertexData0),0,0,0},
 };
 
 static AttributeData g_DEBUGMODEL_Circle_AttributesArray[g_DEBUGMODEL_Circle_numberOfAttributes]=

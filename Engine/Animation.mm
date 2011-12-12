@@ -357,7 +357,7 @@ Animationcoord2 acord[4];
 {
 	
 	m_animationInfos[animationID].r3d = _r3d;
-	_r3d->uniqueUniformValues[0] = (f32*)&m_animationInfos[animationID].wwlo3;
+	_r3d->geom.uniqueUniformValues[0] = (f32*)&m_animationInfos[animationID].wwlo3;
 }
 
 
@@ -427,7 +427,7 @@ float mod;
 	}
 	AnimationClip* clip = (AnimationClip*)[[m_animationInfos[_animation].clipDictionary objectForKey:_nsstring] pointerValue];
 	m_animationInfos[_animation].currentClip = clip;
-	m_animationInfos[_animation].r3d->customTexture0 = clip->textureHandle;
+	m_animationInfos[_animation].r3d->geom.customTexture0 = clip->textureHandle;
 	renderer->ForceRenderablesNeedSorting();
 	m_animationInfos[_animation].currentClip->currentFrame = m_animationInfos[_animation].currentClip->beginingFrame;
 	m_animationInfos[_animation].timesToPlay = _timestoplay;

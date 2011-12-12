@@ -13,8 +13,10 @@
 
 typedef float f32;
 typedef double f64;
-typedef int	s32;
+typedef signed int	s32;
+typedef signed long int sl32;
 typedef unsigned int u32;
+typedef unsigned long ul32;
 typedef char s8;
 typedef unsigned char u8;
 typedef unsigned short u16;

@@ -14,7 +14,7 @@ static const u32 g_Fullscreen_Model_numberOfPrimitives = 1;
 static const u32 g_Fullscreen_Model_numberOfAttributes = 3;
 
 static PrimitiveData g_Fullscreen_Model_PrimitiveArray[g_Fullscreen_Model_numberOfPrimitives]={
-	{GL_TRIANGLE_STRIP,(f32*)g_Fullscreen_Model_VertexData0,NULL,g_Fullscreen_Model_numberOfVertices,sizeof(g_Fullscreen_Model_VertexData0),0,0,0},
+	{GL_TRIANGLE_STRIP,(u8*)g_Fullscreen_Model_VertexData0,NULL,g_Fullscreen_Model_numberOfVertices,sizeof(g_Fullscreen_Model_VertexData0),0,0,0},
 };
 
 static AttributeData g_Fullscreen_Model_AttributesArray[g_Fullscreen_Model_numberOfVertices]=

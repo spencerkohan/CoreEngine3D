@@ -20,6 +20,8 @@
 #include "zlib.h"
 #include "png.h"
 
+#include "MaterialDeclarations.h"
+
 //DEBUG MODELS
 #include "DEBUGMODEL_Circle.h"
 #include "DEBUGMODEL_Cylinder.h"
@@ -165,10 +167,14 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
     m_sortRenderablesByZ = false;
 	
 	m_numTexturedLines = 0;
+
+#ifdef PLATFORM_OSX
+	m_supportsFeaturesFromiOS4 = true;
+#endif
 	
-    //m_supportsFeaturesFromiOS4 = [[[UIDevice currentDevice] systemVersion] floatValue] >= 4.0f;
-    
-	m_supportsFeaturesFromiOS4 = false;
+#ifdef PLATFORM_IOS
+	m_supportsFeaturesFromiOS4 = [[[UIDevice currentDevice] systemVersion] floatValue] >= 4.0f;
+#endif
 	
 #if TARGET_IPHONE_SIMULATOR
     m_supportsMultisampling = NO;
@@ -240,7 +246,7 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 	m_currFadeTime = 0.0f;
 	m_currFadeValue = 1.0f;
 	
-	m_numRenderableObject3Ds = 0;
+	m_numRenderableGeom3Ds = 0;
 	m_numRenderableUIObjects = 0;
 	
 	m_readyToGo = false;
@@ -248,11 +254,13 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 	m_lastUsedMaterial = (RenderMaterial) RENDERMATERIAL_INVALID;
     
 	// Load all the textures
-	LoadTexture("texdefault.png", ImageType_PNG, &texture_default, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+	LoadTexture("bluefalcon.png", ImageType_PNG, &texture_default, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 	LoadTexture("ParticleAtlas_01.png", ImageType_PNG, &texture_pointSpriteAtlas, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 	
 	//Create VBO buffers for terrain
 	//CreateBuffers();
+	
+	PrintOpenGLError("Before creating materials");
 	
 	CreateMaterials();
 	
@@ -263,6 +271,8 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 	ComputeGaussianWeights(m_gaussianWeights,GAUSSIAN_NUMSAMPLES,GAUSSIAN_STANDARDDEVIATION);
 	
 	m_currViewIndex = CameraView0;
+	
+	PrintOpenGLError("Before registering models");
 	
     RegisterModel(&g_DEBUGMODEL_Circle_modelData);
     RegisterModel(&g_DEBUGMODEL_Cylinder_modelData);
@@ -285,9 +295,9 @@ bool OpenGLRenderer::GetFadeFinished()
 
 void OpenGLRenderer::ClearRenderables()
 {
-	for(u32 i=0; i<m_numRenderableObject3Ds; ++i)
+	for(u32 i=0; i<m_numRenderableGeom3Ds; ++i)
     {
-        RenderableObject3D* pCurrObject = m_renderableObject3DList[i];
+        RenderableGeometry3D* pCurrObject = m_renderableGeometry3DList[i];
         if(pCurrObject == NULL)
         {
             continue;
@@ -298,7 +308,7 @@ void OpenGLRenderer::ClearRenderables()
 	
 	for(u32 i=0; i<m_numRenderableUIObjects; ++i)
     {
-        RenderableObject3D* pCurrObject = m_renderableUIList[i];
+        RenderableGeometry3D* pCurrObject = m_renderableUIList[i];
         if(pCurrObject == NULL)
         {
             continue;
@@ -307,7 +317,7 @@ void OpenGLRenderer::ClearRenderables()
         pCurrObject->flags = 0;
     }
     
-    m_numRenderableObject3Ds = 0;
+    m_numRenderableGeom3Ds = 0;
 	m_numRenderableUIObjects = 0;
 }
 
@@ -326,9 +336,9 @@ void OpenGLRenderer::ClearOneFrameGeometry()
 }
 
 
-void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableObject3D** renderableObjectArray, u32 numRenderableObjects)
+void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D** renderableObjectArray, u32 numRenderableObjects)
 {
-	f32* vertexData = NULL;
+	u8* vertexData = NULL;
 	
 #if RENDERLOOP_MODE
 	for (u32 renderIDX = 0; renderIDX<numRenderableObjects; ++renderIDX)
@@ -606,12 +616,12 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableObject3D** renderableOb
 			//SECOND: for each bound, render all the stuff
 			for (unsigned int jRenderIDX=renderIndexStart; jRenderIDX<renderIndex; ++jRenderIDX)
 			{
-				const RenderableObject3D* pCurrRenderableObject3D = renderableObjectArray[jRenderIDX];
+				const RenderableGeometry3D* pCurrRenderable = renderableObjectArray[jRenderIDX];
 				
-				const u32 renderFlags = pCurrRenderableObject3D->flags;
+				const u32 renderFlags = pCurrRenderable->flags;
 				
 				//Don't mess with or draw stuff not in this view
-				if (!(pCurrRenderableObject3D->viewFlags & (1<<camViewIDX)))
+				if (!(pCurrRenderable->viewFlags & (1<<camViewIDX)))
 				{
 					continue;
 				}
@@ -756,7 +766,7 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableObject3D** renderableOb
 				
 				//Set material whenever it has changed
 				
-				RenderMaterial nextMaterial = pCurrRenderableObject3D->materialID;
+				RenderMaterial nextMaterial = pCurrRenderable->materialID;
 				if(nextMaterial != m_lastUsedMaterial)
 				{
 					SetMaterial(nextMaterial);
@@ -772,25 +782,24 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableObject3D** renderableOb
 				
 				//Override material texture0 if needed
 				//Will do nothing if the texture is set to 0 or the texture is already set
-				SetTexture(pCurrRenderableObject3D->customTexture0, 0);
+				SetTexture(pCurrRenderable->customTexture0, 0);
 				//SetTexture(pCurrRenderableObject3D->customTexture1, 1);
 
 				//Upload uniforms that have unique values per object
-				UploadUniqueUniforms(pCurrRenderableObject3D->uniqueUniformValues);
+				UploadUniqueUniforms(pCurrRenderable->uniqueUniformValues);
 				
 				//Draw the current object
 				
 				if (renderFlags & RenderFlag_IgnoreViewMatrix)
 				{
-					UploadWorldProjMatrix(pCurrRenderableObject3D->worldMat);
+					UploadWorldProjMatrix(pCurrRenderable->pWorldMat);
 				}
 				else
 				{
-					UploadWorldViewProjMatrix(pCurrRenderableObject3D->worldMat);
+					UploadWorldViewProjMatrix(pCurrRenderable->pWorldMat);
 				}
 				
 				//Draw the primitive!
-				//if (currPrim->vertexBufferID)
 				if(currPrim->vertexArrayObjectID)
 				{
 					//NULL means non-indexed triangles
@@ -801,6 +810,7 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableObject3D** renderableOb
 					//Render using indices
 					else
 					{
+						//PrintOpenGLError("/*** Tried to render something ***/");
 						glDrawElements(currPrim->drawMethod, currPrim->numVerts, GL_UNSIGNED_SHORT, 0);
 					}
 				}
@@ -1222,9 +1232,9 @@ void OpenGLRenderer::Render(f32 timeElapsed)
         glBindFramebuffer(GL_FRAMEBUFFER, msaaFramebuffer); 
     }
     
-    if(m_numRenderableObject3Ds > m_maxNumRenderables)
+    if(m_numRenderableGeom3Ds > m_maxNumRenderables)
     {
-        m_maxNumRenderables = m_numRenderableObject3Ds;
+        m_maxNumRenderables = m_numRenderableGeom3Ds;
         //printf("*** Max number of models has increased to: %d\n",m_maxNumRenderables);
     }
     
@@ -1311,7 +1321,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 	//Sort renderables if needed
 	if(m_renderableObject3DsNeedSorting == true)
 	{
-		SortRenderableObject3DList();
+		SortRenderableGeometry3DList();
 		
 		m_renderableObject3DsNeedSorting = false;
 	}
@@ -1555,7 +1565,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
         }
 		//TODO: one day if we have multiple viewports, we'll have to link cameras to viewports
 #if RENDERLOOP_ENABLED
-		RenderLoop(camViewIDX,m_renderableObject3DList,m_numRenderableObject3Ds);
+		RenderLoop(camViewIDX,m_renderableGeometry3DList,m_numRenderableGeom3Ds);
 		RenderLoop(0,m_renderableUIList,m_numRenderableUIObjects);
 #endif        
 	}
@@ -2006,16 +2016,14 @@ void OpenGLRenderer::RegisterModel(ModelData* pModelData)
 	}
 	
 	pModelData->modelID = m_numModels++;
+	
+	PrintOpenGLError("End of Register Model");
 }
 
 
 void OpenGLRenderer::AddRenderableObject3DToList(RenderableObject3D* pRenderable)
 {
-	assert(pRenderable->customTexture0 != NULL);
-	
-	assert(*pRenderable->customTexture0 != 0);
-	
-	if (!(pRenderable->flags & RenderFlag_Initialized))
+	if (!(pRenderable->geom.flags & RenderFlag_Initialized))
 	{
 		//assert(0);
 		//NSLog(@"Insane Error: addRenderableObject3D -> You can't add an uninitialized RenderableObject3D to the renderer!");
@@ -2023,11 +2031,11 @@ void OpenGLRenderer::AddRenderableObject3DToList(RenderableObject3D* pRenderable
 		return;
 	}
 	
-	if(pRenderable->renderLayer == RenderLayer_UI)
+	if(pRenderable->geom.renderLayer == RenderLayer_UI)
 	{
 		if(m_numRenderableUIObjects < MAX_RENDERABLE_UI_OBJECTS)
 		{
-			m_renderableUIList[m_numRenderableUIObjects++] = pRenderable;
+			m_renderableUIList[m_numRenderableUIObjects++] = &pRenderable->geom;
 			
 			m_renderableUINeedSorting = true;
 		}
@@ -2038,9 +2046,9 @@ void OpenGLRenderer::AddRenderableObject3DToList(RenderableObject3D* pRenderable
 	}
 	else
 	{
-		if(m_numRenderableObject3Ds < MAX_RENDERABLE_3D_OBJECTS)
+		if(m_numRenderableGeom3Ds < MAX_RENDERABLE_3D_OBJECTS)
 		{
-			m_renderableObject3DList[m_numRenderableObject3Ds++] = pRenderable;
+			m_renderableGeometry3DList[m_numRenderableGeom3Ds++] = &pRenderable->geom;
 			
 			m_renderableObject3DsNeedSorting = true;
 		}
@@ -2049,7 +2057,6 @@ void OpenGLRenderer::AddRenderableObject3DToList(RenderableObject3D* pRenderable
 			NSLog(@"Insane Error: addRenderableObject3D -> You tried to add more than MAX_RENDERABLE_3D_OBJECTS!  Added nothing.");
 		}
 	}
-
 }
 
 
@@ -2372,22 +2379,20 @@ void OpenGLRenderer::InitRenderableObject3D(RenderableObject3D* renderableObject
 		printf("INSANE ERROR: You are tried to initialize a renderable with an unregistered model '%s'!  Skipping...\n",pModel->modelName);
 		return;
 	}
-	
-	//renderableObject->pPod = NULL;
-	renderableObject->pModel = pModel;
-	renderableObject->materialID = materialID;
-	renderableObject->flags = renderFlags|RenderFlag_Initialized;
-	renderableObject->renderLayer = renderLayer;
-	renderableObject->customTexture0 = customTexture;
-	//assert(customTexture);
-	renderableObject->customTexture1 = NULL;
-	renderableObject->viewFlags = viewFlags;
-	renderableObject->debugName = NULL;
-	renderableObject->postRenderLayerSortValue = 0;
-	
+
+	renderableObject->geom.pModel = pModel;
+	renderableObject->geom.materialID = materialID;
+	renderableObject->geom.flags = renderFlags|RenderFlag_Initialized;
+	renderableObject->geom.renderLayer = renderLayer;
+	renderableObject->geom.customTexture0 = customTexture;
+	renderableObject->geom.customTexture1 = NULL;
+	renderableObject->geom.viewFlags = viewFlags;
+	renderableObject->geom.debugName = NULL;
+	renderableObject->geom.postRenderLayerSortValue = 0;
+
 	for (s32 i=0; i<MAX_UNIQUE_UNIFORM_VALUES; ++i)
 	{
-		renderableObject->uniqueUniformValues[i] = NULL;
+		renderableObject->geom.uniqueUniformValues[i] = NULL;
 	}
 	
 	if(matrix4x4 == NULL)
@@ -2399,35 +2404,37 @@ void OpenGLRenderer::InitRenderableObject3D(RenderableObject3D* renderableObject
 		mat4f_Copy(renderableObject->worldMat,matrix4x4);
 	}
 	
+	renderableObject->geom.pWorldMat = renderableObject->worldMat;
+	
 	//You just changed this thing's material so resort
 	m_renderableObject3DsNeedSorting = true;
 }
 
 
-void OpenGLRenderer::SortRenderableObject3DList()
+void OpenGLRenderer::SortRenderableGeometry3DList()
 {
 	m_numCellshadedRenderables = 0;
     
 	//Create sort values
-	for(u32 i=0; i<m_numRenderableObject3Ds; ++i)
+	for(u32 i=0; i<m_numRenderableGeom3Ds; ++i)
 	{
 		//I got 32 bits to use up
-		m_renderableObject3DList[i]->sortValue = 0;
+		m_renderableGeometry3DList[i]->sortValue = 0;
 		
 		//Going to consider 0 to be the most significant bit for ease of reading
-		GU_InsertPositiveValueAsBits(&m_renderableObject3DList[i]->sortValue,m_renderableObject3DList[i]->renderLayer,0,4);
+		GU_InsertPositiveValueAsBits(&m_renderableGeometry3DList[i]->sortValue,m_renderableGeometry3DList[i]->renderLayer,0,4);
         
-        GU_InsertPositiveValueAsBits(&m_renderableObject3DList[i]->sortValue,m_renderableObject3DList[i]->postRenderLayerSortValue,4,5);
+        GU_InsertPositiveValueAsBits(&m_renderableGeometry3DList[i]->sortValue,m_renderableGeometry3DList[i]->postRenderLayerSortValue,4,5);
 		
 		//printf("SortValue: %d\n",m_renderableObject3DList[i]->postRenderLayerSortValue);
         
-		GU_InsertPositiveValueAsBits(&m_renderableObject3DList[i]->sortValue,m_renderableObject3DList[i]->pModel->modelID,9,5);
+		GU_InsertPositiveValueAsBits(&m_renderableGeometry3DList[i]->sortValue,m_renderableGeometry3DList[i]->pModel->modelID,9,5);
         
-		GU_InsertPositiveValueAsBits(&m_renderableObject3DList[i]->sortValue,m_renderableObject3DList[i]->materialID,14,5);
+		GU_InsertPositiveValueAsBits(&m_renderableGeometry3DList[i]->sortValue,m_renderableGeometry3DList[i]->materialID,14,5);
         
-        const u32 texture = m_renderableObject3DList[i]->customTexture0?*m_renderableObject3DList[i]->customTexture0:0;
+        const u32 texture = m_renderableGeometry3DList[i]->customTexture0?*m_renderableGeometry3DList[i]->customTexture0:0;
 		
-		GU_InsertPositiveValueAsBits(&m_renderableObject3DList[i]->sortValue,texture,19,5);
+		GU_InsertPositiveValueAsBits(&m_renderableGeometry3DList[i]->sortValue,texture,19,5);
         
 #if ENABLE_OUTLINE_RENDERING
         if(m_renderableObject3DList[i]->flags & RenderFlag_HasOutline)
@@ -2438,7 +2445,7 @@ void OpenGLRenderer::SortRenderableObject3DList()
 	}
 	
 	//Sort by RenderLayer
-	Array_InsertionSort((void**)m_renderableObject3DList, m_numRenderableObject3Ds, RenderableObject3DCompare_SortValue);
+	Array_InsertionSort((void**)m_renderableGeometry3DList, m_numRenderableGeom3Ds, RenderableGeometry3DCompare_SortValue);
 	
 	//SORT UI
 	
@@ -2465,133 +2472,7 @@ void OpenGLRenderer::SortRenderableObject3DList()
 	}
 	
 	//Sort by RenderLayer
-	Array_InsertionSort((void**)m_renderableUIList, m_numRenderableUIObjects, RenderableObject3DCompare_SortValue);
-}
-
-
-void OpenGLRenderer::DEBUG_PrintRenderables()
-{
-	printf("------start------\n");
-	printf("Renderable List: \n");
-	
-	for (u32 camViewIDX=0; camViewIDX<NumCameraViews; ++camViewIDX)
-	{				
-		printf("\n----------------\n");
-		printf("| CAMERA VIEW %d|\n",camViewIDX);
-		printf("----------------\n");
-		for(u32 i=0; i<m_numRenderableObject3Ds; ++i)
-		{
-			const RenderableObject3D* currObject = m_renderableObject3DList[i];
-			
-			//Don't mess with or draw stuff not in this view
-			if (!(currObject->viewFlags & (1<<camViewIDX)))
-			{
-				continue;
-			}
-			
-			printf("Renderable %d\n",i);
-			if (currObject->debugName)
-			{
-				printf("	Name: %s\n",currObject->debugName);
-			}
-			printf("	Render Layer: %s\n",g_RenderLayerNames[currObject->renderLayer]);
-			printf("	Material Name: %s\n",g_MaterialNames[currObject->materialID]);
-			printf("	Custom Texture 0: %d\n",currObject->customTexture0?*currObject->customTexture0:0);
-			printf("	Model Name: %s\n",currObject->pModel->modelName);
-			printf("	RenderFlags:\n");
-			
-			u32 flags = currObject->flags;
-			bool printedAnyFlags = false;
-			for(s32 j=0; j<NUM_RENDERFLAGS; ++j)
-			{
-				if(flags & 1)
-				{
-					printf("		%s\n",g_RenderFlagNames[j]);
-					printedAnyFlags = true;
-				}
-				flags >>= 1;
-			}
-			if (printedAnyFlags == false)
-			{
-				printf("		None\n");
-			}
-			
-			printf("	ViewFlags:\n");
-			
-			u32 viewFlags = currObject->viewFlags;
-			printedAnyFlags = false;
-			for(s32 j=0; j<NumCameraViews; ++j)
-			{
-				if(viewFlags & 1)
-				{
-					printf("		%s\n",g_ViewFlagNames[j]);
-					printedAnyFlags = true;
-				}
-				viewFlags >>= 1;
-			}
-			if (printedAnyFlags == false)
-			{
-				printf("		None\n");
-			}
-			
-			printf("	Unique Uniform Values:\n");
-			
-			const Material* currMaterial = &g_Materials[currObject->materialID];
-			for (s32 j=0; j<currMaterial->numUniforms_unique; ++j)
-			{
-				switch (currMaterial->uniforms_unique_types[j])
-				{
-					case Uniform_Float:
-					{
-						f32* pFloat = currObject->uniqueUniformValues[j];
-						
-						if (pFloat)
-						{
-							printf("		f32: %f\n",*pFloat);
-						}
-						else
-						{
-							printf("		f32: NULL\n");
-						}
-						
-						break;
-					}
-					case Uniform_Vec2:
-					{
-						vec2* pVec = (vec2*)currObject->uniqueUniformValues[j];
-						if (pVec)
-						{
-							printf("		vec2: <%f,%f>\n",pVec->x,pVec->y);
-						}
-						else
-						{
-							printf("		vec2: NULL\n");
-						}
-						
-						break;
-					}
-					case Uniform_Vec3:
-					{
-						vec3* pVec = (vec3*)currObject->uniqueUniformValues[j];
-						
-						if (pVec)
-						{
-							printf("		vec3: <%f,%f,%f>\n",pVec->x,pVec->y,pVec->z);
-						}
-						else
-						{
-							printf("		vec3: NULL\n");
-						}
-						
-						break;
-					}
-					default:
-						break;
-				}
-			}
-		}
-	}
-	printf("-------end-------\n\n");
+	Array_InsertionSort((void**)m_renderableUIList, m_numRenderableUIObjects, RenderableGeometry3DCompare_SortValue);
 }
 
 
@@ -2656,6 +2537,7 @@ void OpenGLRenderer::CreateMaterials()
 	const s32 VSH_ScreenspaceWithTexcoordOffset = AddVertexShaderToList("ScreenspaceWithTexcoordOffset.vsh");
 	const s32 VSH_TextureOnlyWithTexcoordAndWorldOffset = AddVertexShaderToList("TextureOnlyWithTexcoordAndWorldOffset.vsh");
 	const s32 VSH_PointSprite_Basic = AddVertexShaderToList("PointSprite_Default.vsh");
+	//const s32 VSH_SkinnedVertShader = AddVertexShaderToList("SkinnedVertShader.vsh");
 	
 	//Pixel Shaders
 	const s32 PP_BlendUsingTexture = AddPixelShaderToList("BlendUsingTexture.fsh");
@@ -2668,6 +2550,7 @@ void OpenGLRenderer::CreateMaterials()
 	const s32 PS_Colors = AddPixelShaderToList("Colors.fsh");
 	const s32 PS_PointSprite_ColorShine = AddPixelShaderToList("PointSprite_ColorShine.fsh");
     const s32 PS_TextureWithColor = AddPixelShaderToList("TextureWithColor.fsh");
+	//const s32 PS_SkinnedFragShader = AddPixelShaderToList("SkinnedFragShader.fsh");
 	
 	
 	//Vertex Shaders
@@ -2704,10 +2587,20 @@ void OpenGLRenderer::CreateMaterials()
 		AddUniform_Shared(PPMT_PureColor,"color",Uniform_Vec4,&m_fadeColor.x,1);
 	}
 	
+	/*attribute highp   vec3 inVertex;
+	 attribute mediump vec3 inNormal;
+	 attribute mediump vec3 inTangent;
+	 attribute mediump vec3 inBiNormal;
+	 attribute mediump vec2 inTexCoord;
+	 attribute mediump vec4 inBoneIndex;
+	 attribute mediump vec4 inBoneWeights;
+	 */
+	
     const AttributeFlags attribs_V = (AttributeFlags) (ATTRIBFLAG_VERTEX);
 	const AttributeFlags attribs_VT = (AttributeFlags) (ATTRIBFLAG_VERTEX | ATTRIBFLAG_TEXCOORD);
 	const AttributeFlags attribs_VTC = AttributeFlags (ATTRIBFLAG_VERTEX | ATTRIBFLAG_TEXCOORD | ATTRIBFLAG_COLOR);
     const AttributeFlags attribs_VC = (AttributeFlags) (ATTRIBFLAG_VERTEX | ATTRIBFLAG_COLOR);
+	//const AttributeFlags attribs_skinned = (AttributeFlags) (ATTRIBFLAG_VERTEX | ATTRIBFLAG_NORMAL | ATTRIBFLAG_TANGENT | ATTRIBFLAG_BINORMAL | ATTRIBFLAG_TEXCOORD | ATTRIBFLAG_BONEINDEX | ATTRIBFLAG_BONEWEIGHT);
 	
     //MT_VertColors
 	//TODO: ppAttribs... what?
@@ -2716,6 +2609,12 @@ void OpenGLRenderer::CreateMaterials()
 	{
 		
 	}
+	
+	//MT_SkinnedWithNormalMapping
+    /*if(CreateShaderProgram(VSH_SkinnedVertShader,PS_SkinnedFragShader,attribs_skinned,&g_Materials[MT_SkinnedWithNormalMapping].shaderProgram))
+    {
+        //AddUniform_Unique(MT_SkinnedWithNormalMapping,"inputColor",Uniform_Vec4,1);
+    }*/
     
     //MT_VertWithColorInput
     if(CreateShaderProgram(VSH_VertWithColorInput,PS_Colors,attribs_V,&g_Materials[MT_VertWithColorInput].shaderProgram))
@@ -2925,18 +2824,18 @@ void OpenGLRenderer::ForceRenderablesNeedSorting()
 
 void OpenGLRenderer::SortRenderablesWithMaterialByZ(RenderMaterial materialID)
 {
-	for (u32 i=0; i<m_numRenderableObject3Ds; ++i)
+	for (u32 i=0; i<m_numRenderableGeom3Ds; ++i)
 	{
-		const RenderableObject3D* pCurrRenderableObject3D = m_renderableObject3DList[i];
-		if (pCurrRenderableObject3D->materialID == materialID)
+		const RenderableGeometry3D* pCurrRenderable = m_renderableGeometry3DList[i];
+		if (pCurrRenderable->materialID == materialID)
 		{
 			u32 startIDX = i;
-			while (i<m_numRenderableObject3Ds && m_renderableObject3DList[i]->materialID == materialID)
+			while (i<m_numRenderableGeom3Ds && m_renderableGeometry3DList[i]->materialID == materialID)
 			{
 				++i;
 			}
 			
-			Array_InsertionSort((void**)&m_renderableObject3DList[startIDX], (i-startIDX), RenderableObject3DCompare_SortByZ);
+			Array_InsertionSort((void**)&m_renderableGeometry3DList[startIDX], (i-startIDX), RenderableGeometry3DCompare_SortByZ);
 		}
 	}
 }
@@ -2945,20 +2844,20 @@ void OpenGLRenderer::SortRenderablesWithMaterialByZ(RenderMaterial materialID)
 void OpenGLRenderer::SortRenderablesInLayerRangeByZ(RenderLayer layerBegin, RenderLayer layerEnd)
 {
 	//TODO: make this a little better.  It's a rushed version. :)
-	for (u32 i=0; i<m_numRenderableObject3Ds; ++i)
+	for (u32 i=0; i<m_numRenderableGeom3Ds; ++i)
 	{
-		const RenderableObject3D* pCurrRenderableObject3D = m_renderableObject3DList[i];
-        const bool isInLayer = pCurrRenderableObject3D->renderLayer >= layerBegin && pCurrRenderableObject3D->renderLayer <= layerEnd;
+		const RenderableGeometry3D* pCurrRenderable = m_renderableGeometry3DList[i];
+        const bool isInLayer = pCurrRenderable->renderLayer >= layerBegin && pCurrRenderable->renderLayer <= layerEnd;
 		if (isInLayer)
 		{
 			u32 startIDX = i;
             
-			while (i<m_numRenderableObject3Ds && m_renderableObject3DList[i]->renderLayer >= layerBegin && m_renderableObject3DList[i]->renderLayer <= layerEnd)
+			while (i<m_numRenderableGeom3Ds && m_renderableGeometry3DList[i]->renderLayer >= layerBegin && m_renderableGeometry3DList[i]->renderLayer <= layerEnd)
 			{
 				++i;
 			}
 			
-			Array_InsertionSort((void**)&m_renderableObject3DList[startIDX], (i-startIDX), RenderableObject3DCompare_SortByNegativeZ);
+			Array_InsertionSort((void**)&m_renderableGeometry3DList[startIDX], (i-startIDX), RenderableGeometry3DCompare_SortByNegativeZ);
 		}
 	}
 }
@@ -3397,7 +3296,11 @@ void OpenGLRenderer::PostProcess(RenderMaterial ppMaterial, RenderTarget* render
 
 void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 {
-	
+	int iErr = glGetError();
+	if (iErr != GL_NO_ERROR)
+	{
+		printf("GL error: %d (0x%x)\n\n", iErr, iErr);
+	}
 }
 
 
@@ -3591,6 +3494,8 @@ GLint OpenGLRenderer::ValidateProgram(GLuint prog)
 
 bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderIndex,  AttributeFlags attribs, GLuint* out_resultProgram)
 {
+	PrintOpenGLError("Before creating shader program.");
+	
 	//ALog(@"Creating Shader: VSH:'%@' + FSH:'%@'\n",g_VertexShader_Filenames[vertexShader],g_PixelShader_Filenames[pixelShader]);
 
 	// create shader program
@@ -3629,6 +3534,8 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 	// bind attribute locations
 	// this needs to be done prior to linking
 
+	PrintOpenGLError("Before binding attributes.");
+	
 	if (attribs & ATTRIBFLAG_VERTEX)
 	{
 		glBindAttribLocation(shaderProgram, ATTRIB_VERTEX, "in_position");
@@ -3675,6 +3582,7 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 	}
 	
 
+	PrintOpenGLError("After binding attributes.");
 
 	// link program
 	if (!LinkProgram(shaderProgram))
@@ -3699,6 +3607,8 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 		*out_resultProgram = shaderProgram;
 	}
 
+	PrintOpenGLError("Before texture uniforms.");
+	
 	//TODO: make this only set up as many as the material uses (if it even matters)
 	GLuint uniform_texture0 = glGetUniformLocation(shaderProgram,"texture0");
 	GLuint uniform_texture1 = glGetUniformLocation(shaderProgram,"texture1");
@@ -3708,6 +3618,8 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 	glUniform1i(uniform_texture1,1);
 	glUniform1i(uniform_texture2,2);
 
+	PrintOpenGLError("After creating shader program.");
+	
 	return true;
 }
 
@@ -4123,58 +4035,222 @@ CPVRTModelPOD* OpenGLRenderer::LoadPOD(const char* fileName)
 }
 
 
-bool OpenGLRenderer::InitRenderableFromPOD(RenderableObject3D* pRenderable, const char* fileName,  mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+void OpenGLRenderer::AddRenderableScene3DToList(RenderableScene3D* pRenderableScene)
 {
-	CPVRTModelPOD* newPod = LoadPOD(fileName);
-	
-	if(newPod)
+	for(u32 i=0; i<pRenderableScene->numGeom; ++i)
 	{
-		//pRenderable->pPod = newPod;
+		RenderableGeometry3D* pGeom = &pRenderableScene->pGeom[i];
 		
-		pRenderable->flags |= RenderFlag_Initialized;
-		pRenderable->customTexture0 = &texture_default;
-		pRenderable->customTexture1 = NULL;
-		pRenderable->materialID = MT_TextureOnlySimple;
-		pRenderable->postRenderLayerSortValue = 0;
-		pRenderable->renderLayer = renderLayer;
-		pRenderable->viewFlags = viewFlags;
-		
-		
-		if(matrix4x4 == NULL)
+		if (!(pGeom->flags & RenderFlag_Initialized))
 		{
-			mat4f_LoadIdentity(pRenderable->worldMat);
+			//assert(0);
+			//NSLog(@"Insane Error: addRenderableObject3D -> You can't add an uninitialized RenderableObject3D to the renderer!");
+			
+			return;
+		}
+		
+		if(pGeom->renderLayer == RenderLayer_UI)
+		{
+			if(m_numRenderableUIObjects < MAX_RENDERABLE_UI_OBJECTS)
+			{
+				m_renderableUIList[m_numRenderableUIObjects++] = pGeom;
+				
+				m_renderableUINeedSorting = true;
+			}
+			else
+			{
+				NSLog(@"Insane Error: AddRenderableScene3DToList -> You tried to add more than MAX_RENDERABLE_UI_OBJECTS!  Added nothing.");
+			}
 		}
 		else
 		{
-			mat4f_Copy(pRenderable->worldMat,matrix4x4);
+			if(m_numRenderableGeom3Ds < MAX_RENDERABLE_3D_OBJECTS)
+			{
+				m_renderableGeometry3DList[m_numRenderableGeom3Ds++] = pGeom;
+				
+				m_renderableObject3DsNeedSorting = true;
+			}
+			else
+			{
+				NSLog(@"Insane Error: AddRenderableScene3DToList -> You tried to add more than MAX_RENDERABLE_3D_OBJECTS!  Added nothing.");
+			}
+		}
+	}
+}
+
+
+bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, const char* fileName,  mat4f matrix4x4, u32 viewFlags)
+{
+	CPVRTModelPOD* newPod = LoadPOD(fileName);
+
+	if(newPod)
+	{
+		if(matrix4x4 == NULL)
+		{
+			mat4f_LoadIdentity(pScene->worldMat);
+		}
+		else
+		{
+			mat4f_Copy(pScene->worldMat,matrix4x4);
 		}
 		
-		ModelData* pModelData = new ModelData;
-		//pModelData->format = VertexFormat_POD_Skinned;
-		pModelData->numPrimitives = newPod->nNumMesh;
-		pModelData->modelName = NULL;
-		pModelData->primitiveArray = new PrimitiveData[newPod->nNumMesh];
-		pModelData->modelName = NULL;
-		
-		pRenderable->pModel = pModelData;
-		
-		for (unsigned int i = 0; i < newPod->nNumMesh; ++i)
+		pScene->pGeom = new RenderableGeometry3D[newPod->nNumMesh];
+		pScene->numGeom = newPod->nNumMesh;
+
+		// To draw a scene, you must go through all the MeshNodes and draw the referenced meshes.
+		for (unsigned int i = 0; i < newPod->nNumMeshNode; ++i)
 		{
-			PrimitiveData* pCurrData = &pModelData->primitiveArray[i];
+			// Get the mesh data from the POD file
+			int i32MeshIndex = newPod->pNode[i].nIdx;
+
+			SPODMesh& Mesh = newPod->pMesh[i32MeshIndex];
 			
-			glGenBuffers(newPod->nNumMesh, &pCurrData->vertexArrayObjectID);
+			//Create model data
+			ModelData* pModelData = new ModelData;
+			pModelData->modelName = NULL;
+			pModelData->primitiveArray = new PrimitiveData[1];	//TODO: I think POD just has one primitive unless it's a triangle strip
+			pModelData->numPrimitives = 1;	//TODO: this will be wrong if a triangle strip comes in
+			pModelData->numAttributes = 0;
+			pModelData->stride = Mesh.sVertex.nStride;
 			
-			// Load vertex data into buffer object
-			SPODMesh& Mesh = newPod->pMesh[i];
+			//Fill out the geom
+			RenderableGeometry3D* pCurrGeom = &pScene->pGeom[i];
+			pCurrGeom->pModel = pModelData;
+			pCurrGeom->pWorldMat = pScene->worldMat;
+			pCurrGeom->customTexture0 = &texture_default;
+			pCurrGeom->customTexture1 = 0;
+			pCurrGeom->flags = RenderFlag_Visible|RenderFlag_DisableCulling|RenderFlag_Initialized;
+			pCurrGeom->materialID = MT_TextureOnlySimple;
+			pCurrGeom->postRenderLayerSortValue = 0;
+			pCurrGeom->renderLayer = RenderLayer_Normal;
+			pCurrGeom->viewFlags = viewFlags;
+			
+			pModelData->attributeArray = new AttributeData[8];	//TODO: if this goes beyond 8 we're all gunna die
+			pModelData->modelID = 0;
+			
+			
+			AttributeData* pAttribs = &pModelData->attributeArray[0];
+
+			u32 attribOffset = 0;
+			
+			if(Mesh.sVertex.n > 0)
+			{
+				AttributeData* pCurrAttrib = &pAttribs[pModelData->numAttributes];
+				
+				pCurrAttrib->attribute = ATTRIB_VERTEX;
+				pCurrAttrib->type = GL_FLOAT;
+				pCurrAttrib->size = Mesh.sVertex.n*sizeof(GL_FLOAT);
+				pCurrAttrib->offset = attribOffset;
+				attribOffset += pCurrAttrib->size; //TODO: won't hold up if you change to non-floats
+				
+				++pModelData->numAttributes;
+			}
+			
+			if(Mesh.sNormals.n > 0)
+			{
+				AttributeData* pCurrAttrib = &pAttribs[pModelData->numAttributes];
+				
+				pCurrAttrib->attribute = ATTRIB_NORMAL;
+				pCurrAttrib->type = GL_FLOAT;
+				pCurrAttrib->size = Mesh.sNormals.n*sizeof(GL_FLOAT);
+				pCurrAttrib->offset = attribOffset;
+				attribOffset += pCurrAttrib->size; //TODO: won't hold up if you change to non-floats
+				
+				++pModelData->numAttributes;
+			}
+			
+			if(Mesh.sTangents.n > 0)
+			{
+				AttributeData* pCurrAttrib = &pAttribs[pModelData->numAttributes];
+				
+				pCurrAttrib->attribute = ATTRIB_TANGENT;
+				pCurrAttrib->type = GL_FLOAT;
+				pCurrAttrib->size = Mesh.sTangents.n*sizeof(GL_FLOAT);
+				pCurrAttrib->offset = attribOffset;
+				attribOffset += pCurrAttrib->size; //TODO: won't hold up if you change to non-floats
+				
+				++pModelData->numAttributes;
+			}
+			
+			if(Mesh.sBinormals.n > 0)
+			{
+				AttributeData* pCurrAttrib = &pAttribs[pModelData->numAttributes];
+				
+				pCurrAttrib->attribute = ATTRIB_BINORMAL;
+				pCurrAttrib->type = GL_FLOAT;
+				pCurrAttrib->size = Mesh.sBinormals.n*sizeof(GL_FLOAT);
+				pCurrAttrib->offset = attribOffset;
+				attribOffset += pCurrAttrib->size; //TODO: won't hold up if you change to non-floats
+				
+				++pModelData->numAttributes;
+			}
+			
+			if(Mesh.psUVW->n > 0)
+			{
+				AttributeData* pCurrAttrib = &pAttribs[pModelData->numAttributes];
+				
+				pCurrAttrib->attribute = ATTRIB_TEXCOORD;
+				pCurrAttrib->type = GL_FLOAT;
+				
+				const u32 actualSize = Mesh.psUVW->n*sizeof(GL_FLOAT);
+				
+				pCurrAttrib->size = 2*sizeof(GL_FLOAT);
+				pCurrAttrib->offset = attribOffset;
+				attribOffset += actualSize; //TODO: won't hold up if you change to non-floats or nNumUVW is more than 1
+				
+				++pModelData->numAttributes;
+			}
+			
+			if(Mesh.sVtxColours.n > 0)
+			{
+				AttributeData* pCurrAttrib = &pAttribs[pModelData->numAttributes];
+				
+				pCurrAttrib->attribute = ATTRIB_COLOR;
+				pCurrAttrib->type = GL_FLOAT;
+				pCurrAttrib->size = Mesh.sVtxColours.n*sizeof(GL_FLOAT);
+				pCurrAttrib->offset = attribOffset;
+				attribOffset += pCurrAttrib->size; //TODO: no idea if this is 16 bytes!
+				
+				++pModelData->numAttributes;
+			}
+			
+			if(Mesh.sBoneWeight.n > 0)
+			{
+				AttributeData* pCurrAttrib = &pAttribs[pModelData->numAttributes];
+				
+				pCurrAttrib->attribute = ATTRIB_BONEWEIGHT;
+				pCurrAttrib->type = GL_FLOAT;
+				pCurrAttrib->size = Mesh.sBoneWeight.n*sizeof(GL_FLOAT);
+				pCurrAttrib->offset = attribOffset;
+				attribOffset += pCurrAttrib->size; //TODO: won't hold up if you change to non-floats
+				
+				++pModelData->numAttributes;
+			}
+			
+			if(Mesh.sBoneIdx.n > 0)
+			{
+				AttributeData* pCurrAttrib = &pAttribs[pModelData->numAttributes];
+				
+				pCurrAttrib->attribute = ATTRIB_BONEINDEX;
+				pCurrAttrib->type = GL_FLOAT;
+				pCurrAttrib->size = Mesh.sBoneIdx.n*sizeof(GL_FLOAT);
+				pCurrAttrib->offset = attribOffset;
+				
+				++pModelData->numAttributes;
+			}
+			
+			PrimitiveData* pCurrData = &pModelData->primitiveArray[0];
+			
+			pCurrData->vertexArrayObjectID = 0;
+			pCurrData->indexBufferID = 0;
+			
+			pCurrData->numVerts = Mesh.nNumVertex;
+
 			unsigned int vertexBufferSize = Mesh.nNumVertex * Mesh.sVertex.nStride;
 			
 			pCurrData->drawMethod = GL_TRIANGLES;
-			
-			
-			glBindBuffer(GL_ARRAY_BUFFER, pCurrData->vertexArrayObjectID);
-			glBufferData(GL_ARRAY_BUFFER, vertexBufferSize, Mesh.pInterleaved, GL_STATIC_DRAW);
-			
-			pCurrData->vertexData = (f32*)Mesh.pInterleaved;
+
+			pCurrData->vertexData = Mesh.pInterleaved;
 			pCurrData->sizeOfVertexData = vertexBufferSize;			
 			
 			// Load index data into buffer object if available
@@ -4182,18 +4258,32 @@ bool OpenGLRenderer::InitRenderableFromPOD(RenderableObject3D* pRenderable, cons
 			
 			if (Mesh.sFaces.pData)
 			{
-				glGenBuffers(1, &pCurrData->indexBufferID);
-				unsigned int indexDataSize = PVRTModelPODCountIndices(Mesh) * sizeof(GLshort);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pCurrData->indexBufferID);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexDataSize, Mesh.sFaces.pData, GL_STATIC_DRAW);
+				const u32 numIndices = PVRTModelPODCountIndices(Mesh);
+				pCurrData->numVerts = numIndices;
+				const u32 sizeOfGLShort = sizeof(GLshort);
+				const u32 indexDataSize = numIndices * sizeOfGLShort;
 				
 				pCurrData->indexData = (GLushort*)Mesh.sFaces.pData;
 				pCurrData->sizeOfIndexData = indexDataSize;
+				
+				//DEBUG!
+				printf("\n****************\nNum indices: %d, Triangles: %d\n****************\n",pModelData->primitiveArray->numVerts,pModelData->primitiveArray->numVerts/3);
+				for(int indexIDX=0; indexIDX<pModelData->primitiveArray->numVerts; ++indexIDX)
+				{
+					const u32 index = pModelData->primitiveArray->indexData[indexIDX];
+					printf("Index %d: %d\n",indexIDX,index);
+					
+					u8* pData = &pModelData->primitiveArray->vertexData[index*pModelData->stride];
+					vec3* pPos = (vec3*)&pData[0];
+					vec2* pUV = (vec2*)&pData[12];
+					printf("Vert: V:<%f,%f,%f>, T:<%f,%f>\n",pPos->x,pPos->y,pPos->z,pUV->x,pUV->y);
+				}
 			}
+			
+			RegisterModel(pModelData);
 		}
 		
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		
 		
 		return true;
 	}
@@ -4374,13 +4464,13 @@ bool LoadPngImage(const char* fileName, int &outWidth, int &outHeight, bool &out
 }
 
 
-s32 RenderableObject3DCompare_SortValue(const void* lhs, const void* rhs)
+s32 RenderableGeometry3DCompare_SortValue(const void* lhs, const void* rhs)
 {
-	return ((RenderableObject3D*)lhs)->sortValue <= ((RenderableObject3D*)rhs)->sortValue;
+	return ((RenderableGeometry3D*)lhs)->sortValue <= ((RenderableGeometry3D*)rhs)->sortValue;
 }
 
 
-s32 RenderableObject3DCompare_SortByZ(const void* lhs, const void* rhs)
+s32 RenderableGeometry3DCompare_SortByZ(const void* lhs, const void* rhs)
 {
 	const vec3* pPosLHS = mat4f_GetPos(((RenderableObject3D*)lhs)->worldMat);
 	const vec3* pPosRHS = mat4f_GetPos(((RenderableObject3D*)rhs)->worldMat);
@@ -4389,7 +4479,7 @@ s32 RenderableObject3DCompare_SortByZ(const void* lhs, const void* rhs)
 }
 
 
-s32 RenderableObject3DCompare_SortByNegativeZ(const void* lhs, const void* rhs)
+s32 RenderableGeometry3DCompare_SortByNegativeZ(const void* lhs, const void* rhs)
 {
 	const vec3* pPosLHS = mat4f_GetPos(((RenderableObject3D*)lhs)->worldMat);
 	const vec3* pPosRHS = mat4f_GetPos(((RenderableObject3D*)rhs)->worldMat);
