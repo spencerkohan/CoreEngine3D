@@ -9,29 +9,20 @@
 //DISCLAIMER:  THIS HORRIBLE FILE IS NOT JODY'S FAULT
 
 #import "Animation.h"
-#ifdef PLATFORM_OSX
-#include <OpenGL/OpenGL.h>
-#endif
+#import <OpenGLES/ES2/gl.h>
+#import <OpenGLES/ES1/glext.h>
 #import "GraphicsTypes.h"
+#import "ES2Renderer.h"
 #import "matrix.h"
+
 
 #include <fstream>
 #include <iostream>
-
-const vec2  tcp = {0,0};
-const vec2  tcd = {1,1};
-
+#include "ArrayUtil.h"
 
 @implementation AnimationSystem2D
 
-
-int topleftofcurrentframe = 0;
-RenderableObject3D obj;
-
-
-Animationvert2 avert[4];
-Animationcoord2 acord[4];
-
+@synthesize animEventDelegate;
 
 //returns a headerArrayIndex
 -(s32) AddAttachPointsToAnimationPlayer:(s32) animationInfoIndex:(const char*)attachPointFile
@@ -194,21 +185,21 @@ Animationcoord2 acord[4];
 	//DEBUG
 	
 	AnimationAttachPointArray* pCurrArray = &pAnimInfo->m_pAttachPointHeaderArrays[returnIndex];
-	std::cout << "\nAttach Point Array Index " << returnIndex << '\n';
+	//std::cout << "\nAttach Point Array Index " << returnIndex << '\n';
 	
 	for(int headerIDX=0; headerIDX<pCurrArray->numAttachPointLocationHeaders; ++headerIDX)
 	{
 		AnimationAttachPointLocations* pAttachLocationsHeader = &pCurrArray->pAttachPointLocationHeaders[headerIDX];
-		std::cout << "Attach Point Name: " << pAttachLocationsHeader->attachPointName << '\n';
+		//std::cout << "Attach Point Name: " << pAttachLocationsHeader->attachPointName << '\n';
 		
 		for(int pointsIDX=0; pointsIDX<pAttachLocationsHeader->numAttachPointLocations; ++pointsIDX)
 		{
-			vec2* pVec = &pAttachLocationsHeader->pAttachPointLocations[pointsIDX];
-			std::cout << "Frame " << pointsIDX << ": <" << pVec->x << ',' << pVec->y << ">\n";
+			//vec2* pVec = &pAttachLocationsHeader->pAttachPointLocations[pointsIDX];
+			//std::cout << "Frame " << pointsIDX << ": <" << pVec->x << ',' << pVec->y << ">\n";
 		}
 	}
 	
-	std::cout << '\n';
+	//std::cout << '\n';
 	
 	return returnIndex;
 }
@@ -238,32 +229,6 @@ Animationcoord2 acord[4];
 }
 
 
-//Copies the attach position X,Y (-1 to 1) into the pOut_vec 
-/*-(BOOL) GetAnimationAttachPointByIndex:(s32) animationInfoIndex:(s32)attachPointIndex:(vec2*)pOut_vec
-{
-	AnimationInfo* pAnimInfo = &m_animationInfos[animationInfoIndex];
-	
-	if(pAnimInfo->currentClip == NULL || pAnimInfo->currentClip->attachHeaderIndex == -1)
-	{
-		return NO;
-	}
-	
-	AnimationAttachPointArray* pAttachPointArray = &pAnimInfo->m_pAttachPointHeaderArrays[pAnimInfo->currentClip->attachHeaderIndex];
-	AnimationAttachPointLocations* pLocations = &pAttachPointArray->pAttachPointLocationHeaders[attachPointIndex];
-	
-	const s32 currFrame = pAnimInfo->currentClip->currentFrame;
-	if(currFrame < pLocations->numAttachPointLocations)
-	{
-		vec2* pVec = &pLocations->pAttachPointLocations[currFrame];
-		CopyVec2(pOut_vec, pVec);
-		printf("Attach point location for %s is <%f,%f>\n",pLocations->attachPointName,pVec->x,pVec->y);
-		
-		return YES;
-	}
-	
-	return NO;
-}*/
-
 -(BOOL) GetAnimationAttachPointByName:(s32) animationInfoIndex:(const char*)attachPointName:(vec2*)pOut_vec
 {
 	const s32 attachPointIndex = [self GetAnimationAttachPointIndexByName:animationInfoIndex:attachPointName];
@@ -282,7 +247,7 @@ Animationcoord2 acord[4];
 	AnimationAttachPointArray* pAttachPointArray = &pAnimInfo->m_pAttachPointHeaderArrays[pAnimInfo->currentClip->attachHeaderIndex];
 	AnimationAttachPointLocations* pLocations = &pAttachPointArray->pAttachPointLocationHeaders[attachPointIndex];
 	
-	const s32 currFrame = pAnimInfo->currentClip->currentFrame;
+	const s32 currFrame = pAnimInfo->currentFrame;
 	if(currFrame < pLocations->numAttachPointLocations)
 	{
 		vec2* pVec = &pLocations->pAttachPointLocations[currFrame];
@@ -298,10 +263,11 @@ Animationcoord2 acord[4];
 
 -(void) ClearAllAnimationPlayers
 {
+	m_lastAnimEventFrame = -1;
+	
 	for (s32 x=0; x<m_highestAnimationIndex+1; ++x) 
 	{
 		[m_animationInfos[x].clips release];
-		m_animationInfos[x].clips = nil;
 		
 		for(id key in m_animationInfos[x].clipDictionary) {
 			NSValue* value = [m_animationInfos[x].clipDictionary objectForKey:key];
@@ -309,7 +275,6 @@ Animationcoord2 acord[4];
 		}
 		
 		[m_animationInfos[x].clipDictionary release];
-		m_animationInfos[x].clipDictionary = nil;
 	}
 		
 	[self Init:renderer];
@@ -345,8 +310,6 @@ Animationcoord2 acord[4];
 	
 	m_animationInfos[newid].clips = [[NSMutableArray alloc] init];
 	m_animationInfos[newid].clipDictionary = [[NSMutableDictionary alloc] init];
-	m_animationInfos[newid].startOfPlay = TRUE;
-	m_animationInfos[newid].endTime = 999999999999999999.0;
 	m_animationInfos[newid].m_numAttachPointHeaderArrays = 0;
 
 	return newid;
@@ -357,100 +320,190 @@ Animationcoord2 acord[4];
 {
 	
 	m_animationInfos[animationID].r3d = _r3d;
-	_r3d->geom.uniqueUniformValues[0] = (f32*)&m_animationInfos[animationID].wwlo3;
+	_r3d->uniqueUniformValues[0] = (f32*)&m_animationInfos[animationID].wwlo3;
 }
 
 
-float mod;
--(void) addClip:(AnimationClip *)_clip ToAnimation:(s32) _animation
+-(void) AddClip:(AnimationClip *)_clip ToAnimation:(s32) _animation
 {
-	mod=0.1f;
+	s32 startFrame = _clip->startFrame;
+	s32 endFrame = _clip->endFrame;
 	
-	//	[m_animationInfos[_animation].clips addObject:[NSValue valueWithPointer:_clip]];
-	//[m_animationInfos[_animation].clipDictionary addObject:[NSValue valueWithPointer:_clip] forkey ];
+	const s32 frameDiff = endFrame-startFrame;
+	
+	switch(_clip->playMode)
+	{
+		case AnimPlayMode_Forward:
+		{
+			if(frameDiff < 0)
+			{
+				NSLog(@"INSANE ERROR: AddClip->Your clip is set to forward but the frames are backward.  Clip not added...");
+				return;
+			}
+			
+			break;
+		}
+		case AnimPlayMode_Backward:
+		{
+			s32 endFrameTemp = endFrame;
+			endFrame = startFrame;
+			startFrame = endFrameTemp;
+			
+			if(frameDiff > 0)
+			{
+				NSLog(@"INSANE ERROR: AddClip->Your clip is set to backward but the frames are forward.  Clip not added...");
+				return;
+			}
+			
+			break;
+		}
+		case AnimPlayMode_PingPong:
+		{
+			if(frameDiff < 0)
+			{
+				s32 endFrameTemp = endFrame;
+				endFrame = startFrame;
+				startFrame = endFrameTemp;
+			}
+			
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+
 	AnimationClip* newclip = (AnimationClip*)calloc(sizeof(AnimationClip), sizeof(AnimationClip));
 	
 	newclip->attachHeaderIndex = _clip->attachHeaderIndex;
 	newclip->animationName = _clip->animationName;
     newclip->nextAnimName = _clip->nextAnimName;
-	newclip->beginingFrame = _clip->beginingFrame;
-	newclip->endingFrame = _clip->endingFrame;
+	newclip->startFrame = startFrame;
+	newclip->endFrame = endFrame;
 	newclip->framesPerRow = _clip->framesPerRow;
 	newclip->sheetHeight = _clip->sheetHeight;
 	newclip->sheetWidth = _clip->sheetWidth;
 	newclip->textureHandle = _clip->textureHandle;
 	newclip->fps = _clip->fps;
-	
+	newclip->numAnimEvents = 0;
+	newclip->playMode = _clip->playMode;
+
 	newclip->frameWidth = _clip->sheetWidth/_clip->framesPerRow;
 	newclip->frameHeight = _clip->sheetHeight/_clip->framesPerColumn;
 	
-
-	if (newclip->nextAnimName == nil)
-	{
-		newclip->stopAtEnd = TRUE;		
-	}
-	else
-	{
-		newclip->stopAtEnd = FALSE;
-	}
-
-	
-	for (s32 y = 0; y < MAX_ANIMATION_EVENTS; y++)
-	{		
-		newclip->cs[y]=_clip->cs[y];
-		newclip->cf[y]=_clip->cf[y];
-		if (_clip->cs[y])
-			newclip->usesCallBacks =  YES;
-	}	
-	
-	//NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
 	[m_animationInfos[_animation].clipDictionary setObject:[NSValue valueWithPointer:newclip] forKey:_clip->animationName];
-	
-	//[pool drain];
 }
 
 
--(void) playclip:(NSString *) _nsstring ForAnimation:(s32) _animation timesToPlay:(int)_timestoplay;
+-(void) AddAnimEventToClip:(NSString *) clipName ForAnimation:(s32) _animation OnFrame:(s32)frame WithID:(s32)eventID
 {
 	if(_animation == -1)
 	{
 		return;
 	}
 	
-//	NSLog(@"we will now change the current animation to %@ for animation %d", _nsstring,_animation);
-	if (![m_animationInfos[_animation].clipDictionary objectForKey:_nsstring])
+	AnimationClip* clip = (AnimationClip*)[[m_animationInfos[_animation].clipDictionary objectForKey:clipName] pointerValue];
+	if (!clip)
 	{
-		NSLog(@"2Error in setIdleClip. Clip not found");
-		
 		return;
 	}
-	AnimationClip* clip = (AnimationClip*)[[m_animationInfos[_animation].clipDictionary objectForKey:_nsstring] pointerValue];
-	m_animationInfos[_animation].currentClip = clip;
-	m_animationInfos[_animation].r3d->geom.customTexture0 = clip->textureHandle;
-	renderer->ForceRenderablesNeedSorting();
-	m_animationInfos[_animation].currentClip->currentFrame = m_animationInfos[_animation].currentClip->beginingFrame;
-	m_animationInfos[_animation].timesToPlay = _timestoplay;
-	m_animationInfos[_animation].startOfPlay = TRUE;
-	m_animationInfos[_animation].wwlo3.x = 0;
-	m_animationInfos[_animation].wwlo3.y = 0;
 	
-	if (_timestoplay < 1) 
+	const s32 numAnimEvents = clip->numAnimEvents;
+	
+	if(numAnimEvents < MAX_ANIMATION_EVENTS)
 	{
-		m_animationInfos[_animation].endTime = 9999999999999999.0;
+		int eventIndex = 0;
+		
+		for(int i=0; i<numAnimEvents; ++i)
+		{
+			AnimEvent* pCurrEvent = &clip->animEvents[numAnimEvents];
+			
+			if(pCurrEvent->frame == frame)
+			{
+				eventIndex = i;
+				
+				break;
+			}
+			else if(frame > pCurrEvent->frame)
+			{
+				//Shift all the anim events over to make room
+				for(int eventIDX=numAnimEvents; eventIDX != i; --eventIDX)
+				{
+					clip->animEvents[eventIDX] = clip->animEvents[eventIDX-1];
+				}
+				
+				eventIndex = i;
+				
+				break;
+			}
+		}
+		
+		AnimEvent* pTheEvent = &clip->animEvents[eventIndex];
+		
+		pTheEvent->eventID = eventID;
+		pTheEvent->frame = frame;
+		
+		++clip->numAnimEvents;
 	}
 }
+
+
+-(void) SetLerpTimeForAnimation:(s32) _animation: (f32)lerpValue
+{
+	AnimationInfo* pCurrAnimInfo = &m_animationInfos[_animation];
+	pCurrAnimInfo->lerpVal = lerpValue;
+}
+
+
+-(void) PlayClip:(NSString *) clipName ForAnimation:(s32) _animation timesToPlay:(int)_timestoplay;
+{
+	if(_animation == -1)
+	{
+		return;
+	}
+
+	AnimationClip* pCurrClip = (AnimationClip*)[[m_animationInfos[_animation].clipDictionary objectForKey:clipName] pointerValue];
+	if (!pCurrClip)
+	{
+		return;
+	}
+	
+	m_lastAnimEventFrame = -1;
+	
+	AnimationInfo* pCurrAnimInfo = &m_animationInfos[_animation];
+	
+	pCurrAnimInfo->currentClip = pCurrClip;
+	[renderer setCustomTexture0:m_animationInfos[_animation].r3d :pCurrClip->textureHandle];
+	pCurrAnimInfo->currentFrame = m_animationInfos[_animation].currentClip->startFrame;
+	pCurrAnimInfo->timesToPlay = _timestoplay;
+	pCurrAnimInfo->wwlo3.x = 0;
+	pCurrAnimInfo->wwlo3.y = 0;
+	pCurrAnimInfo->animFinished = false;
+
+	const s32 frameDiff = pCurrClip->endFrame-pCurrClip->startFrame;
+	
+	pCurrAnimInfo->lerpVal = 0.0f;
+	
+	pCurrAnimInfo->currentTime = 0.0f;
+	pCurrAnimInfo->timesPlayed = 0;
+	pCurrAnimInfo->pingPong = (frameDiff > 0)?true:false;
+}
+
 
 -(bool) IsAnimationDone:(s32) _animationIndex
 {
 	if( !m_animationInfos[ _animationIndex ].drawthisframe )
 		return false;
 	
-	if( m_animationInfos[ _animationIndex ].currentClip )
+	if( !m_animationInfos[ _animationIndex].animFinished )
+	{
 		return false;
+	}
 	
 	return true;
 }
+
 
 -(bool) IsAnimationPlaying:(s32) _animationIndex:(NSString *) _animationName
 {
@@ -469,6 +522,7 @@ float mod;
 	return m_animationInfos[ _animationIndex ].currentClip == clip;
 }
 
+
 -(u32) GetCurrentFrame:(s32) _animationIndex
 {
 	if(_animationIndex == -1)
@@ -481,171 +535,181 @@ float mod;
 		return 0;
 	}
 	
-	return m_animationInfos[_animationIndex].currentClip->currentFrame;
+	return m_animationInfos[_animationIndex].currentFrame;
 }
 
-int columnForCurrentFrame;
-f32 m_pausableTime;
 
--(void) UpdateAnimations : (f32) elapsedTime
+-(void) UpdateAnimations : (f32) timeElapsed
 {	
-	m_pausableTime += elapsedTime;
-
 	for (s32 x=0; x<m_highestAnimationIndex+1; ++x) 
 	{
-		if(m_animationInfos[x].drawthisframe == true && m_animationInfos[x].currentClip  )
+		AnimationInfo* pCurrAnimInfo = &m_animationInfos[x];
+		
+		if(!pCurrAnimInfo->animFinished
+		   && pCurrAnimInfo->drawthisframe == true
+		   && pCurrAnimInfo->currentClip  )
 		{
-			if (m_animationInfos[x].startOfPlay)
+			AnimationClip* pCurrClip = m_animationInfos[x].currentClip;
+			
+			if(pCurrClip->playMode == AnimPlayMode_Lerp)
 			{
-				m_animationInfos[x].startOfPlay = FALSE;
-				m_animationInfos[x].theTimeOffset = m_pausableTime;
-				m_animationInfos[x].localTime = m_pausableTime-m_animationInfos[x].theTimeOffset; //cancels out to zero?
-				if(m_animationInfos[x].currentClip->usesCallBacks)
-				{
-					for (s32 y = 0; y < MAX_ANIMATION_EVENTS; y++)
-					{
-						m_animationInfos[x].currentClip->cb_Done[y] =  0;						
-					}	
-				}
-				
-				m_animationInfos[x].beginningTime = m_animationInfos[x].localTime; //zero?
-		
-				if(m_animationInfos[x].timesToPlay > 0)
-				{
-					m_animationInfos[x].endTime = m_animationInfos[x].beginningTime+(m_animationInfos[x].currentClip->endingFrame+1-m_animationInfos[x].currentClip->beginingFrame)*(1.0f/m_animationInfos[x].currentClip->fps)*m_animationInfos[x].timesToPlay;
-				}
-				else 
-				{
-					m_animationInfos[x].endTime = 9999999999999999.0;
-				}
-				
+				const f32 floatValue = Lerp((f32)pCurrClip->startFrame,(f32)pCurrClip->endFrame,pCurrAnimInfo->lerpVal);
+				pCurrAnimInfo->currentFrame = (s32)floatValue;
 			}
-			
-			m_animationInfos[x].localTime = m_pausableTime-m_animationInfos[x].theTimeOffset;
-		
-			
-			GLuint rowForFrame = 0;
-			if(m_animationInfos[x].currentClip->currentFrame)
-				rowForFrame = m_animationInfos[x].currentClip->currentFrame/m_animationInfos[x].currentClip->framesPerRow;
 			else
-				rowForFrame = 0;
-			
-			columnForCurrentFrame = m_animationInfos[x].currentClip->currentFrame-(rowForFrame*m_animationInfos[x].currentClip->framesPerRow);	
-			int topleftofcurrentframex = (columnForCurrentFrame*m_animationInfos[x].currentClip->frameWidth);
-			int topleftofcurrentframey = (rowForFrame*m_animationInfos[x].currentClip->frameHeight);	
-			
-			
-			f32 cx = (float)topleftofcurrentframex/(float)m_animationInfos[x].currentClip->sheetWidth;
-			f32 cy = (float)topleftofcurrentframey/(float)m_animationInfos[x].currentClip->sheetHeight;
-			
-			m_animationInfos[x].wwlo3.x = cx;
-			m_animationInfos[x].wwlo3.y = cy;
-			
-
-			
-			/*if(m_animationInfos[x].currentClip->usesCallBacks)
 			{
-				for (s32 y = 0; y < MAX_ANIMATION_EVENTS; y++)
+				pCurrAnimInfo->currentTime += timeElapsed;
+				const f32 frameTime = 1.0f/pCurrClip->fps;
+				if(pCurrAnimInfo->currentTime > frameTime)
 				{
-					if(m_animationInfos[x].currentClip->cs[y])
-						if (m_animationInfos[x].currentClip->currentFrame >= m_animationInfos[x].currentClip->cf[y] && m_animationInfos[x].currentClip->cb_Done[y]==0)
-						{
-							m_animationInfos[x].currentClip->cb_Done[y] =  1;
-							[game performSelector:m_animationInfos[x].currentClip->cs[y]];
-						}
-				}	
-			}*/
-			
-			double	floatTime = m_animationInfos[x].localTime;			
-			if(floatTime >= m_animationInfos[x].endTime )
-			{	
-				void * hm = m_animationInfos[x].currentClip;
-
-				/*if(m_animationInfos[x].currentClip->usesCallBacks)//wrap around check
+					pCurrAnimInfo->currentTime -=frameTime;
+				}
+				else
 				{
-					for (s32 y = 0; y < MAX_ANIMATION_EVENTS; y++)
+					continue;
+				}
+				
+				switch(pCurrClip->playMode)
+				{
+					case AnimPlayMode_Forward:
 					{
-						if(m_animationInfos[x].currentClip->cs[y])
+						++pCurrAnimInfo->currentFrame;
+						if(pCurrAnimInfo->currentFrame > pCurrClip->endFrame)
 						{
-							if (m_animationInfos[x].currentClip->cb_Done[y]==0)
+							++pCurrAnimInfo->timesPlayed;
+							pCurrAnimInfo->currentFrame = pCurrClip->startFrame;
+						}
+						
+						break;
+					}
+					case AnimPlayMode_Backward:
+					{
+						--pCurrAnimInfo->currentFrame;
+						if(pCurrAnimInfo->currentFrame < pCurrClip->startFrame)
+						{
+							++pCurrAnimInfo->timesPlayed;
+							pCurrAnimInfo->currentFrame = pCurrClip->endFrame;
+						}
+						
+						break;
+					}
+					case AnimPlayMode_PingPong:
+					{
+						if(pCurrAnimInfo->pingPong)
+						{
+							++pCurrAnimInfo->currentFrame;
+							if(pCurrAnimInfo->currentFrame > pCurrClip->endFrame)
 							{
-								NSLog(@"wrap around selector caller");
-								m_animationInfos[x].currentClip->cb_Done[y] =  1;
-								[game performSelector:m_animationInfos[x].currentClip->cs[y]];
+								pCurrAnimInfo->pingPong = !pCurrAnimInfo->pingPong;
+								--pCurrAnimInfo->currentFrame;
 							}
 						}
-							
-					}	
-				}*/
-					
-				if (m_animationInfos[x].currentClip == hm) //a selector that was just called might have changed the current animation to something different from what we think we are working with.
-				{
-					if (m_animationInfos[x].currentClip->stopAtEnd) 
-					{
-						m_animationInfos[x].currentClip = nil;
+						else
+						{
+							--pCurrAnimInfo->currentFrame;
+							if(pCurrAnimInfo->currentFrame < pCurrClip->startFrame)
+							{
+								++pCurrAnimInfo->timesPlayed;
+								pCurrAnimInfo->pingPong = !pCurrAnimInfo->pingPong;
+								++pCurrAnimInfo->currentFrame;
+							}
+						}
+						
+						break;
 					}
-					else 
+					default:
 					{
-						[self playclip:m_animationInfos[x].currentClip->nextAnimName ForAnimation:x timesToPlay:-1];
+						break;
 					}
 				}
-
-				continue;
+				
+				
+				
+				
+				if(pCurrAnimInfo->timesToPlay > 0
+				   && pCurrAnimInfo->timesPlayed >= pCurrAnimInfo->timesToPlay)
+				{	
+					pCurrAnimInfo->animFinished = true;
+					
+					switch(pCurrClip->playMode)
+					{
+						case AnimPlayMode_Forward:
+						{
+							pCurrAnimInfo->currentFrame = pCurrClip->endFrame;
+							break;
+						}
+						case AnimPlayMode_Backward:
+						{
+							pCurrAnimInfo->currentFrame = pCurrClip->startFrame;
+							break;
+						}
+						case AnimPlayMode_PingPong:
+						{
+							pCurrAnimInfo->currentFrame = pCurrClip->startFrame;
+							break;
+						}
+						default:
+						{
+							break;
+						}
+					}
+					
+					m_lastAnimEventFrame = -1;
+					
+					if (pCurrClip->nextAnimName) 
+					{
+						[self PlayClip:pCurrClip->nextAnimName ForAnimation:x timesToPlay:-1];
+					}
+					
+					continue;
+				}
 			}
 			
+			//Finally, use whatever frame we have to animate
 			
-			float frameInterval = 1.0f/m_animationInfos[x].currentClip->fps;
-			int TimeSlot = floatTime/frameInterval;
+			GLuint rowForFrame = pCurrAnimInfo->currentFrame/pCurrClip->framesPerRow;
 			
-			//frames in clip?
-			int fis = m_animationInfos[x].currentClip->endingFrame+1- m_animationInfos[x].currentClip->beginingFrame;
-			
-			int cframe = (TimeSlot%fis)+m_animationInfos[x].currentClip->beginingFrame;
-			
-			
-			m_animationInfos[x].currentClip->currentFrame = cframe;
+			s32 columnForCurrentFrame = pCurrAnimInfo->currentFrame-(rowForFrame*pCurrClip->framesPerRow);	
+			s32 topleftofcurrentframex = (columnForCurrentFrame*pCurrClip->frameWidth);
+			s32 topleftofcurrentframey = (rowForFrame*pCurrClip->frameHeight);	
 			
 			
-			if(m_animationInfos[x].currentClip->currentFrame > m_animationInfos[x].currentClip->endingFrame)
+			f32 cx = (f32)topleftofcurrentframex/(f32)pCurrClip->sheetWidth;
+			f32 cy = (f32)topleftofcurrentframey/(f32)pCurrClip->sheetHeight;
+			
+			pCurrAnimInfo->wwlo3.x = cx;
+			pCurrAnimInfo->wwlo3.y = cy;
+			
+			//Do this whenever the frame changes
+			if(m_lastAnimEventFrame != pCurrAnimInfo->currentFrame)
 			{
-				/*if(m_animationInfos[x].currentClip->usesCallBacks)//wrap around check.
+				for(s32 eventIDX=0; eventIDX < pCurrClip->numAnimEvents; ++eventIDX)
 				{
-					for (s32 y = 0; y < MAX_ANIMATION_EVENTS; y++)
+					AnimEvent* pCurrEvent = &pCurrClip->animEvents[eventIDX];
+					
+					//JAMTODO: THIS HAS A BUG (lol)
+					if(pCurrEvent->frame == pCurrAnimInfo->currentFrame )
 					{
-						if(m_animationInfos[x].currentClip->cs[y])
-							if (m_animationInfos[x].currentClip->currentFrame >= m_animationInfos[x].currentClip->cf[y] && m_animationInfos[x].currentClip->cb_Done[y]==0)
-							{
-								m_animationInfos[x].currentClip->cb_Done[y] =  1;
-								[game performSelector:m_animationInfos[x].currentClip->cs[y]];
-							}
-					}	
-				}*/
+						[self.animEventDelegate AnimationSystem2D_Delegate_HandleAnimEvent:pCurrEvent->eventID];
+					}
+				}
 				
-				m_animationInfos[x].currentClip->currentFrame = m_animationInfos[x].currentClip->beginingFrame;
-				
-				if(m_animationInfos[x].currentClip->usesCallBacks)
-				{
-					for (s32 y = 0; y < MAX_ANIMATION_EVENTS; y++)
-					{
-						m_animationInfos[x].currentClip->cb_Done[y] =  0;								
-						
-					}	
-				}				
+				m_lastAnimEventFrame = pCurrAnimInfo->currentFrame;
 			}
 		}
 	}
 }
 
 
--(void)Init:(OpenGLRenderer*)_renderer
+-(void)Init:(ES2Renderer*)_renderer
 {
 	m_highestAnimationIndex = -1;
 	memset(m_animPlayers, -1, MAX_ANIMATION_PLAYERS*sizeof(s32));
-	[self setRenderer:_renderer];
+	renderer = _renderer;
 }
 
 
--(void) setRenderer :(OpenGLRenderer*)_renderer
+-(void) setRenderer :(ES2Renderer*)_renderer
 {
 	renderer = _renderer;
 }
