@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'CoreEngine3D' target in the 'CoreEngine3D' project
+//
+
+#ifdef __OBJC__
+	#import <Foundation/Foundation.h>
+#endif
