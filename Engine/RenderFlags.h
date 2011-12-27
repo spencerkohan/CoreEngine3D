@@ -1,6 +1,8 @@
 #ifndef __RENDERFLAGS_H
 #define __RENDERFLAGS_H
 
+#include "MathTypes.h"
+
 /*
  *  RenderFlags.h
  *  CoreEngine3D
@@ -9,8 +11,6 @@
  *  Copyright 2010 GameJelly Online. All rights reserved.
  *
  */
-
-#include "MathTypes.h"
 
 typedef enum
 {
@@ -34,14 +34,20 @@ typedef enum
     RenderFlag_UseOrthographicProjection_Points = 1<<17,
 	RenderFlag_NonPremultipliedAlpha = 1 << 18,
 	RenderFlag_DisableBlending = 1<<19,
+	RenderFlag_EnableDepthTest = 1<<20,
+	RenderFlag_EnableDepthRead = 1<<21,
+	RenderFlag_EnableDepthWrite = 1<<22,
 } RenderFlags;
+
+#define NUM_RENDERFLAGS 23
+extern const char* g_RenderFlagNames[NUM_RENDERFLAGS];
 
 const u32 RenderFlagDefaults_2DTexture_NoAlpha = RenderFlag_IgnoreViewMatrix|RenderFlag_UseOrthographicProjection_Points|RenderFlag_DisableCulling|RenderFlag_DisableBlending|RenderFlag_DisableDepthTest;
 const u32 RenderFlagDefaults_2DTexture_AlphaBlended = RenderFlag_IgnoreViewMatrix|RenderFlag_UseOrthographicProjection_Points|RenderFlag_DisableCulling|RenderFlag_AlphaBlended|RenderFlag_NonPremultipliedAlpha|RenderFlag_DisableDepthTest;
-const u32 RenderFlagDefaults_3DModel = RenderFlag_DisableBlending|RenderFlag_NonPremultipliedAlpha;
-
-#define NUM_RENDERFLAGS 20
-
-extern const char* g_RenderFlagNames[NUM_RENDERFLAGS];
+const u32 RenderFlagDefaults_2DTexture_Fullscreen = RenderFlag_IgnoreViewMatrix|RenderFlag_UseOrthographicProjection_NDC|RenderFlag_DisableCulling|RenderFlag_DisableBlending|RenderFlag_DisableDepthTest;
+const u32 RenderFlagDefaults_3DModel = RenderFlag_DisableBlending|RenderFlag_EnableDepthTest|RenderFlag_EnableDepthRead|RenderFlag_EnableDepthWrite;
+const u32 RenderFlagDefaults_3DModelWithAlpha = RenderFlag_AlphaBlended|RenderFlag_NonPremultipliedAlpha|RenderFlag_EnableDepthTest|RenderFlag_EnableDepthRead|RenderFlag_EnableDepthWrite;
+const u32 RenderFlagDefaults_CardWithAlpha = RenderFlag_DisableCulling|RenderFlag_AlphaBlended|RenderFlag_NonPremultipliedAlpha|RenderFlag_DisableDepthTest;
+const u32 RenderFlagDefaults_3DCard_NoAlpha = RenderFlag_AlphaBlended|RenderFlag_NonPremultipliedAlpha|RenderFlag_EnableDepthTest|RenderFlag_EnableDepthRead|RenderFlag_EnableDepthWrite|RenderFlag_DisableCulling;
 
 #endif

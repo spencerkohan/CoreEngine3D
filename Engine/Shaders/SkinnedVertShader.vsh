@@ -29,15 +29,15 @@ attribute mediump vec2 in_texcoord;
 attribute mediump vec4 in_boneindex;
 attribute mediump vec4 in_boneweight;
 
-uniform highp   mat4 ViewProjMatrix;
-uniform mediump vec3 LightPos;
+uniform bool	bUseDot3;
+uniform highp   mat4 worldViewProjMat;
+uniform mediump vec3 lightPos;
 uniform mediump	int	 BoneCount;
 uniform highp   mat4 BoneMatrixArray[8];
 uniform highp   mat3 BoneMatrixArrayIT[8];
-uniform bool	bUseDot3;
 
-varying mediump vec3 Light;
-varying mediump vec2 TexCoord;
+varying mediump vec3 lightDir;
+varying mediump vec2 texcoord;
 
 void main()
 {
@@ -85,25 +85,25 @@ void main()
 				}
 			}
 		}		
-		gl_Position = ViewProjMatrix * position;
+		gl_Position = worldViewProjMat * position;
 		
 		// lighting
-		mediump vec3 TmpLightDir = normalize(LightPos - position.xyz);
+		mediump vec3 TmpLightDir = normalize(lightPos - position.xyz);
 		
 		if(bUseDot3)
 		{
-			Light.x = dot(normalize(worldTangent), TmpLightDir);
-			Light.y = dot(normalize(worldBiNormal), TmpLightDir);
-			Light.z = dot(normalize(worldNormal), TmpLightDir);
+			lightDir.x = dot(normalize(worldTangent), TmpLightDir);
+			lightDir.y = dot(normalize(worldBiNormal), TmpLightDir);
+			lightDir.z = dot(normalize(worldNormal), TmpLightDir);
 		}
 		else
 		{
-			Light.x = dot(normalize(worldNormal), TmpLightDir);
+			lightDir.x = dot(normalize(worldNormal), TmpLightDir);
 		}
 	}
 
 	
 	// Pass through texcoords
-	TexCoord = in_texcoord;
+	texcoord = in_texcoord;
 }
  

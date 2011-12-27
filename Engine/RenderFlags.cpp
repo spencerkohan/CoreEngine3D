@@ -31,4 +31,7 @@ const char* g_RenderFlagNames[NUM_RENDERFLAGS] =
     "RenderFlag_UseOrthographicProjection_Points",
 	"RenderFlag_NonPremultipliedAlpha",
 	"RenderFlag_DisableBlending",
+	"RenderFlag_EnableDepthTest",
+	"RenderFlag_EnableDepthRead",
+	"RenderFlag_EnableDepthWrite",
 };

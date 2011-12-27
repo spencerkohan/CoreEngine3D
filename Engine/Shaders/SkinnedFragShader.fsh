@@ -1,26 +1,25 @@
-uniform sampler2D sTexture;
-uniform sampler2D sNormalMap;
+uniform sampler2D texture0;
+uniform sampler2D texture1;
 uniform bool bUseDot3;
 
-varying mediump vec2 TexCoord;
-varying mediump vec3 Light;
+varying mediump vec2 texcoord;
+varying mediump vec3 lightDir;
 
 void main()
 {
+	/*
 	if(bUseDot3)
 	{
-		/*
-			Note:
-			In the normal map red = y, green = x, blue = z which is why when we get the normal
-			from the texture we use the swizzle .grb so the colours are mapped to the correct
-			co-ordinate variable.
-		*/
-
-		mediump vec3 fNormal = texture2D(sNormalMap, TexCoord).grb;
-		mediump float fNDotL = dot((fNormal - 0.5) * 2.0, Light);
+		mediump vec3 fNormal = texture2D(texture1, texcoord).grb;
+		mediump float fNDotL = dot((fNormal - 0.5) * 2.0, lightDir);
 		
-		gl_FragColor = texture2D(sTexture, TexCoord) * fNDotL;
+		gl_FragColor = texture2D(texture0, texcoord) * fNDotL;
     }
     else
-		gl_FragColor = texture2D(sTexture, TexCoord) * Light.x;
+	{
+		gl_FragColor = texture2D(texture0, texcoord) * lightDir.x;
+	}
+	*/
+	
+	gl_FragColor = texture2D(texture0, texcoord);
 }
