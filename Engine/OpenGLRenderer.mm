@@ -303,7 +303,7 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 	
 	// Load all the textures
 	//LoadTexture("TempTexture.tga", ImageType_TGA, &texture_default, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-	LoadTexture("Textures/ParticleAtlas_01.png", ImageType_PNG, &texture_pointSpriteAtlas, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+	
 	
 	//Create VBO buffers for terrain
 	//CreateBuffers();
@@ -2548,6 +2548,11 @@ s32 OpenGLRenderer::AddPixelShaderToList(const char* filename)
 	}
 }
 
+
+void OpenGLRenderer::LoadParticleAtlas(const char* filename)
+{
+	LoadTexture(filename, ImageType_PNG, &texture_pointSpriteAtlas, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+}
 
 void OpenGLRenderer::CreateMaterials()
 {

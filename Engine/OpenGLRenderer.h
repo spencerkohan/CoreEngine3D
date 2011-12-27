@@ -128,6 +128,7 @@ public:
 	void Init(f32 screenWidth, f32 screenHeight);
 	bool InitSceneFromPOD(RenderableScene3D* pScene, CPVRTModelPOD* pPod, u32 viewFlags, const char* relativePath);
 	void CleanUp();
+	void LoadParticleAtlas(const char* filename);
 	bool GetFadeFinished();
 	void ClearRenderables();
 	void ClearOneFrameGeometry();

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		23629F6914AA679500DCC97F /* ArtResources in Resources */ = {isa = PBXBuildFile; fileRef = 23629F6814AA679500DCC97F /* ArtResources */; };
+		23629F7014AA67D300DCC97F /* Shaders in Resources */ = {isa = PBXBuildFile; fileRef = 23629F6F14AA67D300DCC97F /* Shaders */; };
 		23FCBE5C14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBE5B14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch */; };
 		DDA6F559149C1A930035A1BF /* ArrayUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F49B149C1A920035A1BF /* ArrayUtil.cpp */; };
 		DDA6F55A149C1A930035A1BF /* ArrayUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F49C149C1A920035A1BF /* ArrayUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -145,8 +147,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		23629F6814AA679500DCC97F /* ArtResources */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ArtResources; path = "../Crow-Regime/ArtResources"; sourceTree = "<group>"; };
+		23629F6F14AA67D300DCC97F /* Shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Shaders; path = Engine/Shaders; sourceTree = "<group>"; };
 		23FCBE5B14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreEngine3D-Prefix.pch"; path = "CoreEngine3D(iOS)/CoreEngine3D-Prefix.pch"; sourceTree = SOURCE_ROOT; };
-		DDA6F314149C19E10035A1BF /* libCoreEngine3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCoreEngine3D.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDA6F314149C19E10035A1BF /* libCoreEngine3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libCoreEngine3D.a; path = "libCoreEngine3D(iOS).a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDA6F49B149C1A920035A1BF /* ArrayUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArrayUtil.cpp; sourceTree = "<group>"; };
 		DDA6F49C149C1A920035A1BF /* ArrayUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayUtil.h; sourceTree = "<group>"; };
 		DDA6F49D149C1A920035A1BF /* base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = base64.cpp; sourceTree = "<group>"; };
@@ -297,6 +301,8 @@
 		DDA6F309149C19E10035A1BF = {
 			isa = PBXGroup;
 			children = (
+				23629F6814AA679500DCC97F /* ArtResources */,
+				23629F6F14AA67D300DCC97F /* Shaders */,
 				DDA6F498149C1A920035A1BF /* Engine */,
 				DDA6F319149C19E10035A1BF /* CoreEngine3D(iOS) */,
 				DDA6F315149C19E10035A1BF /* Products */,
@@ -662,6 +668,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23629F6914AA679500DCC97F /* ArtResources in Resources */,
+				23629F7014AA67D300DCC97F /* Shaders in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
