@@ -2507,9 +2507,9 @@ const char* OpenGLRenderer::GetPathToFile(const char* filename)
 {
 #if defined PLATFORM_OSX || defined PLATFORM_IOS
 	NSString* fileString = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
-	NSString* path = [[NSBundle mainBundle] pathForResource:fileString ofType:@""];
+	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
 	
-	return [path UTF8String];
+	return [fullPath UTF8String];
 #else
 	return filename;
 #endif
