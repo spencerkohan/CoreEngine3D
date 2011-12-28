@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		23629F6914AA679500DCC97F /* ArtResources in Resources */ = {isa = PBXBuildFile; fileRef = 23629F6814AA679500DCC97F /* ArtResources */; };
 		23629F7014AA67D300DCC97F /* Shaders in Resources */ = {isa = PBXBuildFile; fileRef = 23629F6F14AA67D300DCC97F /* Shaders */; };
+		23629FBE14AB17A700DCC97F /* AnimationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23629FBA14AB17A300DCC97F /* AnimationController.cpp */; };
+		23629FBF14AB17A700DCC97F /* AnimationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 23629FBB14AB17A500DCC97F /* AnimationController.h */; };
+		23629FC014AB17A700DCC97F /* SpriteSheetAnimator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */; };
+		23629FC114AB17A700DCC97F /* SpriteSheetAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 23629FBD14AB17A700DCC97F /* SpriteSheetAnimator.h */; };
 		23FCBE5C14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBE5B14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch */; };
 		DDA6F559149C1A930035A1BF /* ArrayUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F49B149C1A920035A1BF /* ArrayUtil.cpp */; };
 		DDA6F55A149C1A930035A1BF /* ArrayUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F49C149C1A920035A1BF /* ArrayUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -149,6 +153,10 @@
 /* Begin PBXFileReference section */
 		23629F6814AA679500DCC97F /* ArtResources */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ArtResources; path = "../Crow-Regime/ArtResources"; sourceTree = "<group>"; };
 		23629F6F14AA67D300DCC97F /* Shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Shaders; path = Engine/Shaders; sourceTree = "<group>"; };
+		23629FBA14AB17A300DCC97F /* AnimationController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationController.cpp; sourceTree = "<group>"; };
+		23629FBB14AB17A500DCC97F /* AnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationController.h; sourceTree = "<group>"; };
+		23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteSheetAnimator.cpp; sourceTree = "<group>"; };
+		23629FBD14AB17A700DCC97F /* SpriteSheetAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteSheetAnimator.h; sourceTree = "<group>"; };
 		23FCBE5B14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreEngine3D-Prefix.pch"; path = "CoreEngine3D(iOS)/CoreEngine3D-Prefix.pch"; sourceTree = SOURCE_ROOT; };
 		DDA6F314149C19E10035A1BF /* libCoreEngine3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libCoreEngine3D.a; path = "libCoreEngine3D(iOS).a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDA6F49B149C1A920035A1BF /* ArrayUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArrayUtil.cpp; sourceTree = "<group>"; };
@@ -342,6 +350,10 @@
 				DDA6F544149C1A920035A1BF /* SOIL */,
 				DDA6F4AF149C1A920035A1BF /* Models */,
 				DDA6F4C5149C1A920035A1BF /* PowerVR */,
+				23629FBA14AB17A300DCC97F /* AnimationController.cpp */,
+				23629FBB14AB17A500DCC97F /* AnimationController.h */,
+				23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */,
+				23629FBD14AB17A700DCC97F /* SpriteSheetAnimator.h */,
 				DDD5218A14A024A800D6A0BC /* EngineModels.cpp */,
 				DDD5218B14A024A800D6A0BC /* EngineModels.h */,
 				DDA6F49B149C1A920035A1BF /* ArrayUtil.cpp */,
@@ -614,6 +626,8 @@
 				DDD5218D14A024A800D6A0BC /* EngineModels.h in Headers */,
 				DDD521A314A03BEC00D6A0BC /* TouchState.h in Headers */,
 				23FCBE5C14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch in Headers */,
+				23629FBF14AB17A700DCC97F /* AnimationController.h in Headers */,
+				23629FC114AB17A700DCC97F /* SpriteSheetAnimator.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -739,6 +753,8 @@
 				DDD5217714A008C600D6A0BC /* CoreUI_Button.cpp in Sources */,
 				DDD5218C14A024A800D6A0BC /* EngineModels.cpp in Sources */,
 				DDD521A514A03BFE00D6A0BC /* TouchState.cpp in Sources */,
+				23629FBE14AB17A700DCC97F /* AnimationController.cpp in Sources */,
+				23629FC014AB17A700DCC97F /* SpriteSheetAnimator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

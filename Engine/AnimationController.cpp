@@ -10,6 +10,8 @@
 #include "stddef.h" //for NULL -_-
 #include "Hash.h"
 
+AnimationController* ANIMCONTROLLER = NULL;
+
 //ANIMATION SET
 void AnimationSet::AddAnimation(s32 animID, u32 startFrame, u32 endFrame, u32 FPS, bool isLooping, s32 animID_NextAnim)
 {
@@ -115,6 +117,8 @@ AnimationController::AnimationController()
 {
 	m_numAnimPlayers = 0;
 	m_numAnimSets = 0;
+	
+	ANIMCONTROLLER = this;
 }
 
 

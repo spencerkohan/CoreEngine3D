@@ -11,6 +11,8 @@
 
 class AnimationController;
 
+extern AnimationController* ANIMCONTROLLER;
+
 #include "MathTypes.h"
 
 #define ANIMATION_MAX_PLAYERS 64
