@@ -1733,7 +1733,10 @@ void OpenGLRenderer::Render(f32 timeElapsed)
     
     if(m_numDebugLinePoints2D_saved > 0)
     {
-        //Draw 2D lines
+		//Draw 2D lines
+		m_currProjMatType = ProjMatType_Orthographic_Points;
+		UploadWorldViewProjMatrix(m_identityMat);
+        
         glEnableVertexAttribArray(ATTRIB_VERTEX);
         glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, sizeof(PointData), &m_debugLinePoints2D[0].position);
         

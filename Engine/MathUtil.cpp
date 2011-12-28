@@ -552,7 +552,7 @@ void  ScaleVec4_Self(vec4* out_resultVec, f32 scale)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void  AddScaledVec2_Self(vec2* out_resultVec, vec2* vec, f32 scale)
+void  AddScaledVec2_Self(vec2* out_resultVec, const vec2* vec, f32 scale)
 {
 	out_resultVec->x += vec->x*scale;
 	out_resultVec->y += vec->y*scale;
@@ -561,7 +561,7 @@ void  AddScaledVec2_Self(vec2* out_resultVec, vec2* vec, f32 scale)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void  AddScaledVec2(vec2* out_resultVec, vec2* vec0, vec2* vec1, f32 scale)
+void  AddScaledVec2(vec2* out_resultVec, const vec2* vec0, const vec2* vec1, f32 scale)
 {
 	out_resultVec->x = vec0->x + vec1->x*scale;
 	out_resultVec->y = vec0->y + vec1->y*scale;

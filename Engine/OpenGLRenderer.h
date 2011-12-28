@@ -35,6 +35,8 @@ extern OpenGLRenderer* GLRENDERER;
 
 #define RENDERLOOP_ENABLED 1
 
+#define DEBUG_DRAW 1
+
 #define GAUSSIAN_NUMSAMPLES 6
 #define MAX_TRAILS 64
 #define MAX_PARTICLES 512
