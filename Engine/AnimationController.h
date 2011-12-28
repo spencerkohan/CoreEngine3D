@@ -54,7 +54,7 @@ struct AnimationPlayer
 {
 public:
 	void Update(f32 timeElapsed);
-	void PlayAnimation(u32 animID);
+	void PlayAnimation(u32 animID,u32 frameOffset);
 	bool GetAnimIsDone();
 	f32 GetCurrentFrame();
 	s32 GetCurrentAnimation();

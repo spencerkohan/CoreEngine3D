@@ -50,7 +50,7 @@ Animation* AnimationSet::GetAnimationByID(s32 animID)
 
 //ANIMATION PLAYER
 
-void AnimationPlayer::PlayAnimation(u32 animID)
+void AnimationPlayer::PlayAnimation(u32 animID, u32 frameOffset)
 {
 	if(m_pAnimSet == NULL)
 	{
@@ -66,7 +66,9 @@ void AnimationPlayer::PlayAnimation(u32 animID)
 	
 	m_animIsDone = false;
 	
-	m_currFrame = m_pCurrAnim->startFrame;
+	const u32 numFrames = m_pCurrAnim->endFrame-m_pCurrAnim->startFrame;
+	
+	m_currFrame = m_pCurrAnim->startFrame+frameOffset%numFrames;
 }
 
 bool AnimationPlayer::GetAnimIsDone()
@@ -101,7 +103,7 @@ void AnimationPlayer::Update(f32 timeElapsed)
 		}
 		else if(m_pCurrAnim->animID_playWhenFinished)
 		{
-			PlayAnimation(m_pCurrAnim->animID_playWhenFinished);
+			PlayAnimation(m_pCurrAnim->animID_playWhenFinished,0);
 		}
 		else
 		{
