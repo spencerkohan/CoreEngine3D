@@ -148,6 +148,8 @@ AnimationSet* AnimationController::CreateAnimationSet()
 	}
 	
 	AnimationSet* pAnimSet = &m_animSets[m_numAnimSets];
+	pAnimSet->m_numAnimations = 0;
+	
 	++m_numAnimSets;
 	
 	return pAnimSet;

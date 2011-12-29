@@ -69,35 +69,36 @@ extern OpenGLRenderer* GLRENDERER;
 
 #define MAX_NUM_TEXTURE_UNITS 5
 
+/**ENUMS**/
+enum DebugDrawMode
+{
+	DebugDrawMode_2D,
+	DebugDrawMode_3D,
+	DebugDrawMode_Screen2D,
+	DebugDrawMode_Num,
+};
+
 /**STRUCTS**/
 
-typedef struct
+struct SinCosBucket
 {
 	f32 sinTheta;
 	f32 cosTheta;
 	f32 multiplier;
-} SinCosBucket;
+};
 
 
-typedef struct
+struct RendererParticleBucket
 {
 	Particle3D m_particleQueue[MAX_PARTICLES];
 	ParticleData m_spriteData[MAX_PARTICLES*VERTS_PER_PARTICLE];
 	s32 m_numParticles;
     s32 m_numParticlesToDraw;
 	bool m_particlesNeedSorting;
-} RendererParticleBucket;
+};
 
 
-typedef struct
-{
-    DebugDrawObjectType objectType;
-    mat4f matrix;
-    vec4 color;
-}DebugDrawObject;
-
-
-typedef struct
+struct TexturedLineObject
 {
 	GLuint texturedID;
 	LineSegment line;
@@ -105,21 +106,37 @@ typedef struct
 	f32 lineWidth0;
 	f32 lineWidth1;
 	f32 numTextureRepeats;
-}TexturedLineObject;
+};
 
 
-typedef struct
+struct TexturedLineVert
 {
 	vec3 position;
 	vec2 texcoord;
-}TexturedLineVert;
+};
 
-typedef struct
+struct ShaderCreationStatus
 {
 	const char* filename;
 	GLuint openGLID;
-}ShaderCreationStatus;
+};
 
+
+enum DebugDrawObjectType
+{
+    DebugDrawObjectType_CircleXY,
+    DebugDrawObjectType_CircleXZ,
+	DebugDrawObjectType_Cylinder,
+    DebugDrawObjectType_Cube, //unsupported
+};
+
+
+struct DebugDrawObject
+{
+    DebugDrawObjectType objectType;
+    mat4f matrix;
+    vec4 color;
+};
 
 class OpenGLRenderer
 {
@@ -127,7 +144,7 @@ public:
 	
 	//public functions
 	
-	void Init(f32 screenWidth, f32 screenHeight);
+	void Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 screenWidthPoints, f32 screenHeightPoints);
 	bool InitSceneFromPOD(RenderableScene3D* pScene, CPVRTModelPOD* pPod, u32 viewFlags, const char* relativePath);
 	void CleanUp();
 	void LoadParticleAtlas(const char* filename);
@@ -180,16 +197,19 @@ public:
 	void LoadTexture(const char* fileName,ImageType imageType, GLuint* pGLTexture, GLuint filterMode, GLuint wrapModeU, GLuint wrapModeV, bool flipY = false);
 	GFX_Trail* CreateTrail(GFX_Trail** pCallbackTrail, vec3* pInitialPos, f32 timeToLive, const GFX_TrailSettings* pTrailSettings, u32 renderFlags);
 	void DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, GLuint texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats);
-	void DEBUGDRAW2D_DrawLineSegment(const vec3* p0, const vec3* p1, const vec4* color);
-	void DEBUGDRAW2D_DrawCircle(const vec3* p0, f32 radius, const vec4* color);
-	void DEBUGDRAW3D_DrawLineSegment(const vec3* p0, const vec3* p1, const vec4* color);
-	void DEBUGDRAW3D_DrawLineSegment_2Color(const vec3* p0, const vec3* p1, const vec4* color1, const vec4* color2);
-	void DEBUGDRAW3D_DrawCircle(mat4f matrix4x4, const vec4* color);
-	void DEBUGDRAW3D_DrawCylinder(mat4f matrix4x4, const vec4* color);
+	void DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color);
+	void DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color1, const vec4* color2);
+	void DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color);
+	void DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color);
+	void DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, const vec3* pCenter, f32 radius, const vec4* color);
+	void DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, const vec3* pCenter, f32 radius, const vec4* color);
+	void DEBUGDRAW_DrawCylinder(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color);
 	
 	//public member variables
 	f32 screenWidth_points;
 	f32 screenHeight_points;
+	f32 screenWidth_pixels;
+	f32 screenHeight_pixels;
 	f32 aspectRatio;
 	bool paused;
 	
@@ -292,12 +312,9 @@ private:
     GLuint trailShaderUniform_scrollAmountU;
     GLuint trailShaderUniform_scrollAmountV;
     GFX_Trail m_trails[MAX_TRAILS];
-    PointData m_debugLinePoints3D[DEBUGDRAW_MAXLINESEGMENTS*2];
-    PointData m_debugLinePoints2D[DEBUGDRAW_MAXLINESEGMENTS*2];
-    s32 m_numDebugLinePoints2D;
-    s32 m_numDebugLinePoints3D;
-	s32 m_numDebugLinePoints2D_saved;
-    s32 m_numDebugLinePoints3D_saved;
+    PointData m_debugLinePoints[DebugDrawMode_Num][DEBUGDRAW_MAXLINESEGMENTS*2];
+    s32 m_numDebugLinePoints[DebugDrawMode_Num];
+	s32 m_numDebugLinePoints_saved[DebugDrawMode_Num];
     TexturedLineObject m_texturedLineObjects[MAX_TEXTURED_LINES];
 	s32 m_numTexturedLines;
 	s32 m_numTexturedLines_saved;
@@ -325,9 +342,9 @@ private:
     bool m_pauseRequestedFadeIn;
     bool m_sortRenderablesByZ;
     vec3 m_clearColor;
-    DebugDrawObject m_debugDrawObjects[DEBUGDRAW_MAXDEBUGOBJECTS];
-    u32 m_numDebugDrawObjects;
-	u32 m_numDebugDrawObjects_saved;
+    DebugDrawObject m_debugDrawObjects[DebugDrawMode_Num][DEBUGDRAW_MAXDEBUGOBJECTS];
+    u32 m_numDebugDrawObjects[DebugDrawMode_Num];
+	u32 m_numDebugDrawObjects_saved[DebugDrawMode_Num];
 	char* m_pArtPath;
 	f32 m_identityMat[16];
 	vec3 m_lightPos;	

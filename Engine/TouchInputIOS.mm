@@ -8,22 +8,27 @@
 
 #import "TouchInputIOS.h"
 #include "MathUtil.h"
+#include "OpenGLRenderer.h"
 
 @implementation TouchInputIOS
 
-- (id) init
+- (id) init:(DeviceInputState*) pDeviceInputState
 {	
+	m_inputState = pDeviceInputState;
+	
 	for (u32 i=0; i<MAX_MULTITOUCH; ++i)
 	{
 		//m_pTouches[i] = nil;
-		m_touchStates[i] = TouchState_None;
-		m_touchStateWasUpdated[i] = false;
+		m_inputState->m_touchStates[i] = TouchState_None;
+		m_inputState->m_touchStateWasUpdated[i] = false;
 	}
 
-    SetVec3(&m_accelerometerValue,0.0f,0.0f,0.0f);
+    SetVec3(&m_inputState->m_accelerometerValue,0.0f,0.0f,0.0f);
 	[[UIAccelerometer sharedAccelerometer] setDelegate:self];
     [self SetAccelerometerIsUsed:NO];
 
+	m_inputScale = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 2:1;
+	
 	return self;
 }
 
@@ -33,14 +38,11 @@
 	
 }
 
-- (TouchState)GetTouchState:(u32)touchIndex
-{
-	return m_touchStates[touchIndex];
-}
-
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event: (UIView*) pView
 {
+	
+	
 #ifdef DEBUG_PRINTTOUCHEVENTS
 	NSLog(@"EAGLVIEW: Touches began\n");
 #endif
@@ -88,22 +90,24 @@
 		
 		//Should be impossible for touchIndex to be -1 by now
 		CGPoint touchCoordinates = [touch locationInView:pView];
+		touchCoordinates.x *= m_inputScale;
+		touchCoordinates.y *= m_inputScale;
 		
-		m_touchStateWasUpdated[touchIndex] = true;
+		m_inputState->m_touchStateWasUpdated[touchIndex] = true;
 		
-		m_touchBeginPoints[touchIndex].x = touchCoordinates.x;
-		m_touchBeginPoints[touchIndex].y = touchCoordinates.y;
+		m_inputState->m_touchBeginPoints[touchIndex].x = touchCoordinates.x;
+		m_inputState->m_touchBeginPoints[touchIndex].y = touchCoordinates.y;
 		
 		double currTime = CFAbsoluteTimeGetCurrent();
-		m_touchPrevTimes[touchIndex] = currTime;
-		m_touchCurrTimes[touchIndex] = currTime;
+		m_inputState->m_touchPrevTimes[touchIndex] = currTime;
+		m_inputState->m_touchCurrTimes[touchIndex] = currTime;
 		
-        m_touchCurrentPoints[touchIndex].x = touchCoordinates.x;
-        m_touchCurrentPoints[touchIndex].y = touchCoordinates.y;
-		m_touchPrevPoints[touchIndex].x = touchCoordinates.x;
-		m_touchPrevPoints[touchIndex].y = touchCoordinates.y;
+        m_inputState->m_touchCurrentPoints[touchIndex].x = touchCoordinates.x;
+        m_inputState->m_touchCurrentPoints[touchIndex].y = touchCoordinates.y;
+		m_inputState->m_touchPrevPoints[touchIndex].x = touchCoordinates.x;
+		m_inputState->m_touchPrevPoints[touchIndex].y = touchCoordinates.y;
 		
-		m_touchStates[touchIndex] = TouchState_Began;
+		m_inputState->m_touchStates[touchIndex] = TouchState_Began;
 	}
 }
 
@@ -143,18 +147,20 @@
 		if (pFoundTouch != nil)
 		{
 			CGPoint touchCoordinates = [touch locationInView:pView];
+			touchCoordinates.x *= m_inputScale;
+			touchCoordinates.y *= m_inputScale;
 			
-			m_touchStateWasUpdated[touchIndex] = true;
+			m_inputState->m_touchStateWasUpdated[touchIndex] = true;
 			
-			m_touchPrevPoints[touchIndex].x = m_touchCurrentPoints[touchIndex].x;
-			m_touchPrevPoints[touchIndex].y = m_touchCurrentPoints[touchIndex].y;
-			m_touchCurrentPoints[touchIndex].x = touchCoordinates.x;
-			m_touchCurrentPoints[touchIndex].y = touchCoordinates.y;
+			m_inputState->m_touchPrevPoints[touchIndex].x = m_inputState->m_touchCurrentPoints[touchIndex].x;
+			m_inputState->m_touchPrevPoints[touchIndex].y = m_inputState->m_touchCurrentPoints[touchIndex].y;
+			m_inputState->m_touchCurrentPoints[touchIndex].x = touchCoordinates.x;
+			m_inputState->m_touchCurrentPoints[touchIndex].y = touchCoordinates.y;
 			
-			m_touchPrevTimes[touchIndex] = m_touchCurrTimes[touchIndex];
-			m_touchCurrTimes[touchIndex] = CFAbsoluteTimeGetCurrent();
+			m_inputState->m_touchPrevTimes[touchIndex] = m_inputState->m_touchCurrTimes[touchIndex];
+			m_inputState->m_touchCurrTimes[touchIndex] = CFAbsoluteTimeGetCurrent();
 			
-			m_touchStates[touchIndex] = TouchState_Moving;
+			m_inputState->m_touchStates[touchIndex] = TouchState_Moving;
 		}
 #ifdef DEBUG_PRINTTOUCHEVENTS
 		//else
@@ -163,35 +169,6 @@
 		//}
 #endif
 	}
-}
-
-
-- (void) GetTouchVelocity:(u32)touchIndex:(vec2*)out_velocity
-{
-	TouchState touchState = [self GetTouchState:touchIndex];
-	
-	switch (touchState)
-	{
-		case TouchState_Moving:
-		case TouchState_Ended:
-		{
-			SubVec2(out_velocity, &m_touchCurrentPoints[touchIndex],&m_touchPrevPoints[touchIndex]);
-			const f32 time = m_touchCurrTimes[touchIndex]-m_touchPrevTimes[touchIndex];
-			ScaleVec2_Self(out_velocity, 1.0f/time);
-
-			break;
-		}
-		default:
-		{
-			SetVec2(out_velocity, 0.0f, 0.0f);
-		}
-	}
-}
-
-
-- (void) GetTouchPos:(u32)touchIndex:(vec2*)out_posCurr
-{
-	CopyVec2(out_posCurr,&m_touchCurrentPoints[touchIndex]);
 }
 
 
@@ -230,18 +207,20 @@
 		if (pFoundTouch != nil)
 		{
 			CGPoint touchCoordinates = [touch locationInView:pView];
+			touchCoordinates.x *= m_inputScale;
+			touchCoordinates.y *= m_inputScale;
 			
-			m_touchStateWasUpdated[touchIndex] = true;
+			m_inputState->m_touchStateWasUpdated[touchIndex] = true;
 			
 			//m_touchPrevPoints[touchIndex].x = m_touchCurrentPoints[touchIndex].x;
 			//m_touchPrevPoints[touchIndex].y = m_touchCurrentPoints[touchIndex].y;
-			m_touchCurrentPoints[touchIndex].x = touchCoordinates.x;
-			m_touchCurrentPoints[touchIndex].y = touchCoordinates.y;
+			m_inputState->m_touchCurrentPoints[touchIndex].x = touchCoordinates.x;
+			m_inputState->m_touchCurrentPoints[touchIndex].y = touchCoordinates.y;
 			
 			//m_touchPrevTimes[touchIndex] = m_touchCurrTimes[touchIndex];
-			m_touchCurrTimes[touchIndex] = CFAbsoluteTimeGetCurrent();
+			m_inputState->m_touchCurrTimes[touchIndex] = CFAbsoluteTimeGetCurrent();
 			
-			m_touchStates[touchIndex] = TouchState_Ended;
+			m_inputState->m_touchStates[touchIndex] = TouchState_Ended;
 		}
 #ifdef DEBUG_PRINTTOUCHEVENTS
 		//else
@@ -281,7 +260,7 @@
 		}
 		
 		//Should be impossible for touchIndex to be -1 by now
-		m_touchStates[touchIndex] = TouchState_Cancelled;
+		m_inputState->m_touchStates[touchIndex] = TouchState_Cancelled;
 		
 		[m_pTouches[touchIndex] release];
 		m_pTouches[touchIndex] = nil;
@@ -297,20 +276,20 @@
 	{
 		if (m_pTouches[i] != nil)
 		{
-			if(m_touchStateWasUpdated[i] == true)
+			if(m_inputState->m_touchStateWasUpdated[i] == true)
 			{
-				m_touchStateWasUpdated[i] = false;
-				if(m_touchStates[i] == TouchState_Began)
+				m_inputState->m_touchStateWasUpdated[i] = false;
+				if(m_inputState->m_touchStates[i] == TouchState_Began)
 				{
-					m_touchStates[i] = TouchState_Stationary;
+					m_inputState->m_touchStates[i] = TouchState_Stationary;
 				}
 			}
 			else
 			{
-				m_touchStates[i] = TouchState_Stationary;
+				m_inputState->m_touchStates[i] = TouchState_Stationary;
 			}
 			
-			switch(m_touchStates[i])
+			switch(m_inputState->m_touchStates[i])
 			{
 				case TouchState_Ended:
 				case TouchState_Cancelled:
@@ -329,9 +308,9 @@
 		}
 		
 		//If found
-		if (m_touchStates[i] ==  TouchState_Ended || m_touchStates[i] == TouchState_Cancelled)
+		if (m_inputState->m_touchStates[i] ==  TouchState_Ended || m_inputState->m_touchStates[i] == TouchState_Cancelled)
 		{
-			m_touchStates[i] = TouchState_None;
+			m_inputState->m_touchStates[i] = TouchState_None;
 		}
 	}
 }
@@ -356,22 +335,10 @@
 	const f32 kFilteringFactor	= 0.1f;
     
 	//Use a basic low-pass filter to only keep the gravity in the accelerometer values
-	m_accelerometerValue.x = acceleration.x * kFilteringFactor + m_accelerometerValue.x * (1.0 - kFilteringFactor);
-	m_accelerometerValue.y = acceleration.y * kFilteringFactor + m_accelerometerValue.y * (1.0 - kFilteringFactor);
-	m_accelerometerValue.z = acceleration.z * kFilteringFactor + m_accelerometerValue.z * (1.0 - kFilteringFactor);
+	m_inputState->m_accelerometerValue.x = acceleration.x * kFilteringFactor + m_inputState->m_accelerometerValue.x * (1.0 - kFilteringFactor);
+	m_inputState->m_accelerometerValue.y = acceleration.y * kFilteringFactor + m_inputState->m_accelerometerValue.y * (1.0 - kFilteringFactor);
+	m_inputState->m_accelerometerValue.z = acceleration.z * kFilteringFactor + m_inputState->m_accelerometerValue.z * (1.0 - kFilteringFactor);
 }
 
-#if TARGET_IPHONE_SIMULATOR
-const vec3 fakeAccel = {0.0f,-1.0f,0.0f};
-- (const vec3*) GetAccelerometerValue
-{
-    return &fakeAccel;
-}
-#else
-- (const vec3*) GetAccelerometerValue
-{
-    return &m_accelerometerValue;
-}
-#endif
 
 @end

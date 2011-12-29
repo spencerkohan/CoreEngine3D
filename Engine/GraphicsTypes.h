@@ -537,13 +537,6 @@ typedef enum
 	ImageType_TGA,
 } ImageType;
 
-typedef enum
-{
-    DebugDrawObjectType_Circle,
-    DebugDrawObjectType_Cylinder,
-    DebugDrawObjectType_Cube, //unsupported
-}DebugDrawObjectType;
-
 
 struct RenderableMaterial
 {

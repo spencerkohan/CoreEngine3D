@@ -10,35 +10,23 @@
 #import <UIKit/UIKit.h>
 
 #include "MathTypes.h"
-#include "TouchState.h"
-
-#define MAX_MULTITOUCH 11
+#include "CoreInput_DeviceInputState.h"
 
 @interface TouchInputIOS : NSObject<UIAccelerometerDelegate>
 {
 	UITouch* m_pTouches[MAX_MULTITOUCH];
-	bool m_touchStateWasUpdated[MAX_MULTITOUCH];
-	vec2 m_touchBeginPoints[MAX_MULTITOUCH];
-	double m_touchPrevTimes[MAX_MULTITOUCH];
-	double m_touchCurrTimes[MAX_MULTITOUCH];
-	vec2 m_touchPrevPoints[MAX_MULTITOUCH];
-	vec2 m_touchCurrentPoints[MAX_MULTITOUCH];
-	TouchState m_touchStates[MAX_MULTITOUCH];
-	vec3 m_accelerometerValue;
+	DeviceInputState* m_inputState;
+	u32 m_inputScale;
 }
 
-- (id) init;
+- (id) init:(DeviceInputState*) pDeviceInputState;
 - (void)Update:(f32) timeElapsed;
-- (TouchState)GetTouchState:(u32)touchIndex;
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event: (UIView*) pView;
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event: (UIView*) pView;
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event: (UIView*) pView;
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event: (UIView*)pVIew;
-- (void) GetTouchVelocity:(u32)touchIndex:(vec2*)out_velocity;
-- (void) GetTouchPos:(u32)touchIndex:(vec2*)out_posCurr;
 - (void) PostGameUpdate;
 - (void) SetAccelerometerIsUsed:(BOOL)useAccelerometer;
 - (void)accelerometer:(UIAccelerometer*)accelerometer didAccelerate:(UIAcceleration*)acceleration;
-- (const vec3*) GetAccelerometerValue;
 
 @end

@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		23F4265514AC4C4700F27DAB /* CoreInput_Joystick.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265414AC4C4700F27DAB /* CoreInput_Joystick.h */; };
+		23F4265714AC4C5F00F27DAB /* CoreInput_Joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23F4265614AC4C5F00F27DAB /* CoreInput_Joystick.cpp */; };
+		23F4266114AC5C0900F27DAB /* DEBUGMODEL_CircleXY.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265F14AC5C0900F27DAB /* DEBUGMODEL_CircleXY.h */; };
+		23F4266214AC5C0900F27DAB /* DEBUGMODEL_CircleXZ.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4266014AC5C0900F27DAB /* DEBUGMODEL_CircleXZ.h */; };
+		23F4266514AC8A1E00F27DAB /* CoreInput_DeviceInputState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23F4266314AC8A1D00F27DAB /* CoreInput_DeviceInputState.cpp */; };
+		23F4266614AC8A1E00F27DAB /* CoreInput_DeviceInputState.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4266414AC8A1D00F27DAB /* CoreInput_DeviceInputState.h */; };
 		23FCBBA914A1DFBC00C5EA7C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23FCBBA814A1DFBC00C5EA7C /* Cocoa.framework */; };
 		23FCBCB914A1E09A00C5EA7C /* AnimationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBBCE14A1E09A00C5EA7C /* AnimationController.cpp */; };
 		23FCBCBA14A1E09A00C5EA7C /* AnimationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBBCF14A1E09A00C5EA7C /* AnimationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -16,7 +22,6 @@
 		23FCBCBE14A1E09A00C5EA7C /* base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBBD314A1E09A00C5EA7C /* base64.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBCBF14A1E09A00C5EA7C /* CoreUI_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBBD414A1E09A00C5EA7C /* CoreUI_Button.cpp */; };
 		23FCBCC014A1E09A00C5EA7C /* CoreUI_Button.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBBD514A1E09A00C5EA7C /* CoreUI_Button.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		23FCBCC114A1E09A00C5EA7C /* DEBUGMODEL_Circle.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBBD614A1E09A00C5EA7C /* DEBUGMODEL_Circle.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBCC214A1E09A00C5EA7C /* DEBUGMODEL_Cylinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBBD714A1E09A00C5EA7C /* DEBUGMODEL_Cylinder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBCC314A1E09A00C5EA7C /* EngineModels.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBBD814A1E09A00C5EA7C /* EngineModels.cpp */; };
 		23FCBCC414A1E09A00C5EA7C /* EngineModels.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBBD914A1E09A00C5EA7C /* EngineModels.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -144,13 +149,17 @@
 		23FCBD8C14A1E09A00C5EA7C /* SpriteSheetAnimator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBCAA14A1E09A00C5EA7C /* SpriteSheetAnimator.cpp */; };
 		23FCBD8D14A1E09A00C5EA7C /* SpriteSheetAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBCAB14A1E09A00C5EA7C /* SpriteSheetAnimator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBD8E14A1E09A00C5EA7C /* TouchInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBCB014A1E09A00C5EA7C /* TouchInput.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		23FCBD9114A1E09A00C5EA7C /* TouchState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBCB314A1E09A00C5EA7C /* TouchState.cpp */; };
-		23FCBD9214A1E09A00C5EA7C /* TouchState.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBCB414A1E09A00C5EA7C /* TouchState.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBD9314A1E09A00C5EA7C /* ViewFlags.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBCB514A1E09A00C5EA7C /* ViewFlags.cpp */; };
 		23FCBD9414A1E09A00C5EA7C /* ViewFlags.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBCB614A1E09A00C5EA7C /* ViewFlags.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		23F4265414AC4C4700F27DAB /* CoreInput_Joystick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_Joystick.h; sourceTree = "<group>"; };
+		23F4265614AC4C5F00F27DAB /* CoreInput_Joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_Joystick.cpp; sourceTree = "<group>"; };
+		23F4265F14AC5C0900F27DAB /* DEBUGMODEL_CircleXY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEBUGMODEL_CircleXY.h; sourceTree = "<group>"; };
+		23F4266014AC5C0900F27DAB /* DEBUGMODEL_CircleXZ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEBUGMODEL_CircleXZ.h; sourceTree = "<group>"; };
+		23F4266314AC8A1D00F27DAB /* CoreInput_DeviceInputState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_DeviceInputState.cpp; sourceTree = "<group>"; };
+		23F4266414AC8A1D00F27DAB /* CoreInput_DeviceInputState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_DeviceInputState.h; sourceTree = "<group>"; };
 		23FCBBA514A1DFBC00C5EA7C /* libCoreEngine3D(OSX).a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libCoreEngine3D(OSX).a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		23FCBBA814A1DFBC00C5EA7C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		23FCBBAB14A1DFBC00C5EA7C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -165,7 +174,6 @@
 		23FCBBD314A1E09A00C5EA7C /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base64.h; sourceTree = "<group>"; };
 		23FCBBD414A1E09A00C5EA7C /* CoreUI_Button.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreUI_Button.cpp; sourceTree = "<group>"; };
 		23FCBBD514A1E09A00C5EA7C /* CoreUI_Button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreUI_Button.h; sourceTree = "<group>"; };
-		23FCBBD614A1E09A00C5EA7C /* DEBUGMODEL_Circle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEBUGMODEL_Circle.h; sourceTree = "<group>"; };
 		23FCBBD714A1E09A00C5EA7C /* DEBUGMODEL_Cylinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEBUGMODEL_Cylinder.h; sourceTree = "<group>"; };
 		23FCBBD814A1E09A00C5EA7C /* EngineModels.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EngineModels.cpp; sourceTree = "<group>"; };
 		23FCBBD914A1E09A00C5EA7C /* EngineModels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EngineModels.h; sourceTree = "<group>"; };
@@ -293,8 +301,6 @@
 		23FCBCAA14A1E09A00C5EA7C /* SpriteSheetAnimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteSheetAnimator.cpp; sourceTree = "<group>"; };
 		23FCBCAB14A1E09A00C5EA7C /* SpriteSheetAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteSheetAnimator.h; sourceTree = "<group>"; };
 		23FCBCB014A1E09A00C5EA7C /* TouchInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchInput.h; sourceTree = "<group>"; };
-		23FCBCB314A1E09A00C5EA7C /* TouchState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchState.cpp; sourceTree = "<group>"; };
-		23FCBCB414A1E09A00C5EA7C /* TouchState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchState.h; sourceTree = "<group>"; };
 		23FCBCB514A1E09A00C5EA7C /* ViewFlags.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ViewFlags.cpp; sourceTree = "<group>"; };
 		23FCBCB614A1E09A00C5EA7C /* ViewFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewFlags.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -367,11 +373,10 @@
 		23FCBBCB14A1E09A00C5EA7C /* Engine */ = {
 			isa = PBXGroup;
 			children = (
-				23FCBBE214A1E09A00C5EA7C /* libpng */,
-				23FCBC0214A1E09A00C5EA7C /* Models */,
-				23FCBC1914A1E09A00C5EA7C /* PowerVR */,
-				23FCBC4714A1E09A00C5EA7C /* pugixml */,
-				23FCBC9F14A1E09A00C5EA7C /* SOIL */,
+				23F4266314AC8A1D00F27DAB /* CoreInput_DeviceInputState.cpp */,
+				23F4266414AC8A1D00F27DAB /* CoreInput_DeviceInputState.h */,
+				23F4265414AC4C4700F27DAB /* CoreInput_Joystick.h */,
+				23F4265614AC4C5F00F27DAB /* CoreInput_Joystick.cpp */,
 				23FCBBCE14A1E09A00C5EA7C /* AnimationController.cpp */,
 				23FCBBCF14A1E09A00C5EA7C /* AnimationController.h */,
 				23FCBBD014A1E09A00C5EA7C /* ArrayUtil.cpp */,
@@ -380,7 +385,8 @@
 				23FCBBD314A1E09A00C5EA7C /* base64.h */,
 				23FCBBD414A1E09A00C5EA7C /* CoreUI_Button.cpp */,
 				23FCBBD514A1E09A00C5EA7C /* CoreUI_Button.h */,
-				23FCBBD614A1E09A00C5EA7C /* DEBUGMODEL_Circle.h */,
+				23F4265F14AC5C0900F27DAB /* DEBUGMODEL_CircleXY.h */,
+				23F4266014AC5C0900F27DAB /* DEBUGMODEL_CircleXZ.h */,
 				23FCBBD714A1E09A00C5EA7C /* DEBUGMODEL_Cylinder.h */,
 				23FCBBD814A1E09A00C5EA7C /* EngineModels.cpp */,
 				23FCBBD914A1E09A00C5EA7C /* EngineModels.h */,
@@ -414,10 +420,13 @@
 				23FCBCAA14A1E09A00C5EA7C /* SpriteSheetAnimator.cpp */,
 				23FCBCAB14A1E09A00C5EA7C /* SpriteSheetAnimator.h */,
 				23FCBCB014A1E09A00C5EA7C /* TouchInput.h */,
-				23FCBCB314A1E09A00C5EA7C /* TouchState.cpp */,
-				23FCBCB414A1E09A00C5EA7C /* TouchState.h */,
 				23FCBCB514A1E09A00C5EA7C /* ViewFlags.cpp */,
 				23FCBCB614A1E09A00C5EA7C /* ViewFlags.h */,
+				23FCBBE214A1E09A00C5EA7C /* libpng */,
+				23FCBC0214A1E09A00C5EA7C /* Models */,
+				23FCBC1914A1E09A00C5EA7C /* PowerVR */,
+				23FCBC4714A1E09A00C5EA7C /* pugixml */,
+				23FCBC9F14A1E09A00C5EA7C /* SOIL */,
 			);
 			path = Engine;
 			sourceTree = "<group>";
@@ -578,7 +587,6 @@
 				23FCBCBC14A1E09A00C5EA7C /* ArrayUtil.h in Headers */,
 				23FCBCBE14A1E09A00C5EA7C /* base64.h in Headers */,
 				23FCBCC014A1E09A00C5EA7C /* CoreUI_Button.h in Headers */,
-				23FCBCC114A1E09A00C5EA7C /* DEBUGMODEL_Circle.h in Headers */,
 				23FCBCC214A1E09A00C5EA7C /* DEBUGMODEL_Cylinder.h in Headers */,
 				23FCBCC414A1E09A00C5EA7C /* EngineModels.h in Headers */,
 				23FCBCC514A1E09A00C5EA7C /* Game.h in Headers */,
@@ -651,8 +659,11 @@
 				23FCBD8B14A1E09A00C5EA7C /* stbi_DDS_aug_c.h in Headers */,
 				23FCBD8D14A1E09A00C5EA7C /* SpriteSheetAnimator.h in Headers */,
 				23FCBD8E14A1E09A00C5EA7C /* TouchInput.h in Headers */,
-				23FCBD9214A1E09A00C5EA7C /* TouchState.h in Headers */,
 				23FCBD9414A1E09A00C5EA7C /* ViewFlags.h in Headers */,
+				23F4265514AC4C4700F27DAB /* CoreInput_Joystick.h in Headers */,
+				23F4266114AC5C0900F27DAB /* DEBUGMODEL_CircleXY.h in Headers */,
+				23F4266214AC5C0900F27DAB /* DEBUGMODEL_CircleXZ.h in Headers */,
+				23F4266614AC8A1E00F27DAB /* CoreInput_DeviceInputState.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -765,8 +776,9 @@
 				23FCBD8614A1E09A00C5EA7C /* SOIL.c in Sources */,
 				23FCBD8814A1E09A00C5EA7C /* stb_image_aug.c in Sources */,
 				23FCBD8C14A1E09A00C5EA7C /* SpriteSheetAnimator.cpp in Sources */,
-				23FCBD9114A1E09A00C5EA7C /* TouchState.cpp in Sources */,
 				23FCBD9314A1E09A00C5EA7C /* ViewFlags.cpp in Sources */,
+				23F4265714AC4C5F00F27DAB /* CoreInput_Joystick.cpp in Sources */,
+				23F4266514AC8A1E00F27DAB /* CoreInput_DeviceInputState.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

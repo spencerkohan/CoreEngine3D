@@ -16,6 +16,8 @@
 #import "TouchInputIOS.h"
 #endif
 
+#include "CoreInput_DeviceInputState.h"
+
 #include "CoreUI_Button.h"
 
 #define GAME_MAX_BUTTONS 16
@@ -44,6 +46,10 @@ protected:
 	void LoadItemArt();	//Call to load all the art in the list
 	void ClearItemArt();	//Call when you're going to load more art and some of it might be the same
 	void DeleteAllItemArt();	//Call to delete all the art in the list regardless
+	
+#if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
+	DeviceInputState m_deviceInputState;
+#endif
 	
 private:
 	bool WillArtDescriptionBeLoaded(ItemArtDescription* pArtDesc);

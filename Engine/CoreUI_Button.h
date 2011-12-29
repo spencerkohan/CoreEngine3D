@@ -11,8 +11,7 @@
 
 #include "GraphicsTypes.h"
 #include "OpenGLRenderer.h"
-
-#include "TouchState.h"
+#include "CoreInput_DeviceInputState.h"
 
 enum ButtonState
 {

@@ -10,7 +10,7 @@
 #import <Foundation/Foundation.h>
 #endif
 
-#if defined PLATFORM_IOS
+#if defined (PLATFORM_IOS)
 #import <UIKit/UIKit.h>
 #endif
 
@@ -26,14 +26,15 @@ OpenGLRenderer* GLRENDERER = NULL;
 #include "png.h"
 #include "SOIL.h"
 
-#if defined PLATFORM_OSX 
+#if defined (PLATFORM_OSX)
 #include <OpenGL/glu.h>
 #endif
 
 #include "MaterialDeclarations.h"
 
 //DEBUG MODELS
-#include "DEBUGMODEL_Circle.h"
+#include "DEBUGMODEL_CircleXY.h"
+#include "DEBUGMODEL_CircleXZ.h"
 #include "DEBUGMODEL_Cylinder.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
@@ -145,7 +146,7 @@ static Material g_Materials[NumRenderMaterials];
 static GLuint texture_pointSpriteAtlas = 0;
 //static GLuint texture_default = 0;
 
-void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
+void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 screenWidthPoints, f32 screenHeightPoints)
 {
 	GLRENDERER = this;
 	
@@ -158,14 +159,14 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 	glGenRenderbuffers(1, &colorRenderbuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
 	
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB565, screenWidth, screenHeight);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB565, screenWidthPixels, screenHeightPixels);
 	
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
 	
 	GLuint depthRenderbuffer;
 	glGenRenderbuffers(1, &depthRenderbuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, screenWidth, screenHeight);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, screenWidthPixels, screenHeightPixels);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
 	
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER) ;
@@ -182,10 +183,13 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 	
 	mat4f_LoadIdentity(m_identityMat);
 	
-	screenWidth_points = screenWidth;
-	screenHeight_points = screenHeight;
+	screenWidth_points = screenWidthPoints;
+	screenHeight_points = screenHeightPoints;
 	
-	aspectRatio = screenWidth/screenHeight;
+	screenWidth_pixels = screenWidthPixels;
+	screenHeight_pixels = screenHeightPixels;
+	
+	aspectRatio = screenWidthPoints/screenHeightPoints;
 	
 	mat4f_LoadPerspective(m_projMats[ProjMatType_Perspective], 3.14f*0.25f,aspectRatio,1.0f,6000.0f);
 
@@ -254,8 +258,7 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
     m_maxNumRenderables = 0;
     m_maxNumTrails = 0;
 	
-    m_numDebugLinePoints2D = 0;
-    m_numDebugLinePoints3D = 0;
+	ClearOneFrameGeometry();
     
     m_renderStateFlags = 0;
     
@@ -324,15 +327,12 @@ void OpenGLRenderer::Init(f32 screenWidth, f32 screenHeight)
 	
 	PrintOpenGLError("Before registering models");
 	
-    RegisterModel(&g_DEBUGMODEL_Circle_modelData);
+    RegisterModel(&g_DEBUGMODEL_CircleXY_modelData);
+	RegisterModel(&g_DEBUGMODEL_CircleXZ_modelData);
     RegisterModel(&g_DEBUGMODEL_Cylinder_modelData);
     
 	PrintOpenGLError("Initialized Renderer");
-	
-	//Reset debug lines
-	m_numDebugLinePoints2D_saved = 0;
-	m_numDebugLinePoints3D_saved = 0;
-	m_numDebugDrawObjects_saved = 0;
+
 	m_numTexturedLines_saved = 0;
 	
 	CreateMaterials();
@@ -356,14 +356,15 @@ void OpenGLRenderer::ClearRenderables()
 
 void OpenGLRenderer::ClearOneFrameGeometry()
 {
-	m_numDebugLinePoints2D_saved = 0;
-	m_numDebugLinePoints3D_saved = 0;
-	m_numDebugDrawObjects_saved = 0;
-	m_numTexturedLines_saved = 0;
-	
-	m_numDebugLinePoints2D = 0;
-	m_numDebugLinePoints3D = 0;
-	m_numDebugDrawObjects = 0;
+	for(u32 i=0; i<DebugDrawMode_Num; ++i)
+	{
+		m_numDebugLinePoints[i] = 0;
+		m_numDebugLinePoints_saved[i] = 0;
+		
+		m_numDebugDrawObjects[i] = 0;
+		m_numDebugDrawObjects_saved[i] = 0;
+	}
+
 	m_numTexturedLines = 0;
 }
 
@@ -1126,14 +1127,16 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 {
 	if(!paused)
 	{
-		m_numDebugLinePoints2D_saved = m_numDebugLinePoints2D;
-		m_numDebugLinePoints3D_saved = m_numDebugLinePoints3D;
-		m_numDebugDrawObjects_saved = m_numDebugDrawObjects;
-		m_numTexturedLines_saved = m_numTexturedLines;
+		for(u32 i=0; i<DebugDrawMode_Num; ++i)
+		{
+			m_numDebugLinePoints_saved[i] = m_numDebugLinePoints[i];
+			m_numDebugDrawObjects_saved[i] = m_numDebugDrawObjects[i];
+			
+			m_numDebugLinePoints[i] = 0;
+			m_numDebugDrawObjects[i] = 0;
+		}
 		
-		m_numDebugLinePoints2D = 0;
-		m_numDebugLinePoints3D = 0;
-		m_numDebugDrawObjects = 0;
+		m_numTexturedLines_saved = m_numTexturedLines;
 		m_numTexturedLines = 0;
 	}
 	
@@ -1715,13 +1718,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    
-    //Render debug stuff
-    SetMaterial(MT_VertColors);
-    
-    m_currProjMatType = ProjMatType_Orthographic_Points;
-    UploadWorldProjMatrix(m_identityMat);
-    
+
     //Disable depth test
 	glEnable ( GL_DEPTH_TEST );
 	
@@ -1731,85 +1728,147 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 	//Disable culling
 	glDisable(GL_CULL_FACE);
     
-    if(m_numDebugLinePoints2D_saved > 0)
-    {
-		//Draw 2D lines
-		m_currProjMatType = ProjMatType_Orthographic_Points;
-		UploadWorldViewProjMatrix(m_identityMat);
-        
-        glEnableVertexAttribArray(ATTRIB_VERTEX);
-        glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, sizeof(PointData), &m_debugLinePoints2D[0].position);
-        
-        glEnableVertexAttribArray(ATTRIB_COLOR);
-        glVertexAttribPointer(ATTRIB_COLOR, 4, GL_FLOAT, 0, sizeof(PointData), &m_debugLinePoints2D[0].color);
-        
-        glDrawArrays(GL_LINES, 0, m_numDebugLinePoints2D_saved);
-    }
-    
-    if(m_numDebugLinePoints3D_saved > 0)
-    {
-        //Draw 3D lines
-        m_currProjMatType = ProjMatType_Perspective;
-        UploadWorldViewProjMatrix(m_identityMat);
-        
-        glEnableVertexAttribArray(ATTRIB_VERTEX);
-        glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, sizeof(PointData), &m_debugLinePoints3D[0].position);
-        
-        glEnableVertexAttribArray(ATTRIB_COLOR);
-        glVertexAttribPointer(ATTRIB_COLOR, 4, GL_FLOAT, 0, sizeof(PointData), &m_debugLinePoints3D[0].color);
-        
-        glDrawArrays(GL_LINES, 0, m_numDebugLinePoints3D_saved);
-    }
-    
-    //DEBUG DRAW OBJECTS
-    
-    m_currProjMatType = ProjMatType_Perspective;
-    SetMaterial(MT_VertWithColorInput);
-    
-    for(u32 i=0; i<m_numDebugDrawObjects_saved; ++i)
-    {
-        DebugDrawObject* pCurrObject = &m_debugDrawObjects[i];
-        
-        UploadWorldViewProjMatrix(pCurrObject->matrix);
-        
-        glUniform4fv(g_Materials[MT_VertWithColorInput].uniforms_unique[0],1,(f32*)&pCurrObject->color);
+	//DRAW DEBUG LINES
+	
+	//Render debug stuff
+	SetMaterial(MT_VertColors);
+	
+	for(u32 debugIDX=0; debugIDX<DebugDrawMode_Num; ++debugIDX)
+	{
+		//Set up view/proj
 		
-        ModelData* pModelData = NULL;
-        
-        switch(pCurrObject->objectType)
-        {
-            case DebugDrawObjectType_Circle:
-            {
-                pModelData = &g_DEBUGMODEL_Circle_modelData;
-                break;
-            }
-            case DebugDrawObjectType_Cylinder:
-            {
-                pModelData = &g_DEBUGMODEL_Cylinder_modelData;
-                break;
-            }
-            default:
-            {
-                break;
-            }
-        }
-        
-        for(u32 i=0; i<pModelData->numPrimitives; ++i)
-        {
-            PrimitiveData* pCurrPrim = &pModelData->primitiveArray[i];
-            if (m_supportsFeaturesFromiOS4)
-            {
-                BindVertexArrayObject(pCurrPrim);
-            }
-            else
-            {
-                glBindBuffer(GL_ARRAY_BUFFER, pCurrPrim->vertexArrayObjectID);
-                EnableAttributes(pModelData);
-            }
-            
-            glDrawArrays(pCurrPrim->drawMethod, 0, pCurrPrim->numVerts);
-        }
-    }
+		switch((DebugDrawMode)debugIDX)
+		{
+			case DebugDrawMode_2D:
+			{
+				//Draw 2D lines
+				m_currProjMatType = ProjMatType_Orthographic_Points;
+				UploadWorldViewProjMatrix(m_identityMat);
+				
+				break;
+			}
+			case DebugDrawMode_3D:
+			{
+				//Draw 3D lines
+				m_currProjMatType = ProjMatType_Perspective;
+				UploadWorldViewProjMatrix(m_identityMat);
+				
+				break;
+			}
+			case DebugDrawMode_Screen2D:
+			{
+				//Draw to the screen with no view matrix in 2D
+				m_currProjMatType = ProjMatType_Orthographic_Points;
+				UploadWorldProjMatrix(m_identityMat);
+				
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
+		
+		glEnableVertexAttribArray(ATTRIB_VERTEX);
+		glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, sizeof(PointData), &m_debugLinePoints[debugIDX][0].position);
+		
+		glEnableVertexAttribArray(ATTRIB_COLOR);
+		glVertexAttribPointer(ATTRIB_COLOR, 4, GL_FLOAT, 0, sizeof(PointData), &m_debugLinePoints[debugIDX][0].color);
+		
+		glDrawArrays(GL_LINES, 0, m_numDebugLinePoints_saved[debugIDX]);
+	}
+	
+	
+	//DRAW DEBUG OBJECTS
+	
+	SetMaterial(MT_VertWithColorInput);
+	
+	for(u32 debugIDX=0; debugIDX<DebugDrawMode_Num; ++debugIDX)
+	{
+		for(u32 i=0; i<m_numDebugDrawObjects_saved[debugIDX]; ++i)
+		{
+			DebugDrawObject* pCurrObject = &m_debugDrawObjects[debugIDX][i];
+			
+			switch((DebugDrawMode)debugIDX)
+			{
+				case DebugDrawMode_2D:
+				{
+					//Draw 2D lines
+					m_currProjMatType = ProjMatType_Orthographic_Points;
+					UploadWorldViewProjMatrix(pCurrObject->matrix);
+					
+					break;
+				}
+				case DebugDrawMode_3D:
+				{
+					//Draw 3D lines
+					m_currProjMatType = ProjMatType_Perspective;
+					UploadWorldViewProjMatrix(pCurrObject->matrix);
+					
+					break;
+				}
+				case DebugDrawMode_Screen2D:
+				{
+					//Draw to the screen with no view matrix in 2D
+					m_currProjMatType = ProjMatType_Orthographic_Points;
+					UploadWorldProjMatrix(pCurrObject->matrix);
+					
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+			
+			glUniform4fv(g_Materials[MT_VertWithColorInput].uniforms_unique[0],1,(f32*)&pCurrObject->color);
+			
+			ModelData* pModelData = NULL;
+			
+			switch(pCurrObject->objectType)
+			{
+				case DebugDrawObjectType_CircleXY:
+				{
+					pModelData = &g_DEBUGMODEL_CircleXY_modelData;
+					
+					break;
+				}
+				case DebugDrawObjectType_CircleXZ:
+				{
+					pModelData = &g_DEBUGMODEL_CircleXZ_modelData;
+					
+					break;
+				}
+				case DebugDrawObjectType_Cylinder:
+				{
+					pModelData = &g_DEBUGMODEL_Cylinder_modelData;
+					
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+			
+			for(u32 i=0; i<pModelData->numPrimitives; ++i)
+			{
+				PrimitiveData* pCurrPrim = &pModelData->primitiveArray[i];
+				if (m_supportsFeaturesFromiOS4)
+				{
+					BindVertexArrayObject(pCurrPrim);
+				}
+				else
+				{
+					glBindBuffer(GL_ARRAY_BUFFER, pCurrPrim->vertexArrayObjectID);
+					EnableAttributes(pModelData);
+				}
+				
+				glDrawArrays(pCurrPrim->drawMethod, 0, pCurrPrim->numVerts);
+			}
+		}
+	}
+	
 #endif
     
 	/*if (parentView.drawMatrices)
@@ -3145,113 +3204,104 @@ void OpenGLRenderer::DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const
 }
 
 
-void OpenGLRenderer::DEBUGDRAW2D_DrawLineSegment(const vec3* p0, const vec3* p1, const vec4* color)
+void OpenGLRenderer::DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color)
 {
 	//TODO: put safety check in here
-    CopyVec3(&m_debugLinePoints2D[m_numDebugLinePoints2D].position,p0);
-    CopyVec4(&m_debugLinePoints2D[m_numDebugLinePoints2D].color,color);
-    
-    CopyVec3(&m_debugLinePoints2D[m_numDebugLinePoints2D+1].position,p1);
-    CopyVec4(&m_debugLinePoints2D[m_numDebugLinePoints2D+1].color,color);
-    
-    m_numDebugLinePoints2D += 2;
-}
-
-
-void OpenGLRenderer::DEBUGDRAW2D_DrawCircle(const vec3* p0, f32 radius, const vec4* color)
-{
-#if DEBUG_DRAW
-    const f32 angleInc = PI_2/16.0f;
-    f32 currAngle = angleInc;
-    
-    vec3 lastPos;
-    CopyVec3(&lastPos, p0);
-    lastPos.x += radius;
-    
+	const u32 numPoints = m_numDebugLinePoints[drawMode];
 	
-    for (u32 i=0; i<32; ++i)
-    {
-        vec2 rotatedVec2;
-        MakeRotatedVec2(&rotatedVec2,currAngle);
-		
-        vec3 finalPos;
-        AddScaledVec2((vec2*)&finalPos, (const vec2*)p0, (const vec2*)&rotatedVec2, radius);
-        finalPos.z = 0.0f;
-        
-        CopyVec3(&m_debugLinePoints2D[m_numDebugLinePoints2D].position,&lastPos);
-        CopyVec4(&m_debugLinePoints2D[m_numDebugLinePoints2D].color,color);
-        ++m_numDebugLinePoints2D;
-        
-        CopyVec3(&m_debugLinePoints2D[m_numDebugLinePoints2D].position,&finalPos);
-        CopyVec4(&m_debugLinePoints2D[m_numDebugLinePoints2D].color,color);
-        ++m_numDebugLinePoints2D;
-        
-        CopyVec3(&lastPos, &finalPos);
-        
-        currAngle += angleInc;
-    }
-#endif
-
+    CopyVec3(&m_debugLinePoints[drawMode][numPoints].position,p0);
+    CopyVec4(&m_debugLinePoints[drawMode][numPoints].color,color);
+    
+    CopyVec3(&m_debugLinePoints[drawMode][numPoints+1].position,p1);
+    CopyVec4(&m_debugLinePoints[drawMode][numPoints+1].color,color);
+    
+    m_numDebugLinePoints[drawMode] += 2;
 }
 
 
-void OpenGLRenderer::DEBUGDRAW3D_DrawLineSegment(const vec3* p0, const vec3* p1, const vec4* color)
+void OpenGLRenderer::DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color1, const vec4* color2)
 {
 	//TODO: put safety check in here
-    CopyVec3(&m_debugLinePoints3D[m_numDebugLinePoints3D].position,p0);
-    CopyVec4(&m_debugLinePoints3D[m_numDebugLinePoints3D].color,color);
+	const u32 numPoints = m_numDebugLinePoints[drawMode];
+	
+    CopyVec3(&m_debugLinePoints[drawMode][numPoints].position,p0);
+    CopyVec4(&m_debugLinePoints[drawMode][numPoints].color,color1);
     
-    CopyVec3(&m_debugLinePoints3D[m_numDebugLinePoints3D+1].position,p1);
-    CopyVec4(&m_debugLinePoints3D[m_numDebugLinePoints3D+1].color,color);
+    CopyVec3(&m_debugLinePoints[drawMode][numPoints+1].position,p1);
+    CopyVec4(&m_debugLinePoints[drawMode][numPoints+1].color,color2);
     
-    m_numDebugLinePoints3D += 2;
+    m_numDebugLinePoints[drawMode] += 2;
 }
 
 
-void OpenGLRenderer::DEBUGDRAW3D_DrawLineSegment_2Color(const vec3* p0, const vec3* p1, const vec4* color1, const vec4* color2)
+void OpenGLRenderer::DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color)
 {
-	//TODO: put safety check in here
-    CopyVec3(&m_debugLinePoints3D[m_numDebugLinePoints3D].position,p0);
-    CopyVec4(&m_debugLinePoints3D[m_numDebugLinePoints3D].color,color1);
-    
-    CopyVec3(&m_debugLinePoints3D[m_numDebugLinePoints3D+1].position,p1);
-    CopyVec4(&m_debugLinePoints3D[m_numDebugLinePoints3D+1].color,color2);
-    
-    m_numDebugLinePoints3D += 2;
-}
-
-
-void OpenGLRenderer::DEBUGDRAW3D_DrawCircle(mat4f matrix4x4, const vec4* color)
-{
-	if(m_numDebugDrawObjects == DEBUGDRAW_MAXDEBUGOBJECTS)
+	if(m_numDebugDrawObjects[drawMode] == DEBUGDRAW_MAXDEBUGOBJECTS)
 	{
 		return;
 	}
 	
-    DebugDrawObject* pObject = &m_debugDrawObjects[m_numDebugDrawObjects];
+    DebugDrawObject* pObject = &m_debugDrawObjects[drawMode][m_numDebugDrawObjects[drawMode]];
     
     mat4f_Copy(pObject->matrix, matrix4x4);
     CopyVec4(&pObject->color,color);
-    pObject->objectType = DebugDrawObjectType_Circle;
+    pObject->objectType = DebugDrawObjectType_CircleXY;
     
-    ++m_numDebugDrawObjects;
+    ++m_numDebugDrawObjects[drawMode];
 }
 
 
-void OpenGLRenderer::DEBUGDRAW3D_DrawCylinder(mat4f matrix4x4, const vec4* color)
+void OpenGLRenderer::DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color)
 {
-	if(m_numDebugDrawObjects == DEBUGDRAW_MAXDEBUGOBJECTS)
+	if(m_numDebugDrawObjects[drawMode] == DEBUGDRAW_MAXDEBUGOBJECTS)
 	{
 		return;
 	}
 	
-    DebugDrawObject* pObject = &m_debugDrawObjects[m_numDebugDrawObjects];
+    DebugDrawObject* pObject = &m_debugDrawObjects[drawMode][m_numDebugDrawObjects[drawMode]];
+    
+    mat4f_Copy(pObject->matrix, matrix4x4);
+    CopyVec4(&pObject->color,color);
+    pObject->objectType = DebugDrawObjectType_CircleXZ;
+    
+    ++m_numDebugDrawObjects[drawMode];
+}
+
+
+void OpenGLRenderer::DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, const vec3* pCenter, f32 radius, const vec4* color)
+{
+	mat4f scaleMat;
+	mat4f_LoadScale(scaleMat, radius);
+	CopyVec3(mat4f_GetPos(scaleMat),pCenter);
+	
+	DEBUGDRAW_DrawCircleXY(drawMode,scaleMat,color);
+}
+
+
+void OpenGLRenderer::DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, const vec3* pCenter, f32 radius, const vec4* color)
+{
+	mat4f scaleMat;
+	mat4f_LoadScale(scaleMat, radius);
+	CopyVec3(mat4f_GetPos(scaleMat),pCenter);
+	
+	DEBUGDRAW_DrawCircleXZ(drawMode,scaleMat,color);
+}
+
+
+void OpenGLRenderer::DEBUGDRAW_DrawCylinder(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color)
+{
+	if(m_numDebugDrawObjects[drawMode] == DEBUGDRAW_MAXDEBUGOBJECTS)
+	{
+		return;
+	}
+	
+    DebugDrawObject* pObject = &m_debugDrawObjects[drawMode][m_numDebugDrawObjects[drawMode]];
     
     mat4f_Copy(pObject->matrix, matrix4x4);
     CopyVec4(&pObject->color,color);
     pObject->objectType = DebugDrawObjectType_Cylinder;
     
-    ++m_numDebugDrawObjects;
+    ++m_numDebugDrawObjects[drawMode];
 }
 
 
@@ -3414,7 +3464,7 @@ void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 		printf("GL error: %d (0x%x)\n\n", iErr, iErr);
 	}*/
 	
-#if defined PLATFORM_OSX 
+#if defined (PLATFORM_OSX)
 	GLenum errCode;
 	const GLubyte *errString;
 	

@@ -13,6 +13,10 @@ void Game::Init()
 	m_numLoadedArtDescriptions = 0;
 	m_numArtDescriptionsToLoadTexturesFor = 0;
 	m_ui_numButtons = 0;
+	
+#if defined (PLATFORM_IOS)
+	m_pTouchInput = [[[TouchInputIOS alloc]init:&m_deviceInputState]retain];
+#endif
 }
 
 
