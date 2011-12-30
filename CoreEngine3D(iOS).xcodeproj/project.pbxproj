@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2328343114AD34BF00BEBBD0 /* CoreInput_GamePad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */; };
+		2328343214AD34BF00BEBBD0 /* CoreInput_GamePad.h in Headers */ = {isa = PBXBuildFile; fileRef = 2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */; };
 		23629F6914AA679500DCC97F /* ArtResources in Resources */ = {isa = PBXBuildFile; fileRef = 23629F6814AA679500DCC97F /* ArtResources */; };
 		23629F7014AA67D300DCC97F /* Shaders in Resources */ = {isa = PBXBuildFile; fileRef = 23629F6F14AA67D300DCC97F /* Shaders */; };
 		23629FBE14AB17A700DCC97F /* AnimationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23629FBA14AB17A300DCC97F /* AnimationController.cpp */; };
 		23629FBF14AB17A700DCC97F /* AnimationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 23629FBB14AB17A500DCC97F /* AnimationController.h */; };
 		23629FC014AB17A700DCC97F /* SpriteSheetAnimator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */; };
 		23629FC114AB17A700DCC97F /* SpriteSheetAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 23629FBD14AB17A700DCC97F /* SpriteSheetAnimator.h */; };
-		23F4265A14AC4FA000F27DAB /* CoreInput_Joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23F4265814AC4FA000F27DAB /* CoreInput_Joystick.cpp */; };
-		23F4265B14AC4FA000F27DAB /* CoreInput_Joystick.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265914AC4FA000F27DAB /* CoreInput_Joystick.h */; };
 		23F4265E14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265D14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h */; };
 		23FCBE5C14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBE5B14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch */; };
 		DDA6F559149C1A930035A1BF /* ArrayUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F49B149C1A920035A1BF /* ArrayUtil.cpp */; };
@@ -154,14 +154,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_GamePad.cpp; sourceTree = "<group>"; };
+		2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_GamePad.h; sourceTree = "<group>"; };
 		23629F6814AA679500DCC97F /* ArtResources */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ArtResources; path = "../Crow-Regime/ArtResources"; sourceTree = "<group>"; };
 		23629F6F14AA67D300DCC97F /* Shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Shaders; path = Engine/Shaders; sourceTree = "<group>"; };
 		23629FBA14AB17A300DCC97F /* AnimationController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationController.cpp; sourceTree = "<group>"; };
 		23629FBB14AB17A500DCC97F /* AnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationController.h; sourceTree = "<group>"; };
 		23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteSheetAnimator.cpp; sourceTree = "<group>"; };
 		23629FBD14AB17A700DCC97F /* SpriteSheetAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteSheetAnimator.h; sourceTree = "<group>"; };
-		23F4265814AC4FA000F27DAB /* CoreInput_Joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_Joystick.cpp; sourceTree = "<group>"; };
-		23F4265914AC4FA000F27DAB /* CoreInput_Joystick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_Joystick.h; sourceTree = "<group>"; };
 		23F4265D14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEBUGMODEL_CircleXY.h; sourceTree = "<group>"; };
 		23FCBE5B14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreEngine3D-Prefix.pch"; path = "CoreEngine3D(iOS)/CoreEngine3D-Prefix.pch"; sourceTree = SOURCE_ROOT; };
 		DDA6F314149C19E10035A1BF /* libCoreEngine3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libCoreEngine3D.a; path = "libCoreEngine3D(iOS).a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -351,15 +351,10 @@
 		DDA6F498149C1A920035A1BF /* Engine */ = {
 			isa = PBXGroup;
 			children = (
-				DDF73D17149C24D700D5DFB5 /* libpng */,
-				DDF73D30149C24D700D5DFB5 /* pugixml */,
-				DDA6F544149C1A920035A1BF /* SOIL */,
-				DDA6F4AF149C1A920035A1BF /* Models */,
-				DDA6F4C5149C1A920035A1BF /* PowerVR */,
+				2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */,
+				2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */,
 				23629FBA14AB17A300DCC97F /* AnimationController.cpp */,
 				23629FBB14AB17A500DCC97F /* AnimationController.h */,
-				23F4265914AC4FA000F27DAB /* CoreInput_Joystick.h */,
-				23F4265814AC4FA000F27DAB /* CoreInput_Joystick.cpp */,
 				23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */,
 				23629FBD14AB17A700DCC97F /* SpriteSheetAnimator.h */,
 				DDD5218A14A024A800D6A0BC /* EngineModels.cpp */,
@@ -404,6 +399,11 @@
 				DDD5217614A008C600D6A0BC /* CoreUI_Button.cpp */,
 				DDD521A214A03BEB00D6A0BC /* CoreInput_DeviceInputState.h */,
 				DDD521A414A03BFE00D6A0BC /* CoreInput_DeviceInputState.cpp */,
+				DDF73D17149C24D700D5DFB5 /* libpng */,
+				DDF73D30149C24D700D5DFB5 /* pugixml */,
+				DDA6F544149C1A920035A1BF /* SOIL */,
+				DDA6F4AF149C1A920035A1BF /* Models */,
+				DDA6F4C5149C1A920035A1BF /* PowerVR */,
 			);
 			path = Engine;
 			sourceTree = "<group>";
@@ -637,8 +637,8 @@
 				23FCBE5C14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch in Headers */,
 				23629FBF14AB17A700DCC97F /* AnimationController.h in Headers */,
 				23629FC114AB17A700DCC97F /* SpriteSheetAnimator.h in Headers */,
-				23F4265B14AC4FA000F27DAB /* CoreInput_Joystick.h in Headers */,
 				23F4265E14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h in Headers */,
+				2328343214AD34BF00BEBBD0 /* CoreInput_GamePad.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -766,7 +766,7 @@
 				DDD521A514A03BFE00D6A0BC /* CoreInput_DeviceInputState.cpp in Sources */,
 				23629FBE14AB17A700DCC97F /* AnimationController.cpp in Sources */,
 				23629FC014AB17A700DCC97F /* SpriteSheetAnimator.cpp in Sources */,
-				23F4265A14AC4FA000F27DAB /* CoreInput_Joystick.cpp in Sources */,
+				2328343114AD34BF00BEBBD0 /* CoreInput_GamePad.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

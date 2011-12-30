@@ -6,21 +6,23 @@
 //  Copyright (c) 2011 Jody McAdams. All rights reserved.
 //
 
-#include "CoreInput_Joystick.h"
+#include "CoreInput_GamePad.h"
 
 #include "MathUtil.h"
 #include "matrix.h"
 
 #include "OpenGLRenderer.h"
 
-void GamePad::AddJoystick(JoystickMode stickMode, const JoystickBoundingBox& boundingBox, f32 radius, f32 radiusBuffer, f32 deadZone, f32 minValue)
+GamePadJoystick* GamePad::AddJoystick(GamePadJoystickType type, JoystickMode stickMode, const JoystickBoundingBox& boundingBox, f32 radius, f32 radiusBuffer, f32 deadZone, f32 minValue)
 {
-	if(m_numJoysticks == COREINPUT_MAX_JOYSTICKS)
+	if(numJoysticks == GamePadJoystickType_Num)
 	{
-		return;
+		return NULL;
 	}
 	
-	Joystick* pJoystick = &m_joysticks[m_numJoysticks];
+	GamePadJoystick* pJoystick = &joysticks[numJoysticks];
+	
+	pJoystick->joystickType = type;
 	
 	pJoystick->boundingBox = boundingBox;
 	
@@ -35,18 +37,22 @@ void GamePad::AddJoystick(JoystickMode stickMode, const JoystickBoundingBox& bou
 	pJoystick->stickRadiusBuffer = radiusBuffer;
 	pJoystick->minValue = minValue;
 	
-	++m_numJoysticks;
+	++numJoysticks;
+	
+	return pJoystick;
 }
 
 
-void GamePad::AddButton(const JoystickBoundingBox& boundingBox, f32 radius)
+GamePadButton* GamePad::AddButton(GamePadButtonType type, const JoystickBoundingBox& boundingBox, f32 radius)
 {
-	if(m_numButtons == COREINPUT_MAX_JOYSTICKBUTTONS)
+	if(numButtons == GamePadButtonType_Num)
 	{
-		return;
+		return NULL;
 	}
 	
-	JoystickButton* pButton = &m_buttons[m_numButtons];
+	GamePadButton* pButton = &buttons[numButtons];
+	
+	pButton->buttonType = type;
 	
 	pButton->boundingBox = boundingBox;
 	
@@ -59,15 +65,46 @@ void GamePad::AddButton(const JoystickBoundingBox& boundingBox, f32 radius)
 	pButton->touchIsInsideBoundingBox_INTERNAL = 0;
 	pButton->value = 0;
 	
-	++m_numButtons;
+	++numButtons;
+	
+	return pButton;
+}
+
+GamePadJoystick* GamePad::GetJoystickByType(GamePadJoystickType type)
+{
+	for(int joystickIDX=0; joystickIDX<numJoysticks; ++joystickIDX)
+	{
+		GamePadJoystick* pJoystick = &joysticks[joystickIDX];
+		if(pJoystick->joystickType == type)
+		{
+			return pJoystick;
+		}
+	}
+	
+	return NULL;
+}
+
+
+GamePadButton* GamePad::GetGamePadButtonByType(GamePadButtonType type)
+{
+	for(int buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
+	{
+		GamePadButton* pButton = &buttons[buttonIDX];
+		if(pButton->buttonType == type)
+		{
+			return pButton;
+		}
+	}
+	
+	return NULL;
 }
 
 
 void GamePad::DebugDraw()
 {
-	for(u32 i=0; i<m_numJoysticks; ++i)
+	for(u32 i=0; i<numJoysticks; ++i)
 	{
-		Joystick* pJoystick = &m_joysticks[i];
+		GamePadJoystick* pJoystick = &joysticks[i];
 		
 		const vec3 topLeft = {pJoystick->boundingBox.X0,pJoystick->boundingBox.Y0,0.0f};
 		const vec3 botRight = {pJoystick->boundingBox.X1,pJoystick->boundingBox.Y1,0.0f};
@@ -91,9 +128,9 @@ void GamePad::DebugDraw()
 		GLRENDERER->DEBUGDRAW_DrawCircleXY(DebugDrawMode_Screen2D,&circlePosStick,pJoystick->stickRadius/4.0f,&circleColorStick);
 	}
 	
-	for(u32 i=0; i<m_numButtons; ++i)
+	for(u32 i=0; i<numButtons; ++i)
 	{
-		JoystickButton* pButton = &m_buttons[i];
+		GamePadButton* pButton = &buttons[i];
 		
 		const vec3 topLeft = {pButton->boundingBox.X0,pButton->boundingBox.Y0,0.0f};
 		const vec3 botRight = {pButton->boundingBox.X1,pButton->boundingBox.Y1,0.0f};
@@ -109,12 +146,12 @@ void GamePad::DebugDraw()
 		
 		vec4 circleColor;
 		f32 circleRadius;
-		if(pButton->value & (1<<JoystickButtonState_On))
+		if(pButton->value & (1<<GamePadButtonState_On))
 		{
 			SetVec4(&circleColor,0,1,0,1);
 			circleRadius = pButton->buttonRadius*1.5f;
 		}
-		else if(pButton->value & (1<<JoystickButtonState_Released))
+		else if(pButton->value & (1<<GamePadButtonState_Released))
 		{
 			SetVec4(&circleColor,1,1,0,1);
 			circleRadius = pButton->buttonRadius*2.5f;
@@ -131,7 +168,7 @@ void GamePad::DebugDraw()
 }
 
 
-void Joystick::SetStickCenter(const vec2* pTouchPos)
+void GamePadJoystick::SetStickCenter(const vec2* pTouchPos)
 {
     //Do not process touch if it's outside of the box
     if(pTouchPos->x < boundingBox.X0
@@ -148,7 +185,7 @@ void Joystick::SetStickCenter(const vec2* pTouchPos)
 }
 
 
-void Joystick::ConstrainStick()
+void GamePadJoystick::ConstrainStick()
 {
     //CONSTRAIN THE STICK
     const f32 radiusWithBuffer = stickRadius+stickRadiusBuffer;
@@ -182,7 +219,7 @@ void Joystick::ConstrainStick()
 }
 
 
-void Joystick::Update(const vec2* pTouchPos)
+void GamePadJoystick::Update(const vec2* pTouchPos)
 {    
     const bool insideStickArea = TouchIsInsideBoundingBox(pTouchPos,&boundingBox,stickRadiusBuffer);
     
@@ -412,17 +449,20 @@ void Joystick::Update(const vec2* pTouchPos)
 void GamePad::Init(DeviceInputState* pDeviceInputState)
 {
 	m_pDeviceInputState = pDeviceInputState;
+	
+	numButtons = 0;
+	numJoysticks = 0;
 }
 
 
 void GamePad::Update()
 {
 	//Reset flags for all buttons that need resetting
-    for(int buttonIDX=0; buttonIDX<m_numButtons; ++buttonIDX)
+    for(int buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
     {
         //Clear out one-frame button flags from last update
-        m_buttons[buttonIDX].value &= ~(1<<JoystickButtonState_Released);
-         m_buttons[buttonIDX].value &= ~(1<<JoystickButtonState_FirstFrameOn);
+        buttons[buttonIDX].value &= ~(1<<GamePadButtonState_Released);
+         buttons[buttonIDX].value &= ~(1<<GamePadButtonState_FirstFrameOn);
     }
     
     
@@ -438,33 +478,33 @@ void GamePad::Update()
         m_pDeviceInputState->GetTouchVelocity(i,&velocity);
         
 		//TODO: expand to support more than one joystick
-		Joystick* pJoystick = &m_joysticks[0];
+		GamePadJoystick* pJoystick = &joysticks[0];
 		
 		const bool touchIsLeftStick = TouchIsInsideBoundingBox(&posCurr,&pJoystick->boundingBox,0.0f);
         
         //Find button
         
-        JoystickButton* pButton = NULL;
+        GamePadButton* pButton = NULL;
         
         //Only look for buttons if we are not using the stick
         if(touchIsLeftStick == false)
         {
-            for(int buttonIDX=0; buttonIDX<2; ++buttonIDX)
+            for(int buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
             {
-                if(m_buttons[buttonIDX].touchIndex == i)
+                if(buttons[buttonIDX].touchIndex == i)
                 {
                     //If we found the button with this touch index and it's inside the bounding box
-                    if(TouchIsInsideBoundingBox(&posCurr,&m_buttons[buttonIDX].boundingBox,0.0f))
+                    if(TouchIsInsideBoundingBox(&posCurr,&buttons[buttonIDX].boundingBox,0.0f))
                     {
-                        pButton = &m_buttons[buttonIDX];
+                        pButton = &buttons[buttonIDX];
                         
                     }
                     //else the touch is outside the bounding box so reset the button
                     else
                     {
                         //printf("Force reset button: %d\n",i);
-                        m_buttons[buttonIDX].value = 0;
-                        m_buttons[buttonIDX].touchIndex = -1;
+                        buttons[buttonIDX].value = 0;
+                        buttons[buttonIDX].touchIndex = -1;
                     }
                     
                     break;
@@ -476,11 +516,11 @@ void GamePad::Update()
             {
                 //If we didn't already have a button, find the closest
                 //one in the button group
-                for(int buttonIDX=0; buttonIDX<2; ++buttonIDX)
+                for(int buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
                 {
-                    if(TouchIsInsideBoundingBox(&posCurr,&m_buttons[buttonIDX].boundingBox,0.0f))
+                    if(TouchIsInsideBoundingBox(&posCurr,&buttons[buttonIDX].boundingBox,0.0f))
                     {
-                        pButton = &m_buttons[buttonIDX];
+                        pButton = &buttons[buttonIDX];
 						
                         break;
                     }
@@ -491,16 +531,16 @@ void GamePad::Update()
         //This can probably be cleaned up a bit
         else
         {
-            for(int buttonIDX=0; buttonIDX<2; ++buttonIDX)
+            for(int buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
             {
-                if(m_buttons[buttonIDX].touchIndex == i)
+                if(buttons[buttonIDX].touchIndex == i)
                 {
                     //If we found the button with this touch index and it's inside the bounding box
-                    if(TouchIsInsideBoundingBox(&posCurr,&m_buttons[buttonIDX].boundingBox,0.0f) == false)
+                    if(TouchIsInsideBoundingBox(&posCurr,&buttons[buttonIDX].boundingBox,0.0f) == false)
                     {
                         //printf("Force reset button: %d\n",i);
-                        m_buttons[buttonIDX].value = 0;
-                        m_buttons[buttonIDX].touchIndex = -1;
+                        buttons[buttonIDX].value = 0;
+                        buttons[buttonIDX].touchIndex = -1;
                     }
                     
                     break;
@@ -537,15 +577,15 @@ void GamePad::Update()
                 {    
                     //printf("Pressed button\n");
                     pButton->touchIndex = i;
-                    pButton->value |= 1<<JoystickButtonState_On;
-                    pButton->value |= 1<<JoystickButtonState_FirstFrameOn;
+                    pButton->value |= 1<<GamePadButtonState_On;
+                    pButton->value |= 1<<GamePadButtonState_FirstFrameOn;
                     pButton->timePressed = 0.0f;
                 }
                 
                 if(pButton && pButton->touchIndex == i)
                 {    
                     //printf("Pressed button\n");
-                    pButton->value |= 1<<JoystickButtonState_On;
+                    pButton->value |= 1<<GamePadButtonState_On;
                 }
                 
                 //Only check the stick if the touch index is the assigned index of the stick
@@ -561,7 +601,7 @@ void GamePad::Update()
                 if(pButton && pButton->touchIndex == i)
                 {    
                     //printf("Pressed button\n");
-                    pButton->value |= 1<<JoystickButtonState_On;
+                    pButton->value |= 1<<GamePadButtonState_On;
                 }
                 
                 break;
@@ -586,8 +626,8 @@ void GamePad::Update()
                 {
                     //printf("Released button\n");
                     pButton->touchIndex = -1;
-                    pButton->value &= ~(1<<JoystickButtonState_On);
-                    pButton->value |= 1<<JoystickButtonState_Released;
+                    pButton->value &= ~(1<<GamePadButtonState_On);
+                    pButton->value |= 1<<GamePadButtonState_Released;
                 }
 				
 				//	printf("Touch %d -Ended- <%f,%f>\n",i+1,posCurr.x,posCurr.y);
