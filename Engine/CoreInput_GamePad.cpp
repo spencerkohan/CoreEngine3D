@@ -32,10 +32,14 @@ GamePadJoystick* GamePad::AddJoystick(GamePadJoystickType type, JoystickMode sti
 	CopyVec2(&pJoystick->stickJoystickPos, &pJoystick->stickCenter);
 	pJoystick->touchIndex = -1;
 	
+	pJoystick->deadZone = deadZone;
 	pJoystick->stickMode = stickMode;
 	pJoystick->stickRadius = radius;
 	pJoystick->stickRadiusBuffer = radiusBuffer;
 	pJoystick->minValue = minValue;
+	
+	pJoystick->value.x = 0.0f;
+	pJoystick->value.y = 0.0f;
 	
 	++numJoysticks;
 	
@@ -314,9 +318,7 @@ void GamePadJoystick::Update(const vec2* pTouchPos)
             
             distX = fabsf(distX);
             distY = fabsf(distY);
-            
-            const f32 deadZone = deadZone;
-            
+
             if(distX > deadZone)
             {
                 distX = 1.0f;
@@ -352,9 +354,7 @@ void GamePadJoystick::Update(const vec2* pTouchPos)
             if(distMag > 0.0f)
             {
                 distMag = MinF(distMag/stickRadius,1.0f);
-                
-                const f32 deadZone = deadZone;
-                
+
                 const f32 oneMinDeadZone = 1.0f-deadZone;
                 
                 if(distMag < deadZone)
@@ -389,7 +389,6 @@ void GamePadJoystick::Update(const vec2* pTouchPos)
             distX = MinF(fabsf(distX),1.0f);
             distY = MinF(fabsf(distY),1.0f);
             
-            const f32 deadZone = deadZone;
             const f32 oneMinDeadZone = 1.0f-deadZone;
             
             if(distX < deadZone)
