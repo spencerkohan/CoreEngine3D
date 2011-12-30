@@ -16,7 +16,15 @@
 #import "TouchInputIOS.h"
 #endif
 
+#if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 #include "CoreInput_DeviceInputState.h"
+#endif
+
+#if defined (PLATFORM_OSX) || defined (PLATFORM_WIN)
+#include "CoreInput_MouseState.h"
+#endif
+
+
 
 #include "CoreUI_Button.h"
 
@@ -36,6 +44,9 @@ public:
 	TouchInputIOS* m_pTouchInput;
 #endif
 
+#if defined (PLATFORM_OSX) || defined(PLATFORM_WIN)
+	MouseInputState m_mouseState;
+#endif
 	CoreUI_Button* AddUIButton(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32));
 	void UpdateButtons(TouchState touchState, vec2 *pTouchPos);
 	void ClearAllButtons();

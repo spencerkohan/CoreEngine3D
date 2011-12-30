@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		2328343114AD34BF00BEBBD0 /* CoreInput_GamePad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */; };
 		2328343214AD34BF00BEBBD0 /* CoreInput_GamePad.h in Headers */ = {isa = PBXBuildFile; fileRef = 2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */; };
-		23629F6914AA679500DCC97F /* ArtResources in Resources */ = {isa = PBXBuildFile; fileRef = 23629F6814AA679500DCC97F /* ArtResources */; };
-		23629F7014AA67D300DCC97F /* Shaders in Resources */ = {isa = PBXBuildFile; fileRef = 23629F6F14AA67D300DCC97F /* Shaders */; };
 		23629FBE14AB17A700DCC97F /* AnimationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23629FBA14AB17A300DCC97F /* AnimationController.cpp */; };
 		23629FBF14AB17A700DCC97F /* AnimationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 23629FBB14AB17A500DCC97F /* AnimationController.h */; };
 		23629FC014AB17A700DCC97F /* SpriteSheetAnimator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */; };
@@ -156,8 +154,6 @@
 /* Begin PBXFileReference section */
 		2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_GamePad.cpp; sourceTree = "<group>"; };
 		2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_GamePad.h; sourceTree = "<group>"; };
-		23629F6814AA679500DCC97F /* ArtResources */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ArtResources; path = "../Crow-Regime/ArtResources"; sourceTree = "<group>"; };
-		23629F6F14AA67D300DCC97F /* Shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Shaders; path = Engine/Shaders; sourceTree = "<group>"; };
 		23629FBA14AB17A300DCC97F /* AnimationController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationController.cpp; sourceTree = "<group>"; };
 		23629FBB14AB17A500DCC97F /* AnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationController.h; sourceTree = "<group>"; };
 		23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteSheetAnimator.cpp; sourceTree = "<group>"; };
@@ -315,8 +311,6 @@
 		DDA6F309149C19E10035A1BF = {
 			isa = PBXGroup;
 			children = (
-				23629F6814AA679500DCC97F /* ArtResources */,
-				23629F6F14AA67D300DCC97F /* Shaders */,
 				DDA6F498149C1A920035A1BF /* Engine */,
 				DDA6F319149C19E10035A1BF /* CoreEngine3D(iOS) */,
 				DDA6F315149C19E10035A1BF /* Products */,
@@ -693,8 +687,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				23629F6914AA679500DCC97F /* ArtResources in Resources */,
-				23629F7014AA67D300DCC97F /* Shaders in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
