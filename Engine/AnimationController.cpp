@@ -95,7 +95,7 @@ void AnimationPlayer::Update(f32 timeElapsed)
 	
 	m_currFrame += timeElapsed*(f32)m_pCurrAnim->FPS;
 	
-	if(m_currFrame > m_pCurrAnim->endFrame)
+	if(m_currFrame > (m_pCurrAnim->endFrame+1))
 	{
 		if(m_pCurrAnim->isLooping)
 		{
