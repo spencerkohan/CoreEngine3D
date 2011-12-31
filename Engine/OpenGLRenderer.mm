@@ -1192,7 +1192,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			
 			--m_numRenderableGeom3Ds;
 			
-			printf("    Deleted a renderable, %d left.\n",m_numRenderableGeom3Ds);
+			//printf("    Deleted a renderable, %d left.\n",m_numRenderableGeom3Ds);
 			
 			m_renderableObject3DsNeedSorting = true;
 		}
@@ -2106,7 +2106,7 @@ void OpenGLRenderer::AddRenderableObject3DToList(RenderableObject3D* pRenderable
 			
 			m_renderableObject3DsNeedSorting = true;
 			
-			printf("Num renderables: %d\n",m_numRenderableGeom3Ds);
+			//printf("Num renderables: %d\n",m_numRenderableGeom3Ds);
 		}
 		else
 		{

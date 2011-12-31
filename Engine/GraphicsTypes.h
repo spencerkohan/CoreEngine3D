@@ -24,7 +24,7 @@
 #include "RenderLayer.h"
 #include "RenderFlags.h"
 #include "ViewFlags.h"
-#include "PVRTModelPOD.h"
+#include "PowerVR/PVRTModelPOD.h"
 
 #define MAX_SHARED_CONST_UNIFORM_VALUES 4
 #define MAX_SHARED_UNIFORM_VALUES 8

@@ -169,11 +169,19 @@ void Game::UpdateBreakables(f32 timeElapsed)
         //Kill off old breakables
         if(pCurrBreakable->lifeTimer < 0.0f)
         {
+			Breakable* pLastBreakable = &m_updatingBreakables[m_numBreakables-1];
+			
 			if(m_numBreakables > 1)
 			{
-				GLRENDERER->RemoveRenderableGeometry3DFromList(&m_updatingBreakables[m_numBreakables-1].renderable.geom);
-				m_updatingBreakables[i] = m_updatingBreakables[m_numBreakables-1];
+				*pCurrBreakable = *pLastBreakable;
+				
+				RenderableObject3D* pRenderable = &pCurrBreakable->renderable;
+				pRenderable->geom.pWorldMat = pRenderable->worldMat;
+				pRenderable->geom.material.uniqueUniformValues[0] = (u8*)&pCurrBreakable->texcoordOffset;
+				pRenderable->geom.material.uniqueUniformValues[1] = (u8*)&pCurrBreakable->diffuseColor;
 			}
+			
+			GLRENDERER->RemoveRenderableGeometry3DFromList(&pLastBreakable->renderable.geom);
 			
 			//printf("  Deleted breakable...\n");
 			

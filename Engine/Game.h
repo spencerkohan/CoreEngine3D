@@ -30,10 +30,11 @@ class Game;
 extern Game* GAME;
 
 #define GAME_MAX_BUTTONS 16
-#define GAME_MAX_BREAKABLES 256
+
 
 #define GAME_MAX_ART_DESCRIPTIONS 128
 
+#define GAME_MAX_BREAKABLES 256
 
 struct BreakableSettings
 {
