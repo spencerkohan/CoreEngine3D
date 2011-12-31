@@ -13,6 +13,7 @@
 		23629FBF14AB17A700DCC97F /* AnimationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 23629FBB14AB17A500DCC97F /* AnimationController.h */; };
 		23629FC014AB17A700DCC97F /* SpriteSheetAnimator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */; };
 		23629FC114AB17A700DCC97F /* SpriteSheetAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 23629FBD14AB17A700DCC97F /* SpriteSheetAnimator.h */; };
+		237B3BBF14AF0D52009196A2 /* Square_Tiled_2.h in Headers */ = {isa = PBXBuildFile; fileRef = 237B3BBE14AF0D52009196A2 /* Square_Tiled_2.h */; };
 		23F4265E14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265D14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h */; };
 		23FCBE5C14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBE5B14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch */; };
 		DDA6F559149C1A930035A1BF /* ArrayUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F49B149C1A920035A1BF /* ArrayUtil.cpp */; };
@@ -36,16 +37,9 @@
 		DDA6F56B149C1A930035A1BF /* matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4AD149C1A920035A1BF /* matrix.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F56C149C1A930035A1BF /* matrix.mm in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F4AE149C1A920035A1BF /* matrix.mm */; };
 		DDA6F56D149C1A930035A1BF /* fullscreen_model.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B0149C1A920035A1BF /* fullscreen_model.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DDA6F56F149C1A930035A1BF /* plane_XZ_3000x3000.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B2149C1A920035A1BF /* plane_XZ_3000x3000.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DDA6F570149C1A930035A1BF /* skybox.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B3149C1A920035A1BF /* skybox.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F571149C1A930035A1BF /* square1x1.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B4149C1A920035A1BF /* square1x1.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DDA6F572149C1A930035A1BF /* Square_Anim_1024x1024.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B5149C1A920035A1BF /* Square_Anim_1024x1024.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DDA6F573149C1A930035A1BF /* Square_Anim_1024x512.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B6149C1A920035A1BF /* Square_Anim_1024x512.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DDA6F574149C1A930035A1BF /* Square_Anim_10x10.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B7149C1A920035A1BF /* Square_Anim_10x10.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DDA6F575149C1A930035A1BF /* Square_Anim_256x64.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B8149C1A920035A1BF /* Square_Anim_256x64.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F576149C1A930035A1BF /* Square_Tiled_16.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B9149C1A920035A1BF /* Square_Tiled_16.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F577149C1A930035A1BF /* Square_Tiled_8.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4BA149C1A920035A1BF /* Square_Tiled_8.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DDA6F578149C1A930035A1BF /* square_tophalf.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4BB149C1A920035A1BF /* square_tophalf.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F57D149C1A930035A1BF /* OpenGLRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4C0149C1A920035A1BF /* OpenGLRenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F57E149C1A930035A1BF /* OpenGLRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F4C1149C1A920035A1BF /* OpenGLRenderer.mm */; };
 		DDA6F57F149C1A930035A1BF /* Physics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F4C2149C1A920035A1BF /* Physics.cpp */; };
@@ -158,6 +152,7 @@
 		23629FBB14AB17A500DCC97F /* AnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationController.h; sourceTree = "<group>"; };
 		23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteSheetAnimator.cpp; sourceTree = "<group>"; };
 		23629FBD14AB17A700DCC97F /* SpriteSheetAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteSheetAnimator.h; sourceTree = "<group>"; };
+		237B3BBE14AF0D52009196A2 /* Square_Tiled_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_2.h; sourceTree = "<group>"; };
 		23F4265D14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEBUGMODEL_CircleXY.h; sourceTree = "<group>"; };
 		23FCBE5B14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreEngine3D-Prefix.pch"; path = "CoreEngine3D(iOS)/CoreEngine3D-Prefix.pch"; sourceTree = SOURCE_ROOT; };
 		DDA6F314149C19E10035A1BF /* libCoreEngine3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libCoreEngine3D.a; path = "libCoreEngine3D(iOS).a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -182,16 +177,9 @@
 		DDA6F4AD149C1A920035A1BF /* matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matrix.h; sourceTree = "<group>"; };
 		DDA6F4AE149C1A920035A1BF /* matrix.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = matrix.mm; sourceTree = "<group>"; };
 		DDA6F4B0149C1A920035A1BF /* fullscreen_model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fullscreen_model.h; sourceTree = "<group>"; };
-		DDA6F4B2149C1A920035A1BF /* plane_XZ_3000x3000.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = plane_XZ_3000x3000.h; sourceTree = "<group>"; };
-		DDA6F4B3149C1A920035A1BF /* skybox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = skybox.h; sourceTree = "<group>"; };
 		DDA6F4B4149C1A920035A1BF /* square1x1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = square1x1.h; sourceTree = "<group>"; };
-		DDA6F4B5149C1A920035A1BF /* Square_Anim_1024x1024.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Anim_1024x1024.h; sourceTree = "<group>"; };
-		DDA6F4B6149C1A920035A1BF /* Square_Anim_1024x512.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Anim_1024x512.h; sourceTree = "<group>"; };
-		DDA6F4B7149C1A920035A1BF /* Square_Anim_10x10.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Anim_10x10.h; sourceTree = "<group>"; };
-		DDA6F4B8149C1A920035A1BF /* Square_Anim_256x64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Anim_256x64.h; sourceTree = "<group>"; };
 		DDA6F4B9149C1A920035A1BF /* Square_Tiled_16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_16.h; sourceTree = "<group>"; };
 		DDA6F4BA149C1A920035A1BF /* Square_Tiled_8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_8.h; sourceTree = "<group>"; };
-		DDA6F4BB149C1A920035A1BF /* square_tophalf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = square_tophalf.h; sourceTree = "<group>"; };
 		DDA6F4C0149C1A920035A1BF /* OpenGLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLRenderer.h; sourceTree = "<group>"; };
 		DDA6F4C1149C1A920035A1BF /* OpenGLRenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLRenderer.mm; sourceTree = "<group>"; };
 		DDA6F4C2149C1A920035A1BF /* Physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Physics.cpp; sourceTree = "<group>"; };
@@ -405,17 +393,11 @@
 		DDA6F4AF149C1A920035A1BF /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				237B3BBE14AF0D52009196A2 /* Square_Tiled_2.h */,
 				DDA6F4B0149C1A920035A1BF /* fullscreen_model.h */,
-				DDA6F4B2149C1A920035A1BF /* plane_XZ_3000x3000.h */,
-				DDA6F4B3149C1A920035A1BF /* skybox.h */,
 				DDA6F4B4149C1A920035A1BF /* square1x1.h */,
-				DDA6F4B5149C1A920035A1BF /* Square_Anim_1024x1024.h */,
-				DDA6F4B6149C1A920035A1BF /* Square_Anim_1024x512.h */,
-				DDA6F4B7149C1A920035A1BF /* Square_Anim_10x10.h */,
-				DDA6F4B8149C1A920035A1BF /* Square_Anim_256x64.h */,
 				DDA6F4B9149C1A920035A1BF /* Square_Tiled_16.h */,
 				DDA6F4BA149C1A920035A1BF /* Square_Tiled_8.h */,
-				DDA6F4BB149C1A920035A1BF /* square_tophalf.h */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -565,16 +547,9 @@
 				DDA6F56A149C1A930035A1BF /* MathUtil.h in Headers */,
 				DDA6F56B149C1A930035A1BF /* matrix.h in Headers */,
 				DDA6F56D149C1A930035A1BF /* fullscreen_model.h in Headers */,
-				DDA6F56F149C1A930035A1BF /* plane_XZ_3000x3000.h in Headers */,
-				DDA6F570149C1A930035A1BF /* skybox.h in Headers */,
 				DDA6F571149C1A930035A1BF /* square1x1.h in Headers */,
-				DDA6F572149C1A930035A1BF /* Square_Anim_1024x1024.h in Headers */,
-				DDA6F573149C1A930035A1BF /* Square_Anim_1024x512.h in Headers */,
-				DDA6F574149C1A930035A1BF /* Square_Anim_10x10.h in Headers */,
-				DDA6F575149C1A930035A1BF /* Square_Anim_256x64.h in Headers */,
 				DDA6F576149C1A930035A1BF /* Square_Tiled_16.h in Headers */,
 				DDA6F577149C1A930035A1BF /* Square_Tiled_8.h in Headers */,
-				DDA6F578149C1A930035A1BF /* square_tophalf.h in Headers */,
 				DDA6F57D149C1A930035A1BF /* OpenGLRenderer.h in Headers */,
 				DDA6F580149C1A930035A1BF /* Physics.h in Headers */,
 				DDA6F581149C1A930035A1BF /* PhysicsTypes.h in Headers */,
@@ -633,6 +608,7 @@
 				23629FC114AB17A700DCC97F /* SpriteSheetAnimator.h in Headers */,
 				23F4265E14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h in Headers */,
 				2328343214AD34BF00BEBBD0 /* CoreInput_GamePad.h in Headers */,
+				237B3BBF14AF0D52009196A2 /* Square_Tiled_2.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

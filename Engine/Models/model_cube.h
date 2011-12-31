@@ -38,7 +38,7 @@ static PrimitiveData g_Cube_PrimitiveArray[g_Cube_numberOfPrimitives]={
 	{GL_TRIANGLE_STRIP,(u8*)g_Cube_VertexData,NULL,g_Cube_numberOfVertices,sizeof(g_Cube_VertexData),0,0,0},
 };
 
-static AttributeData g_Cube_AttributesArray[g_Square1x1_numberOfAttributes]=
+static AttributeData g_Cube_AttributesArray[g_Cube_numberOfAttributes]=
 {
 	{ATTRIB_VERTEX,GL_FLOAT,3,0},
 };

@@ -20,6 +20,7 @@ typedef enum
     MT_TextureAndDiffuseColor,
     MT_TextureAndDiffuseColorDiscard,
 	MT_TextureAndFogColorDiscard,
+	MT_TextureAndDiffuseColorWithTexcoordOffset,
     MT_TextureAndDiffuseColorWithTexcoordOffsetDiscard,
 	MT_BlockColor,
 	MT_FontTest,

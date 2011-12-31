@@ -19,7 +19,7 @@
 #include "stddef.h" //for NULL -_-
 
 #include "square1x1.h"
-#include "Square_Anim_10x10.h"
 #include "fullscreen_model.h"
 #include "Square_Tiled_16.h"
 #include "Square_Tiled_8.h"
+#include "Square_Tiled_2.h"

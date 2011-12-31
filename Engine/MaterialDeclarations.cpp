@@ -21,6 +21,7 @@ const char* g_MaterialNames[NumRenderMaterials] =
     "MT_TextureAndDiffuseColor",
     "MT_TextureAndDiffuseColorDiscard",
 	"MT_TextureAndFogColorDiscard",
+	"MT_TextureAndDiffuseColorWithTexcoordOffset",
     "MT_TextureAndDiffuseColorWithTexcoordOffsetDiscard",
 	"MT_BlockColor",
 	"MT_FontTest",

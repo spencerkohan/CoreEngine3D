@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		23310A3514AD91120001D4E3 /* CoreInput_MouseState.h in Headers */ = {isa = PBXBuildFile; fileRef = 23310A3414AD91120001D4E3 /* CoreInput_MouseState.h */; };
 		23310A3814AD91220001D4E3 /* CoreInput_MouseState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23310A3714AD91220001D4E3 /* CoreInput_MouseState.cpp */; };
+		237B3BBC14AF0BE3009196A2 /* Square_Tiled_2.h in Headers */ = {isa = PBXBuildFile; fileRef = 237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */; };
 		23F4265514AC4C4700F27DAB /* CoreInput_GamePad.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265414AC4C4700F27DAB /* CoreInput_GamePad.h */; };
 		23F4265714AC4C5F00F27DAB /* CoreInput_GamePad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23F4265614AC4C5F00F27DAB /* CoreInput_GamePad.cpp */; };
 		23F4266114AC5C0900F27DAB /* DEBUGMODEL_CircleXY.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265F14AC5C0900F27DAB /* DEBUGMODEL_CircleXY.h */; };
@@ -68,16 +69,9 @@
 		23FCBCEB14A1E09A00C5EA7C /* matrix.mm in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC0114A1E09A00C5EA7C /* matrix.mm */; };
 		23FCBCEC14A1E09A00C5EA7C /* fullscreen_model.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0314A1E09A00C5EA7C /* fullscreen_model.h */; };
 		23FCBCED14A1E09A00C5EA7C /* model_cube.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0414A1E09A00C5EA7C /* model_cube.h */; };
-		23FCBCEE14A1E09A00C5EA7C /* plane_XZ_3000x3000.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0514A1E09A00C5EA7C /* plane_XZ_3000x3000.h */; };
-		23FCBCEF14A1E09A00C5EA7C /* skybox.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0614A1E09A00C5EA7C /* skybox.h */; };
 		23FCBCF014A1E09A00C5EA7C /* square1x1.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0714A1E09A00C5EA7C /* square1x1.h */; };
-		23FCBCF114A1E09A00C5EA7C /* Square_Anim_1024x1024.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0814A1E09A00C5EA7C /* Square_Anim_1024x1024.h */; };
-		23FCBCF214A1E09A00C5EA7C /* Square_Anim_1024x512.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0914A1E09A00C5EA7C /* Square_Anim_1024x512.h */; };
-		23FCBCF314A1E09A00C5EA7C /* Square_Anim_10x10.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0A14A1E09A00C5EA7C /* Square_Anim_10x10.h */; };
-		23FCBCF414A1E09A00C5EA7C /* Square_Anim_256x64.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0B14A1E09A00C5EA7C /* Square_Anim_256x64.h */; };
 		23FCBCF514A1E09A00C5EA7C /* Square_Tiled_16.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0C14A1E09A00C5EA7C /* Square_Tiled_16.h */; };
 		23FCBCF614A1E09A00C5EA7C /* Square_Tiled_8.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0D14A1E09A00C5EA7C /* Square_Tiled_8.h */; };
-		23FCBCF714A1E09A00C5EA7C /* square_tophalf.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0E14A1E09A00C5EA7C /* square_tophalf.h */; };
 		23FCBCFC14A1E09A00C5EA7C /* OpenGLRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC1314A1E09A00C5EA7C /* OpenGLRenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBCFD14A1E09A00C5EA7C /* OpenGLRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC1414A1E09A00C5EA7C /* OpenGLRenderer.mm */; };
 		23FCBCFE14A1E09A00C5EA7C /* Physics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC1614A1E09A00C5EA7C /* Physics.cpp */; };
@@ -157,6 +151,7 @@
 /* Begin PBXFileReference section */
 		23310A3414AD91120001D4E3 /* CoreInput_MouseState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_MouseState.h; sourceTree = "<group>"; };
 		23310A3714AD91220001D4E3 /* CoreInput_MouseState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_MouseState.cpp; sourceTree = "<group>"; };
+		237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_2.h; sourceTree = "<group>"; };
 		23F4265414AC4C4700F27DAB /* CoreInput_GamePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_GamePad.h; sourceTree = "<group>"; };
 		23F4265614AC4C5F00F27DAB /* CoreInput_GamePad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_GamePad.cpp; sourceTree = "<group>"; };
 		23F4265F14AC5C0900F27DAB /* DEBUGMODEL_CircleXY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEBUGMODEL_CircleXY.h; sourceTree = "<group>"; };
@@ -221,16 +216,9 @@
 		23FCBC0114A1E09A00C5EA7C /* matrix.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = matrix.mm; sourceTree = "<group>"; };
 		23FCBC0314A1E09A00C5EA7C /* fullscreen_model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fullscreen_model.h; sourceTree = "<group>"; };
 		23FCBC0414A1E09A00C5EA7C /* model_cube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = model_cube.h; sourceTree = "<group>"; };
-		23FCBC0514A1E09A00C5EA7C /* plane_XZ_3000x3000.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = plane_XZ_3000x3000.h; sourceTree = "<group>"; };
-		23FCBC0614A1E09A00C5EA7C /* skybox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = skybox.h; sourceTree = "<group>"; };
 		23FCBC0714A1E09A00C5EA7C /* square1x1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = square1x1.h; sourceTree = "<group>"; };
-		23FCBC0814A1E09A00C5EA7C /* Square_Anim_1024x1024.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Anim_1024x1024.h; sourceTree = "<group>"; };
-		23FCBC0914A1E09A00C5EA7C /* Square_Anim_1024x512.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Anim_1024x512.h; sourceTree = "<group>"; };
-		23FCBC0A14A1E09A00C5EA7C /* Square_Anim_10x10.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Anim_10x10.h; sourceTree = "<group>"; };
-		23FCBC0B14A1E09A00C5EA7C /* Square_Anim_256x64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Anim_256x64.h; sourceTree = "<group>"; };
 		23FCBC0C14A1E09A00C5EA7C /* Square_Tiled_16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_16.h; sourceTree = "<group>"; };
 		23FCBC0D14A1E09A00C5EA7C /* Square_Tiled_8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_8.h; sourceTree = "<group>"; };
-		23FCBC0E14A1E09A00C5EA7C /* square_tophalf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = square_tophalf.h; sourceTree = "<group>"; };
 		23FCBC1314A1E09A00C5EA7C /* OpenGLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLRenderer.h; sourceTree = "<group>"; };
 		23FCBC1414A1E09A00C5EA7C /* OpenGLRenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLRenderer.mm; sourceTree = "<group>"; };
 		23FCBC1614A1E09A00C5EA7C /* Physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Physics.cpp; sourceTree = "<group>"; };
@@ -469,16 +457,10 @@
 			children = (
 				23FCBC0314A1E09A00C5EA7C /* fullscreen_model.h */,
 				23FCBC0414A1E09A00C5EA7C /* model_cube.h */,
-				23FCBC0514A1E09A00C5EA7C /* plane_XZ_3000x3000.h */,
-				23FCBC0614A1E09A00C5EA7C /* skybox.h */,
 				23FCBC0714A1E09A00C5EA7C /* square1x1.h */,
-				23FCBC0814A1E09A00C5EA7C /* Square_Anim_1024x1024.h */,
-				23FCBC0914A1E09A00C5EA7C /* Square_Anim_1024x512.h */,
-				23FCBC0A14A1E09A00C5EA7C /* Square_Anim_10x10.h */,
-				23FCBC0B14A1E09A00C5EA7C /* Square_Anim_256x64.h */,
 				23FCBC0C14A1E09A00C5EA7C /* Square_Tiled_16.h */,
 				23FCBC0D14A1E09A00C5EA7C /* Square_Tiled_8.h */,
-				23FCBC0E14A1E09A00C5EA7C /* square_tophalf.h */,
+				237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -609,16 +591,9 @@
 				23FCBCEA14A1E09A00C5EA7C /* matrix.h in Headers */,
 				23FCBCEC14A1E09A00C5EA7C /* fullscreen_model.h in Headers */,
 				23FCBCED14A1E09A00C5EA7C /* model_cube.h in Headers */,
-				23FCBCEE14A1E09A00C5EA7C /* plane_XZ_3000x3000.h in Headers */,
-				23FCBCEF14A1E09A00C5EA7C /* skybox.h in Headers */,
 				23FCBCF014A1E09A00C5EA7C /* square1x1.h in Headers */,
-				23FCBCF114A1E09A00C5EA7C /* Square_Anim_1024x1024.h in Headers */,
-				23FCBCF214A1E09A00C5EA7C /* Square_Anim_1024x512.h in Headers */,
-				23FCBCF314A1E09A00C5EA7C /* Square_Anim_10x10.h in Headers */,
-				23FCBCF414A1E09A00C5EA7C /* Square_Anim_256x64.h in Headers */,
 				23FCBCF514A1E09A00C5EA7C /* Square_Tiled_16.h in Headers */,
 				23FCBCF614A1E09A00C5EA7C /* Square_Tiled_8.h in Headers */,
-				23FCBCF714A1E09A00C5EA7C /* square_tophalf.h in Headers */,
 				23FCBCFC14A1E09A00C5EA7C /* OpenGLRenderer.h in Headers */,
 				23FCBCFF14A1E09A00C5EA7C /* Physics.h in Headers */,
 				23FCBD0014A1E09A00C5EA7C /* PhysicsTypes.h in Headers */,
@@ -667,6 +642,7 @@
 				23F4266214AC5C0900F27DAB /* DEBUGMODEL_CircleXZ.h in Headers */,
 				23F4266614AC8A1E00F27DAB /* CoreInput_DeviceInputState.h in Headers */,
 				23310A3514AD91120001D4E3 /* CoreInput_MouseState.h in Headers */,
+				237B3BBC14AF0BE3009196A2 /* Square_Tiled_2.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

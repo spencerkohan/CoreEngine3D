@@ -1165,7 +1165,11 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 		RenderableGeometry3D* pCurrGeom = m_renderableUIList[i];
 		if(pCurrGeom->material.flags & RenderFlag_MarkedForRemoval)
 		{
-			m_renderableUIList[i] = m_renderableUIList[m_numRenderableUIObjects-1];
+			if(m_numRenderableUIObjects > 1)
+			{
+				m_renderableUIList[i] = m_renderableUIList[m_numRenderableUIObjects-1];
+			}
+			
 			--m_numRenderableUIObjects;
 			
 			m_renderableObject3DsNeedSorting = true;
@@ -1181,8 +1185,14 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 		RenderableGeometry3D* pCurrGeom = m_renderableGeometry3DList[i];
 		if(pCurrGeom->material.flags & RenderFlag_MarkedForRemoval)
 		{
-			m_renderableGeometry3DList[i] = m_renderableGeometry3DList[m_numRenderableGeom3Ds-1];
+			if(m_numRenderableGeom3Ds > 1)
+			{
+				m_renderableGeometry3DList[i] = m_renderableGeometry3DList[m_numRenderableGeom3Ds-1];
+			}
+			
 			--m_numRenderableGeom3Ds;
+			
+			printf("    Deleted a renderable, %d left.\n",m_numRenderableGeom3Ds);
 			
 			m_renderableObject3DsNeedSorting = true;
 		}
@@ -1197,7 +1207,11 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 		RenderableSceneObject3D* pCurrScene = m_scenes[i];
 		if(pCurrScene->markedForRemoval)
 		{
-			m_scenes[i] = m_scenes[m_numScenes-1];
+			if(m_numScenes > 1)
+			{
+				m_scenes[i] = m_scenes[m_numScenes-1];
+			}
+			
 			--m_numScenes;
 		}
 		else
@@ -2091,6 +2105,8 @@ void OpenGLRenderer::AddRenderableObject3DToList(RenderableObject3D* pRenderable
 			m_renderableGeometry3DList[m_numRenderableGeom3Ds++] = &pRenderable->geom;
 			
 			m_renderableObject3DsNeedSorting = true;
+			
+			printf("Num renderables: %d\n",m_numRenderableGeom3Ds);
 		}
 		else
 		{
@@ -2783,6 +2799,13 @@ void OpenGLRenderer::CreateMaterials()
 	{
 		AddUniform_Unique(MT_TextureAndDiffuseColorWithTexcoordOffsetDiscard,"texCoordOffset",Uniform_Vec2,1);
 		AddUniform_Unique(MT_TextureAndDiffuseColorWithTexcoordOffsetDiscard,"inputColor",Uniform_Vec4,1);
+	}
+	
+	//MT_TextureAndDiffuseColorWithTexcoordOffset
+	if(CreateShaderProgram(VSH_VertWithColorInputWithTexcoordOffset,PS_TextureAndDiffuseColor,attribs_VT,&g_Materials[MT_TextureAndDiffuseColorWithTexcoordOffset].shaderProgram))
+	{
+		AddUniform_Unique(MT_TextureAndDiffuseColorWithTexcoordOffset,"texCoordOffset",Uniform_Vec2,1);
+		AddUniform_Unique(MT_TextureAndDiffuseColorWithTexcoordOffset,"inputColor",Uniform_Vec4,1);
 	}
     
     //MT_TextureWithColor

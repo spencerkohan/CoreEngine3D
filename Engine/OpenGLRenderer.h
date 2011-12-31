@@ -37,6 +37,8 @@ extern OpenGLRenderer* GLRENDERER;
 
 #define DEBUG_DRAW 1
 
+
+
 #define GAUSSIAN_NUMSAMPLES 6
 #define MAX_TRAILS 64
 #define MAX_PARTICLES 512
@@ -54,7 +56,7 @@ extern OpenGLRenderer* GLRENDERER;
 #define DEBUGDRAW_MAXLINESEGMENTS 512
 #define DEBUGDRAW_MAXDEBUGOBJECTS 32
 
-#define MAX_RENDERABLE_3D_OBJECTS 2300
+#define MAX_RENDERABLE_3D_OBJECTS 2500
 #define MAX_RENDERABLE_UI_OBJECTS 64
 
 #define MAX_ANIMATED_PODS 16
@@ -79,7 +81,6 @@ enum DebugDrawMode
 };
 
 /**STRUCTS**/
-
 struct SinCosBucket
 {
 	f32 sinTheta;
@@ -196,6 +197,7 @@ public:
 	void ShakeScreen(f32 shakeAmount,f32 shakeSpeed, f32 shakeTime);
 	void LoadTexture(const char* fileName,ImageType imageType, GLuint* pGLTexture, GLuint filterMode, GLuint wrapModeU, GLuint wrapModeV, bool flipY = false);
 	GFX_Trail* CreateTrail(GFX_Trail** pCallbackTrail, vec3* pInitialPos, f32 timeToLive, const GFX_TrailSettings* pTrailSettings, u32 renderFlags);
+	
 	void DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, GLuint texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats);
 	void DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color);
 	void DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color1, const vec4* color2);
@@ -347,7 +349,7 @@ private:
 	u32 m_numDebugDrawObjects_saved[DebugDrawMode_Num];
 	char* m_pArtPath;
 	f32 m_identityMat[16];
-	vec3 m_lightPos;	
+	vec3 m_lightPos;
 };
 
 

@@ -24,21 +24,57 @@
 #include "CoreInput_MouseState.h"
 #endif
 
-
-
 #include "CoreUI_Button.h"
 
-#define GAME_MAX_BUTTONS 16
+class Game;
+extern Game* GAME;
 
+#define GAME_MAX_BUTTONS 16
+#define GAME_MAX_BREAKABLES 256
 
 #define GAME_MAX_ART_DESCRIPTIONS 128
+
+
+struct BreakableSettings
+{
+    f32 lifetime;
+    f32 gravity;
+    f32 bounceDamping;
+    f32 moveSpeedMin;
+    f32 moveSpeedMax;
+    f32 spinSpeedMin;
+    f32 spinSpeedMax;
+    bool doesBounce;
+};
+
+struct BreakableData
+{
+    const BreakableSettings* pSettings;
+    ItemArtDescription itemArt;
+    const char* breakSoundName;
+    f32 radius;
+    u8 scaleWithZ;
+};
+
+struct Breakable
+{
+    BreakableData* pBreakableData;
+    f32 spinSpeed;
+    f32 lifeTimer;
+    vec3 velocity;
+    vec4 diffuseColorStart;
+    vec4 diffuseColor;
+    RenderableObject3D renderable;
+    vec2 texcoordOffset;
+    f32 currSpinAngle;
+};
 
 
 class Game
 {
 public:
 	virtual void Init();
-	virtual void Update(f32 timeElapsed) = 0;
+	virtual void Update(f32 timeElapsed);
 	virtual void CleanUp() = 0;
 #if defined (PLATFORM_IOS)
 	TouchInputIOS* m_pTouchInput;
@@ -51,6 +87,8 @@ public:
 	void UpdateButtons(TouchState touchState, vec2 *pTouchPos);
 	void ClearAllButtons();
 	void AddItemArt(ItemArtDescription* pArtDescription); //Adds are to art list
+	void UpdateBreakables(f32 timeElapsed);
+	void SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec3* pDirection, u32 breakableIndex, const vec4* diffuseColor, RenderLayer renderLayer);
 	
 protected:
 	
@@ -73,6 +111,9 @@ private:
 	
 	CoreUI_Button m_ui_buttons[GAME_MAX_BUTTONS];
 	u32 m_ui_numButtons;
+	
+	Breakable m_updatingBreakables[GAME_MAX_BREAKABLES];
+	u32 m_numBreakables;
 };
 
 #endif
