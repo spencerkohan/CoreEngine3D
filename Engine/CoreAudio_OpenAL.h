@@ -9,15 +9,11 @@
 #ifndef CoreEngine3D_iOS__CoreAudio_OpenAL_h
 #define CoreEngine3D_iOS__CoreAudio_OpenAL_h
 
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
-
-#if defined (PLATFORM_IOS) || defined (PLATFORM_OSX)
-#include <AudioToolbox/AudioToolbox.h>
-#include <AudioToolbox/ExtendedAudioFile.h>
-#endif
+class CoreAudioOpenAL;
+extern CoreAudioOpenAL* OPENALAUDIO;
 
 #include "MathTypes.h"
+#include <OpenAL/alc.h>
 
 struct CoreAudioFileInfo
 {
@@ -27,26 +23,40 @@ struct CoreAudioFileInfo
 	s32 sampleRate;
 };
 
+struct ItemSoundDescription
+{
+    const char*		soundFileName;
+    u32			soundBufferID;
+};
+
 class CoreAudioOpenAL
 {
 public:
 	bool Init();
 	void CleanUp();
-	u32 CreateSoundBufferFromFile(const char* filename);
+	void CreateSoundBufferFromFile(const char* filename, u32* pSoundBufferID);
 	u32 CreateSoundSourceFromBuffer(u32 bufferID);
-	void DeleteBuffer(u32 soundBufferID);
-	void DeleteSoundSource(u32 soundSourceID);
+	void DeleteSoundBuffer(u32* soundBufferID);
+	void DeleteSoundSource(u32* soundSourceID);
+	void PlaySoundSource(u32 soundSourceID, f32 volume, f32 pitch, bool isLooping);
+	void PauseSoundSource(u32 soundSourceID);
+	void StopSoundSource(u32 soundSourceID);
+	void RewindSoundSource(u32 soundSourceID);
 	void SetSoundSourceIsLooping(u32 soundSourceID, bool isLooping);
 	void SetSoundSourcePitch(u32 soundSourceID, f32 pitch);
 	void SetSoundSourceVolume(u32 soundSourceID, f32 volume);
 	void SetSoundSourcePosition(u32 soundSourceID, const vec3* pPosition);
 	void SetSoundSourceDirection(u32 soundSourceID, const vec3* pDirection);
 	void SetSoundSourceVelocity(u32 soundSourceID, const vec3* pVelocity);
+	void SetListenerPosition(const vec3* pPosition);
+	void SetListenerVelocity(const vec3* pVelocity);
+	void SetListenerOrientation(const vec3* pAt, const vec3* pUp);
+	void SetListenerVolume(f32 volume);
 	
 private:
 	bool LoadSoundDataFromFile_APPLE(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo);
 	bool CheckForOpenALError();
-	
+	const char* GetPathToFile(const char* filename);
 	ALCcontext* m_context;
 	ALCdevice* m_device;
 };

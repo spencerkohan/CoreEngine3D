@@ -21,23 +21,23 @@
 	will not work properly in clip space.
 */
 
-attribute highp   vec3 in_position;
-attribute mediump vec3 in_normal;
-attribute mediump vec3 in_tangent;
-attribute mediump vec3 in_binormal;
-attribute mediump vec2 in_texcoord;
-attribute mediump vec4 in_boneindex;
-attribute mediump vec4 in_boneweight;
+attribute vec3 in_position;
+attribute vec3 in_normal;
+attribute vec3 in_tangent;
+attribute vec3 in_binormal;
+attribute vec2 in_texcoord;
+attribute vec4 in_boneindex;
+attribute vec4 in_boneweight;
 
 uniform bool	bUseDot3;
-uniform highp   mat4 worldViewProjMat;
-uniform mediump vec3 lightPos;
-uniform mediump	int	 BoneCount;
-uniform highp   mat4 BoneMatrixArray[8];
-uniform highp   mat3 BoneMatrixArrayIT[8];
+uniform mat4 worldViewProjMat;
+uniform vec3 lightPos;
+uniform int	 BoneCount;
+uniform mat4 BoneMatrixArray[8];
+uniform mat3 BoneMatrixArrayIT[8];
 
-varying mediump vec3 lightDir;
-varying mediump vec2 texcoord;
+varying vec3 lightDir;
+varying vec2 texcoord;
 
 void main()
 {
@@ -46,17 +46,17 @@ void main()
 		// On PowerVR SGX it is possible to index the components of a vector
 		// with the [] operator. However this can cause trouble with PC
 		// emulation on some hardware so we "rotate" the vectors instead.
-		mediump ivec4 boneIndex = ivec4(in_boneindex);
-		mediump vec4 boneWeights = in_boneweight;
+		ivec4 boneIndex = ivec4(in_boneindex);
+		vec4 boneWeights = in_boneweight;
 	
-		highp mat4 boneMatrix = BoneMatrixArray[boneIndex.x];
-		mediump mat3 normalMatrix = BoneMatrixArrayIT[boneIndex.x];
+		mat4 boneMatrix = BoneMatrixArray[boneIndex.x];
+		mat3 normalMatrix = BoneMatrixArrayIT[boneIndex.x];
 	
-		highp vec4 position = boneMatrix * vec4(in_position, 1.0) * boneWeights.x;
-		mediump vec3 worldNormal = normalMatrix * in_normal * boneWeights.x;
+		vec4 position = boneMatrix * vec4(in_position, 1.0) * boneWeights.x;
+		vec3 worldNormal = normalMatrix * in_normal * boneWeights.x;
 		
-		mediump vec3 worldTangent;
-		mediump vec3 worldBiNormal;
+		vec3 worldTangent;
+		vec3 worldBiNormal;
 		
 		if(bUseDot3)
 		{
@@ -64,7 +64,7 @@ void main()
 			worldBiNormal = normalMatrix * in_binormal * boneWeights.x;
 		}
 	
-		for (lowp int i = 1; i < 3; ++i)
+		for (int i = 1; i < 3; ++i)
 		{
 			if(i < BoneCount)
 			{
@@ -88,7 +88,7 @@ void main()
 		gl_Position = worldViewProjMat * position;
 		
 		// lighting
-		mediump vec3 TmpLightDir = normalize(lightPos - position.xyz);
+		vec3 TmpLightDir = normalize(lightPos - position.xyz);
 		
 		if(bUseDot3)
 		{

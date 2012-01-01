@@ -7,22 +7,35 @@
 //
 
 #include "CoreAudio_OpenAL.h"
+#include "MathUtil.h"
+
+CoreAudioOpenAL* OPENALAUDIO = NULL;
+
 #include "stddef.h" //for NULL -_-
+
+#include <OpenAL/al.h>
+
 
 #if defined (PLATFORM_OSX) || (defined PLATFORM_IOS)
 #include <Foundation/Foundation.h>
+#include <AudioToolbox/ExtendedAudioFile.h>
 #endif
+
 
 bool CoreAudioOpenAL::Init()
 {
+	OPENALAUDIO = this;
+
 	// Initialization
 	m_device = alcOpenDevice(NULL);
 	
 	if (m_device)
 	{
 		m_context = alcCreateContext(m_device,NULL);
+		CheckForOpenALError();
 		
 		alcMakeContextCurrent(m_context);
+		CheckForOpenALError();
 		
 		return true;
 	}
@@ -40,112 +53,146 @@ void CoreAudioOpenAL::CleanUp()
 	alcCloseDevice(m_device);
 }
 
+const char* CoreAudioOpenAL::GetPathToFile(const char* filename)
+{
+#if defined PLATFORM_OSX || defined PLATFORM_IOS
+	NSString* fileString = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
+	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
+	
+	return [fullPath UTF8String];
+#else
+	return filename;
+#endif
+}
 
 bool CoreAudioOpenAL::LoadSoundDataFromFile_APPLE(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo)
 {
-	//NOTE: this function is horrible
+	CFStringRef filenameStr = CFStringCreateWithCString( NULL, GetPathToFile(filename), kCFStringEncodingUTF8 );
+    CFURLRef url = CFURLCreateWithFileSystemPath( NULL, filenameStr, kCFURLPOSIXPathStyle, false );
+    CFRelease( filenameStr );
 	
-	NSString* fileString = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
+    AudioFileID audioFile;
+    OSStatus error = AudioFileOpenURL( url, kAudioFileReadPermission, kAudioFileWAVEType, &audioFile );
+    CFRelease( url );
 	
-	// get some audio data from a wave file
-	CFURLRef fileURL = (CFURLRef)[[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:fileString ofType:@""]] retain];
+    if ( error != noErr )
+    {
+        fprintf( stderr, "Error opening audio file. %d\n", error );
+        return false;
+    }
 	
-	if (!fileURL)
-	{
-		//NSLog(@"error loading sound file, file Not found");
-		//END_TIMER(@"file not found.");
-		return false;
-	}
+    AudioStreamBasicDescription basicDescription;
+    UInt32 propertySize = sizeof(basicDescription);
+    error = AudioFileGetProperty( audioFile, kAudioFilePropertyDataFormat, &propertySize, &basicDescription );
 	
-	UInt32		dataSize;
-	OSStatus err = noErr;
-	SInt64 theFileLengthInFrames = 0;
-	AudioStreamBasicDescription theFileFormat;
-	UInt32 thePropertySize = sizeof(theFileFormat);
-	ExtAudioFileRef extRef = NULL;
-	u8* theData = NULL;
-	AudioStreamBasicDescription theOutputFormat;
+    if ( error != noErr )
+    {
+        fprintf( stderr, "Error reading audio file basic description. %d\n", error );
+        AudioFileClose( audioFile );
+        return false;
+    }
 	
-	// Open a file with ExtAudioFileOpen()
-	err = ExtAudioFileOpenURL(fileURL, &extRef);
-	if(err)
-	{
-		//printf("MyGetOpenALAudioData: ExtAudioFileOpenURL FAILED, Error = %ld\n", err); 
-		goto Exit;
-	}
+    if ( basicDescription.mFormatID != kAudioFormatLinearPCM )
+    {
+        // Need PCM for Open AL. WAVs are (I believe) by definition PCM, so this check isn't necessary. It's just here
+        // in case I ever use this with another audio format.
+        fprintf( stderr, "Audio file is not linear-PCM. %d\n", basicDescription.mFormatID );
+        AudioFileClose( audioFile );
+        return false;
+    }
 	
-	// Get the audio data format
-	err = ExtAudioFileGetProperty(extRef, kExtAudioFileProperty_FileDataFormat, &thePropertySize, &theFileFormat);
-	if(err)
-	{
-		printf("MyGetOpenALAudioData: ExtAudioFileGetProperty(kExtAudioFileProperty_FileDataFormat) FAILED, Error = %ld\n", err); goto Exit;
-	}
-	if (theFileFormat.mChannelsPerFrame > 2)
-	{
-		printf("MyGetOpenALAudioData - Unsupported Format, channel count is greater than stereo\n");
-		goto Exit;
-	}
+    UInt64 audioDataByteCount = 0;
+    propertySize = sizeof(audioDataByteCount);
+    error = AudioFileGetProperty( audioFile, kAudioFilePropertyAudioDataByteCount, &propertySize, &audioDataByteCount );
+    if ( error != noErr )
+    {
+        fprintf( stderr, "Error reading audio file byte count. %d\n", error );
+        AudioFileClose( audioFile );
+        return false;
+    }
 	
-	// Set the client format to 16 bit signed integer (native-endian) data
-	// Maintain the channel count and sample rate of the original source format
-	theOutputFormat.mSampleRate = theFileFormat.mSampleRate;
-	theOutputFormat.mChannelsPerFrame = theFileFormat.mChannelsPerFrame;
+    Float64 estimatedDuration = 0;
+    propertySize = sizeof(estimatedDuration);
+    error = AudioFileGetProperty( audioFile, kAudioFilePropertyEstimatedDuration, &propertySize, &estimatedDuration );
+    if ( error != noErr )
+    {
+        fprintf( stderr, "Error reading estimated duration of audio file. %d\n", error );
+        AudioFileClose( audioFile );
+        return false;
+    }
 	
-	theOutputFormat.mFormatID = kAudioFormatLinearPCM;
-	theOutputFormat.mBytesPerPacket = 2 * theOutputFormat.mChannelsPerFrame;
-	theOutputFormat.mFramesPerPacket = 1;
-	theOutputFormat.mBytesPerFrame = 2 * theOutputFormat.mChannelsPerFrame;
-	theOutputFormat.mBitsPerChannel = 16;
-	theOutputFormat.mFormatFlags = kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
+    ALenum alFormat = 0;
 	
-	// Set the desired client (output) data format
-	err = ExtAudioFileSetProperty(extRef, kExtAudioFileProperty_ClientDataFormat, sizeof(theOutputFormat), &theOutputFormat);
-	if(err) { printf("MyGetOpenALAudioData: ExtAudioFileSetProperty(kExtAudioFileProperty_ClientDataFormat) FAILED, Error = %ld\n", err); goto Exit; }
-	
-	// Get the total frame count
-	thePropertySize = sizeof(theFileLengthInFrames);
-	err = ExtAudioFileGetProperty(extRef, kExtAudioFileProperty_FileLengthFrames, &thePropertySize, &theFileLengthInFrames);
-	if(err) { printf("MyGetOpenALAudioData: ExtAudioFileGetProperty(kExtAudioFileProperty_FileLengthFrames) FAILED, Error = %ld\n", err); goto Exit; }
-	
-	// Read all the data into memory
-	dataSize = theFileLengthInFrames * theOutputFormat.mBytesPerFrame;
-	theData = (u8*)malloc(dataSize);
-	if (theData)
-	{
-		AudioBufferList		theDataBuffer;
-		theDataBuffer.mNumberBuffers = 1;
-		theDataBuffer.mBuffers[0].mDataByteSize = dataSize;
-		theDataBuffer.mBuffers[0].mNumberChannels = theOutputFormat.mChannelsPerFrame;
-		theDataBuffer.mBuffers[0].mData = theData;
+    if ( basicDescription.mChannelsPerFrame == 1 )
+    {
+        if ( basicDescription.mBitsPerChannel == 8 )
+            alFormat = AL_FORMAT_MONO8;
+			else if ( basicDescription.mBitsPerChannel == 16 )
+				alFormat = AL_FORMAT_MONO16;
+				else
+				{
+					alFormat = AL_FORMAT_MONO16;
+					fprintf( stderr, "Expected 8 or 16 bits for the mono channel but got %d\n", basicDescription.mBitsPerChannel );
+					AudioFileClose( audioFile );
+					return false;
+				}
 		
-		// Read the data into an AudioBufferList
-		err = ExtAudioFileRead(extRef, (UInt32*)&theFileLengthInFrames, &theDataBuffer);
-		if(err == noErr)
-		{
-			// success
-			pOut_AudioFileInfo->dataSize = (ALsizei)dataSize;
-			pOut_AudioFileInfo->format = (theOutputFormat.mChannelsPerFrame > 1) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
-			pOut_AudioFileInfo->sampleRate = (ALsizei)theOutputFormat.mSampleRate;
-		}
-		else
-		{
-			// failure
-			free (theData);
-			theData = NULL; // make sure to return NULL
-			printf("MyGetOpenALAudioData: ExtAudioFileRead FAILED, Error = %ld\n", err); goto Exit;
-		}
-	}
+    }
+    else if ( basicDescription.mChannelsPerFrame == 2 )
+    {
+        if ( basicDescription.mBitsPerChannel == 8 )
+            alFormat = AL_FORMAT_STEREO8;
+			else if ( basicDescription.mBitsPerChannel == 16 )
+				alFormat = AL_FORMAT_STEREO16;
+				else
+				{
+					fprintf( stderr, "Expected 8 or 16 bits per channel but got %d\n", basicDescription.mBitsPerChannel );
+					AudioFileClose( audioFile );
+					return false;
+				}
+    }
+    else
+    {
+        fprintf( stderr, "Expected 1 or 2 channels in audio file but got %d\n", basicDescription.mChannelsPerFrame );
+        AudioFileClose( audioFile );
+        return false;
+    }
 	
-Exit:
-	// Dispose the ExtAudioFileRef, it is no longer needed
-	if (extRef) ExtAudioFileDispose(extRef);
+    UInt32 numBytesToRead = audioDataByteCount;
+    void* buffer = malloc( numBytesToRead );
 	
-	pOut_AudioFileInfo->data = theData;
+    if ( buffer == NULL )
+    {
+        fprintf( stderr, "Error allocating buffer for audio data of size %u\n", numBytesToRead );
+        return false;
+    }
 	
-	CFRelease(fileURL);
+    error = AudioFileReadBytes( audioFile, false, 0, &numBytesToRead, buffer );
+    AudioFileClose( audioFile );
 	
-	return true;
+    if ( error != noErr )
+    {
+        fprintf( stderr, "Error reading audio bytes. %d\n", error );
+        free(buffer);
+        return false;
+    }
+	
+    if ( numBytesToRead != audioDataByteCount )
+    {
+        fprintf( stderr, "Tried to read %lld bytes from the audio file but only got %d bytes\n", audioDataByteCount, numBytesToRead );
+        free(buffer);
+        return false;
+    }
+	
+    pOut_AudioFileInfo->sampleRate = basicDescription.mSampleRate;
+    pOut_AudioFileInfo->dataSize = audioDataByteCount;
+    pOut_AudioFileInfo->format = alFormat;
+    pOut_AudioFileInfo->data = (u8*)buffer;
+    //*estimatedDurationOut = estimatedDuration;
+	
+    return true;
 }
+
 
 bool CoreAudioOpenAL::CheckForOpenALError()
 {
@@ -194,6 +241,68 @@ bool CoreAudioOpenAL::CheckForOpenALError()
 	}
 }
 
+void CoreAudioOpenAL::SetListenerPosition(const vec3* pPosition)
+{
+	alListenerfv(AL_POSITION,(const ALfloat*)pPosition);
+	CheckForOpenALError();
+}
+
+
+void CoreAudioOpenAL::SetListenerVelocity(const vec3* pVelocity)
+{
+	alListenerfv(AL_VELOCITY,(const ALfloat*)pVelocity);
+	CheckForOpenALError();
+}
+
+
+void CoreAudioOpenAL::SetListenerOrientation(const vec3* pAt, const vec3* pUp)
+{
+	f32 orientVec[6];
+	CopyVec3((vec3*)&orientVec[0],pAt);
+	CopyVec3((vec3*)&orientVec[3],pUp);
+	
+	alListenerfv(AL_ORIENTATION,(const ALfloat*)orientVec);
+	CheckForOpenALError();
+}
+
+
+void CoreAudioOpenAL::SetListenerVolume(f32 volume)
+{
+	alListenerf(AL_GAIN,volume);
+	CheckForOpenALError();
+}
+
+
+void CoreAudioOpenAL::PlaySoundSource(u32 soundSourceID, f32 volume, f32 pitch, bool isLooping)
+{
+	SetSoundSourceIsLooping(soundSourceID, isLooping);
+	SetSoundSourcePitch(soundSourceID, pitch);
+	SetSoundSourceVolume(soundSourceID, volume);
+	
+	alSourcePlay(soundSourceID);
+	CheckForOpenALError();
+}
+
+
+void CoreAudioOpenAL::PauseSoundSource(u32 soundSourceID)
+{
+	alSourcePause(soundSourceID);
+	CheckForOpenALError();
+}
+
+
+void CoreAudioOpenAL::StopSoundSource(u32 soundSourceID)
+{
+	alSourceStop(soundSourceID);
+	CheckForOpenALError();
+}
+
+
+void CoreAudioOpenAL::RewindSoundSource(u32 soundSourceID)
+{
+	alSourceRewind(soundSourceID);
+	CheckForOpenALError();
+}
 
 u32 CoreAudioOpenAL::CreateSoundSourceFromBuffer(u32 bufferID)
 {
@@ -214,14 +323,16 @@ u32 CoreAudioOpenAL::CreateSoundSourceFromBuffer(u32 bufferID)
 	return soundSourceID;
 }
 
-void CoreAudioOpenAL::DeleteBuffer(u32 soundBufferID)
+void CoreAudioOpenAL::DeleteSoundBuffer(u32* soundBufferID)
 {
-	alDeleteBuffers(1, &soundBufferID);
+	alDeleteBuffers(1, soundBufferID);
+	*soundBufferID = 0;
 }
 
-void CoreAudioOpenAL::DeleteSoundSource(u32 soundSourceID)
+void CoreAudioOpenAL::DeleteSoundSource(u32* soundSourceID)
 {
-	alDeleteSources(1, &soundSourceID);
+	alDeleteSources(1, soundSourceID);
+	*soundSourceID = 0;
 }
 
 void CoreAudioOpenAL::SetSoundSourceIsLooping(u32 soundSourceID, bool isLooping)
@@ -255,23 +366,28 @@ void CoreAudioOpenAL::SetSoundSourceVelocity(u32 soundSourceID, const vec3* pVel
 	alSourcefv(soundSourceID, AL_VELOCITY, (ALfloat*)pVelocity);
 }
 
-u32 CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename)
+void CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoundBufferID)
 {
+	if (pSoundBufferID == NULL || *pSoundBufferID != 0)
+    {       
+        return;
+    }
+	
 	u32 soundBufferID;
 	alGenBuffers(1, &soundBufferID);
 	
 	if(CheckForOpenALError())
 	{
-		return 0;
+		return;
 	}
 	
 	CoreAudioFileInfo fileInfo;
 	LoadSoundDataFromFile_APPLE(filename, &fileInfo);
-
+	
 	if(CheckForOpenALError())
 	{
 		alDeleteBuffers(1, &soundBufferID);
-		return 0;
+		return;
 	}
 	
 	// Copy wav data into AL Buffer
@@ -280,8 +396,10 @@ u32 CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename)
 	if(CheckForOpenALError())
 	{
 		alDeleteBuffers(1, &soundBufferID);
-		return 0;
+		return;
 	}
+	
+	delete[] fileInfo.data;
 
-	return soundBufferID;
+	*pSoundBufferID = soundBufferID;
 }

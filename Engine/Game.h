@@ -26,6 +26,8 @@
 
 #include "CoreUI_Button.h"
 
+#include "CoreAudio_OpenAL.h"
+
 class Game;
 extern Game* GAME;
 
@@ -33,6 +35,7 @@ extern Game* GAME;
 
 
 #define GAME_MAX_ART_DESCRIPTIONS 128
+#define GAME_MAX_SOUND_DESCRIPTIONS 32
 
 #define GAME_MAX_BREAKABLES 256
 
@@ -76,7 +79,7 @@ class Game
 public:
 	virtual void Init();
 	virtual void Update(f32 timeElapsed);
-	virtual void CleanUp() = 0;
+	virtual void CleanUp();
 #if defined (PLATFORM_IOS)
 	TouchInputIOS* m_pTouchInput;
 #endif
@@ -87,22 +90,26 @@ public:
 	CoreUI_Button* AddUIButton(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32));
 	void UpdateButtons(TouchState touchState, vec2 *pTouchPos);
 	void ClearAllButtons();
-	void AddItemArt(ItemArtDescription* pArtDescription); //Adds are to art list
+	void AddItemArt(ItemArtDescription* pArtDescription);
+	void AddItemSound(ItemSoundDescription* pSoundDescription);
 	void UpdateBreakables(f32 timeElapsed);
 	void SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec3* pDirection, u32 breakableIndex, const vec4* diffuseColor, RenderLayer renderLayer);
 	
 protected:
 	
 	void LoadItemArt();	//Call to load all the art in the list
+	void LoadItemSounds();
 	void ClearItemArt();	//Call when you're going to load more art and some of it might be the same
+	void ClearItemSounds();
 	void DeleteAllItemArt();	//Call to delete all the art in the list regardless
-	
+	void DeleteAllItemSounds();
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState m_deviceInputState;
 #endif
 	
 private:
 	bool WillArtDescriptionBeLoaded(ItemArtDescription* pArtDesc);
+	bool WillSoundDescriptionBeLoaded(ItemSoundDescription* pArtDesc);
 	
 	ItemArtDescription* m_pLoadedArtDescriptions[GAME_MAX_ART_DESCRIPTIONS];
     u32 m_numLoadedArtDescriptions;
@@ -110,11 +117,18 @@ private:
     ItemArtDescription* m_pArtDescriptionsToLoadTexturesFor[GAME_MAX_ART_DESCRIPTIONS];
     u32 m_numArtDescriptionsToLoadTexturesFor;
 	
+	ItemSoundDescription* m_pLoadedSoundDescriptions[GAME_MAX_SOUND_DESCRIPTIONS];
+    u32 m_numLoadedSoundDescriptions;
+    
+    ItemSoundDescription* m_pSoundDescriptionsToLoadWavsFor[GAME_MAX_SOUND_DESCRIPTIONS];
+    u32 m_numSoundDescriptionsToLoadWavsFor;
+	
 	CoreUI_Button m_ui_buttons[GAME_MAX_BUTTONS];
 	u32 m_ui_numButtons;
 	
 	Breakable m_updatingBreakables[GAME_MAX_BREAKABLES];
 	u32 m_numBreakables;
+	CoreAudioOpenAL* m_pCoreAudioOpenAL;
 };
 
 #endif

@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		2328343114AD34BF00BEBBD0 /* CoreInput_GamePad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */; };
 		2328343214AD34BF00BEBBD0 /* CoreInput_GamePad.h in Headers */ = {isa = PBXBuildFile; fileRef = 2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */; };
-		2355541B14B01EBA00BF618F /* CoreAudio_OpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */; };
+		2355541B14B01EBA00BF618F /* CoreAudio_OpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2355541E14B01F0C00BF618F /* CoreAudio_OpenAL.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.mm */; };
 		23629FBE14AB17A700DCC97F /* AnimationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23629FBA14AB17A300DCC97F /* AnimationController.cpp */; };
 		23629FBF14AB17A700DCC97F /* AnimationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 23629FBB14AB17A500DCC97F /* AnimationController.h */; };

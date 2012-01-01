@@ -2,8 +2,8 @@ uniform sampler2D texture0;
 uniform sampler2D texture1;
 uniform bool bUseDot3;
 
-varying mediump vec2 texcoord;
-varying mediump vec3 lightDir;
+varying vec2 texcoord;
+varying vec3 lightDir;
 
 void main()
 {
