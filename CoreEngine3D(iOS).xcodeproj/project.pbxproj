@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2328343114AD34BF00BEBBD0 /* CoreInput_GamePad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */; };
 		2328343214AD34BF00BEBBD0 /* CoreInput_GamePad.h in Headers */ = {isa = PBXBuildFile; fileRef = 2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */; };
+		2355541B14B01EBA00BF618F /* CoreAudio_OpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */; };
+		2355541E14B01F0C00BF618F /* CoreAudio_OpenAL.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.mm */; };
 		23629FBE14AB17A700DCC97F /* AnimationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23629FBA14AB17A300DCC97F /* AnimationController.cpp */; };
 		23629FBF14AB17A700DCC97F /* AnimationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 23629FBB14AB17A500DCC97F /* AnimationController.h */; };
 		23629FC014AB17A700DCC97F /* SpriteSheetAnimator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */; };
@@ -148,6 +150,8 @@
 /* Begin PBXFileReference section */
 		2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_GamePad.cpp; sourceTree = "<group>"; };
 		2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_GamePad.h; sourceTree = "<group>"; };
+		2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAudio_OpenAL.h; sourceTree = "<group>"; };
+		2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CoreAudio_OpenAL.mm; sourceTree = "<group>"; };
 		23629FBA14AB17A300DCC97F /* AnimationController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationController.cpp; sourceTree = "<group>"; };
 		23629FBB14AB17A500DCC97F /* AnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationController.h; sourceTree = "<group>"; };
 		23629FBC14AB17A600DCC97F /* SpriteSheetAnimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteSheetAnimator.cpp; sourceTree = "<group>"; };
@@ -333,6 +337,8 @@
 		DDA6F498149C1A920035A1BF /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */,
+				2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.mm */,
 				2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */,
 				2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */,
 				23629FBA14AB17A300DCC97F /* AnimationController.cpp */,
@@ -609,6 +615,7 @@
 				23F4265E14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h in Headers */,
 				2328343214AD34BF00BEBBD0 /* CoreInput_GamePad.h in Headers */,
 				237B3BBF14AF0D52009196A2 /* Square_Tiled_2.h in Headers */,
+				2355541B14B01EBA00BF618F /* CoreAudio_OpenAL.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -735,6 +742,7 @@
 				23629FBE14AB17A700DCC97F /* AnimationController.cpp in Sources */,
 				23629FC014AB17A700DCC97F /* SpriteSheetAnimator.cpp in Sources */,
 				2328343114AD34BF00BEBBD0 /* CoreInput_GamePad.cpp in Sources */,
+				2355541E14B01F0C00BF618F /* CoreAudio_OpenAL.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

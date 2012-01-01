@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		23310A3514AD91120001D4E3 /* CoreInput_MouseState.h in Headers */ = {isa = PBXBuildFile; fileRef = 23310A3414AD91120001D4E3 /* CoreInput_MouseState.h */; };
 		23310A3814AD91220001D4E3 /* CoreInput_MouseState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23310A3714AD91220001D4E3 /* CoreInput_MouseState.cpp */; };
+		2355542114B044CA00BF618F /* CoreAudio_OpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 2355541F14B044CA00BF618F /* CoreAudio_OpenAL.h */; };
+		2355542214B044CA00BF618F /* CoreAudio_OpenAL.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2355542014B044CA00BF618F /* CoreAudio_OpenAL.mm */; };
 		237B3BBC14AF0BE3009196A2 /* Square_Tiled_2.h in Headers */ = {isa = PBXBuildFile; fileRef = 237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */; };
 		23F4265514AC4C4700F27DAB /* CoreInput_GamePad.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265414AC4C4700F27DAB /* CoreInput_GamePad.h */; };
 		23F4265714AC4C5F00F27DAB /* CoreInput_GamePad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23F4265614AC4C5F00F27DAB /* CoreInput_GamePad.cpp */; };
@@ -151,6 +153,8 @@
 /* Begin PBXFileReference section */
 		23310A3414AD91120001D4E3 /* CoreInput_MouseState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_MouseState.h; sourceTree = "<group>"; };
 		23310A3714AD91220001D4E3 /* CoreInput_MouseState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_MouseState.cpp; sourceTree = "<group>"; };
+		2355541F14B044CA00BF618F /* CoreAudio_OpenAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAudio_OpenAL.h; sourceTree = "<group>"; };
+		2355542014B044CA00BF618F /* CoreAudio_OpenAL.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CoreAudio_OpenAL.mm; sourceTree = "<group>"; };
 		237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_2.h; sourceTree = "<group>"; };
 		23F4265414AC4C4700F27DAB /* CoreInput_GamePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_GamePad.h; sourceTree = "<group>"; };
 		23F4265614AC4C5F00F27DAB /* CoreInput_GamePad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_GamePad.cpp; sourceTree = "<group>"; };
@@ -363,6 +367,8 @@
 		23FCBBCB14A1E09A00C5EA7C /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				2355541F14B044CA00BF618F /* CoreAudio_OpenAL.h */,
+				2355542014B044CA00BF618F /* CoreAudio_OpenAL.mm */,
 				23310A3414AD91120001D4E3 /* CoreInput_MouseState.h */,
 				23310A3714AD91220001D4E3 /* CoreInput_MouseState.cpp */,
 				23F4266314AC8A1D00F27DAB /* CoreInput_DeviceInputState.cpp */,
@@ -643,6 +649,7 @@
 				23F4266614AC8A1E00F27DAB /* CoreInput_DeviceInputState.h in Headers */,
 				23310A3514AD91120001D4E3 /* CoreInput_MouseState.h in Headers */,
 				237B3BBC14AF0BE3009196A2 /* Square_Tiled_2.h in Headers */,
+				2355542114B044CA00BF618F /* CoreAudio_OpenAL.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -759,6 +766,7 @@
 				23F4265714AC4C5F00F27DAB /* CoreInput_GamePad.cpp in Sources */,
 				23F4266514AC8A1E00F27DAB /* CoreInput_DeviceInputState.cpp in Sources */,
 				23310A3814AD91220001D4E3 /* CoreInput_MouseState.cpp in Sources */,
+				2355542214B044CA00BF618F /* CoreAudio_OpenAL.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
