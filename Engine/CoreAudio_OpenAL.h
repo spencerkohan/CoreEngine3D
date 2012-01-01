@@ -48,6 +48,7 @@ public:
 	void SetSoundSourcePosition(u32 soundSourceID, const vec3* pPosition);
 	void SetSoundSourceDirection(u32 soundSourceID, const vec3* pDirection);
 	void SetSoundSourceVelocity(u32 soundSourceID, const vec3* pVelocity);
+	bool GetSourceIsStopped(u32 soundSourceID);
 	void SetListenerPosition(const vec3* pPosition);
 	void SetListenerVelocity(const vec3* pVelocity);
 	void SetListenerOrientation(const vec3* pAt, const vec3* pUp);

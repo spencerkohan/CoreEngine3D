@@ -379,6 +379,14 @@ void CoreAudioOpenAL::SetSoundSourceVelocity(u32 soundSourceID, const vec3* pVel
 	alSourcefv(soundSourceID, AL_VELOCITY, (ALfloat*)pVelocity);
 }
 
+bool CoreAudioOpenAL::GetSourceIsStopped(u32 soundSourceID)
+{
+	s32 state;
+	alGetSourcei(soundSourceID,AL_SOURCE_STATE,&state);
+	
+	return state == AL_STOPPED;
+}
+
 void CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoundBufferID)
 {
 	if (pSoundBufferID == NULL || *pSoundBufferID != 0)
