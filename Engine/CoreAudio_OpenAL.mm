@@ -25,6 +25,8 @@ CoreAudioOpenAL* OPENALAUDIO = NULL;
 bool CoreAudioOpenAL::Init()
 {
 	OPENALAUDIO = this;
+	
+	m_maxSoundDistance = 1.0f;
 
 	// Initialization
 	m_device = alcOpenDevice(NULL);
@@ -41,6 +43,11 @@ bool CoreAudioOpenAL::Init()
 	}
 	
 	return false;
+}
+
+void CoreAudioOpenAL::SetMaxSoundDistance(f32 maxDistance)
+{
+	m_maxSoundDistance = maxDistance;
 }
 
 
@@ -315,6 +322,12 @@ u32 CoreAudioOpenAL::CreateSoundSourceFromBuffer(u32 bufferID)
 	}
 	
 	alSourcei(soundSourceID, AL_BUFFER, bufferID); 
+	if(CheckForOpenALError())
+	{
+		return 0;
+	}
+	
+	alSourcef(soundSourceID, AL_REFERENCE_DISTANCE, m_maxSoundDistance);
 	if(CheckForOpenALError())
 	{
 		return 0;

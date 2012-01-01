@@ -52,6 +52,7 @@ public:
 	void SetListenerVelocity(const vec3* pVelocity);
 	void SetListenerOrientation(const vec3* pAt, const vec3* pUp);
 	void SetListenerVolume(f32 volume);
+	void SetMaxSoundDistance(f32 maxDistance);
 	
 private:
 	bool LoadSoundDataFromFile_APPLE(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo);
@@ -59,6 +60,7 @@ private:
 	const char* GetPathToFile(const char* filename);
 	ALCcontext* m_context;
 	ALCdevice* m_device;
+	f32 m_maxSoundDistance;
 };
 
 #endif
