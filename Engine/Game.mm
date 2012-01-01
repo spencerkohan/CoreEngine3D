@@ -33,7 +33,9 @@ void Game::Init()
 	
 #if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
 	m_pAudioPlayer = nil;
-	
+#endif
+
+#if defined (PLATFORM_IOS)
 	AVAudioSession *session = [AVAudioSession sharedInstance];
 	
 	NSError* error;
