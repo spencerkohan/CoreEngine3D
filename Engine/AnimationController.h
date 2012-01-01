@@ -53,8 +53,9 @@ public:
 struct AnimationPlayer
 {
 public:
+	void Init(AnimationSet* pAnimSet);
 	void Update(f32 timeElapsed);
-	void PlayAnimation(u32 animID,u32 frameOffset);
+	void PlayAnimation(u32 animID,u32 frameOffset, f32 playSpeed);
 	bool GetAnimIsDone();
 	f32 GetCurrentFrame();
 	s32 GetCurrentAnimation();
@@ -62,6 +63,7 @@ public:
 	bool m_animIsDone;
 	AnimationSet* m_pAnimSet;
 	Animation* m_pCurrAnim;
+	f32 m_playSpeed;
 };
 
 
@@ -72,10 +74,6 @@ public:
 	void (*animEventCallback)(u32);
 	
 	AnimationSet* CreateAnimationSet();
-	AnimationPlayer* CreateAnimationPlayer(AnimationSet* pAnimSet);
-	
-	void DestroyAnimationPlayer(AnimationPlayer* pAnimPlayer);
-	void Update(f32 timeElapsed);
 
 private:
 	AnimationPlayer m_animPlayers[ANIMATION_MAX_PLAYERS];

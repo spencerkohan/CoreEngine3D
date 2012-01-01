@@ -50,7 +50,7 @@ Animation* AnimationSet::GetAnimationByID(s32 animID)
 
 //ANIMATION PLAYER
 
-void AnimationPlayer::PlayAnimation(u32 animID, u32 frameOffset)
+void AnimationPlayer::PlayAnimation(u32 animID, u32 frameOffset, f32 playSpeed)
 {
 	if(m_pAnimSet == NULL)
 	{
@@ -63,6 +63,8 @@ void AnimationPlayer::PlayAnimation(u32 animID, u32 frameOffset)
 	{
 		return;
 	}
+	
+	m_playSpeed = playSpeed;
 	
 	m_animIsDone = false;
 	
@@ -93,7 +95,7 @@ void AnimationPlayer::Update(f32 timeElapsed)
 		return;
 	}
 	
-	m_currFrame += timeElapsed*(f32)m_pCurrAnim->FPS;
+	m_currFrame += timeElapsed*(f32)m_pCurrAnim->FPS*m_playSpeed;
 	
 	if(m_currFrame > (m_pCurrAnim->endFrame+1))
 	{
@@ -103,7 +105,7 @@ void AnimationPlayer::Update(f32 timeElapsed)
 		}
 		else if(m_pCurrAnim->animID_playWhenFinished)
 		{
-			PlayAnimation(m_pCurrAnim->animID_playWhenFinished,0);
+			PlayAnimation(m_pCurrAnim->animID_playWhenFinished,0,m_playSpeed);
 		}
 		else
 		{
@@ -124,20 +126,13 @@ AnimationController::AnimationController()
 }
 
 
-AnimationPlayer* AnimationController::CreateAnimationPlayer(AnimationSet* pAnimSet)
+void AnimationPlayer::Init(AnimationSet* pAnimSet)
 {
-	if(m_numAnimPlayers == ANIMATION_MAX_PLAYERS)
-	{
-		return NULL;
-	}
-	
-	AnimationPlayer* pAnimPlayer = &m_animPlayers[m_numAnimPlayers];
-	pAnimPlayer->m_pAnimSet = pAnimSet;
-	
-	
-	++m_numAnimPlayers;
-	
-	return pAnimPlayer;
+	m_pAnimSet = pAnimSet;
+	m_pCurrAnim = NULL;
+	m_currFrame = 0.0f;
+	m_animIsDone = false;
+	m_playSpeed = 1.0f;
 }
 
 AnimationSet* AnimationController::CreateAnimationSet()
@@ -155,42 +150,3 @@ AnimationSet* AnimationController::CreateAnimationSet()
 	return pAnimSet;
 }
 
-
-void AnimationController::DestroyAnimationPlayer(AnimationPlayer* pAnimPlayer)
-{
-	if(m_numAnimPlayers == 0)
-	{
-		return;
-	}
-	
-	if(m_numAnimPlayers > 1)
-	{
-		u32 playerIndex = -1;
-		for(u32 i=0; i<m_numAnimPlayers; ++i)
-		{
-			AnimationPlayer* pCurrPlayer = &m_animPlayers[i];
-			if(pCurrPlayer == pAnimPlayer)
-			{
-				playerIndex = i;
-				break;
-			}
-		}
-		
-		if(playerIndex != -1)
-		{
-			m_animPlayers[playerIndex] = m_animPlayers[m_numAnimPlayers-1];
-		}
-		
-	}
-	
-	--m_numAnimPlayers;
-}
-
-
-void AnimationController::Update(f32 timeElapsed)
-{
-	for(u32 i=0; i<m_numAnimPlayers; ++i)
-	{
-		m_animPlayers[i].Update(timeElapsed);
-	}
-}
