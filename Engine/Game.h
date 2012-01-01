@@ -28,6 +28,10 @@
 
 #include "CoreAudio_OpenAL.h"
 
+#if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
+#include <AVFoundation/AVFoundation.h>
+#endif
+
 class Game;
 extern Game* GAME;
 
@@ -36,6 +40,7 @@ extern Game* GAME;
 
 #define GAME_MAX_ART_DESCRIPTIONS 128
 #define GAME_MAX_SOUND_DESCRIPTIONS 32
+#define GAME_MAX_SONGS_IN_PLAYLIST 16
 
 #define GAME_MAX_BREAKABLES 256
 
@@ -94,7 +99,9 @@ public:
 	void AddItemSound(ItemSoundDescription* pSoundDescription);
 	void UpdateBreakables(f32 timeElapsed);
 	void SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec3* pDirection, u32 breakableIndex, const vec4* diffuseColor, RenderLayer renderLayer);
-	
+	s32 AddSongToPlaylist(const char* songFilenameMP3);
+	void PlaySongByID(s32 songID, f32 volume, bool isLooping);
+	const char* GetPathToFile(const char* filename);
 protected:
 	
 	void LoadItemArt();	//Call to load all the art in the list
@@ -129,6 +136,14 @@ private:
 	Breakable m_updatingBreakables[GAME_MAX_BREAKABLES];
 	u32 m_numBreakables;
 	CoreAudioOpenAL* m_pCoreAudioOpenAL;
+
+	s32 m_currSongID;
+	char* m_songPlaylist[GAME_MAX_SONGS_IN_PLAYLIST];
+	u32 m_numSongsInPlaylist;
+	
+#if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
+	AVAudioPlayer* m_pAudioPlayer;
+#endif
 };
 
 #endif

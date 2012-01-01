@@ -21,12 +21,24 @@ void Game::Init()
 	m_ui_numButtons = 0;
 	m_numBreakables = 0;
 	
+	m_numSongsInPlaylist = 0;
+	m_currSongID = -1;
+	
 #if defined (PLATFORM_IOS)
 	m_pTouchInput = [[[TouchInputIOS alloc]init:&m_deviceInputState]retain];
 #endif
 	
 	m_pCoreAudioOpenAL = new CoreAudioOpenAL;
 	m_pCoreAudioOpenAL->Init();
+	
+#if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
+	m_pAudioPlayer = nil;
+	
+	AVAudioSession *session = [AVAudioSession sharedInstance];
+	
+	NSError* error;
+	[session setCategory:AVAudioSessionCategorySoloAmbient error:&error];
+#endif
 	
 	GAME = this;
 }
@@ -39,6 +51,65 @@ void Game::CleanUp()
 void Game::Update(f32 timeElapsed)
 {
 	UpdateBreakables(timeElapsed);
+}
+
+s32 Game::AddSongToPlaylist(const char* songFilenameMP3)
+{
+	const u32 songID = m_numSongsInPlaylist;
+	
+	m_songPlaylist[songID] = new char[strlen(songFilenameMP3+1)];
+	strcpy(m_songPlaylist[songID], songFilenameMP3);
+	
+	++m_numSongsInPlaylist;
+	
+	return songID;
+}
+
+
+const char* Game::GetPathToFile(const char* filename)
+{
+#if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
+	NSString* fileString = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
+	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
+	
+	return [fullPath UTF8String];
+#else
+	return filename;
+#endif
+}
+
+
+void Game::PlaySongByID(s32 songID, f32 volume, bool isLooping)
+{
+	if(songID >= m_numSongsInPlaylist)
+	{
+		return;
+	}
+	
+	if(m_currSongID == songID)
+	{
+		return;
+	}
+	
+#if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
+	[m_pAudioPlayer stop];
+	[m_pAudioPlayer release];
+	
+	NSString* fileString = [NSString stringWithCString:m_songPlaylist[songID] encoding:NSUTF8StringEncoding];
+	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
+	NSURL *soundURL = [NSURL fileURLWithPath:fullPath];
+	
+	//m_pAudioPlayer = CreateAudioPlayer(fullPath,@"",YES,1.0f);
+	NSError* error;
+	m_pAudioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:soundURL error:&error];
+	m_pAudioPlayer.volume = volume;
+	m_pAudioPlayer.numberOfLoops = isLooping?-1:0;
+	
+	[m_pAudioPlayer play];
+
+#endif
+	
+	m_currSongID = songID;
 }
 
 
