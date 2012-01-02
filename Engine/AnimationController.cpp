@@ -101,7 +101,7 @@ void AnimationPlayer::Update(f32 timeElapsed)
 	{
 		if(m_pCurrAnim->isLooping)
 		{
-			m_currFrame -= (m_pCurrAnim->endFrame-m_pCurrAnim->startFrame);
+			m_currFrame -= (m_pCurrAnim->endFrame-m_pCurrAnim->startFrame+1);
 		}
 		else if(m_pCurrAnim->animID_playWhenFinished)
 		{
