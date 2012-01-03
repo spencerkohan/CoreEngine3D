@@ -23,7 +23,7 @@ struct SpriteFrameInfo
 struct SpriteSheet
 {
 	u32 cellsPerRow;
-	u32 textureHandle;
+	u32* pTextureHandle;
 	u32 totalCells;
 };
 
@@ -31,7 +31,7 @@ class SpriteSheetAnimator
 {
 public:
 	SpriteSheetAnimator();
-	void SetSpriteSheet(u32 spriteSheetIndex, u32 textureHandle, u32 cellsPerRow);
+	void SetSpriteSheet(u32 spriteSheetIndex, u32* pTextureHandle, u32 cellsPerRow);
 	bool GetSpriteInfoForFrame(u32 frame, SpriteFrameInfo* pOut_SpriteFrameInfo);
 private:
 	SpriteSheet m_spriteSheets[SPRITESHEET_MAX_SHEETS];

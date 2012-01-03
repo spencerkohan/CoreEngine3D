@@ -50,7 +50,7 @@ bool SpriteSheetAnimator::GetSpriteInfoForFrame(u32 frame, SpriteFrameInfo* pOut
 	const f32 uIncrement = 1.0f/(f32)cellsPerRow;
 	const f32 vIncrement = 1.0f/(f32)cellsPerRow;
 	
-	pOut_SpriteFrameInfo->textureHandle = pSheet->textureHandle;
+	pOut_SpriteFrameInfo->textureHandle = *pSheet->pTextureHandle;
 	pOut_SpriteFrameInfo->cellsPerRow = cellsPerRow;
 	pOut_SpriteFrameInfo->textureOffset.x = uIncrement*(f32)cellX;
 	pOut_SpriteFrameInfo->textureOffset.y = vIncrement*(f32)cellY;
@@ -58,7 +58,7 @@ bool SpriteSheetAnimator::GetSpriteInfoForFrame(u32 frame, SpriteFrameInfo* pOut
 	return true;
 }
 
-void SpriteSheetAnimator::SetSpriteSheet(u32 spriteSheetIndex, u32 textureHandle, u32 cellsPerRow)
+void SpriteSheetAnimator::SetSpriteSheet(u32 spriteSheetIndex, u32* pTextureHandle, u32 cellsPerRow)
 {
 	if(spriteSheetIndex > SPRITESHEET_MAX_SHEETS-1)
 	{
@@ -67,6 +67,6 @@ void SpriteSheetAnimator::SetSpriteSheet(u32 spriteSheetIndex, u32 textureHandle
 	
 	SpriteSheet* pSheet = &m_spriteSheets[spriteSheetIndex];
 	pSheet->cellsPerRow = cellsPerRow;
-	pSheet->textureHandle = textureHandle;
+	pSheet->pTextureHandle = pTextureHandle;
 	pSheet->totalCells = cellsPerRow*cellsPerRow;
 }

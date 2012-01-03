@@ -60,7 +60,7 @@ extern OpenGLRenderer* GLRENDERER;
 #define MAX_RENDERABLE_UI_OBJECTS 64
 
 #define MAX_ANIMATED_PODS 16
-#define MAX_SCENES 64
+#define MAX_SCENES 128
 
 #define GAUSSIAN_STANDARDDEVIATION 0.9f
 
@@ -156,7 +156,7 @@ public:
 	void RenderEffects();
 	void SetClearColor(f32 r, f32 g, f32 b);
 	void SetGravityDir(const vec3* pNewGravityDir);
-	void SetSortRenderablesByZ(bool sortRenderablesByZ);
+	void SetSortRenderablesByZ(bool sortRenderablesByZ, RenderLayer layerStart, RenderLayer layerEnd);
 	void Render(f32 timeElapsed);
 	void DrawAnimatedPOD(AnimatedPOD* pAnimatedPod);
 	void DrawSceneObject(RenderableSceneObject3D* pScene);
@@ -191,8 +191,7 @@ public:
 	void ClearParticles();
 	void SetScreenFadeColor(vec3* screenFadeColor);
 	void ForceRenderablesNeedSorting();
-	void SortRenderablesWithMaterialByZ(RenderMaterial materialID);
-	void SortRenderablesInLayerRangeByZ(RenderLayer layerBegin, RenderLayer layerEnd);
+	
 	void FlashScreen(const vec3* pColor, f32 timeInSeconds);
 	void ShakeScreen(f32 shakeAmount,f32 shakeSpeed, f32 shakeTime);
 	void LoadTexture(const char* fileName,ImageType imageType, GLuint* pGLTexture, GLuint filterMode, GLuint wrapModeU, GLuint wrapModeV, bool flipY = false);
@@ -218,6 +217,8 @@ public:
 private:
 	
 	//private functions
+	void SortRenderablesWithMaterialByZ(RenderMaterial materialID);
+	void SortRenderablesInLayerRangeByZ(RenderLayer layerBegin, RenderLayer layerEnd);
 	void SetMaterial(RenderMaterial material);
 	void DeleteScene(RenderableScene3D* pScene);
 	void PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PostProcessDrawArea drawArea, GLuint* texture0, GLuint* texture1, GLuint* texture2);
@@ -350,6 +351,9 @@ private:
 	char* m_pArtPath;
 	f32 m_identityMat[16];
 	vec3 m_lightPos;
+	
+	RenderLayer m_sortRenderablesLayerStart;
+	RenderLayer m_sortRenderablesLayerEnd;
 };
 
 

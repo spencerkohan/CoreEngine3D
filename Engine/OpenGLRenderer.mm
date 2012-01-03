@@ -1117,9 +1117,11 @@ void OpenGLRenderer::SetGravityDir(const vec3* pNewGravityDir)
 }
 
 
-void OpenGLRenderer::SetSortRenderablesByZ(bool sortRenderablesByZ)
+void OpenGLRenderer::SetSortRenderablesByZ(bool sortRenderablesByZ, RenderLayer layerStart, RenderLayer layerEnd)
 {
 	m_sortRenderablesByZ = sortRenderablesByZ;
+	m_sortRenderablesLayerStart = layerStart;
+	m_sortRenderablesLayerEnd = layerEnd;
 }
 
 
@@ -1295,7 +1297,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
     
     if(m_sortRenderablesByZ)
     {
-        SortRenderablesInLayerRangeByZ(RenderLayer_Normal,RenderLayer_AlphaBlended1);
+        SortRenderablesInLayerRangeByZ(m_sortRenderablesLayerStart,m_sortRenderablesLayerEnd);
     }
 	
 	if (!paused)
@@ -5143,8 +5145,8 @@ s32 RenderableGeometry3DCompare_SortValue(const void* lhs, const void* rhs)
 
 s32 RenderableGeometry3DCompare_SortByZ(const void* lhs, const void* rhs)
 {
-	const vec3* pPosLHS = mat4f_GetPos(((RenderableObject3D*)lhs)->worldMat);
-	const vec3* pPosRHS = mat4f_GetPos(((RenderableObject3D*)rhs)->worldMat);
+	const vec3* pPosLHS = mat4f_GetPos(((RenderableGeometry3D*)lhs)->pWorldMat);
+	const vec3* pPosRHS = mat4f_GetPos(((RenderableGeometry3D*)rhs)->pWorldMat);
 	
 	return pPosLHS->z <= pPosRHS->z;
 }
@@ -5152,8 +5154,8 @@ s32 RenderableGeometry3DCompare_SortByZ(const void* lhs, const void* rhs)
 
 s32 RenderableGeometry3DCompare_SortByNegativeZ(const void* lhs, const void* rhs)
 {
-	const vec3* pPosLHS = mat4f_GetPos(((RenderableObject3D*)lhs)->worldMat);
-	const vec3* pPosRHS = mat4f_GetPos(((RenderableObject3D*)rhs)->worldMat);
+	const vec3* pPosLHS = mat4f_GetPos(((RenderableGeometry3D*)lhs)->pWorldMat);
+	const vec3* pPosRHS = mat4f_GetPos(((RenderableGeometry3D*)rhs)->pWorldMat);
 	
 	return pPosLHS->z > pPosRHS->z;
 }
