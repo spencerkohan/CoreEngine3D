@@ -23,7 +23,7 @@ class CoreObject
 {
 public:
 	s32 GetHandle();
-	void UpdateHandle();	//Call when the memory location changes
+	virtual void UpdateHandle();	//Call when the memory location changes
 protected:
 	virtual void Init();
 	virtual void Uninit();
