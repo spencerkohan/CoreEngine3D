@@ -471,7 +471,7 @@ void GamePad::Update()
 		TouchState touchState = m_pDeviceInputState->GetTouchState(i);
 		
 		vec2 posCurr;
-		m_pDeviceInputState->GetTouchPos(i,&posCurr);
+		m_pDeviceInputState->GetTouchPos_Curr(i,&posCurr);
 		
 		vec2 velocity;
         m_pDeviceInputState->GetTouchVelocity(i,&velocity);

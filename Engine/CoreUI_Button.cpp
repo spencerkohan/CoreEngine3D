@@ -14,67 +14,87 @@ void CoreUI_Button::SetActive(bool isActive)
 	m_isActive = isActive;
 }
 
-void CoreUI_Button::PressButton(TouchState touchState, vec2* pTouchPos)
+static const f32 g_CoreUIButton_DefaultPressedBrightness = 0.5f;
+
+void CoreUI_Button::PressButton(TouchState touchState, vec2* pBeginTouchPos, vec2* pCurrTouchPos)
 {
 	if(!m_isActive)
 	{
 		return;
 	}
 	
-	const f32 x = pTouchPos->x;
-	const f32 y = pTouchPos->y;
+	const f32 beginX = pBeginTouchPos->x;
+	const f32 beginY = pBeginTouchPos->y;
 	
 	
-	const bool touchIsInside =  x > m_position.x-m_halfWidth && x < m_position.x+m_halfWidth
-		&& y > m_position.y-m_halfHeight && y < m_position.y+m_halfHeight;
+	const bool touchBeginIsInside =  beginX > m_position.x-m_halfWidth && beginX < m_position.x+m_halfWidth
+		&& beginY > m_position.y-m_halfHeight && beginY < m_position.y+m_halfHeight;
 	
-	if(touchIsInside)
+	if(touchBeginIsInside)
 	{
-		switch(touchState)
+		const f32 currX = pCurrTouchPos->x;
+		const f32 currY = pCurrTouchPos->y;
+		
+		const bool touchCurrIsInside =  currX > m_position.x-m_halfWidth && currX < m_position.x+m_halfWidth
+		&& currY > m_position.y-m_halfHeight && currY < m_position.y+m_halfHeight;
+		
+		if(touchCurrIsInside)
 		{
-			case TouchState_Began:
+			switch(touchState)
 			{
-				m_buttonState = ButtonState_Pressed;
-				
-				break;
-			}
-			case TouchState_Moving:
-			{
-				m_buttonState = ButtonState_Pressed;
-				
-				break;
-			}
-			case TouchState_Ended:
-			{
-				if(m_buttonState == ButtonState_Pressed)
+				case TouchState_Moving:	
+				case TouchState_Began:
 				{
+					SetVec4(&m_diffuseColor,g_CoreUIButton_DefaultPressedBrightness,g_CoreUIButton_DefaultPressedBrightness,g_CoreUIButton_DefaultPressedBrightness,1.0f);
+					
+					m_buttonState = ButtonState_Pressed;
+					
+					break;
+				}
+				case TouchState_Ended:
+				{
+					if(m_buttonState == ButtonState_Pressed)
+					{
+						SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,1.0f);
+						
+						m_buttonState = ButtonState_Neutral;
+						
+						m_callback(m_value);					
+					}
+					
+					break;
+				}
+				case TouchState_Stationary:
+				{
+					m_buttonState = ButtonState_Pressed;
+					
+					break;
+				}
+				case TouchState_Cancelled:
+				{
+					SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,1.0f);
+					
 					m_buttonState = ButtonState_Neutral;
 					
-					m_callback(m_value);
+					break;
 				}
-				
-				break;
+				default:
+				{
+					break;
+				}
 			}
-			case TouchState_Stationary:
-			{
-				m_buttonState = ButtonState_Pressed;
-				
-				break;
-			}
-			case TouchState_Cancelled:
-			{
-				m_buttonState = ButtonState_Neutral;
-				
-				break;
-			}
-			default:
-			{
-				break;
-			}
+		}
+		else
+		{
+			SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,1.0f);
+			
+			m_buttonState = ButtonState_Neutral;
 		}
 	}
 	else
 	{
+		SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,1.0f);
+		
 		m_buttonState = ButtonState_Neutral;
 	}
 }
@@ -82,6 +102,8 @@ void CoreUI_Button::PressButton(TouchState touchState, vec2* pTouchPos)
 
 void CoreUI_Button::Init(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32))
 {
+	SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,1.0f);
+	
 	m_isActive = true;
 	
 	m_width = width;
@@ -167,7 +189,9 @@ void CoreUI_Button::Init(u32 width, u32 height, CoreUI_AttachSide attachSide, s3
 		}
 	}
 	
-	GLRENDERER->InitRenderableObject3D(&m_r3D_button, &g_Square1x1_modelData, MT_TextureOnlySimple, textureHandle, NULL, RenderLayer_UI, View_0, RenderFlagDefaults_2DTexture_NoAlpha);
+	GLRENDERER->InitRenderableObject3D(&m_r3D_button, &g_Square1x1_modelData, MT_TextureAndDiffuseColor, textureHandle, NULL, RenderLayer_UI, View_0, RenderFlagDefaults_2DTexture_NoAlpha);
+	
+	m_r3D_button.geom.material.uniqueUniformValues[0] = (u8*)&m_diffuseColor;
 	
 	GLRENDERER->AddRenderableObject3DToList(&m_r3D_button);
 

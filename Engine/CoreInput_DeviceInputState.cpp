@@ -31,8 +31,12 @@ void DeviceInputState::GetTouchVelocity(u32 touchIndex, vec2* out_velocity)
 	}
 }
 
+void DeviceInputState::GetTouchPos_Begin(u32 touchIndex, vec2* out_posCurr)
+{
+	CopyVec2(out_posCurr,&m_touchBeginPoints[touchIndex]);
+}
 
-void DeviceInputState::GetTouchPos(u32 touchIndex, vec2* out_posCurr)
+void DeviceInputState::GetTouchPos_Curr(u32 touchIndex, vec2* out_posCurr)
 {
 	CopyVec2(out_posCurr,&m_touchCurrentPoints[touchIndex]);
 }

@@ -38,7 +38,7 @@ struct CoreUI_Button
 {
 public:
 	void Init(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32));
-	void PressButton(TouchState touchState, vec2* pTouchPos);
+	void PressButton(TouchState touchState, vec2* pBeginTouchPos, vec2* pCurrTouchPo);
 	
 	void Show();
 	void Hide();
@@ -51,6 +51,7 @@ public:
 	u32 m_halfHeight;
 	
 	vec3 m_position;
+	vec4 m_diffuseColor;
 
 	ButtonState m_buttonState;
 	CoreUI_AttachSide m_attachSide;
@@ -58,8 +59,6 @@ public:
 	RenderableObject3D m_r3D_button;
 	
 	s32 m_value;
-	
-	
 	
 	void (*m_callback)(s32);
 	

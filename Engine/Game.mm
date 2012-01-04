@@ -42,12 +42,15 @@ void Game::Init()
 	[session setCategory:AVAudioSessionCategorySoloAmbient error:&error];
 #endif
 	
+	m_coreObjectManager = new CoreObjectManager;
+	
 	GAME = this;
 }
 
 void Game::CleanUp()
 {
 	delete m_pCoreAudioOpenAL;
+	delete m_coreObjectManager;
 }
 
 void Game::Update(f32 timeElapsed)
@@ -136,13 +139,13 @@ void Game::ClearAllButtons()
 }
 
 
-void Game::UpdateButtons(TouchState touchState, vec2 *pTouchPos)
+void Game::UpdateButtons(TouchState touchState, vec2 *pTouchPosBegin, vec2* pTouchPosCurr)
 {
 	for(u32 i=0; i<m_ui_numButtons; ++i)
 	{
 		if(touchState != TouchState_None)
 		{
-			m_ui_buttons[i].PressButton(touchState, pTouchPos);
+			m_ui_buttons[i].PressButton(touchState, pTouchPosBegin, pTouchPosCurr);
 		}
 	}
 }

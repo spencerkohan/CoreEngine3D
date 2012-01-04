@@ -26,7 +26,8 @@ typedef enum
 struct DeviceInputState
 {
 	void GetTouchVelocity(u32 touchIndex, vec2* out_velocity);
-	void GetTouchPos(u32 touchIndex,vec2* out_posCurr);
+	void GetTouchPos_Begin(u32 touchIndex, vec2* out_posCurr);
+	void GetTouchPos_Curr(u32 touchIndex, vec2* out_posCurr);
 	vec3* GetAccelerometerValue();
 	TouchState GetTouchState(u32 touchIndex);
 	

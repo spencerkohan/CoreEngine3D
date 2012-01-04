@@ -32,6 +32,8 @@
 #include <AVFoundation/AVFoundation.h>
 #endif
 
+#include "CoreObject_Manager.h"
+
 class Game;
 extern Game* GAME;
 
@@ -93,7 +95,7 @@ public:
 	MouseInputState m_mouseState;
 #endif
 	CoreUI_Button* AddUIButton(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32));
-	void UpdateButtons(TouchState touchState, vec2 *pTouchPos);
+	void UpdateButtons(TouchState touchState, vec2 *pTouchPosBegin, vec2* pTouchPosCurr);
 	void ClearAllButtons();
 	void AddItemArt(ItemArtDescription* pArtDescription);
 	void AddItemSound(ItemSoundDescription* pSoundDescription);
@@ -144,6 +146,8 @@ private:
 #if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
 	AVAudioPlayer* m_pAudioPlayer;
 #endif
+	
+	CoreObjectManager* m_coreObjectManager;
 };
 
 #endif
