@@ -14,6 +14,12 @@ s32 CoreObject::GetHandle()
 	return handle;
 }
 
+//Call when the memory location changes
+void CoreObject::UpdateHandle()
+{
+	COREOBJECTMANAGER->UpdateHandle(this);
+}
+
 void CoreObject::Init()
 {
 	COREOBJECTMANAGER->AddObject(this);

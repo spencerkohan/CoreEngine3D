@@ -10,19 +10,26 @@
 #define CoreEngine3D_iOS__CoreObject_h
 
 #include "MathTypes.h"
+class CoreObject;
 class CoreObjectManager;
+
+struct CoreObjectHandleObject
+{
+	CoreObject* pObject;
+	s32 handle;
+};
 
 class CoreObject
 {
 public:
 	s32 GetHandle();
+	void UpdateHandle();	//Call when the memory location changes
 protected:
 	virtual void Init();
 	virtual void Uninit();
 private:
-	s32 handle;
-	
-	friend CoreObjectManager;
+	u32 handle;
+	friend class CoreObjectManager;
 };
 
 #endif

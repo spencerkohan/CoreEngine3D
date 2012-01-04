@@ -26,9 +26,10 @@ public:
 	void RemoveObjectByHandle(s32 handle);
 	CoreObject* GetObjectByHandle(s32 handle);
 private:
+	void UpdateHandle(CoreObject* pCoreObject);
 	s32 GetUnusedHandle();
 	void FreeHandle(s32 handle);
-	CoreObject* m_objectArray[COREOBJECT_MAX_OBJECTS];
+	CoreObjectHandleObject m_objectArray[COREOBJECT_MAX_OBJECTS];
 	u32 m_numObjects;
 	
 	//Handles available for use
@@ -38,6 +39,8 @@ private:
 	//Handles that are currently being used
 	s32 m_usedHandles[COREOBJECT_MAX_OBJECTS];
 	u32 m_numUsedHandles;
+	
+	friend class CoreObject;
 };
 
 #endif
