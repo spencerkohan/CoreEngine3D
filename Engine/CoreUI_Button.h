@@ -56,7 +56,7 @@ public:
 	ButtonState m_buttonState;
 	CoreUI_AttachSide m_attachSide;
 	
-	RenderableObject3D m_r3D_button;
+	CoreObjectHandle m_handle_r3D_button;
 	
 	s32 m_value;
 	

@@ -56,6 +56,7 @@ public:
 	void Init(AnimationSet* pAnimSet);
 	void Update(f32 timeElapsed);
 	void PlayAnimation(u32 animID,u32 frameOffset, f32 playSpeed);
+	void SetSpeed(f32 speed);
 	bool GetAnimIsDone();
 	f32 GetCurrentFrame();
 	s32 GetCurrentAnimation();

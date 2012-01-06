@@ -9,7 +9,9 @@
 #include "CoreObject.h"
 #include "CoreObject_Manager.h"
 
-s32 CoreObject::GetHandle()
+#include <cassert>
+
+CoreObjectHandle CoreObject::GetHandle()
 {
 	return handle;
 }
@@ -28,4 +30,5 @@ void CoreObject::Init()
 void CoreObject::Uninit()
 {
 	COREOBJECTMANAGER->RemoveObjectByHandle(handle);
+	assert(handle == INVALID_COREOBJECT_HANDLE);
 }

@@ -15,10 +15,8 @@
 /* This macro allows it to be accessed as if it was 2D. */
 #define ARRAY2D(THEARRAY, X, Y, WIDTH) ((THEARRAY)[(X) + (Y) * (WIDTH)])
 
-void Array_InsertionSort(void** array, s32 length, s32 (*compareFunc)(const void* lhs, const void* rhs));
-
 template <typename T>
-void Array_ObjectInsertionSort(T* array, s32 length, bool (*compareFunc)(const T& lhs, const T& rhs))
+void Array_InsertionSort(T* array, s32 length, bool (*compareFunc)(const T& lhs, const T& rhs))
 {
 	//INSERTION SORT
 	

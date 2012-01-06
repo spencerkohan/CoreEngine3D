@@ -23,21 +23,22 @@ public:
 	CoreObjectManager();
 	void Clear();
 	bool AddObject(CoreObject* pCoreObject);
-	void RemoveObjectByHandle(s32 handle);
-	CoreObject* GetObjectByHandle(s32 handle);
+	
+	CoreObject* GetObjectByHandle(CoreObjectHandle handle);
 private:
+	void RemoveObjectByHandle(CoreObjectHandle handle);
 	void UpdateHandle(CoreObject* pCoreObject);
-	s32 GetUnusedHandle();
-	void FreeHandle(s32 handle);
+	u32 GetUnusedHandle();
+	void FreeHandle(CoreObjectHandle handle);
 	CoreObjectHandleObject m_objectArray[COREOBJECT_MAX_OBJECTS];
 	u32 m_numObjects;
 	
 	//Handles available for use
-	s32 m_freeHandles[COREOBJECT_MAX_OBJECTS];
+	CoreObjectHandle m_freeHandles[COREOBJECT_MAX_OBJECTS];
 	u32 m_numFreeHandles;
 	
 	//Handles that are currently being used
-	s32 m_usedHandles[COREOBJECT_MAX_OBJECTS];
+	CoreObjectHandle m_usedHandles[COREOBJECT_MAX_OBJECTS];
 	u32 m_numUsedHandles;
 	
 	friend class CoreObject;

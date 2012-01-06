@@ -12,6 +12,25 @@
 
 Game* GAME = NULL;
 
+const MaterialSettings g_Game_BlobShadowSettings =
+{
+	GL_LINEAR,//GLuint			textureFilterMode;
+	GL_CLAMP_TO_EDGE,//GLuint			wrapModeU;
+	GL_CLAMP_TO_EDGE,//GLuint			wrapModeV;
+    MT_TextureOnlySimple,//RenderMaterial	renderMaterial;
+    RenderFlagDefaults_CardWithAlpha,//u32				renderFlags;
+	true,
+};
+
+ItemArtDescription g_Game_BlobShadowDesc =
+{
+	"ArtResources/Textures/shadowblob.png",//const char*		textureFileName;
+	ImageType_PNG,//ImageType		imageType;
+	0,//GLuint			textureHandle;
+	&g_Game_BlobShadowSettings,//MaterialSettings	materialSettings;
+	&g_Square1x1_modelData//ModelData*		pModelData;
+};
+
 void Game::Init()
 {
 	m_numLoadedArtDescriptions = 0;
@@ -341,6 +360,8 @@ void Game::DeleteAllItemSounds()
 
 void Game::UpdateBreakables(f32 timeElapsed)
 {
+	//TODO: this is probably BAD
+	
 	//Delete old breakables
 	for(u32 i=0; i<m_numBreakables; )
     {
@@ -353,17 +374,25 @@ void Game::UpdateBreakables(f32 timeElapsed)
 			
 			if(m_numBreakables > 1)
 			{
-				*pCurrBreakable = *pLastBreakable;
+				//Get handles to both renderables
+				RenderableGeometry3D* pCurrGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pCurrBreakable->handleRenderable);
 				
-				RenderableObject3D* pRenderable = &pCurrBreakable->renderable;
-				pRenderable->geom.pWorldMat = pRenderable->worldMat;
-				pRenderable->geom.material.uniqueUniformValues[0] = (u8*)&pCurrBreakable->texcoordOffset;
-				pRenderable->geom.material.uniqueUniformValues[1] = (u8*)&pCurrBreakable->diffuseColor;
+				RenderableGeometry3D* pLastGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pLastBreakable->handleRenderable);
+				
+				//This is the bad part
+				
+				//Delete the current geom because it's getting overwritten
+				pCurrGeom->Uninit();
+				
+				//Overwrite the breakable
+				*pCurrBreakable = *pLastBreakable;
+								
+				//Have to relink up the uniform values because they're basicaly gone
+				//TODO: maybe one day have these be based on handles as well
+				//Referring to last geom because that's what the current handle is referring to now
+				pLastGeom->material.uniqueUniformValues[0] = (u8*)&pCurrBreakable->texcoordOffset;
+				pLastGeom->material.uniqueUniformValues[1] = (u8*)&pCurrBreakable->diffuseColor;
 			}
-			
-			GLRENDERER->RemoveRenderableGeometry3DFromList(&pLastBreakable->renderable.geom);
-			
-			//printf("  Deleted breakable...\n");
 			
 			--m_numBreakables;
         }
@@ -378,6 +407,8 @@ void Game::UpdateBreakables(f32 timeElapsed)
     {
         Breakable* pCurrBreakable = &m_updatingBreakables[i];
         
+		RenderableGeometry3D* pCurrGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pCurrBreakable->handleRenderable);
+		
 		pCurrBreakable->lifeTimer -= timeElapsed;
 		
         const f32 breakableAlpha = ClampF(pCurrBreakable->lifeTimer/0.15f,0.0f,1.0f);
@@ -388,7 +419,7 @@ void Game::UpdateBreakables(f32 timeElapsed)
         pCurrBreakable->currSpinAngle += pCurrBreakable->spinSpeed*timeElapsed;
         
         
-        vec3* pBreakablePos = mat4f_GetPos(pCurrBreakable->renderable.worldMat);
+        vec3* pBreakablePos = mat4f_GetPos(pCurrGeom->worldMat);
         
         pCurrBreakable->velocity.y -= pData->pSettings->gravity*timeElapsed;
         AddScaledVec3_Self(pBreakablePos,&pCurrBreakable->velocity,timeElapsed);
@@ -406,7 +437,7 @@ void Game::UpdateBreakables(f32 timeElapsed)
             radius = Lerp(pData->radius,maxZScale,zScaleT);
         }
         
-        mat4f_LoadScaledZRotation_IgnoreTranslation(pCurrBreakable->renderable.worldMat, pCurrBreakable->currSpinAngle, radius);
+        mat4f_LoadScaledZRotation_IgnoreTranslation(pCurrGeom->worldMat, pCurrBreakable->currSpinAngle, radius);
         
 		//Bouncing disabled for now
 		
@@ -444,12 +475,12 @@ void Game::SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec
 	
 	//[self PlaySoundByFilename:pCurrBreakable->pBreakableDescription->breakSoundName:pPosition:0.0f:FALSE];
 	
-	RenderableObject3D* pRenderable = &pCurrBreakable->renderable;
-
-	GLRENDERER->InitRenderableObject3D(pRenderable, pArtDesc->pModelData, pMaterial->renderMaterial, &pArtDesc->textureHandle, NULL, renderLayer, View_0, pMaterial->renderFlags|RenderFlag_Visible);
-	pRenderable->geom.material.uniqueUniformValues[0] = (u8*)&pCurrBreakable->texcoordOffset;
-	pRenderable->geom.material.uniqueUniformValues[1] = (u8*)&pCurrBreakable->diffuseColor;
-	GLRENDERER->AddRenderableObject3DToList(pRenderable);
+	RenderableGeometry3D* pRenderable = NULL;
+	pCurrBreakable->handleRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(&pRenderable);
+	
+	GLRENDERER->InitRenderableGeometry3D(pRenderable, pArtDesc->pModelData, pMaterial->renderMaterial, &pArtDesc->textureHandle, NULL, renderLayer, View_0, pMaterial->renderFlags|RenderFlag_Visible);
+	pRenderable->material.uniqueUniformValues[0] = (u8*)&pCurrBreakable->texcoordOffset;
+	pRenderable->material.uniqueUniformValues[1] = (u8*)&pCurrBreakable->diffuseColor;
 	
 	f32 radius = pData->radius;
 	

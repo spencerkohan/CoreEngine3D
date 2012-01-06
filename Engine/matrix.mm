@@ -9,7 +9,7 @@
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadIdentity(f32* pOut_matrix)
+void mat4f_LoadIdentity(mat4f pOut_matrix)
 {
 	pOut_matrix[0] = 1.0f;
 	pOut_matrix[1] = 0.0f;
@@ -35,7 +35,7 @@ void mat4f_LoadIdentity(f32* pOut_matrix)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadTranspose(f32* pOut_matrix, const f32* a)
+void mat4f_LoadTranspose(mat4f pOut_matrix, const mat4f a)
 {
 	pOut_matrix[0] = a[0];
 	pOut_matrix[1] = a[4];
@@ -60,7 +60,7 @@ void mat4f_LoadTranspose(f32* pOut_matrix, const f32* a)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScaleFromFloats(f32* pOut_matrix, f32 scaleX, f32 scaleY, f32 scaleZ)
+void mat4f_LoadScaleFromFloats(mat4f pOut_matrix, f32 scaleX, f32 scaleY, f32 scaleZ)
 {
 	pOut_matrix[0] = scaleX;
 	pOut_matrix[1] = 0.0f;
@@ -85,7 +85,7 @@ void mat4f_LoadScaleFromFloats(f32* pOut_matrix, f32 scaleX, f32 scaleY, f32 sca
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScaleFromVec(f32* pOut_matrix, const vec3* v)
+void mat4f_LoadScaleFromVec(mat4f pOut_matrix, const vec3* v)
 {
 	pOut_matrix[0] = v->x;
 	pOut_matrix[1] = 0.0f;
@@ -111,7 +111,7 @@ void mat4f_LoadScaleFromVec(f32* pOut_matrix, const vec3* v)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScaleFromVec_IgnoreTranslation(f32* pOut_matrix, const vec3* v)
+void mat4f_LoadScaleFromVec_IgnoreTranslation(mat4f pOut_matrix, const vec3* v)
 {
 	pOut_matrix[0] = v->x;
 	pOut_matrix[1] = 0.0f;
@@ -132,7 +132,7 @@ void mat4f_LoadScaleFromVec_IgnoreTranslation(f32* pOut_matrix, const vec3* v)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScale(f32* pOut_matrix, f32 s)
+void mat4f_LoadScale(mat4f pOut_matrix, f32 s)
 {
 	pOut_matrix[0] = s;
 	pOut_matrix[1] = 0.0f;
@@ -158,7 +158,7 @@ void mat4f_LoadScale(f32* pOut_matrix, f32 s)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScale_IgnoreTranslation(f32* pOut_matrix, f32 s)
+void mat4f_LoadScale_IgnoreTranslation(mat4f pOut_matrix, f32 s)
 {
 	pOut_matrix[0] = s;
 	pOut_matrix[1] = 0.0f;
@@ -179,7 +179,7 @@ void mat4f_LoadScale_IgnoreTranslation(f32* pOut_matrix, f32 s)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadXRotation(f32* pOut_matrix, f32 radians)
+void mat4f_LoadXRotation(mat4f pOut_matrix, f32 radians)
 {
 	f32 cosrad = cosf(radians);
 	f32 sinrad = sinf(radians);
@@ -208,7 +208,7 @@ void mat4f_LoadXRotation(f32* pOut_matrix, f32 radians)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadXRotation_IgnoreTranslation(f32* pOut_matrix, f32 radians)
+void mat4f_LoadXRotation_IgnoreTranslation(mat4f pOut_matrix, f32 radians)
 {
     f32 cosrad = cosf(radians);
 	f32 sinrad = sinf(radians);
@@ -232,7 +232,7 @@ void mat4f_LoadXRotation_IgnoreTranslation(f32* pOut_matrix, f32 radians)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadYRotation(f32* pOut_matrix, f32 radians)
+void mat4f_LoadYRotation(mat4f pOut_matrix, f32 radians)
 {
 	f32 cosrad = cosf(radians);
 	f32 sinrad = sinf(radians);
@@ -261,7 +261,7 @@ void mat4f_LoadYRotation(f32* pOut_matrix, f32 radians)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadYRotation_IgnoreTranslation(f32* pOut_matrix, f32 radians)
+void mat4f_LoadYRotation_IgnoreTranslation(mat4f pOut_matrix, f32 radians)
 {
 	f32 cosrad = cosf(radians);
 	f32 sinrad = sinf(radians);
@@ -285,7 +285,7 @@ void mat4f_LoadYRotation_IgnoreTranslation(f32* pOut_matrix, f32 radians)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_RotateY(f32* pInOut_Matrix, f32 radians, bool ignoreTranslation)
+void mat4f_RotateY(mat4f pInOut_Matrix, f32 radians, bool ignoreTranslation)
 {
 	f32 tempMat[16];
 	mat4f_LoadYRotation(tempMat, radians);
@@ -308,7 +308,7 @@ void mat4f_RotateY(f32* pInOut_Matrix, f32 radians, bool ignoreTranslation)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadZRotation(f32* pOut_matrix, f32 radians)
+void mat4f_LoadZRotation(mat4f pOut_matrix, f32 radians)
 {
 	f32 cosrad = cosf(radians);
 	f32 sinrad = sinf(radians);
@@ -337,7 +337,7 @@ void mat4f_LoadZRotation(f32* pOut_matrix, f32 radians)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_SetLookAtPos(f32* pInOut_matrix,const vec3* camPos)
+void mat4f_SetLookAtPos(mat4f pInOut_matrix,const vec3* camPos)
 {
     vec3 mat_left;
     vec3 mat_up;
@@ -358,7 +358,7 @@ void mat4f_SetLookAtPos(f32* pInOut_matrix,const vec3* camPos)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadZRotation_IgnoreTranslation(f32* pOut_matrix, f32 radians)
+void mat4f_LoadZRotation_IgnoreTranslation(mat4f pOut_matrix, f32 radians)
 {
     f32 cosrad = cosf(radians);
 	f32 sinrad = sinf(radians);
@@ -382,7 +382,7 @@ void mat4f_LoadZRotation_IgnoreTranslation(f32* pOut_matrix, f32 radians)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScaledZRotation(f32* pOut_matrix, f32 radians, f32 scale)
+void mat4f_LoadScaledZRotation(mat4f pOut_matrix, f32 radians, f32 scale)
 {
 	f32 cosrad = cosf(radians)*scale;
 	f32 sinrad = sinf(radians)*scale;
@@ -411,7 +411,7 @@ void mat4f_LoadScaledZRotation(f32* pOut_matrix, f32 radians, f32 scale)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScaledYRotation(f32* pOut_matrix, f32 radians, f32 scale)
+void mat4f_LoadScaledYRotation(mat4f pOut_matrix, f32 radians, f32 scale)
 {
 	f32 cosrad = cosf(radians)*scale;
 	f32 sinrad = sinf(radians)*scale;
@@ -440,7 +440,7 @@ void mat4f_LoadScaledYRotation(f32* pOut_matrix, f32 radians, f32 scale)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScaledYRotation_IgnoreTranslation(f32* pOut_matrix, f32 radians, f32 scale)
+void mat4f_LoadScaledYRotation_IgnoreTranslation(mat4f pOut_matrix, f32 radians, f32 scale)
 {
 	f32 cosrad = cosf(radians)*scale;
 	f32 sinrad = sinf(radians)*scale;
@@ -464,7 +464,7 @@ void mat4f_LoadScaledYRotation_IgnoreTranslation(f32* pOut_matrix, f32 radians, 
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScaledXRotation(f32* pOut_matrix, f32 radians, f32 scale)
+void mat4f_LoadScaledXRotation(mat4f pOut_matrix, f32 radians, f32 scale)
 {
 	f32 cosrad = cosf(radians)*scale;
 	f32 sinrad = sinf(radians)*scale;
@@ -493,7 +493,7 @@ void mat4f_LoadScaledXRotation(f32* pOut_matrix, f32 radians, f32 scale)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScaledXRotation_IgnoreTranslation(f32* pOut_matrix,f32 radians,f32 scale)
+void mat4f_LoadScaledXRotation_IgnoreTranslation(mat4f pOut_matrix,f32 radians,f32 scale)
 {
     f32 cosrad = cosf(radians)*scale;
 	f32 sinrad = sinf(radians)*scale;
@@ -517,7 +517,7 @@ void mat4f_LoadScaledXRotation_IgnoreTranslation(f32* pOut_matrix,f32 radians,f3
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScaledZRotationFromVec_IgnoreTranslation(f32* pOut_matrix, f32 radians, const vec3* v)
+void mat4f_LoadScaledZRotationFromVec_IgnoreTranslation(mat4f pOut_matrix, f32 radians, const vec3* v)
 {
 	f32 cosrad = cosf(radians);
 	f32 sinrad = sinf(radians);
@@ -541,7 +541,7 @@ void mat4f_LoadScaledZRotationFromVec_IgnoreTranslation(f32* pOut_matrix, f32 ra
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadScaledZRotation_IgnoreTranslation(f32* pOut_matrix, f32 radians, f32 scale)
+void mat4f_LoadScaledZRotation_IgnoreTranslation(mat4f pOut_matrix, f32 radians, f32 scale)
 {
     f32 cosrad = cosf(radians)*scale;
 	f32 sinrad = sinf(radians)*scale;
@@ -565,7 +565,7 @@ void mat4f_LoadScaledZRotation_IgnoreTranslation(f32* pOut_matrix, f32 radians, 
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadTranslation(f32* pOut_matrix, const vec3* v)
+void mat4f_LoadTranslation(mat4f pOut_matrix, const vec3* v)
 {
 	pOut_matrix[0] = 1.0f;
 	pOut_matrix[1] = 0.0f;
@@ -591,7 +591,7 @@ void mat4f_LoadTranslation(f32* pOut_matrix, const vec3* v)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-vec3* mat4f_GetLeft(f32* pMatrix)
+vec3* mat4f_GetLeft(const mat4f pMatrix)
 {
 	return (vec3*)&pMatrix[0];
 }
@@ -599,7 +599,7 @@ vec3* mat4f_GetLeft(f32* pMatrix)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-vec3* mat4f_GetUp(f32* pMatrix)
+vec3* mat4f_GetUp(const mat4f pMatrix)
 {
 	return (vec3*)&pMatrix[4];
 }
@@ -607,7 +607,7 @@ vec3* mat4f_GetUp(f32* pMatrix)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-vec3* mat4f_GetAt(f32* pMatrix)
+vec3* mat4f_GetAt(const mat4f pMatrix)
 {
 	return (vec3*)&pMatrix[8];
 }
@@ -615,7 +615,7 @@ vec3* mat4f_GetAt(f32* pMatrix)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-vec3* mat4f_GetPos(f32* pMatrix)
+vec3* mat4f_GetPos(const mat4f pMatrix)
 {
 	return (vec3*)&pMatrix[12];
 }
@@ -623,7 +623,7 @@ vec3* mat4f_GetPos(f32* pMatrix)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_GetViewLeft(vec3* out_viewLeft, f32* pMatrix)
+void mat4f_GetViewLeft(vec3* out_viewLeft, mat4f pMatrix)
 {
 	out_viewLeft->x = pMatrix[0];
 	out_viewLeft->y = pMatrix[4];
@@ -633,7 +633,7 @@ void mat4f_GetViewLeft(vec3* out_viewLeft, f32* pMatrix)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_GetViewUp(vec3* out_viewUp, f32* pMatrix)
+void mat4f_GetViewUp(vec3* out_viewUp, mat4f pMatrix)
 {
 	out_viewUp->x = pMatrix[1];
 	out_viewUp->y = pMatrix[5];
@@ -643,7 +643,7 @@ void mat4f_GetViewUp(vec3* out_viewUp, f32* pMatrix)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_GetViewAt(vec3* out_viewAt, f32* pMatrix)
+void mat4f_GetViewAt(vec3* out_viewAt, mat4f pMatrix)
 {
 	out_viewAt->x = pMatrix[2];
 	out_viewAt->y = pMatrix[6];
@@ -673,7 +673,7 @@ void mat4f_GetViewAt(vec3* out_viewAt, f32* pMatrix)
 // mout[14] = -DotVec3(&mat_at, camPos);
 // mout[15] = 1.0f;
 //----------------------------------------------------------------------------
-void mat4f_LoadLookAtDir(f32* pOut_matrix, const vec3* camPos, const vec3* at, const vec3* up)
+void mat4f_LoadLookAtDir(mat4f pOut_matrix, const vec3* camPos, const vec3* at, const vec3* up)
 {
 	vec3 mat_at;
 	CopyVec3(&mat_at,at);
@@ -706,7 +706,7 @@ void mat4f_LoadLookAtDir(f32* pOut_matrix, const vec3* camPos, const vec3* at, c
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadLookAtTarget(f32* pOut_matrix, const vec3* camPos, const vec3* target, const vec3* up)
+void mat4f_LoadLookAtTarget(mat4f pOut_matrix, const vec3* camPos, const vec3* target, const vec3* up)
 {
 	vec3 mat_at;
 
@@ -719,7 +719,7 @@ void mat4f_LoadLookAtTarget(f32* pOut_matrix, const vec3* camPos, const vec3* ta
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadPerspective(f32* pOut_matrix, f32 fov_radians, f32 aspect, f32 zNear, f32 zFar)
+void mat4f_LoadPerspective(mat4f pOut_matrix, f32 fov_radians, f32 aspect, f32 zNear, f32 zFar)
 {
 	f32 f = 1.0f / tanf(fov_radians/2.0f);
 	
@@ -749,7 +749,7 @@ void mat4f_LoadPerspective(f32* pOut_matrix, f32 fov_radians, f32 aspect, f32 zN
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_LoadOrtho(f32* pOut_matrix, f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far)
+void mat4f_LoadOrtho(mat4f pOut_matrix, f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far)
 {
 	f32 r_l = right - left;
 	f32 t_b = top - bottom;
@@ -782,7 +782,7 @@ void mat4f_LoadOrtho(f32* pOut_matrix, f32 left, f32 right, f32 bottom, f32 top,
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_Multiply(f32* pOut_matrix, const f32* a, const f32* b)
+void mat4f_Multiply(mat4f pOut_matrix, const mat4f a, const mat4f b)
 {
 #if DEBUG
     if(pOut_matrix == a || pOut_matrix == b)
@@ -812,7 +812,7 @@ void mat4f_Multiply(f32* pOut_matrix, const f32* a, const f32* b)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_Multiply_Self_LHS(f32* a, const f32* b)
+void mat4f_Multiply_Self_LHS(mat4f a, const mat4f b)
 {
     mat4f tempMat;
     mat4f_Multiply(tempMat,a,b);
@@ -822,7 +822,7 @@ void mat4f_Multiply_Self_LHS(f32* a, const f32* b)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_Multiply_Self_RHS(f32* a, const f32* b)
+void mat4f_Multiply_Self_RHS(mat4f a, const mat4f b)
 {
     mat4f tempMat;
     mat4f_Multiply(tempMat,b,a);
@@ -832,7 +832,7 @@ void mat4f_Multiply_Self_RHS(f32* a, const f32* b)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_Copy(f32* pOut_matrix,f32* m_copyFrom)
+void mat4f_Copy(mat4f pOut_matrix,mat4f m_copyFrom)
 {
 	for(int i=0; i<16; ++i)
 	{
@@ -843,7 +843,7 @@ void mat4f_Copy(f32* pOut_matrix,f32* m_copyFrom)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat4f_CopyRotation(f32* pOut_matrix,f32* m_copyFrom)
+void mat4f_CopyRotation(mat4f pOut_matrix,mat4f m_copyFrom)
 {
 	for(int i=0; i<12; ++i)
 	{
@@ -854,7 +854,7 @@ void mat4f_CopyRotation(f32* pOut_matrix,f32* m_copyFrom)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_Copy(f32* pOut_matrix,f32* m_copyFrom)
+void mat3f_Copy(mat4f pOut_matrix,mat4f m_copyFrom)
 {
 	for(int i=0; i<9; ++i)
 	{
@@ -865,7 +865,7 @@ void mat3f_Copy(f32* pOut_matrix,f32* m_copyFrom)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_CopyMat4fRotation(f32* pOut_matrix,f32* m_copyFrom)
+void mat3f_CopyMat4fRotation(mat4f pOut_matrix,mat4f m_copyFrom)
 {
 	pOut_matrix[0] = m_copyFrom[0];
 	pOut_matrix[1] = m_copyFrom[1];
@@ -883,7 +883,7 @@ void mat3f_CopyMat4fRotation(f32* pOut_matrix,f32* m_copyFrom)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_InvertMat4fRotation(f32* pOut_matrix,f32* pIn_Matrix)
+void mat3f_InvertMat4fRotation(mat4f pOut_matrix,mat4f pIn_Matrix)
 {
     pOut_matrix[0] = pIn_Matrix[0];
 	pOut_matrix[1] = pIn_Matrix[4];
@@ -901,7 +901,7 @@ void mat3f_InvertMat4fRotation(f32* pOut_matrix,f32* pIn_Matrix)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_Invert(f32* pOut_matrix,f32* pIn_Matrix)
+void mat3f_Invert(mat4f pOut_matrix,mat4f pIn_Matrix)
 {
     pOut_matrix[0] = pIn_Matrix[0];
 	pOut_matrix[1] = pIn_Matrix[3];
@@ -919,7 +919,7 @@ void mat3f_Invert(f32* pOut_matrix,f32* pIn_Matrix)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_LoadIdentity(f32* pOut_matrix)
+void mat3f_LoadIdentity(mat4f pOut_matrix)
 {
     pOut_matrix[0] = 1.0f;
 	pOut_matrix[1] = 0.0f;
@@ -937,7 +937,7 @@ void mat3f_LoadIdentity(f32* pOut_matrix)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_LoadScaleFromVec(f32* pOut_matrix, const vec3* v)
+void mat3f_LoadScaleFromVec(mat4f pOut_matrix, const vec3* v)
 {
     pOut_matrix[0] = v->x;
 	pOut_matrix[1] = 0.0f;
@@ -955,7 +955,7 @@ void mat3f_LoadScaleFromVec(f32* pOut_matrix, const vec3* v)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_LoadScale(f32* pOut_matrix, f32 s)
+void mat3f_LoadScale(mat4f pOut_matrix, f32 s)
 {
     pOut_matrix[0] = s;
 	pOut_matrix[1] = 0.0f;
@@ -973,7 +973,7 @@ void mat3f_LoadScale(f32* pOut_matrix, f32 s)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_LoadXRotation(f32* pOut_matrix, f32 radians)
+void mat3f_LoadXRotation(mat4f pOut_matrix, f32 radians)
 {
     f32 cosrad = cosf(radians);
 	f32 sinrad = sinf(radians);
@@ -994,7 +994,7 @@ void mat3f_LoadXRotation(f32* pOut_matrix, f32 radians)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_LoadYRotation(f32* pOut_matrix, f32 radians)
+void mat3f_LoadYRotation(mat4f pOut_matrix, f32 radians)
 {
     f32 cosrad = cosf(radians);
 	f32 sinrad = sinf(radians);
@@ -1015,7 +1015,7 @@ void mat3f_LoadYRotation(f32* pOut_matrix, f32 radians)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_LoadZRotation(f32* pOut_matrix, f32 radians)
+void mat3f_LoadZRotation(mat4f pOut_matrix, f32 radians)
 {
     f32 cosrad = cosf(radians);
 	f32 sinrad = sinf(radians);
@@ -1036,7 +1036,7 @@ void mat3f_LoadZRotation(f32* pOut_matrix, f32 radians)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_LoadScaledZRotation(f32* pOut_matrix, f32 radians, f32 scale)
+void mat3f_LoadScaledZRotation(mat4f pOut_matrix, f32 radians, f32 scale)
 {
     f32 cosrad = cosf(radians);
 	f32 sinrad = sinf(radians);
@@ -1057,7 +1057,7 @@ void mat3f_LoadScaledZRotation(f32* pOut_matrix, f32 radians, f32 scale)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_Multiply(f32* pOut_matrix, const f32* a, const f32* b)
+void mat3f_Multiply(mat4f pOut_matrix, const mat4f a, const mat4f b)
 {
     #if DEBUG
         if(pOut_matrix == a || pOut_matrix == b)
@@ -1080,7 +1080,7 @@ void mat3f_Multiply(f32* pOut_matrix, const f32* a, const f32* b)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_Multiply_Self_LHS(f32* a, const f32* b)
+void mat3f_Multiply_Self_LHS(mat4f a, const mat4f b)
 {
     mat3f tempMat;
     mat3f_Multiply(tempMat,a,b);
@@ -1090,7 +1090,7 @@ void mat3f_Multiply_Self_LHS(f32* a, const f32* b)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void mat3f_Multiply_Self_RHS(f32* a, const f32* b)
+void mat3f_Multiply_Self_RHS(mat4f a, const mat4f b)
 {
     mat3f tempMat;
     mat3f_Multiply(tempMat,b,a);

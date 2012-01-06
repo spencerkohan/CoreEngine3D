@@ -46,6 +46,9 @@ extern Game* GAME;
 
 #define GAME_MAX_BREAKABLES 256
 
+extern const MaterialSettings g_Game_BlobShadowSettings;
+extern ItemArtDescription g_Game_BlobShadowDesc;
+
 struct BreakableSettings
 {
     f32 lifetime;
@@ -75,7 +78,7 @@ struct Breakable
     vec3 velocity;
     vec4 diffuseColorStart;
     vec4 diffuseColor;
-    RenderableObject3D renderable;
+    CoreObjectHandle handleRenderable;
     vec2 texcoordOffset;
     f32 currSpinAngle;
 };

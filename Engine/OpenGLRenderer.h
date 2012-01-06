@@ -33,6 +33,8 @@ extern OpenGLRenderer* GLRENDERER;
 
 #include "EngineModels.h"
 
+#include "CoreObject_Manager.h"
+
 #define RENDERLOOP_ENABLED 1
 
 #define DEBUG_DRAW 1
@@ -56,11 +58,11 @@ extern OpenGLRenderer* GLRENDERER;
 #define DEBUGDRAW_MAXLINESEGMENTS 512
 #define DEBUGDRAW_MAXDEBUGOBJECTS 32
 
-#define MAX_RENDERABLE_3D_OBJECTS 2500
+#define MAX_RENDERABLE_NORMAL_OBJECTS 2500
 #define MAX_RENDERABLE_UI_OBJECTS 64
 
 #define MAX_ANIMATED_PODS 16
-#define MAX_SCENES 128
+#define MAX_RENDERABLE_SCENES 128
 
 #define GAUSSIAN_STANDARDDEVIATION 0.9f
 
@@ -72,6 +74,13 @@ extern OpenGLRenderer* GLRENDERER;
 #define MAX_NUM_TEXTURE_UNITS 5
 
 /**ENUMS**/
+enum RenderableObjectType
+{
+	RenderableObjectType_Normal,
+	RenderableObjectType_UI,
+	RenderableObjectType_Num,
+};
+
 enum DebugDrawMode
 {
 	DebugDrawMode_2D,
@@ -152,7 +161,7 @@ public:
 	bool GetFadeFinished();
 	void ClearRenderables();
 	void ClearOneFrameGeometry();
-	void RenderLoop(u32 camViewIDX,RenderableGeometry3D** renderableObjectArray, u32 numRenderableObjects);
+	void RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableObjectArray, u32 numRenderableObjects);
 	void RenderEffects();
 	void SetClearColor(f32 r, f32 g, f32 b);
 	void SetGravityDir(const vec3* pNewGravityDir);
@@ -162,21 +171,20 @@ public:
 	void DrawSceneObject(RenderableSceneObject3D* pScene);
 	CPVRTModelPOD* LoadPOD(const char* fileName);
 	AnimatedPOD* AddAnimatedPOD(CPVRTModelPOD* pPod, RenderableScene3D* pScene, mat4f matrix4x4);
-	void RemoveRenderableSceneObject3DFromList(RenderableSceneObject3D* pSceneObject);
-	void AddRenderableSceneObject3DToList(RenderableSceneObject3D* pSceneObject);
+	CoreObjectHandle CreateRenderableSceneObject3D(RenderableSceneObject3D** pOut_SceneObject);
 	bool LoadTextureFromData(GLuint* out_textureName,const void* data,u32 texWidth, u32 texHeight, u32 format, u32 type, GLuint filterMode, GLuint wrapModeU, GLuint wrapModeV);
 	bool UpdateTextureFromData(GLuint* out_textureName, const void* data, u32 texWidth, u32 texHeight, u32 format, u32 type);
 	void RegisterModel(ModelData* pModelData);
-	void AddRenderableObject3DToList(RenderableObject3D* pRenderable);
-	void RemoveRenderableGeometry3DFromList(RenderableGeometry3D* pGeom);
+	CoreObjectHandle CreateRenderableGeometry3D_Normal(RenderableGeometry3D** pOut_Geom);
+	CoreObjectHandle CreateRenderableGeometry3D_UI(RenderableGeometry3D** pOut_Geom);
 	void AddParticleToQueue(Particle3D* pParticle, vec3* pPosition, vec3* pCallbackPos, ParticleBuckets particleBucket);
 	void SpawnParticles(vec3* pPosition, const vec3* pColor, const ParticleSettings* particleSettings, s32 numParticles);
 	void UpdateParticleQueues(f32 timeElapsed);
 	void UpdateTrails(f32 timeElapsed);
-	void InitRenderableObject3D(RenderableObject3D* renderableObject, ModelData* pModel, RenderMaterial materialID, GLuint* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
+	void InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, ModelData* pModel, RenderMaterial materialID, GLuint* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
 	void InitRenderableSceneObject3D(RenderableSceneObject3D* renderableObject, RenderableScene3D* pScene, RenderMaterial materialID, GLuint* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
 	void InitRenderableSceneObject3D_Simple(RenderableSceneObject3D* renderableObject, RenderableScene3D* pScene, mat4f matrix4x4, u32 viewFlags);
-	void SortRenderableGeometry3DList();
+	void SortRenderableGeometry3DList(RenderableObjectType type);
 	void CreateMaterials();
 	void SetViewMatrixForIndex(f32* pCameraMatrix, u32 viewIndex);
 	void SetViewPos(vec3* pCamPos, u32 viewIndex);
@@ -217,6 +225,10 @@ public:
 private:
 	
 	//private functions
+	RenderableGeometry3D* GetUnusedRenderableGeometry3D_UI();
+	RenderableGeometry3D* GetUnusedRenderableGeometry3D_Normal();
+	RenderableSceneObject3D* GetUnusedRenderableSceneObject3D();
+	CoreObjectHandle CreateRenderableGeometry3D(RenderableObjectType renderableType,RenderableGeometry3D** pOut_Geom);
 	void SortRenderablesWithMaterialByZ(RenderMaterial materialID);
 	void SortRenderablesInLayerRangeByZ(RenderLayer layerBegin, RenderLayer layerEnd);
 	void SetMaterial(RenderMaterial material);
@@ -286,9 +298,8 @@ private:
 	vec4 m_fadeColor;
 	vec3 m_fadeToScreenColor;
 	u32 m_currViewIndex;
-	u32 m_numRenderableGeom3Ds;
-	u32 m_numRenderableUIObjects;
-	bool m_renderableObject3DsNeedSorting;
+	bool m_renderableObject3DsNeedSorting_UI;
+	bool m_renderableObject3DsNeedSorting_Normal;
 	bool m_renderableUINeedSorting;
 	u32 m_glBufferCount;
 	u32 m_glTotalBufferSize;
@@ -298,17 +309,17 @@ private:
     u32 m_maxNumRenderables;
     u32 m_maxNumTrails;
     u32 m_maxNumParticles;
-    u32 m_numCellshadedRenderables;
 	GLuint m_currTexture;
     vec3 m_flashColor;
     GLuint m_currTextureInTextureUnit[MAX_NUM_TEXTURE_UNITS];
     GLuint m_currTextureUnit;
     SinCosBucket m_sinCosBuckets[NUM_SINCOS_BUCKETS];
-    RenderableGeometry3D* m_renderableGeometry3DList[MAX_RENDERABLE_3D_OBJECTS];
-	RenderableGeometry3D* m_renderableUIList[MAX_RENDERABLE_UI_OBJECTS];
+    RenderableGeometry3D m_renderableGeometry3DList_Normal[MAX_RENDERABLE_NORMAL_OBJECTS];
+	RenderableGeometry3D m_renderableGeometry3DList_UI[MAX_RENDERABLE_UI_OBJECTS];
+	
 	AnimatedPOD m_animatedPODs[MAX_ANIMATED_PODS];
 	u32 m_numAnimatedPods;
-	RenderableSceneObject3D* m_scenes[MAX_SCENES];
+	RenderableSceneObject3D m_scenes[MAX_RENDERABLE_SCENES];
 	u32 m_numScenes;
     RendererParticleBucket m_particleBuckets[NumParticleBuckets];
     GLuint trailShaderUniform_accumulatedTime;
@@ -354,15 +365,19 @@ private:
 	
 	RenderLayer m_sortRenderablesLayerStart;
 	RenderLayer m_sortRenderablesLayerEnd;
+	
+	u32 m_numRenderableGeom3Ds_Normal;
+	u32 m_numRenderableGeom3Ds_UI;
+	u32 m_numRenderableScenes;	
 };
 
 
 //Helpers
 char* FileToCharArray(const char* filename);
 bool LoadPNGImage(const char *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData, bool flipY);
-s32 RenderableGeometry3DCompare_SortByZ(const void* lhs, const void* rhs);
-s32 RenderableGeometry3DCompare_SortByNegativeZ(const void* lhs, const void* rhs);
-s32 RenderableGeometry3DCompare_SortValue(const void* lhs, const void* rhs);
+bool RenderableGeometry3DCompare_SortByZ(const RenderableGeometry3D& lhs, const RenderableGeometry3D& rhs);
+bool RenderableGeometry3DCompare_SortByNegativeZ(const RenderableGeometry3D& lhs, const RenderableGeometry3D& rhs);
+bool RenderableGeometry3DCompare_SortValue(const RenderableGeometry3D& lhs, const RenderableGeometry3D& rhs);
 void PackFloat16(float myFloat, float* out_x, float* out_y);
 float UnpackFloat16(float x, float y);
 void DoubleRenderTarget_Flip(DoubleRenderTarget* doubleRenderTarget);

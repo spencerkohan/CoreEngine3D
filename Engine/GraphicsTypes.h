@@ -25,6 +25,7 @@
 #include "RenderFlags.h"
 #include "ViewFlags.h"
 #include "PowerVR/PVRTModelPOD.h"
+#include "CoreObject.h"
 
 #define MAX_SHARED_CONST_UNIFORM_VALUES 4
 #define MAX_SHARED_UNIFORM_VALUES 8
@@ -554,9 +555,10 @@ typedef struct
 	mat4f worldMat;   //16 bytes
 } SceneMesh;
 
-struct RenderableGeometry3D
+class RenderableGeometry3D: public CoreObject
 {
-	f32* pWorldMat;
+public:
+	mat4f worldMat;   //16 bytes
 	ModelData* pModel;  //4 bytes
 	RenderableMaterial material;
 	RenderLayer renderLayer;    //4 bytes
@@ -564,14 +566,16 @@ struct RenderableGeometry3D
 	const char* debugName;  //4 bytes
 	u32 sortValue;  //4 bytes
     u32 postRenderLayerSortValue; //4 bytes (optional)
-	f32 localUniformData[MAX_LOCALDATA_SLOTS_FOR_RENDERABLE];
-};
 
-
-struct RenderableObject3D
-{
-	mat4f worldMat;   //16 bytes
-	RenderableGeometry3D geom;
+	virtual void Uninit()
+	{
+		CoreObject::Uninit();
+		
+		material.flags &= ~RenderFlag_Visible;
+		material.flags |= RenderFlag_MarkedForRemoval;
+		
+		assert(GetHandle() == INVALID_COREOBJECT_HANDLE);
+	}
 };
 
 
@@ -592,8 +596,9 @@ struct RenderableScene3D
 	CPVRTModelPOD* pPod;
 };
 
-struct RenderableSceneObject3D
+class RenderableSceneObject3D: public CoreObject
 {
+public:
 	RenderableScene3D* pScene;
 	mat4f worldMat;   //16 bytes
 	RenderableMaterial material;	//optional
@@ -601,6 +606,14 @@ struct RenderableSceneObject3D
 	mat4f* pParentMat;
 	bool visible;
 	bool markedForRemoval;
+	
+	virtual void Uninit()
+	{
+		visible = false;
+		
+		CoreObject::Uninit();
+		markedForRemoval = true;
+	}
 };
 
 struct AnimatedPOD

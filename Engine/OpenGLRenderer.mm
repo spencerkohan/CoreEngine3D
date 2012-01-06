@@ -149,7 +149,7 @@ static GLuint texture_pointSpriteAtlas = 0;
 void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 screenWidthPoints, f32 screenHeightPoints)
 {
 	GLRENDERER = this;
-	
+
 #ifdef PLATFORM_IOS
 	GLuint framebuffer;
 	glGenFramebuffers(1, &framebuffer);
@@ -278,7 +278,8 @@ void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 scre
 	
     paused = false;
 	
-	m_renderableObject3DsNeedSorting = false;
+	m_renderableObject3DsNeedSorting_UI = false;
+	m_renderableObject3DsNeedSorting_Normal = false;
 	
 	ClearParticles();
 	
@@ -294,10 +295,7 @@ void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 scre
 	m_totalFadeTime = 0.0f;
 	m_currFadeTime = 0.0f;
 	m_currFadeValue = 1.0f;
-	
-	m_numRenderableGeom3Ds = 0;
-	m_numRenderableUIObjects = 0;
-	
+		
 	m_readyToGo = false;
 	
 	m_lastUsedMaterial = (RenderMaterial) RENDERMATERIAL_INVALID;
@@ -335,6 +333,8 @@ void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 scre
 
 	m_numTexturedLines_saved = 0;
 	
+	ClearRenderables();
+	
 	CreateMaterials();
 }
 
@@ -347,10 +347,9 @@ bool OpenGLRenderer::GetFadeFinished()
 
 void OpenGLRenderer::ClearRenderables()
 {
-    
-    m_numRenderableGeom3Ds = 0;
-	m_numRenderableUIObjects = 0;
-	m_numScenes = 0;	
+    m_numRenderableGeom3Ds_Normal = 0;
+	m_numRenderableGeom3Ds_UI = 0;
+	m_numRenderableScenes = 0;	
 }
 
 
@@ -501,7 +500,7 @@ void OpenGLRenderer::SetRenderState(u32 renderFlags)
 }
 
 
-void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D** renderableObjectArray, u32 numRenderableObjects)
+void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableObjectArray, u32 numRenderableObjects)
 {
 	u8* vertexData = NULL;
 	
@@ -622,13 +621,13 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D** renderable
 	
 	while(renderIndex < numRenderableObjects)
 	{				
-		const ModelData* pModelData = renderableObjectArray[renderIndex]->pModel;
+		const ModelData* pModelData = renderableObjectArray[renderIndex].pModel;
 		
 		u32 renderIndexStart=renderIndex;
 		//printf("\n *** STARTING MODEL RUN ***\n");
 		//printf("Start Index %d Model Name: %s\n",renderIndexStart,pModelData->modelName);
 		
-		for (; renderIndex < numRenderableObjects && renderableObjectArray[renderIndex]->pModel == pModelData; ++renderIndex);
+		for (; renderIndex < numRenderableObjects && renderableObjectArray[renderIndex].pModel == pModelData; ++renderIndex);
 		
 		//unsigned int renderIndexEnd = renderIndex-1;
 		
@@ -664,7 +663,7 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D** renderable
 			//SECOND: for each bound, render all the stuff
 			for (unsigned int jRenderIDX=renderIndexStart; jRenderIDX<renderIndex; ++jRenderIDX)
 			{
-				const RenderableGeometry3D* pCurrRenderable = renderableObjectArray[jRenderIDX];
+				const RenderableGeometry3D* pCurrRenderable = &renderableObjectArray[jRenderIDX];
 				
 				const u32 renderFlags = pCurrRenderable->material.flags;
 				
@@ -710,11 +709,11 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D** renderable
 				
 				if (renderFlags & RenderFlag_IgnoreViewMatrix)
 				{
-					UploadWorldProjMatrix(pCurrRenderable->pWorldMat);
+					UploadWorldProjMatrix(pCurrRenderable->worldMat);
 				}
 				else
 				{
-					UploadWorldViewProjMatrix(pCurrRenderable->pWorldMat);
+					UploadWorldViewProjMatrix(pCurrRenderable->worldMat);
 				}
 				
 				//Draw the primitive!
@@ -1148,12 +1147,6 @@ void OpenGLRenderer::Render(f32 timeElapsed)
         glBindFramebuffer(GL_FRAMEBUFFER, msaaFramebuffer); 
     }*/
     
-    if(m_numRenderableGeom3Ds > m_maxNumRenderables)
-    {
-        m_maxNumRenderables = m_numRenderableGeom3Ds;
-        //printf("*** Max number of models has increased to: %d\n",m_maxNumRenderables);
-    }
-    
     if(m_numRenderableTrails > m_maxNumTrails)
     {
         m_maxNumTrails = m_numRenderableTrails;
@@ -1162,19 +1155,26 @@ void OpenGLRenderer::Render(f32 timeElapsed)
     
     //Remove deleted renderables
 
-	for(u32 i=0; i<m_numRenderableUIObjects;)
+	for(u32 i=0; i<m_numRenderableGeom3Ds_UI;)
 	{
-		RenderableGeometry3D* pCurrGeom = m_renderableUIList[i];
+		RenderableGeometry3D* pCurrGeom = &m_renderableGeometry3DList_UI[i];
 		if(pCurrGeom->material.flags & RenderFlag_MarkedForRemoval)
 		{
-			if(m_numRenderableUIObjects > 1)
+			RenderableGeometry3D* pLastGeom = &m_renderableGeometry3DList_UI[m_numRenderableGeom3Ds_UI-1];
+			
+			if(m_numRenderableGeom3Ds_UI > 1)
 			{
-				m_renderableUIList[i] = m_renderableUIList[m_numRenderableUIObjects-1];
+				*pCurrGeom = *pLastGeom;
+				
+				//Data in geom has moved so have to update the handle
+				pCurrGeom->UpdateHandle();
 			}
 			
-			--m_numRenderableUIObjects;
+			--m_numRenderableGeom3Ds_UI;
 			
-			m_renderableObject3DsNeedSorting = true;
+			//printf("    Deleted a UI renderable handle %d, %d left.\n",pCurrGeom->GetHandle(), m_numRenderableGeom3Ds_UI);
+			
+			m_renderableObject3DsNeedSorting_UI = true;
 		}
 		else
 		{
@@ -1182,21 +1182,32 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 		}
 	}
 	
-	for(u32 i=0; i<m_numRenderableGeom3Ds;)
+	for(u32 i=0; i<m_numRenderableGeom3Ds_Normal;)
 	{
-		RenderableGeometry3D* pCurrGeom = m_renderableGeometry3DList[i];
+		RenderableGeometry3D* pCurrGeom = &m_renderableGeometry3DList_Normal[i];
 		if(pCurrGeom->material.flags & RenderFlag_MarkedForRemoval)
 		{
-			if(m_numRenderableGeom3Ds > 1)
+			RenderableGeometry3D* pLastGeom = &m_renderableGeometry3DList_Normal[m_numRenderableGeom3Ds_Normal-1];
+			
+			assert(pCurrGeom->GetHandle() == INVALID_COREOBJECT_HANDLE);
+			
+			if(m_numRenderableGeom3Ds_Normal > 1)
 			{
-				m_renderableGeometry3DList[i] = m_renderableGeometry3DList[m_numRenderableGeom3Ds-1];
+				//assert(pLastGeom->GetHandle() != INVALID_COREOBJECT_HANDLE);
+				
+				*pCurrGeom = *pLastGeom;
+				
+				//assert(pCurrGeom->GetHandle() != INVALID_COREOBJECT_HANDLE);
+				
+				//Data in geom has moved so have to update the handle
+				pCurrGeom->UpdateHandle();
 			}
 			
-			--m_numRenderableGeom3Ds;
+			--m_numRenderableGeom3Ds_Normal;
 			
-			//printf("    Deleted a renderable, %d left.\n",m_numRenderableGeom3Ds);
+			//printf("    Deleted a normal renderable handle %d, %d left.\n",pCurrGeom->GetHandle(), m_numRenderableGeom3Ds_Normal);
 			
-			m_renderableObject3DsNeedSorting = true;
+			m_renderableObject3DsNeedSorting_Normal = true;
 		}
 		else
 		{
@@ -1206,12 +1217,16 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 	
 	for(u32 i=0; i<m_numScenes; ++i)
 	{
-		RenderableSceneObject3D* pCurrScene = m_scenes[i];
+		RenderableSceneObject3D* pCurrScene = &m_scenes[i];
 		if(pCurrScene->markedForRemoval)
 		{
+			RenderableSceneObject3D* pLastScene = &m_scenes[m_numScenes-1];
 			if(m_numScenes > 1)
 			{
-				m_scenes[i] = m_scenes[m_numScenes-1];
+				*pCurrScene = *pLastScene;
+				
+				//Data in scene has moved so have to update the handle
+				pCurrScene->UpdateHandle();
 			}
 			
 			--m_numScenes;
@@ -1288,11 +1303,18 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 	SortParticleQueues();
 	
 	//Sort renderables if needed
-	if(m_renderableObject3DsNeedSorting == true)
+	if(m_renderableObject3DsNeedSorting_UI == true)
 	{
-		SortRenderableGeometry3DList();
+		SortRenderableGeometry3DList(RenderableObjectType_UI);
 		
-		m_renderableObject3DsNeedSorting = false;
+		m_renderableObject3DsNeedSorting_UI = false;
+	}
+	
+	if(m_renderableObject3DsNeedSorting_Normal == true)
+	{
+		SortRenderableGeometry3DList(RenderableObjectType_Normal);
+	
+		m_renderableObject3DsNeedSorting_Normal = false;
 	}
     
     if(m_sortRenderablesByZ)
@@ -1533,7 +1555,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
         }
 		//TODO: one day if we have multiple viewports, we'll have to link cameras to viewports
 #if RENDERLOOP_ENABLED
-		RenderLoop(camViewIDX,m_renderableGeometry3DList,m_numRenderableGeom3Ds);
+		RenderLoop(camViewIDX,m_renderableGeometry3DList_Normal,m_numRenderableGeom3Ds_Normal);
 		
 		for(u32 i=0; i<m_numAnimatedPods; ++i)
 		{
@@ -1542,14 +1564,14 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 		
 		for(u32 i=0; i<m_numScenes; ++i)
 		{
-			RenderableSceneObject3D* pSceneObj = m_scenes[i];
+			RenderableSceneObject3D* pSceneObj = &m_scenes[i];
 			if(pSceneObj->visible)
 			{
 				DrawSceneObject(pSceneObj);
 			}
 		}
 		
-		RenderLoop(0,m_renderableUIList,m_numRenderableUIObjects);
+		RenderLoop(0,m_renderableGeometry3DList_UI,m_numRenderableGeom3Ds_UI);
 #endif        
 	}
 	
@@ -2070,51 +2092,114 @@ void OpenGLRenderer::RegisterModel(ModelData* pModelData)
 	PrintOpenGLError("End of Register Model");
 }
 
-
-void OpenGLRenderer::RemoveRenderableGeometry3DFromList(RenderableGeometry3D* pGeom)
+RenderableGeometry3D* OpenGLRenderer::GetUnusedRenderableGeometry3D_UI()
 {
-	pGeom->material.flags |= RenderFlag_MarkedForRemoval;
+	if(m_numRenderableGeom3Ds_UI == MAX_RENDERABLE_UI_OBJECTS)
+	{
+		return NULL;
+	}
+	
+	const u32 numGeoms = m_numRenderableGeom3Ds_UI;
+
+	++m_numRenderableGeom3Ds_UI;
+	
+	return &m_renderableGeometry3DList_UI[numGeoms];
 }
 
 
-void OpenGLRenderer::AddRenderableObject3DToList(RenderableObject3D* pRenderable)
+RenderableGeometry3D* OpenGLRenderer::GetUnusedRenderableGeometry3D_Normal()
 {
-	if (!(pRenderable->geom.material.flags & RenderFlag_Initialized))
+	if(m_numRenderableGeom3Ds_Normal == MAX_RENDERABLE_NORMAL_OBJECTS)
 	{
-		//assert(0);
-		//NSLog(@"Insane Error: addRenderableObject3D -> You can't add an uninitialized RenderableObject3D to the renderer!");
-		
-		return;
+		return NULL;
 	}
 	
-	if(pRenderable->geom.renderLayer == RenderLayer_UI)
+	const u32 numGeoms = m_numRenderableGeom3Ds_Normal;
+	
+	++m_numRenderableGeom3Ds_Normal;
+	
+	return &m_renderableGeometry3DList_Normal[numGeoms];
+}
+
+
+RenderableSceneObject3D* OpenGLRenderer::GetUnusedRenderableSceneObject3D()
+{
+	if(m_numScenes == MAX_RENDERABLE_NORMAL_OBJECTS)
 	{
-		if(m_numRenderableUIObjects < MAX_RENDERABLE_UI_OBJECTS)
-		{
-			m_renderableUIList[m_numRenderableUIObjects++] = &pRenderable->geom;
-			
-			m_renderableUINeedSorting = true;
-		}
-		else
-		{
-			NSLog(@"Insane Error: addRenderableObject3D -> You tried to add more than MAX_RENDERABLE_UI_OBJECTS!  Added nothing.");
-		}
+		return NULL;
 	}
+	const u32 numScences = m_numScenes;
+	
+	++m_numScenes;
+	
+	return &m_scenes[numScences];
+}
+
+
+CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D_Normal(RenderableGeometry3D** pOut_Geom)
+{
+	return CreateRenderableGeometry3D(RenderableObjectType_Normal,pOut_Geom);
+}
+
+CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D_UI(RenderableGeometry3D** pOut_Geom)
+{
+	return CreateRenderableGeometry3D(RenderableObjectType_UI,pOut_Geom);
+}
+
+CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType renderableType, RenderableGeometry3D** pOut_Geom)
+{
+	RenderableGeometry3D* pGeom = NULL;
+	
+	//UI
+	if(renderableType == RenderableObjectType_UI)
+	{
+		pGeom = GetUnusedRenderableGeometry3D_UI();
+	}
+	//Normal
 	else
 	{
-		if(m_numRenderableGeom3Ds < MAX_RENDERABLE_3D_OBJECTS)
-		{
-			m_renderableGeometry3DList[m_numRenderableGeom3Ds++] = &pRenderable->geom;
-			
-			m_renderableObject3DsNeedSorting = true;
-			
-			//printf("Num renderables: %d\n",m_numRenderableGeom3Ds);
-		}
-		else
-		{
-			NSLog(@"Insane Error: addRenderableObject3D -> You tried to add more than MAX_RENDERABLE_3D_OBJECTS!  Added nothing.");
-		}
+		pGeom = GetUnusedRenderableGeometry3D_Normal();
 	}
+	
+	if(pGeom == NULL)
+	{
+		printf("INSANE ERROR: You're out of RenderableObject3Ds!");
+	}
+	
+	pGeom->Init();
+	
+	const CoreObjectHandle handle = pGeom->GetHandle();
+	
+	if(handle == INVALID_COREOBJECT_HANDLE)
+	{
+		return INVALID_COREOBJECT_HANDLE;
+	}
+	
+	pGeom->material.flags = 0;
+	
+	//UI
+	if(renderableType == RenderableObjectType_UI)
+	{
+		m_renderableObject3DsNeedSorting_UI = true;
+		
+		printf("Created a UI RenderableGeometry3D handle %d!  Count: %d\n",pGeom->GetHandle(),m_numRenderableGeom3Ds_UI);
+	}
+	//Normal
+	else
+	{
+		m_renderableObject3DsNeedSorting_Normal = true;
+		
+		//printf("Created a normal RenderableGeometry3D handle %d!  Count: %d\n",pGeom->GetHandle(),m_numRenderableGeom3Ds_Normal);
+	}
+	
+	if(pOut_Geom != NULL)
+	{
+		*pOut_Geom = pGeom;
+	}
+	
+	assert(pGeom->GetHandle() != INVALID_COREOBJECT_HANDLE);
+	
+	return handle;
 }
 
 
@@ -2479,7 +2564,7 @@ void OpenGLRenderer::InitRenderableSceneObject3D(RenderableSceneObject3D* render
 }
 
 
-void OpenGLRenderer::InitRenderableObject3D(RenderableObject3D* renderableObject, ModelData* pModel, RenderMaterial materialID, GLuint* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, ModelData* pModel, RenderMaterial materialID, GLuint* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
 {
 	if(pModel->modelID == -1)
 	{
@@ -2487,19 +2572,19 @@ void OpenGLRenderer::InitRenderableObject3D(RenderableObject3D* renderableObject
 		return;
 	}
 
-	renderableObject->geom.pModel = pModel;
-	renderableObject->geom.material.materialID = materialID;
-	renderableObject->geom.material.flags = renderFlags|RenderFlag_Initialized;
-	renderableObject->geom.renderLayer = renderLayer;
-	renderableObject->geom.material.customTexture0 = customTexture;
-	renderableObject->geom.material.customTexture1 = NULL;
-	renderableObject->geom.viewFlags = viewFlags;
-	renderableObject->geom.debugName = NULL;
-	renderableObject->geom.postRenderLayerSortValue = 0;
+	renderableObject->pModel = pModel;
+	renderableObject->material.materialID = materialID;
+	renderableObject->material.flags = renderFlags|RenderFlag_Initialized;
+	renderableObject->renderLayer = renderLayer;
+	renderableObject->material.customTexture0 = customTexture;
+	renderableObject->material.customTexture1 = NULL;
+	renderableObject->viewFlags = viewFlags;
+	renderableObject->debugName = NULL;
+	renderableObject->postRenderLayerSortValue = 0;
 
 	for (s32 i=0; i<MAX_UNIQUE_UNIFORM_VALUES; ++i)
 	{
-		renderableObject->geom.material.uniqueUniformValues[i] = NULL;
+		renderableObject->material.uniqueUniformValues[i] = NULL;
 	}
 	
 	if(matrix4x4 == NULL)
@@ -2510,76 +2595,86 @@ void OpenGLRenderer::InitRenderableObject3D(RenderableObject3D* renderableObject
 	{
 		mat4f_Copy(renderableObject->worldMat,matrix4x4);
 	}
-	
-	renderableObject->geom.pWorldMat = renderableObject->worldMat;
-	
-	//You just changed this thing's material so resort
-	m_renderableObject3DsNeedSorting = true;
 }
 
 
-void OpenGLRenderer::SortRenderableGeometry3DList()
+void OpenGLRenderer::SortRenderableGeometry3DList(RenderableObjectType type)
 {
-	m_numCellshadedRenderables = 0;
-    
-	//Create sort values
-	for(u32 i=0; i<m_numRenderableGeom3Ds; ++i)
+	//Array_ObjectInsertionSort
+
+	if(type == RenderableObjectType_UI)
 	{
-		//I got 32 bits to use up
-		m_renderableGeometry3DList[i]->sortValue = 0;
+		//SORT UI
 		
-		//Going to consider 0 to be the most significant bit for ease of reading
-		GU_InsertPositiveValueAsBits(&m_renderableGeometry3DList[i]->sortValue,m_renderableGeometry3DList[i]->renderLayer,0,4);
-        
-        GU_InsertPositiveValueAsBits(&m_renderableGeometry3DList[i]->sortValue,m_renderableGeometry3DList[i]->postRenderLayerSortValue,4,5);
+		//Create sort values
+		for(u32 i=0; i<m_numRenderableGeom3Ds_UI; ++i)
+		{
+			RenderableGeometry3D* pGeom = &m_renderableGeometry3DList_UI[i];
+			u32 sortValue = 0;
+			
+			//I got 32 bits to use up
+			
+			//Going to consider 0 to be the most significant bit for ease of reading
+			GU_InsertPositiveValueAsBits(&sortValue,pGeom->renderLayer,0,4);
+			
+			GU_InsertPositiveValueAsBits(&sortValue,pGeom->postRenderLayerSortValue,4,5);
+			
+			GU_InsertPositiveValueAsBits(&sortValue,pGeom->pModel->modelID,9,5);
+			
+			GU_InsertPositiveValueAsBits(&sortValue,pGeom->material.materialID,14,5);
+			
+			const u32 texture = pGeom->material.customTexture0?*pGeom->material.customTexture0:0;
+			
+			GU_InsertPositiveValueAsBits(&sortValue,texture,19,5);
+			
+			pGeom->sortValue = sortValue;
+		}
 		
-		//printf("SortValue: %d\n",m_renderableObject3DList[i]->postRenderLayerSortValue);
-        
-		GU_InsertPositiveValueAsBits(&m_renderableGeometry3DList[i]->sortValue,m_renderableGeometry3DList[i]->pModel->modelID,9,5);
-        
-		GU_InsertPositiveValueAsBits(&m_renderableGeometry3DList[i]->sortValue,m_renderableGeometry3DList[i]->material.materialID,14,5);
-        
-        const u32 texture = m_renderableGeometry3DList[i]->material.customTexture0?*m_renderableGeometry3DList[i]->material.customTexture0:0;
+		//Sort by RenderLayer
+		Array_InsertionSort(m_renderableGeometry3DList_UI, m_numRenderableGeom3Ds_UI, RenderableGeometry3DCompare_SortValue);
 		
-		GU_InsertPositiveValueAsBits(&m_renderableGeometry3DList[i]->sortValue,texture,19,5);
-        
-#if ENABLE_OUTLINE_RENDERING
-        if(m_renderableObject3DList[i]->flags & RenderFlag_HasOutline)
-        {
-            m_cellshadedRenderableObject3DList[m_numCellshadedRenderables++] = m_renderableObject3DList[i];
-        }
-#endif
+		//Everything could have moved around so update the handles
+		for(u32 i=0; i<m_numRenderableGeom3Ds_UI; ++i)
+		{
+			m_renderableGeometry3DList_UI[i].UpdateHandle();
+		}
 	}
-	
-	//Sort by RenderLayer
-	Array_InsertionSort((void**)m_renderableGeometry3DList, m_numRenderableGeom3Ds, RenderableGeometry3DCompare_SortValue);
-	
-	//SORT UI
-	
-	//Create sort values
-	for(u32 i=0; i<m_numRenderableUIObjects; ++i)
+	else
 	{
-		//I got 32 bits to use up
-		m_renderableUIList[i]->sortValue = 0;
+		//Create sort values
+		for(u32 i=0; i<m_numRenderableGeom3Ds_Normal; ++i)
+		{
+			RenderableGeometry3D* pGeom = &m_renderableGeometry3DList_Normal[i];
+			u32 sortValue = 0;
+			
+			//I got 32 bits to use up
+			
+			//Going to consider 0 to be the most significant bit for ease of reading
+			GU_InsertPositiveValueAsBits(&sortValue,pGeom->renderLayer,0,4);
+			
+			GU_InsertPositiveValueAsBits(&sortValue,pGeom->postRenderLayerSortValue,4,5);
+			
+			GU_InsertPositiveValueAsBits(&sortValue,pGeom->pModel->modelID,9,5);
+			
+			GU_InsertPositiveValueAsBits(&sortValue,pGeom->material.materialID,14,5);
+			
+			const u32 texture = pGeom->material.customTexture0?*pGeom->material.customTexture0:0;
+			
+			GU_InsertPositiveValueAsBits(&sortValue,texture,19,5);
+			
+			pGeom->sortValue = sortValue;
+		}
 		
-		//Going to consider 0 to be the most significant bit for ease of reading
-		GU_InsertPositiveValueAsBits(&m_renderableUIList[i]->sortValue,m_renderableUIList[i]->renderLayer,0,4);
-        
-        GU_InsertPositiveValueAsBits(&m_renderableUIList[i]->sortValue,m_renderableUIList[i]->postRenderLayerSortValue,4,5);
+		//Sort by RenderLayer
+		Array_InsertionSort(m_renderableGeometry3DList_Normal,m_numRenderableGeom3Ds_Normal,RenderableGeometry3DCompare_SortValue);
 		
-		//printf("SortValue: %d\n",m_renderableUIList[i]->postRenderLayerSortValue);
-        
-		GU_InsertPositiveValueAsBits(&m_renderableUIList[i]->sortValue,m_renderableUIList[i]->pModel->modelID,9,5);
-        
-		GU_InsertPositiveValueAsBits(&m_renderableUIList[i]->sortValue,m_renderableUIList[i]->material.materialID,14,5);
-        
-        const u32 texture = m_renderableUIList[i]->material.customTexture0?*m_renderableUIList[i]->material.customTexture0:0;
-		
-		GU_InsertPositiveValueAsBits(&m_renderableUIList[i]->sortValue,texture,19,5);
+		//Everything could have moved around so update the handles
+		for(u32 i=0; i<m_numRenderableGeom3Ds_Normal; ++i)
+		{
+			m_renderableGeometry3DList_Normal[i].UpdateHandle();
+		}
 	}
-	
-	//Sort by RenderLayer
-	Array_InsertionSort((void**)m_renderableUIList, m_numRenderableUIObjects, RenderableGeometry3DCompare_SortValue);
+
 }
 
 
@@ -2695,7 +2790,7 @@ void OpenGLRenderer::CreateMaterials()
 	}
 	
 	//PPMT_PureColor
-	if(!CreateShaderProgram(VSH_FullScreenQuadNoTexcoord,PP_PureColor,ppAttribs,&g_Materials[PPMT_PureColor].shaderProgram))
+	if(CreateShaderProgram(VSH_FullScreenQuadNoTexcoord,PP_PureColor,ppAttribs,&g_Materials[PPMT_PureColor].shaderProgram))
 	{
 		AddUniform_Shared(PPMT_PureColor,"color",Uniform_Vec4,(u8*)&m_fadeColor.x,1);
 	}
@@ -2949,25 +3044,41 @@ void OpenGLRenderer::SetScreenFadeColor(vec3* screenFadeColor)
 
 void OpenGLRenderer::ForceRenderablesNeedSorting()
 {
-	m_renderableObject3DsNeedSorting = true;
+	m_renderableObject3DsNeedSorting_UI = true;
+	m_renderableObject3DsNeedSorting_Normal = true;
 }
 
 
+//Only for normal objects, not UI
 void OpenGLRenderer::SortRenderablesWithMaterialByZ(RenderMaterial materialID)
 {
-	for (u32 i=0; i<m_numRenderableGeom3Ds; ++i)
+	for (u32 i=0; i<m_numRenderableGeom3Ds_Normal; ++i)
 	{
-		const RenderableGeometry3D* pCurrRenderable = m_renderableGeometry3DList[i];
+		const RenderableGeometry3D* pCurrRenderable = &m_renderableGeometry3DList_Normal[i];
 		if (pCurrRenderable->material.materialID == materialID)
 		{
 			u32 startIDX = i;
-			while (i<m_numRenderableGeom3Ds && m_renderableGeometry3DList[i]->material.materialID == materialID)
+			while (i<m_numRenderableGeom3Ds_Normal && pCurrRenderable->material.materialID == materialID)
 			{
 				++i;
 			}
 			
-			Array_InsertionSort((void**)&m_renderableGeometry3DList[startIDX], (i-startIDX), RenderableGeometry3DCompare_SortByZ);
+			const u32 count = i-startIDX;
+			Array_InsertionSort(&m_renderableGeometry3DList_Normal[startIDX], count,RenderableGeometry3DCompare_SortByZ);
+
+			//Everything could have moved around so update the handles
+			const u32 endOfLoop = startIDX+count;
+			for(u32 rIDX=startIDX; rIDX<endOfLoop; ++rIDX)
+			{
+				m_renderableGeometry3DList_Normal[rIDX].UpdateHandle();
+			}
 		}
+	}
+	
+	//Everything could have moved around so update the handles
+	for(u32 i=0; i<m_numRenderableGeom3Ds_Normal; ++i)
+	{
+		m_renderableGeometry3DList_Normal[i].UpdateHandle();
 	}
 }
 
@@ -2975,20 +3086,28 @@ void OpenGLRenderer::SortRenderablesWithMaterialByZ(RenderMaterial materialID)
 void OpenGLRenderer::SortRenderablesInLayerRangeByZ(RenderLayer layerBegin, RenderLayer layerEnd)
 {
 	//TODO: make this a little better.  It's a rushed version. :)
-	for (u32 i=0; i<m_numRenderableGeom3Ds; ++i)
+	for (u32 i=0; i<m_numRenderableGeom3Ds_Normal; ++i)
 	{
-		const RenderableGeometry3D* pCurrRenderable = m_renderableGeometry3DList[i];
+		const RenderableGeometry3D* pCurrRenderable = &m_renderableGeometry3DList_Normal[i];
         const bool isInLayer = pCurrRenderable->renderLayer >= layerBegin && pCurrRenderable->renderLayer <= layerEnd;
 		if (isInLayer)
 		{
 			u32 startIDX = i;
             
-			while (i<m_numRenderableGeom3Ds && m_renderableGeometry3DList[i]->renderLayer >= layerBegin && m_renderableGeometry3DList[i]->renderLayer <= layerEnd)
+			while (i<m_numRenderableGeom3Ds_Normal && pCurrRenderable->renderLayer >= layerBegin && pCurrRenderable->renderLayer <= layerEnd)
 			{
 				++i;
 			}
 			
-			Array_InsertionSort((void**)&m_renderableGeometry3DList[startIDX], (i-startIDX), RenderableGeometry3DCompare_SortByNegativeZ);
+			const u32 count = i-startIDX;
+			Array_InsertionSort(&m_renderableGeometry3DList_Normal[startIDX], count,RenderableGeometry3DCompare_SortByNegativeZ);
+			
+			//Everything could have moved around so update the handles
+			const u32 endOfLoop = startIDX+count;
+			for(u32 rIDX=startIDX; rIDX<endOfLoop; ++rIDX)
+			{
+				m_renderableGeometry3DList_Normal[rIDX].UpdateHandle();
+			}
 		}
 	}
 }
@@ -3089,7 +3208,6 @@ void OpenGLRenderer::DeleteScene(RenderableScene3D* pScene)
 void OpenGLRenderer::CleanUp()
 {
 	glDeleteTextures(1,&texture_pointSpriteAtlas);
-	//glDeleteTextures(1,&texture_default);
 }
 
 
@@ -4297,23 +4415,37 @@ CPVRTModelPOD* OpenGLRenderer::LoadPOD(const char* fileName)
 
 
 
-void OpenGLRenderer::RemoveRenderableSceneObject3DFromList(RenderableSceneObject3D* pSceneObject)
+CoreObjectHandle OpenGLRenderer::CreateRenderableSceneObject3D(RenderableSceneObject3D** pOut_SceneObject)
 {
-	pSceneObject->markedForRemoval = true;
-}
-
-
-void OpenGLRenderer::AddRenderableSceneObject3DToList(RenderableSceneObject3D* pSceneObject)
-{
-	if(m_numScenes == MAX_SCENES)
+	RenderableSceneObject3D* pScene = NULL;
+	
+	//UI
+	pScene = GetUnusedRenderableSceneObject3D();
+	
+	if(pScene == NULL)
 	{
-		printf("Insane Error: AddScene -> Reached max scenes!  Added nothing.");
-		return;
+		printf("INSANE ERROR: You're out of RenderableSceneObject3Ds!");
 	}
 	
-	m_scenes[m_numScenes] = pSceneObject;
-
-	++m_numScenes;
+	pScene->Init();
+	
+	const CoreObjectHandle handle = pScene->GetHandle();
+	
+	if(handle == INVALID_COREOBJECT_HANDLE)
+	{
+		return INVALID_COREOBJECT_HANDLE;
+	}
+	
+	pScene->material.flags = 0;
+	
+	if(pOut_SceneObject != NULL)
+	{
+		*pOut_SceneObject = pScene;
+	}
+	
+	printf("Created a RenderableSceneObject3D handle: %d!  Count: %d\n",pScene->GetHandle(),m_numRenderableScenes);
+	
+	return handle;
 }
 
 
@@ -5137,25 +5269,25 @@ bool LoadPNGImage(const char* fileName, int &outWidth, int &outHeight, bool &out
 }
 
 
-s32 RenderableGeometry3DCompare_SortValue(const void* lhs, const void* rhs)
+bool RenderableGeometry3DCompare_SortValue(const RenderableGeometry3D& lhs, const RenderableGeometry3D& rhs)
 {
-	return ((RenderableGeometry3D*)lhs)->sortValue <= ((RenderableGeometry3D*)rhs)->sortValue;
+	return lhs.sortValue <= rhs.sortValue;
 }
 
 
-s32 RenderableGeometry3DCompare_SortByZ(const void* lhs, const void* rhs)
+bool RenderableGeometry3DCompare_SortByZ(const RenderableGeometry3D& lhs, const RenderableGeometry3D& rhs)
 {
-	const vec3* pPosLHS = mat4f_GetPos(((RenderableGeometry3D*)lhs)->pWorldMat);
-	const vec3* pPosRHS = mat4f_GetPos(((RenderableGeometry3D*)rhs)->pWorldMat);
+	const vec3* pPosLHS = mat4f_GetPos((f32*)lhs.worldMat);
+	const vec3* pPosRHS = mat4f_GetPos((f32*)rhs.worldMat);
 	
 	return pPosLHS->z <= pPosRHS->z;
 }
 
 
-s32 RenderableGeometry3DCompare_SortByNegativeZ(const void* lhs, const void* rhs)
+bool RenderableGeometry3DCompare_SortByNegativeZ(const RenderableGeometry3D& lhs, const RenderableGeometry3D& rhs)
 {
-	const vec3* pPosLHS = mat4f_GetPos(((RenderableGeometry3D*)lhs)->pWorldMat);
-	const vec3* pPosRHS = mat4f_GetPos(((RenderableGeometry3D*)rhs)->pWorldMat);
+	const vec3* pPosLHS = mat4f_GetPos(lhs.worldMat);
+	const vec3* pPosRHS = mat4f_GetPos(rhs.worldMat);
 	
 	return pPosLHS->z > pPosRHS->z;
 }

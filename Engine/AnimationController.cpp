@@ -73,15 +73,23 @@ void AnimationPlayer::PlayAnimation(u32 animID, u32 frameOffset, f32 playSpeed)
 	m_currFrame = m_pCurrAnim->startFrame+frameOffset%numFrames;
 }
 
+void AnimationPlayer::SetSpeed(f32 speed)
+{
+	m_playSpeed = speed;
+}
+
+
 bool AnimationPlayer::GetAnimIsDone()
 {
 	return m_animIsDone;
 }
 
+
 f32 AnimationPlayer::GetCurrentFrame()
 {
 	return m_currFrame;
 }
+
 
 void AnimationPlayer::Update(f32 timeElapsed)
 {
@@ -135,6 +143,7 @@ void AnimationPlayer::Init(AnimationSet* pAnimSet)
 	m_playSpeed = 1.0f;
 }
 
+
 AnimationSet* AnimationController::CreateAnimationSet()
 {
 	if(m_numAnimSets == ANIMATION_MAX_ANIMATION_SETS)
@@ -149,4 +158,5 @@ AnimationSet* AnimationController::CreateAnimationSet()
 	
 	return pAnimSet;
 }
+
 

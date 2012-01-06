@@ -13,22 +13,25 @@
 class CoreObject;
 class CoreObjectManager;
 
+typedef u32 CoreObjectHandle;
+#define INVALID_COREOBJECT_HANDLE 0
+
 struct CoreObjectHandleObject
 {
 	CoreObject* pObject;
-	s32 handle;
+	u32 handle;
 };
 
 class CoreObject
 {
 public:
-	s32 GetHandle();
+	CoreObjectHandle GetHandle();
 	virtual void UpdateHandle();	//Call when the memory location changes
-protected:
 	virtual void Init();
 	virtual void Uninit();
+	
 private:
-	u32 handle;
+	CoreObjectHandle handle;
 	friend class CoreObjectManager;
 };
 

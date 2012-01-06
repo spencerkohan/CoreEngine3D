@@ -189,15 +189,16 @@ void CoreUI_Button::Init(u32 width, u32 height, CoreUI_AttachSide attachSide, s3
 		}
 	}
 	
-	GLRENDERER->InitRenderableObject3D(&m_r3D_button, &g_Square1x1_modelData, MT_TextureAndDiffuseColor, textureHandle, NULL, RenderLayer_UI, View_0, RenderFlagDefaults_2DTexture_NoAlpha);
+	RenderableGeometry3D* pGeom = NULL;
+	m_handle_r3D_button = GLRENDERER->CreateRenderableGeometry3D_UI(&pGeom);
 	
-	m_r3D_button.geom.material.uniqueUniformValues[0] = (u8*)&m_diffuseColor;
+	GLRENDERER->InitRenderableGeometry3D(pGeom, &g_Square1x1_modelData, MT_TextureAndDiffuseColor, textureHandle, NULL, RenderLayer_UI, View_0, RenderFlagDefaults_2DTexture_NoAlpha);
 	
-	GLRENDERER->AddRenderableObject3DToList(&m_r3D_button);
+	pGeom->material.uniqueUniformValues[0] = (u8*)&m_diffuseColor;
 
-	mat4f_LoadScaleFromFloats(m_r3D_button.worldMat,width,height,1.0f);
+	mat4f_LoadScaleFromFloats(pGeom->worldMat,width,height,1.0f);
 	
-	vec3* pPos = mat4f_GetPos(m_r3D_button.worldMat);
+	vec3* pPos = mat4f_GetPos(pGeom->worldMat);
 	pPos->x = m_position.x;
 	pPos->y = m_position.y;
 	pPos->z = 0.0f;
@@ -206,11 +207,19 @@ void CoreUI_Button::Init(u32 width, u32 height, CoreUI_AttachSide attachSide, s3
 
 void CoreUI_Button::Show()
 {
-	m_r3D_button.geom.material.flags |= RenderFlag_Visible;
+	RenderableGeometry3D* pGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(m_handle_r3D_button);
+	if(pGeom != NULL)
+	{
+		pGeom->material.flags |= RenderFlag_Visible;
+	}
 }
 
 
 void CoreUI_Button::Hide()
 {
-	m_r3D_button.geom.material.flags &= ~RenderFlag_Visible;
+	RenderableGeometry3D* pGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(m_handle_r3D_button);
+	if(pGeom != NULL)
+	{
+		pGeom->material.flags &= ~RenderFlag_Visible;
+	}
 }
