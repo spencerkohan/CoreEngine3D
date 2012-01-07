@@ -320,7 +320,7 @@ private:
 	AnimatedPOD m_animatedPODs[MAX_ANIMATED_PODS];
 	u32 m_numAnimatedPods;
 	RenderableSceneObject3D m_scenes[MAX_RENDERABLE_SCENES];
-	u32 m_numScenes;
+
     RendererParticleBucket m_particleBuckets[NumParticleBuckets];
     GLuint trailShaderUniform_accumulatedTime;
     GLuint trailShaderUniform_scrollAmountU;

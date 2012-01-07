@@ -216,7 +216,7 @@ void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 scre
 	m_numTexturedLines = 0;
 	
 	m_numAnimatedPods = 0;
-	m_numScenes = 0;
+	
 
 #ifdef PLATFORM_OSX
 	m_supportsFeaturesFromiOS4 = true;
@@ -1215,13 +1215,13 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 		}
 	}
 	
-	for(u32 i=0; i<m_numScenes; ++i)
+	for(u32 i=0; i<m_numRenderableScenes; ++i)
 	{
 		RenderableSceneObject3D* pCurrScene = &m_scenes[i];
 		if(pCurrScene->markedForRemoval)
 		{
-			RenderableSceneObject3D* pLastScene = &m_scenes[m_numScenes-1];
-			if(m_numScenes > 1)
+			RenderableSceneObject3D* pLastScene = &m_scenes[m_numRenderableScenes-1];
+			if(m_numRenderableScenes > 1)
 			{
 				*pCurrScene = *pLastScene;
 				
@@ -1229,7 +1229,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 				pCurrScene->UpdateHandle();
 			}
 			
-			--m_numScenes;
+			--m_numRenderableScenes;
 		}
 		else
 		{
@@ -1562,7 +1562,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			DrawAnimatedPOD(&m_animatedPODs[i]);
 		}
 		
-		for(u32 i=0; i<m_numScenes; ++i)
+		for(u32 i=0; i<m_numRenderableScenes; ++i)
 		{
 			RenderableSceneObject3D* pSceneObj = &m_scenes[i];
 			if(pSceneObj->visible)
@@ -2124,13 +2124,13 @@ RenderableGeometry3D* OpenGLRenderer::GetUnusedRenderableGeometry3D_Normal()
 
 RenderableSceneObject3D* OpenGLRenderer::GetUnusedRenderableSceneObject3D()
 {
-	if(m_numScenes == MAX_RENDERABLE_NORMAL_OBJECTS)
+	if(m_numRenderableScenes == MAX_RENDERABLE_NORMAL_OBJECTS)
 	{
 		return NULL;
 	}
-	const u32 numScences = m_numScenes;
+	const u32 numScences = m_numRenderableScenes;
 	
-	++m_numScenes;
+	++m_numRenderableScenes;
 	
 	return &m_scenes[numScences];
 }
@@ -4443,7 +4443,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableSceneObject3D(RenderableSceneOb
 		*pOut_SceneObject = pScene;
 	}
 	
-	printf("Created a RenderableSceneObject3D handle: %d!  Count: %d\n",pScene->GetHandle(),m_numRenderableScenes);
+	//printf("Created a RenderableSceneObject3D handle: %d!  Count: %d\n",pScene->GetHandle(),m_numRenderableScenes);
 	
 	return handle;
 }
@@ -5288,7 +5288,7 @@ bool RenderableGeometry3DCompare_SortByNegativeZ(const RenderableGeometry3D& lhs
 {
 	const vec3* pPosLHS = mat4f_GetPos(lhs.worldMat);
 	const vec3* pPosRHS = mat4f_GetPos(rhs.worldMat);
-	
-	return pPosLHS->z > pPosRHS->z;
+
+	return (pPosLHS->z > pPosRHS->z) || (pPosLHS->z == pPosRHS->z && pPosLHS->x < pPosRHS->x);
 }
 
