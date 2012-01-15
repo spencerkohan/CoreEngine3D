@@ -7,11 +7,11 @@
 //
 
 #if defined (PLATFORM_OSX) || (defined PLATFORM_IOS)
-#import <Foundation/Foundation.h>
+#include <Foundation/Foundation.h>
 #endif
 
 #if defined (PLATFORM_IOS)
-#import <UIKit/UIKit.h>
+#include <UIKit/UIKit.h>
 #endif
 
 #include "OpenGLRenderer.h"
@@ -22,12 +22,17 @@ OpenGLRenderer* GLRENDERER = NULL;
 #include <cmath>
 #include "GameUtil.h"
 #include "ArrayUtil.h"
-#include "zlib.h"
-#include "png.h"
-#include "SOIL.h"
+#include "zlib/zlib.h"
+#include "libpng/png.h"
+#include "SOIL/SOIL.h"
 
 #if defined (PLATFORM_OSX)
 #include <OpenGL/glu.h>
+#endif
+
+#if defined (PLATFORM_WIN)
+#include "glew/glew.h"
+#include <GL/glu.h>
 #endif
 
 #include "MaterialDeclarations.h"
@@ -143,19 +148,19 @@ const GLfloat squareTexCoords[] = {
 };
 
 static Material g_Materials[NumRenderMaterials];
-static GLuint texture_pointSpriteAtlas = 0;
-//static GLuint texture_default = 0;
+static u32 texture_pointSpriteAtlas = 0;
+//static u32 texture_default = 0;
 
 void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 screenWidthPoints, f32 screenHeightPoints)
 {
 	GLRENDERER = this;
 
 #ifdef PLATFORM_IOS
-	GLuint framebuffer;
+	u32 framebuffer;
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	
-	GLuint colorRenderbuffer;
+	u32 colorRenderbuffer;
 	glGenRenderbuffers(1, &colorRenderbuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
 	
@@ -163,7 +168,7 @@ void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 scre
 	
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
 	
-	GLuint depthRenderbuffer;
+	u32 depthRenderbuffer;
 	glGenRenderbuffers(1, &depthRenderbuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, screenWidthPixels, screenHeightPixels);
@@ -783,12 +788,12 @@ void OpenGLRenderer::RenderEffects()
     m_currProjMatType = ProjMatType_Perspective;
     UploadWorldViewProjMatrix(m_identityMat);
 	
-	GLuint currLineTexture = NULL;
+	u32 currLineTexture = NULL;
 	
 	for(s32 renderLineIDX=0; renderLineIDX<m_numTexturedLines_saved; ++renderLineIDX)
 	{
 		TexturedLineObject* pCurrLine = &m_texturedLineObjects[renderLineIDX];
-		GLuint nextLineTexture = pCurrLine->texturedID;
+		u32 nextLineTexture = pCurrLine->texturedID;
 		
 		if(nextLineTexture != currLineTexture)
 		{
@@ -862,7 +867,7 @@ void OpenGLRenderer::RenderEffects()
     glUniform1fv(trailShaderUniform_accumulatedTime,1,&m_accumulatedTime);
     
     
-	GLuint currTrailTexture = 0;
+	u32 currTrailTexture = 0;
 	
     for(u32 renderTrailIDX=0; renderTrailIDX<m_numRenderableTrails; ++renderTrailIDX)
     {
@@ -902,7 +907,7 @@ void OpenGLRenderer::RenderEffects()
         //Set current trail texture
         //JAMTODO: sort list by texture
 		
-		GLuint nextTrailTexture = m_renderableTrails[renderTrailIDX]->texture;
+		u32 nextTrailTexture = m_renderableTrails[renderTrailIDX]->texture;
 		
 		if(nextTrailTexture != currTrailTexture)
 		{
@@ -1971,7 +1976,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 	 }
 	 else
 	 {
-	 const GLuint discards[]  = {GL_DEPTH_ATTACHMENT};
+	 const u32 discards[]  = {GL_DEPTH_ATTACHMENT};
 	 glDiscardFramebufferEXT(GL_FRAMEBUFFER,1,discards);
 	 }*/
 	
@@ -1981,7 +1986,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 }
 
 
-bool OpenGLRenderer::LoadTextureFromData(GLuint* out_textureName,const void* data,u32 texWidth, u32 texHeight, u32 format, u32 type, GLuint filterMode, GLuint wrapModeU, GLuint wrapModeV)
+bool OpenGLRenderer::LoadTextureFromData(u32* out_textureName,const void* data,u32 texWidth, u32 texHeight, u32 format, u32 type, u32 filterMode, u32 wrapModeU, u32 wrapModeV)
 {
 	if (filterMode == GL_LINEAR_MIPMAP_LINEAR || filterMode == GL_LINEAR_MIPMAP_NEAREST)
 	{
@@ -2005,7 +2010,7 @@ bool OpenGLRenderer::LoadTextureFromData(GLuint* out_textureName,const void* dat
 }
 
 
-bool OpenGLRenderer::UpdateTextureFromData(GLuint* out_textureName, const void* data, u32 texWidth, u32 texHeight, u32 format, u32 type)
+bool OpenGLRenderer::UpdateTextureFromData(u32* out_textureName, const void* data, u32 texWidth, u32 texHeight, u32 format, u32 type)
 {
 	glBindTexture(GL_TEXTURE_2D, *out_textureName);
 	
@@ -2038,7 +2043,7 @@ void OpenGLRenderer::RegisterModel(ModelData* pModelData)
         //Use vertex array object
         if (m_supportsFeaturesFromiOS4)
         {
-            GLuint vertexBufferID;
+            u32 vertexBufferID;
             glGenBuffers(1,&vertexBufferID);
 
 #ifdef PLATFORM_IOS
@@ -2534,7 +2539,7 @@ void OpenGLRenderer::InitRenderableSceneObject3D_Simple(RenderableSceneObject3D*
 }
 
 
-void OpenGLRenderer::InitRenderableSceneObject3D(RenderableSceneObject3D* renderableObject, RenderableScene3D* pScene, RenderMaterial materialID, GLuint* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+void OpenGLRenderer::InitRenderableSceneObject3D(RenderableSceneObject3D* renderableObject, RenderableScene3D* pScene, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
 {
 	renderableObject->pScene = pScene;
 	renderableObject->visible = true;
@@ -2564,7 +2569,7 @@ void OpenGLRenderer::InitRenderableSceneObject3D(RenderableSceneObject3D* render
 }
 
 
-void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, ModelData* pModel, RenderMaterial materialID, GLuint* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, ModelData* pModel, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
 {
 	if(pModel->modelID == -1)
 	{
@@ -3211,7 +3216,7 @@ void OpenGLRenderer::CleanUp()
 }
 
 
-void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, GLuint* pGLTexture, GLuint filterMode, GLuint wrapModeU, GLuint wrapModeV, bool flipY)
+void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* pGLTexture, u32 filterMode, u32 wrapModeU, u32 wrapModeV, bool flipY)
 {
 	//You're not allowed to load different textures into one location
     //You're not allowed to load into NULL
@@ -3261,7 +3266,7 @@ void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, GLuin
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapModeU);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapModeV);
 				
-				GLint type = hasAlpha?GL_RGBA:GL_RGB;
+				s32 type = hasAlpha?GL_RGBA:GL_RGB;
 				
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 				glTexImage2D(GL_TEXTURE_2D, 0, type, width,height, 0, type, GL_UNSIGNED_BYTE, textureImage);
@@ -3327,7 +3332,7 @@ GFX_Trail* OpenGLRenderer::CreateTrail(GFX_Trail** pCallbackTrail, vec3* pInitia
 }
 
 
-void OpenGLRenderer::DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, GLuint texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats)
+void OpenGLRenderer::DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, u32 texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats)
 {
 	if(m_numTexturedLines == MAX_TEXTURED_LINES)
 	{
@@ -3452,7 +3457,7 @@ void OpenGLRenderer::SetMaterial(RenderMaterial material)
 {
 	//Enable the shader
 	const Material* currMaterial = &g_Materials[material];
-	const GLuint program = currMaterial->shaderProgram;
+	const u32 program = currMaterial->shaderProgram;
 	glUseProgram(program);
 	
 	//Upload camPos (TODO: don't put this here)
@@ -3545,7 +3550,7 @@ void Draw_Matrix()
     glDrawArrays(GL_LINES, 0, 6);
 }
 
-void OpenGLRenderer::PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PostProcessDrawArea drawArea, GLuint* texture0, GLuint* texture1, GLuint* texture2)
+void OpenGLRenderer::PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PostProcessDrawArea drawArea, u32* texture0, u32* texture1, u32* texture2)
 {
 	//TODO: comment this back in later when we want to use post processing
 	//[self setRenderTarget:renderTarget];
@@ -3619,7 +3624,7 @@ void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 }
 
 
-bool OpenGLRenderer::CreateRenderTarget(RenderTarget* renderTarget, GLuint FBO, GLuint width, GLuint height)
+bool OpenGLRenderer::CreateRenderTarget(RenderTarget* renderTarget, u32 FBO, u32 width, u32 height)
 {
 	return false;
 }
@@ -3628,7 +3633,7 @@ bool OpenGLRenderer::CreateRenderTarget(RenderTarget* renderTarget, GLuint FBO, 
 //Just an OpenGL example from Apple I might care about later
 /*- (BOOL)loadShaders
 {
-    GLuint vertShader, fragShader;
+    u32 vertShader, fragShader;
     NSString *vertShaderPathname, *fragShaderPathname;
     
     // Create shader program.
@@ -3721,9 +3726,9 @@ char* FileToCharArray(const char* filename)
 
 
 /* Create and compile a shader from the provided source(s) */
-bool OpenGLRenderer::CompileShader(GLuint *shader, GLenum type, GLsizei count, const char* filename)
+bool OpenGLRenderer::CompileShader(u32 *shader, s32 type, s32 count, const char* filename)
 {
-	GLint status;
+	s32 status;
    
     const GLchar* source = FileToCharArray(filename);
 	
@@ -3740,7 +3745,7 @@ bool OpenGLRenderer::CompileShader(GLuint *shader, GLenum type, GLsizei count, c
 	//Release the source code!
 	free((void*)source);
 
-    GLint logLength;
+    s32 logLength;
     glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength > 0)
 	{
@@ -3761,12 +3766,12 @@ bool OpenGLRenderer::CompileShader(GLuint *shader, GLenum type, GLsizei count, c
 
 
 /* Link a program with all currently attached shaders */
-bool OpenGLRenderer::LinkProgram(GLuint prog)
+bool OpenGLRenderer::LinkProgram(u32 prog)
 {
-	GLint status;
+	s32 status;
     glLinkProgram(prog);
     
-    GLint logLength;
+    s32 logLength;
     glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength > 0) {
         GLchar *log = (GLchar *)malloc(logLength);
@@ -3785,9 +3790,9 @@ bool OpenGLRenderer::LinkProgram(GLuint prog)
 
 
 /* Validate a program (for i.e. inconsistent samplers) */
-GLint OpenGLRenderer::ValidateProgram(GLuint prog)
+s32 OpenGLRenderer::ValidateProgram(u32 prog)
 {
-	GLint logLength, status;
+	s32 logLength, status;
 	
 	glValidateProgram(prog);
     glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
@@ -3795,26 +3800,26 @@ GLint OpenGLRenderer::ValidateProgram(GLuint prog)
     {
         GLchar *log = (GLchar *)malloc(logLength+1);
         glGetProgramInfoLog(prog, logLength, &logLength, log);
-        NSLog(@"Program validate log:\n%s", log);
+        printf("Program validate log:\n%s", log);
         free(log);
     }
     
     glGetProgramiv(prog, GL_VALIDATE_STATUS, &status);
     if (status == GL_FALSE)
-		NSLog(@"Failed to validate program %d", prog);
+		printf("Failed to validate program %d", prog);
 	
 	return status;
 }
 
 
-bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderIndex,  AttributeFlags attribs, GLuint* out_resultProgram)
+bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderIndex,  AttributeFlags attribs, u32* out_resultProgram)
 {
 	PrintOpenGLError("Before creating shader program.");
 	
 	//ALog(@"Creating Shader: VSH:'%@' + FSH:'%@'\n",g_VertexShader_Filenames[vertexShader],g_PixelShader_Filenames[pixelShader]);
 
 	// create shader program
-	const GLuint shaderProgram = glCreateProgram();
+	const u32 shaderProgram = glCreateProgram();
 
 	if (!shaderProgram)
 	{
@@ -3904,7 +3909,7 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 	{	
 		//NSLog(@"ERROR: createShaderProgram -> failed to link program ('%@.vsh' + '%@.fsh')\n",g_VertexShader_Filenames[vertexShader],g_PixelShader_Filenames[pixelShader]);
 		
-		GLint logLength;
+		s32 logLength;
 		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLength);
 		if (logLength > 0)
 		{
@@ -3927,9 +3932,9 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 	glUseProgram(shaderProgram);
 	
 	//TODO: make this only set up as many as the material uses (if it even matters)
-	GLuint uniform_texture0 = glGetUniformLocation(shaderProgram,"texture0");
-	GLuint uniform_texture1 = glGetUniformLocation(shaderProgram,"texture1");
-	GLuint uniform_texture2 = glGetUniformLocation(shaderProgram,"texture2");
+	u32 uniform_texture0 = glGetUniformLocation(shaderProgram,"texture0");
+	u32 uniform_texture1 = glGetUniformLocation(shaderProgram,"texture1");
+	u32 uniform_texture2 = glGetUniformLocation(shaderProgram,"texture2");
 
 	glUniform1i(uniform_texture0,0);
 	glUniform1i(uniform_texture1,1);
@@ -4057,7 +4062,7 @@ void OpenGLRenderer::UploadUniqueUniforms(u8* const * pValuePointerArray)
 	for(int i=0; i<numUniforms; ++i)
 	{
 		const u8* pCurrValue = pValuePointerArray[i];
-		const GLint uniformID = currMaterial->uniforms_unique[i];
+		const s32 uniformID = currMaterial->uniforms_unique[i];
 		
 		if (uniformID == -1 || pCurrValue == NULL)
 		{
@@ -4113,11 +4118,11 @@ void OpenGLRenderer::UploadUniqueUniforms(u8* const * pValuePointerArray)
 }
 
 
-void OpenGLRenderer::SetTexture(const GLuint* pTexture,GLuint textureUnit)
+void OpenGLRenderer::SetTexture(const u32* pTexture,u32 textureUnit)
 {
 	//If the texture is NULL or the deferenced texture is 0, do nothing
     //else use the deferenced texture
-    GLuint textureToUse = (pTexture && *pTexture) ? *pTexture : 0;
+    u32 textureToUse = (pTexture && *pTexture) ? *pTexture : 0;
 
 	//assert(textureToUse);
 	
@@ -4263,11 +4268,11 @@ void OpenGLRenderer::BindIndexData(const PrimitiveData* pPrimitive)
 void OpenGLRenderer::AddUniform_Unique(RenderMaterial renderMaterial, const char* nameOfUniformInShader,UniformType uniformType, u32 amount)
 {
 	const int index = g_Materials[renderMaterial].numUniforms_unique;
-	const GLint uniformID = glGetUniformLocation(g_Materials[renderMaterial].shaderProgram,nameOfUniformInShader);
+	const s32 uniformID = glGetUniformLocation(g_Materials[renderMaterial].shaderProgram,nameOfUniformInShader);
 	
 	if (uniformID == -1)
 	{
-		NSLog(@"ERROR: addUniform_Unique -> Unable to add uniform: %s for material %s!\n", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
+		printf("ERROR: addUniform_Unique -> Unable to add uniform: %s for material %s!\n", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
 	}
 	
 	g_Materials[renderMaterial].uniforms_unique[index] = uniformID;
@@ -4284,7 +4289,7 @@ void OpenGLRenderer::AddUniform_Shared(RenderMaterial renderMaterial, const char
 	
 	if (g_Materials[renderMaterial].uniforms_shared[index].uniform == -1)
 	{
-		NSLog(@"ERROR: addUniform_Shared -> Unable to add uniform: %s for material %s!\n", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
+		printf("ERROR: addUniform_Shared -> Unable to add uniform: %s for material %s!\n", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
 		
 		//Return early and don't add this uniform
 		return;
@@ -4304,7 +4309,7 @@ void OpenGLRenderer::AddUniform_Shared_Const(RenderMaterial renderMaterial, cons
 	
 	if (g_Materials[renderMaterial].uniforms_shared_const[index].uniform == -1)
 	{
-		NSLog(@"ERROR: addUniform_Shared_Const -> Unable to add uniform: %s for material %s!\n", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
+		printf("ERROR: addUniform_Shared_Const -> Unable to add uniform: %s for material %s!\n", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
 		
 		//Return early and don't add this uniform
 		return;
@@ -4324,13 +4329,13 @@ void OpenGLRenderer::SortParticleQueues()
 	{
 		RendererParticleBucket* pBucket = &m_particleBuckets[bucketIDX];
 		
-		if (pBucket->m_particlesNeedSorting == NO)
+		if (pBucket->m_particlesNeedSorting == false)
 		{
 			continue;
 		}
 		
 		//Else it needs sorting
-		pBucket->m_particlesNeedSorting = NO;
+		pBucket->m_particlesNeedSorting = false;
 		
 		//INSERTION SORT
 		for (s32 i=0; i < pBucket->m_numParticles; ++i)
@@ -4591,7 +4596,7 @@ void OpenGLRenderer::DrawSceneObject(RenderableSceneObject3D* pSceneObject)
 }
 
 
-void OpenGLRenderer::DeleteTexture(GLuint* pTextureID)
+void OpenGLRenderer::DeleteTexture(u32* pTextureID)
 {
 	if(*pTextureID != 0)
     {
@@ -5114,7 +5119,7 @@ bool LoadPNGImage(const char* fileName, int &outWidth, int &outHeight, bool &out
 	/* Open the file. */
 	infile = fopen(fileName, "rb");
 	if (!infile) {
-		return 0;
+		return false;
 	}
 	
 	
@@ -5127,7 +5132,7 @@ bool LoadPNGImage(const char* fileName, int &outWidth, int &outHeight, bool &out
 	
 	if (!png_check_sig((unsigned char *) sig, 8)) {
 		fclose(infile);
-		return 0;
+		return false;
 	}
 	
 	/* 
@@ -5136,14 +5141,14 @@ bool LoadPNGImage(const char* fileName, int &outWidth, int &outHeight, bool &out
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr) {
 		fclose(infile);
-		return 4;    /* out of memory */
+		return false;    /* out of memory */
 	}
 	
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr) {
 		png_destroy_read_struct(&png_ptr, (png_infopp) NULL, (png_infopp) NULL);
 		fclose(infile);
-		return 4;    /* out of memory */
+		return false;    /* out of memory */
 	}
 	
 	
@@ -5154,7 +5159,7 @@ bool LoadPNGImage(const char* fileName, int &outWidth, int &outHeight, bool &out
 	if (setjmp(png_jmpbuf(png_ptr))) {
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		fclose(infile);
-		return 0;
+		return false;
 	}
 	
 	/* 
@@ -5220,14 +5225,14 @@ bool LoadPNGImage(const char* fileName, int &outWidth, int &outHeight, bool &out
 	/* Allocate the image_data buffer. */
 	if ((image_data = (GLubyte *) malloc(rowbytes * height))==NULL) {
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-		return 4;
+		return false;
     }
 	
 	if ((row_pointers = (png_bytepp)malloc(height*sizeof(png_bytep))) == NULL) {
         png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
         free(image_data);
         image_data = NULL;
-        return 4;
+        return false;
     }
 	
 	
@@ -5265,7 +5270,7 @@ bool LoadPNGImage(const char* fileName, int &outWidth, int &outHeight, bool &out
 	
 	*outData = (GLubyte*)image_data;
 	
-	return 1;
+	return true;
 }
 
 

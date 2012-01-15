@@ -7,6 +7,8 @@
 //
 
 #include "base64.h"
+#include <cstdio>
+#include <cstring>
 
 /**
  * characters used for Base64 encoding

@@ -14,13 +14,20 @@ class OpenGLRenderer;
 extern OpenGLRenderer* GLRENDERER;
 
 //** INCLUDES **/
-#ifdef PLATFORM_OSX
+#if defined (PLATFORM_OSX)
 #include <OpenGL/gl.h>
 #endif
 
+#if defined (PLATFORM_WIN)
+#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+	#include <wingdi.h>
+#include "glew/glew.h"
+#endif
+
 #ifdef PLATFORM_IOS
-#import <OpenGLES/ES2/gl.h>
-#import <OpenGLES/ES2/glext.h>
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
 #endif
 
 #include "MathUtil.h"
@@ -29,7 +36,7 @@ extern OpenGLRenderer* GLRENDERER;
 #include "MaterialDeclarations.h"
 #include "ArrayUtil.h"
 
-#include "PVRTModelPOD.h"
+#include "PowerVR/PVRTModelPOD.h"
 
 #include "EngineModels.h"
 
@@ -110,7 +117,7 @@ struct RendererParticleBucket
 
 struct TexturedLineObject
 {
-	GLuint texturedID;
+	u32 texturedID;
 	LineSegment line;
 	vec4 diffuseColor;
 	f32 lineWidth0;
@@ -128,7 +135,7 @@ struct TexturedLineVert
 struct ShaderCreationStatus
 {
 	const char* filename;
-	GLuint openGLID;
+	u32 openGLID;
 };
 
 
@@ -172,8 +179,8 @@ public:
 	CPVRTModelPOD* LoadPOD(const char* fileName);
 	AnimatedPOD* AddAnimatedPOD(CPVRTModelPOD* pPod, RenderableScene3D* pScene, mat4f matrix4x4);
 	CoreObjectHandle CreateRenderableSceneObject3D(RenderableSceneObject3D** pOut_SceneObject);
-	bool LoadTextureFromData(GLuint* out_textureName,const void* data,u32 texWidth, u32 texHeight, u32 format, u32 type, GLuint filterMode, GLuint wrapModeU, GLuint wrapModeV);
-	bool UpdateTextureFromData(GLuint* out_textureName, const void* data, u32 texWidth, u32 texHeight, u32 format, u32 type);
+	bool LoadTextureFromData(u32* out_textureName,const void* data,u32 texWidth, u32 texHeight, u32 format, u32 type, u32 filterMode, u32 wrapModeU, u32 wrapModeV);
+	bool UpdateTextureFromData(u32* out_textureName, const void* data, u32 texWidth, u32 texHeight, u32 format, u32 type);
 	void RegisterModel(ModelData* pModelData);
 	CoreObjectHandle CreateRenderableGeometry3D_Normal(RenderableGeometry3D** pOut_Geom);
 	CoreObjectHandle CreateRenderableGeometry3D_UI(RenderableGeometry3D** pOut_Geom);
@@ -181,8 +188,8 @@ public:
 	void SpawnParticles(vec3* pPosition, const vec3* pColor, const ParticleSettings* particleSettings, s32 numParticles);
 	void UpdateParticleQueues(f32 timeElapsed);
 	void UpdateTrails(f32 timeElapsed);
-	void InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, ModelData* pModel, RenderMaterial materialID, GLuint* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
-	void InitRenderableSceneObject3D(RenderableSceneObject3D* renderableObject, RenderableScene3D* pScene, RenderMaterial materialID, GLuint* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
+	void InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, ModelData* pModel, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
+	void InitRenderableSceneObject3D(RenderableSceneObject3D* renderableObject, RenderableScene3D* pScene, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
 	void InitRenderableSceneObject3D_Simple(RenderableSceneObject3D* renderableObject, RenderableScene3D* pScene, mat4f matrix4x4, u32 viewFlags);
 	void SortRenderableGeometry3DList(RenderableObjectType type);
 	void CreateMaterials();
@@ -195,17 +202,17 @@ public:
 	void StartPauseFadeIn();
 	void StartPauseFadeOut(f32 finalFade, f32 timeInSeconds);
 	void ResetPauseFade();
-	void DeleteTexture(GLuint* pTextureID);
+	void DeleteTexture(u32* pTextureID);
 	void ClearParticles();
 	void SetScreenFadeColor(vec3* screenFadeColor);
 	void ForceRenderablesNeedSorting();
 	
 	void FlashScreen(const vec3* pColor, f32 timeInSeconds);
 	void ShakeScreen(f32 shakeAmount,f32 shakeSpeed, f32 shakeTime);
-	void LoadTexture(const char* fileName,ImageType imageType, GLuint* pGLTexture, GLuint filterMode, GLuint wrapModeU, GLuint wrapModeV, bool flipY = false);
+	void LoadTexture(const char* fileName,ImageType imageType, u32* pGLTexture, u32 filterMode, u32 wrapModeU, u32 wrapModeV, bool flipY = false);
 	GFX_Trail* CreateTrail(GFX_Trail** pCallbackTrail, vec3* pInitialPos, f32 timeToLive, const GFX_TrailSettings* pTrailSettings, u32 renderFlags);
 	
-	void DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, GLuint texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats);
+	void DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, u32 texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats);
 	void DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color);
 	void DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color1, const vec4* color2);
 	void DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color);
@@ -233,17 +240,17 @@ private:
 	void SortRenderablesInLayerRangeByZ(RenderLayer layerBegin, RenderLayer layerEnd);
 	void SetMaterial(RenderMaterial material);
 	void DeleteScene(RenderableScene3D* pScene);
-	void PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PostProcessDrawArea drawArea, GLuint* texture0, GLuint* texture1, GLuint* texture2);
+	void PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PostProcessDrawArea drawArea, u32* texture0, u32* texture1, u32* texture2);
 	void PrintOpenGLError(const char* callerName);
-	bool CreateRenderTarget(RenderTarget* renderTarget, GLuint FBO, GLuint width, GLuint height);
-	bool CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderIndex, AttributeFlags attribs, GLuint* out_resultProgram);
+	bool CreateRenderTarget(RenderTarget* renderTarget, u32 FBO, u32 width, u32 height);
+	bool CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderIndex, AttributeFlags attribs, u32* out_resultProgram);
 	void SetRenderTarget(RenderTarget* renderTarget);
 	void UploadWorldViewProjMatrix(const f32* pWorldMat); //only call after setMaterial
 	void UploadProjMatrix(const f32* pProjMat); //only call after setMaterial
 	void UploadWorldProjMatrix(const f32* pWorldMat); //only call after setMaterial
 	void UploadSharedUniforms();
 	void UploadUniqueUniforms(u8* const * pValuePointerArray);
-	void SetTexture(const GLuint* pTexture,GLuint textureUnit);
+	void SetTexture(const u32* pTexture,u32 textureUnit);
 	void SetRenderState(u32 renderFlags);
 	f32 ComputeGaussianValue(f32 x, f32 stdDevSq);
 	void ComputeGaussianWeights(f32* out_pWeights, s32 numWeights, f32 standardDeviationSquared);
@@ -254,9 +261,9 @@ private:
 	void AddUniform_Shared(RenderMaterial renderMaterial, const char* nameOfUniformInShader, UniformType uniformType, u8* pData, u32 amount);
 	void AddUniform_Shared_Const(RenderMaterial renderMaterial, const char* nameOfUniformInShader, UniformType uniformType, u8* pData, u32 amount);
 	void SortParticleQueues();
-	bool CompileShader(GLuint *shader, GLenum type, GLsizei count, const char* filename);
-	bool LinkProgram(GLuint prog);
-	GLint ValidateProgram(GLuint prog);
+	bool CompileShader(u32 *shader, s32 type, s32 count, const char* filename);
+	bool LinkProgram(u32 prog);
+	s32 ValidateProgram(u32 prog);
 	const char* GetPathToFile(const char* filename);
 	
 	bool CreatePixelShader(s32 pixelShaderIndex);
@@ -269,13 +276,13 @@ private:
 	ShaderCreationStatus m_pixelShaders[MAX_COMPILED_PIXEL_SHADERS];
 	s32 m_numVertexShaders;
 	s32 m_numPixelShaders;
-	GLint backingWidth;
-	GLint backingHeight;
+	s32 backingWidth;
+	s32 backingHeight;
 	RenderTarget m_screenTarget;
 	vec3 m_camPos[NumCameraViews];
 	// The OpenGL names for the framebuffer and renderbuffer used to render to this view
-	GLuint viewFrameBuffer, colorRenderbuffer, depthRenderbuffer, msaaFramebuffer,msaaRenderBuffer,msaaDepthBuffer;
-	GLuint m_postProcessDefaultVertShader;
+	u32 viewFrameBuffer, colorRenderbuffer, depthRenderbuffer, msaaFramebuffer,msaaRenderBuffer,msaaDepthBuffer;
+	u32 m_postProcessDefaultVertShader;
 	f32 m_gaussianWeights[GAUSSIAN_NUMSAMPLES];
 	f32 m_accumulatedTime;
 	f32* m_view[NumCameraViews];
@@ -309,10 +316,10 @@ private:
     u32 m_maxNumRenderables;
     u32 m_maxNumTrails;
     u32 m_maxNumParticles;
-	GLuint m_currTexture;
+	u32 m_currTexture;
     vec3 m_flashColor;
-    GLuint m_currTextureInTextureUnit[MAX_NUM_TEXTURE_UNITS];
-    GLuint m_currTextureUnit;
+    u32 m_currTextureInTextureUnit[MAX_NUM_TEXTURE_UNITS];
+    u32 m_currTextureUnit;
     SinCosBucket m_sinCosBuckets[NUM_SINCOS_BUCKETS];
     RenderableGeometry3D m_renderableGeometry3DList_Normal[MAX_RENDERABLE_NORMAL_OBJECTS];
 	RenderableGeometry3D m_renderableGeometry3DList_UI[MAX_RENDERABLE_UI_OBJECTS];
@@ -322,9 +329,9 @@ private:
 	RenderableSceneObject3D m_scenes[MAX_RENDERABLE_SCENES];
 
     RendererParticleBucket m_particleBuckets[NumParticleBuckets];
-    GLuint trailShaderUniform_accumulatedTime;
-    GLuint trailShaderUniform_scrollAmountU;
-    GLuint trailShaderUniform_scrollAmountV;
+    u32 trailShaderUniform_accumulatedTime;
+    u32 trailShaderUniform_scrollAmountU;
+    u32 trailShaderUniform_scrollAmountV;
     GFX_Trail m_trails[MAX_TRAILS];
     PointData m_debugLinePoints[DebugDrawMode_Num][DEBUGDRAW_MAXLINESEGMENTS*2];
     s32 m_numDebugLinePoints[DebugDrawMode_Num];
@@ -374,7 +381,7 @@ private:
 
 //Helpers
 char* FileToCharArray(const char* filename);
-bool LoadPNGImage(const char *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData, bool flipY);
+bool LoadPNGImage(const char *name, int &outWidth, int &outHeight, bool &outHasAlpha, u8 **outData, bool flipY);
 bool RenderableGeometry3DCompare_SortByZ(const RenderableGeometry3D& lhs, const RenderableGeometry3D& rhs);
 bool RenderableGeometry3DCompare_SortByNegativeZ(const RenderableGeometry3D& lhs, const RenderableGeometry3D& rhs);
 bool RenderableGeometry3DCompare_SortValue(const RenderableGeometry3D& lhs, const RenderableGeometry3D& rhs);

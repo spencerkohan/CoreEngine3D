@@ -9,12 +9,20 @@
 #include "CoreAudio_OpenAL.h"
 #include "MathUtil.h"
 
+#include "stddef.h" //for NULL -_-
+#include <cstdio>
+
 CoreAudioOpenAL* OPENALAUDIO = NULL;
 
-#include "stddef.h" //for NULL -_-
 
+
+#if defined (PLATFORM_IOS) || defined (PLATFORM_OSX)
 #include <OpenAL/al.h>
+#endif
 
+#if defined (PLATFORM_WIN)
+#include "al.h"
+#endif
 
 #if defined (PLATFORM_OSX) || (defined PLATFORM_IOS)
 #include <Foundation/Foundation.h>
@@ -72,6 +80,14 @@ const char* CoreAudioOpenAL::GetPathToFile(const char* filename)
 #endif
 }
 
+#if defined (PLATFORM_WIN)
+bool LoadSoundDataFromFile_WIN(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo)
+{
+	return false;
+}
+#endif
+
+#if defined (PLATFORM_IOS) || defined (PLATFORM_OSX)
 bool CoreAudioOpenAL::LoadSoundDataFromFile_APPLE(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo)
 {
 	CFStringRef filenameStr = CFStringCreateWithCString( NULL, GetPathToFile(filename), kCFStringEncodingUTF8 );
@@ -199,7 +215,7 @@ bool CoreAudioOpenAL::LoadSoundDataFromFile_APPLE(const char* filename, CoreAudi
 	
     return true;
 }
-
+#endif
 
 bool CoreAudioOpenAL::CheckForOpenALError()
 {
@@ -403,8 +419,15 @@ void CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoun
 	}
 	
 	CoreAudioFileInfo fileInfo;
+
+#if defined (PLATFORM_IOS) || defined (PLATFORM_OSX)
 	LoadSoundDataFromFile_APPLE(filename, &fileInfo);
-	
+#endif
+
+#if defined (PLATFORM_WIN)
+	LoadSoundDataFromFile_WIN(filename, &fileInfo);
+#endif
+
 	if(CheckForOpenALError())
 	{
 		alDeleteBuffers(1, &soundBufferID);

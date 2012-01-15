@@ -1,4 +1,4 @@
-#import "GraphicsTypes.h"
+#include "GraphicsTypes.h"
 
 //Model: "plane_XZ_3000x3000"
 

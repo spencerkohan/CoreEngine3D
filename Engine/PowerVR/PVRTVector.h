@@ -312,8 +312,8 @@ struct PVRTVec2
 
 	/*!***************************************************************************
 		@Function			rotated90
-		@Returns			returns the vector rotated 90°
-		@Description		returns the vector rotated 90°
+		@Returns			returns the vector rotated 90?
+		@Description		returns the vector rotated 90?
 		****************************************************************************/
 	PVRTVec2 rotated90() const
 	{

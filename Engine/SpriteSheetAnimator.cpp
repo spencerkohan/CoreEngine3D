@@ -18,9 +18,9 @@ bool SpriteSheetAnimator::GetSpriteInfoForFrame(u32 frame, SpriteFrameInfo* pOut
 {
 	SpriteSheet* pSheet = NULL;
 	
-	int frameCount = 0;
-	int prevFrameCount = 0;
-	for(int i=0; i<SPRITESHEET_MAX_SHEETS; ++i)
+	u32 frameCount = 0;
+	u32 prevFrameCount = 0;
+	for(u32 i=0; i<SPRITESHEET_MAX_SHEETS; ++i)
 	{
 		SpriteSheet* pCurrSheet = &m_spriteSheets[i];
 		

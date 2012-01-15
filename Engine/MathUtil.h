@@ -6,7 +6,6 @@
 #define __MATHUTIL_H
 
 #include "MathTypes.h"
-#include <stdbool.h>
 
 #define PI 3.141592653589f
 

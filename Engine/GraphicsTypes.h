@@ -15,8 +15,8 @@
 #endif
 
 #ifdef PLATFORM_IOS
-#import <OpenGLES/ES2/gl.h>
-#import <OpenGLES/ES2/glext.h>
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
 #endif
 
 #include "MaterialDeclarations.h"
@@ -324,12 +324,12 @@ typedef struct
 {
 	u32 drawMethod;
 	u8* vertexData;
-	GLushort* indexData;
+	u16* indexData;
 	u32 numVerts;
 	u32 sizeOfVertexData;
 	u32 sizeOfIndexData;
-    GLuint vertexArrayObjectID; //Gets filled in at init
-	GLuint indexBufferID; //Gets filled in at init
+    u32 vertexArrayObjectID; //Gets filled in at init
+	u32 indexBufferID; //Gets filled in at init
 }PrimitiveData;
 
 typedef struct
@@ -415,29 +415,29 @@ typedef struct
 //UniformBlob
 typedef struct
 {
-	GLint uniform;
+	u32 uniform;
 	UniformValue value;
-	GLsizei size;
+	s32 size;
 } UniformBlob;
 
 
 //Material
 typedef struct
 {
-	GLuint shaderProgram;
-	GLint uniform_worldViewProjMat;
-	GLint uniform_camPos;//TODO: remove
+	u32 shaderProgram;
+	u32 uniform_worldViewProjMat;
+	u32 uniform_camPos;//TODO: remove
 	UniformBlob uniforms_shared[MAX_SHARED_UNIFORM_VALUES];
     UniformBlob uniforms_shared_const[MAX_SHARED_CONST_UNIFORM_VALUES];
-	GLint uniforms_unique[MAX_UNIQUE_UNIFORM_VALUES];
-	GLsizei uniforms_unique_sizes[MAX_UNIQUE_UNIFORM_VALUES];
+	u32 uniforms_unique[MAX_UNIQUE_UNIFORM_VALUES];
+	s32 uniforms_unique_sizes[MAX_UNIQUE_UNIFORM_VALUES];
 	UniformType uniforms_unique_types[MAX_UNIQUE_UNIFORM_VALUES];
 	int numUniforms_shared;
     int numUniforms_shared_const;
 	int numUniforms_unique;
-	GLuint* texture0;
-	GLuint* texture1;
-	GLuint* texture2;
+	u32* texture0;
+	u32* texture1;
+	u32* texture2;
 	VertexFormat requiredVertexFormat;	//TODO: use this
 	const char* materialName;
 } Material;
@@ -463,16 +463,16 @@ typedef enum
 //RenderTarget	
 typedef struct
 {
-	GLuint texture;
-	GLuint width;
-	GLuint height;
-	GLuint FBO;
+	u32 texture;
+	u32 width;
+	u32 height;
+	u32 FBO;
 } RenderTarget;
 
 
 typedef struct
 {
-    GLuint* texture;
+    u32* texture;
     f32 fatnessBegin;
     f32 fatnessEnd;
     f32 segmentLength;
@@ -501,7 +501,7 @@ typedef struct
 typedef struct
 {
     GFX_TrailParticle trailParticles[MAX_TRAIL_PARTICLES_PER_TRAIL+1];
-    GLuint texture;
+    u32 texture;
     s32 m_numTrailParticles;
     f32 segmentLengthSq;
     vec3 currPos;
@@ -543,8 +543,8 @@ struct RenderableMaterial
 {
 	RenderMaterial materialID;  //4 bytes
 	u8* uniqueUniformValues[MAX_UNIQUE_UNIFORM_VALUES];    //32 bytes
-	GLuint* customTexture0;   //4 bytes
-    GLuint* customTexture1;   //4 bytes
+	u32* customTexture0;   //4 bytes
+    u32* customTexture1;   //4 bytes
 	u32 flags;  //4 bytes
 };
 
@@ -732,9 +732,9 @@ typedef struct
 
 struct MaterialSettings
 {
-	GLuint			textureFilterMode;
-	GLuint			wrapModeU;
-	GLuint			wrapModeV;
+	u32			textureFilterMode;
+	u32			wrapModeU;
+	u32			wrapModeV;
     RenderMaterial	renderMaterial;
     u32				renderFlags;
 	bool			flipY;
@@ -744,7 +744,7 @@ struct ItemArtDescription
 {
     const char*		textureFileName;
     ImageType		imageType;
-    GLuint			textureHandle;
+    u32			textureHandle;
 	const MaterialSettings*	materialSettings;
     ModelData*		pModelData;
 };

@@ -1,0 +1,259 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AA9393C9-427A-480F-8FAB-E8B18548876F}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>CoreEngine3DWIN</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Program Files\OpenAL 1.1 SDK\include;$(solutionDir)/../Engine/zlib</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(solutionDir)/../Engine/glew</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenAL32.lib;glew32.lib</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Program Files\OpenAL 1.1 SDK\include;$(solutionDir)/../Engine/zlib</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(solutionDir)/../Engine/glew</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenAL32.lib;glew32.lib</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Engine\CoreAudio_OpenAL.mm">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\Game.mm">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\matrix.mm">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\OpenGLRenderer.mm">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <None Include="..\..\Engine\zlib\libz.a" />
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Engine\AnimationController.cpp" />
+    <ClCompile Include="..\..\Engine\ArrayUtil.cpp" />
+    <ClCompile Include="..\..\Engine\base64.cpp" />
+    <ClCompile Include="..\..\Engine\CoreInput_DeviceInputState.cpp" />
+    <ClCompile Include="..\..\Engine\CoreInput_GamePad.cpp" />
+    <ClCompile Include="..\..\Engine\CoreInput_MouseState.cpp" />
+    <ClCompile Include="..\..\Engine\CoreObject.cpp" />
+    <ClCompile Include="..\..\Engine\CoreObject_Manager.cpp" />
+    <ClCompile Include="..\..\Engine\CoreUI_Button.cpp" />
+    <ClCompile Include="..\..\Engine\EngineModels.cpp" />
+    <ClCompile Include="..\..\Engine\GameUtil.cpp" />
+    <ClCompile Include="..\..\Engine\GraphicsTypes.cpp" />
+    <ClCompile Include="..\..\Engine\Hash.cpp" />
+    <ClCompile Include="..\..\Engine\libpng\png.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngerror.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngget.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngmem.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngpread.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngread.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngrio.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngrtran.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngrutil.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngset.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngtest.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngtrans.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngwio.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngwrite.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngwtran.c" />
+    <ClCompile Include="..\..\Engine\libpng\pngwutil.c" />
+    <ClCompile Include="..\..\Engine\MaterialDeclarations.cpp" />
+    <ClCompile Include="..\..\Engine\MathTypes.cpp" />
+    <ClCompile Include="..\..\Engine\MathUtil.cpp" />
+    <ClCompile Include="..\..\Engine\Physics.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTBoneBatch.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTDecompress.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTError.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTFixedPoint.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTGeometry.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTMatrixF.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTMatrixX.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTMisc.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTModelPOD.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTPFXParser.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTQuaternionF.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTQuaternionX.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTResourceFile.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTString.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTTexture.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTTrans.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTTriStrip.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTVector.cpp" />
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTVertex.cpp" />
+    <ClCompile Include="..\..\Engine\pugixml\src\pugixml.cpp" />
+    <ClCompile Include="..\..\Engine\RenderFlags.cpp" />
+    <ClCompile Include="..\..\Engine\RenderLayer.cpp" />
+    <ClCompile Include="..\..\Engine\SOIL\image_DXT.c" />
+    <ClCompile Include="..\..\Engine\SOIL\image_helper.c" />
+    <ClCompile Include="..\..\Engine\SOIL\SOIL.c" />
+    <ClCompile Include="..\..\Engine\SOIL\stb_image_aug.c" />
+    <ClCompile Include="..\..\Engine\SpriteSheetAnimator.cpp" />
+    <ClCompile Include="..\..\Engine\TouchState.cpp" />
+    <ClCompile Include="..\..\Engine\ViewFlags.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Engine\AnimationController.h" />
+    <ClInclude Include="..\..\Engine\ArrayUtil.h" />
+    <ClInclude Include="..\..\Engine\base64.h" />
+    <ClInclude Include="..\..\Engine\CoreAudio_OpenAL.h" />
+    <ClInclude Include="..\..\Engine\CoreInput_DeviceInputState.h" />
+    <ClInclude Include="..\..\Engine\CoreInput_GamePad.h" />
+    <ClInclude Include="..\..\Engine\CoreInput_MouseState.h" />
+    <ClInclude Include="..\..\Engine\CoreObject.h" />
+    <ClInclude Include="..\..\Engine\CoreObject_Manager.h" />
+    <ClInclude Include="..\..\Engine\CoreUI_Button.h" />
+    <ClInclude Include="..\..\Engine\DEBUGMODEL_Circle.h" />
+    <ClInclude Include="..\..\Engine\DEBUGMODEL_CircleXY.h" />
+    <ClInclude Include="..\..\Engine\DEBUGMODEL_CircleXZ.h" />
+    <ClInclude Include="..\..\Engine\DEBUGMODEL_Cylinder.h" />
+    <ClInclude Include="..\..\Engine\EngineModels.h" />
+    <ClInclude Include="..\..\Engine\Game.h" />
+    <ClInclude Include="..\..\Engine\GameUtil.h" />
+    <ClInclude Include="..\..\Engine\glew\glew.h" />
+    <ClInclude Include="..\..\Engine\GraphicsTypes.h" />
+    <ClInclude Include="..\..\Engine\Hash.h" />
+    <ClInclude Include="..\..\Engine\libpng\png.h" />
+    <ClInclude Include="..\..\Engine\libpng\pngconf.h" />
+    <ClInclude Include="..\..\Engine\libpng\pngdebug.h" />
+    <ClInclude Include="..\..\Engine\libpng\pnginfo.h" />
+    <ClInclude Include="..\..\Engine\libpng\pnglibconf.h" />
+    <ClInclude Include="..\..\Engine\libpng\pngpriv.h" />
+    <ClInclude Include="..\..\Engine\libpng\pngstruct.h" />
+    <ClInclude Include="..\..\Engine\MaterialDeclarations.h" />
+    <ClInclude Include="..\..\Engine\MathTypes.h" />
+    <ClInclude Include="..\..\Engine\MathUtil.h" />
+    <ClInclude Include="..\..\Engine\matrix.h" />
+    <ClInclude Include="..\..\Engine\Models\fullscreen_model.h" />
+    <ClInclude Include="..\..\Engine\Models\model_cube.h" />
+    <ClInclude Include="..\..\Engine\Models\plane_XZ_3000x3000.h" />
+    <ClInclude Include="..\..\Engine\Models\skybox.h" />
+    <ClInclude Include="..\..\Engine\Models\square1x1.h" />
+    <ClInclude Include="..\..\Engine\Models\Square_Anim_1024x1024.h" />
+    <ClInclude Include="..\..\Engine\Models\Square_Anim_1024x512.h" />
+    <ClInclude Include="..\..\Engine\Models\Square_Anim_10x10.h" />
+    <ClInclude Include="..\..\Engine\Models\Square_Anim_256x64.h" />
+    <ClInclude Include="..\..\Engine\Models\Square_Tiled_16.h" />
+    <ClInclude Include="..\..\Engine\Models\Square_Tiled_2.h" />
+    <ClInclude Include="..\..\Engine\Models\Square_Tiled_8.h" />
+    <ClInclude Include="..\..\Engine\Models\square_tophalf.h" />
+    <ClInclude Include="..\..\Engine\OpenGLRenderer.h" />
+    <ClInclude Include="..\..\Engine\Physics.h" />
+    <ClInclude Include="..\..\Engine\PhysicsTypes.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTArray.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTBackground.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTBoneBatch.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTDecompress.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTError.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTFixedPoint.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTGeometry.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTGlobal.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTHash.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTMathTable.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTMatrix.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTMemoryFileSystem.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTMisc.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTModelPOD.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTPFXParser.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTPrint3Ddat.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTQuaternion.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTResourceFile.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTSingleton.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTSkipGraph.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTString.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTTexture.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTTrans.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTTriStrip.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTVector.h" />
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTVertex.h" />
+    <ClInclude Include="..\..\Engine\pugixml\contrib\foreach.hpp" />
+    <ClInclude Include="..\..\Engine\pugixml\src\pugiconfig.hpp" />
+    <ClInclude Include="..\..\Engine\pugixml\src\pugixml.hpp" />
+    <ClInclude Include="..\..\Engine\RenderFlags.h" />
+    <ClInclude Include="..\..\Engine\RenderLayer.h" />
+    <ClInclude Include="..\..\Engine\SOIL\image_DXT.h" />
+    <ClInclude Include="..\..\Engine\SOIL\image_helper.h" />
+    <ClInclude Include="..\..\Engine\SOIL\SOIL.h" />
+    <ClInclude Include="..\..\Engine\SOIL\stbi_DDS_aug.h" />
+    <ClInclude Include="..\..\Engine\SOIL\stbi_DDS_aug_c.h" />
+    <ClInclude Include="..\..\Engine\SOIL\stb_image_aug.h" />
+    <ClInclude Include="..\..\Engine\SpriteSheetAnimator.h" />
+    <ClInclude Include="..\..\Engine\TouchState.h" />
+    <ClInclude Include="..\..\Engine\ViewFlags.h" />
+    <ClInclude Include="..\..\Engine\zlib\zconf.h" />
+    <ClInclude Include="..\..\Engine\zlib\zlib.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

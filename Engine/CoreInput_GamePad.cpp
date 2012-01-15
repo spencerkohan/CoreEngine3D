@@ -76,7 +76,7 @@ GamePadButton* GamePad::AddButton(GamePadButtonType type, const JoystickBounding
 
 GamePadJoystick* GamePad::GetJoystickByType(GamePadJoystickType type)
 {
-	for(int joystickIDX=0; joystickIDX<numJoysticks; ++joystickIDX)
+	for(u32 joystickIDX=0; joystickIDX<numJoysticks; ++joystickIDX)
 	{
 		GamePadJoystick* pJoystick = &joysticks[joystickIDX];
 		if(pJoystick->joystickType == type)
@@ -91,7 +91,7 @@ GamePadJoystick* GamePad::GetJoystickByType(GamePadJoystickType type)
 
 GamePadButton* GamePad::GetGamePadButtonByType(GamePadButtonType type)
 {
-	for(int buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
+	for(u32 buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
 	{
 		GamePadButton* pButton = &buttons[buttonIDX];
 		if(pButton->buttonType == type)
@@ -457,7 +457,7 @@ void GamePad::Init(DeviceInputState* pDeviceInputState)
 void GamePad::Update()
 {
 	//Reset flags for all buttons that need resetting
-    for(int buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
+    for(u32 buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
     {
         //Clear out one-frame button flags from last update
         buttons[buttonIDX].value &= ~(1<<GamePadButtonState_Released);
@@ -488,7 +488,7 @@ void GamePad::Update()
         //Only look for buttons if we are not using the stick
         if(touchIsLeftStick == false)
         {
-            for(int buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
+            for(u32 buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
             {
                 if(buttons[buttonIDX].touchIndex == i)
                 {
@@ -515,7 +515,7 @@ void GamePad::Update()
             {
                 //If we didn't already have a button, find the closest
                 //one in the button group
-                for(int buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
+                for(u32 buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
                 {
                     if(TouchIsInsideBoundingBox(&posCurr,&buttons[buttonIDX].boundingBox,0.0f))
                     {
@@ -530,7 +530,7 @@ void GamePad::Update()
         //This can probably be cleaned up a bit
         else
         {
-            for(int buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
+            for(u32 buttonIDX=0; buttonIDX<numButtons; ++buttonIDX)
             {
                 if(buttons[buttonIDX].touchIndex == i)
                 {

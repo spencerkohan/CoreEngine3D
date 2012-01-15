@@ -1,0 +1,517 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{fc2fedd1-48d9-4d28-b33c-885e8e3a0f8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Models">
+      <UniqueIdentifier>{e60b43e8-bfb0-40c4-9f7c-6ab70281b396}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs">
+      <UniqueIdentifier>{183bdd58-83e5-47dc-b9ae-9937db3067dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs\SOIL">
+      <UniqueIdentifier>{5125f7b6-44de-4aa1-a3f5-d26d7fb5d1f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs\pugixml">
+      <UniqueIdentifier>{a8df14de-4bcb-4fb3-8cd7-13c53c109b4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs\pugixml\contrib">
+      <UniqueIdentifier>{8d2a40d8-5b83-4b2e-a295-36a8239c4a65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs\pugixml\src">
+      <UniqueIdentifier>{b6def2e2-bb5d-4178-aeb5-c70edec84c36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs\PowerVR">
+      <UniqueIdentifier>{2cefef22-29ee-47be-96da-290c6d67a562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs\libpng">
+      <UniqueIdentifier>{9f5bf29e-0fa2-4c0d-9c9e-331201f67119}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs\zlib">
+      <UniqueIdentifier>{a0a2b15a-0b08-429b-acd6-f6d03602d39a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs\glew">
+      <UniqueIdentifier>{f7bfc310-e485-4de4-aaaa-f3ef3e608e4a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+    <None Include="..\..\Engine\zlib\libz.a">
+      <Filter>Libs\zlib</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Engine\libpng\png.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngerror.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngget.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngmem.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngpread.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngread.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngrio.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngrtran.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngrutil.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngset.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngtest.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngtrans.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngwio.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngwrite.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngwtran.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\libpng\pngwutil.c">
+      <Filter>Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTBoneBatch.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTDecompress.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTError.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTFixedPoint.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTGeometry.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTMatrixF.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTMatrixX.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTMisc.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTModelPOD.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTPFXParser.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTQuaternionF.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTQuaternionX.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTResourceFile.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTString.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTTexture.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTTrans.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTTriStrip.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTVector.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\PowerVR\PVRTVertex.cpp">
+      <Filter>Libs\PowerVR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\pugixml\src\pugixml.cpp">
+      <Filter>Libs\pugixml\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\SOIL\image_helper.c">
+      <Filter>Libs\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\SOIL\SOIL.c">
+      <Filter>Libs\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\SOIL\stb_image_aug.c">
+      <Filter>Libs\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\SOIL\image_DXT.c">
+      <Filter>Libs\SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\Physics.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\RenderFlags.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\RenderLayer.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\SpriteSheetAnimator.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\TouchState.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ViewFlags.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\AnimationController.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ArrayUtil.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\base64.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreInput_DeviceInputState.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreInput_GamePad.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreInput_MouseState.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreObject.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreObject_Manager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreUI_Button.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\EngineModels.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\GameUtil.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\GraphicsTypes.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\Hash.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\MaterialDeclarations.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\MathTypes.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\MathUtil.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\Game.mm">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\OpenGLRenderer.mm">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\matrix.mm">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreAudio_OpenAL.mm">
+      <Filter>Engine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Engine\libpng\png.h">
+      <Filter>Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\libpng\pngconf.h">
+      <Filter>Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\libpng\pngdebug.h">
+      <Filter>Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\libpng\pnginfo.h">
+      <Filter>Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\libpng\pnglibconf.h">
+      <Filter>Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\libpng\pngpriv.h">
+      <Filter>Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\libpng\pngstruct.h">
+      <Filter>Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\fullscreen_model.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\model_cube.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\plane_XZ_3000x3000.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\skybox.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\square1x1.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\Square_Anim_10x10.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\Square_Anim_256x64.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\Square_Anim_1024x512.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\Square_Anim_1024x1024.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\Square_Tiled_2.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\Square_Tiled_8.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\Square_Tiled_16.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\square_tophalf.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTArray.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTBackground.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTBoneBatch.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTDecompress.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTError.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTFixedPoint.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTGeometry.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTGlobal.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTHash.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTMathTable.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTMatrix.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTMemoryFileSystem.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTMisc.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTModelPOD.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTPFXParser.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTPrint3Ddat.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTQuaternion.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTResourceFile.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTSingleton.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTSkipGraph.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTString.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTTexture.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTTrans.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTTriStrip.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTVector.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PowerVR\PVRTVertex.h">
+      <Filter>Libs\PowerVR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\pugixml\contrib\foreach.hpp">
+      <Filter>Libs\pugixml\contrib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\pugixml\src\pugiconfig.hpp">
+      <Filter>Libs\pugixml\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\pugixml\src\pugixml.hpp">
+      <Filter>Libs\pugixml\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\SOIL\image_helper.h">
+      <Filter>Libs\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\SOIL\SOIL.h">
+      <Filter>Libs\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\SOIL\stb_image_aug.h">
+      <Filter>Libs\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\SOIL\stbi_DDS_aug.h">
+      <Filter>Libs\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\SOIL\stbi_DDS_aug_c.h">
+      <Filter>Libs\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\SOIL\image_DXT.h">
+      <Filter>Libs\SOIL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\matrix.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\OpenGLRenderer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Physics.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\PhysicsTypes.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\RenderFlags.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\RenderLayer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\SpriteSheetAnimator.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\TouchState.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ViewFlags.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\AnimationController.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ArrayUtil.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\base64.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreAudio_OpenAL.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreInput_DeviceInputState.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreInput_GamePad.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreInput_MouseState.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreObject.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreObject_Manager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreUI_Button.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\DEBUGMODEL_Circle.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\DEBUGMODEL_CircleXY.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\DEBUGMODEL_CircleXZ.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\DEBUGMODEL_Cylinder.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\EngineModels.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Game.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\GameUtil.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\GraphicsTypes.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Hash.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\MaterialDeclarations.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\MathTypes.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\MathUtil.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\zlib\zlib.h">
+      <Filter>Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\zlib\zconf.h">
+      <Filter>Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\glew\glew.h">
+      <Filter>Libs\glew</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

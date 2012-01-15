@@ -1,4 +1,4 @@
-#import "GraphicsTypes.h"
+#include "GraphicsTypes.h"
 
 //Model: "Square_Tiled_16"
 

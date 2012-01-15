@@ -1,4 +1,4 @@
-#import "GraphicsTypes.h"
+#include "GraphicsTypes.h"
 
 static const TexturedVertexData3D SkyboxVertexData[] = {
 	{/*v:*/{1.000000, 1.000000, -0.999999}, /*n:*/{0.666646, 0.333323, -0.666646}, /*t:*/{0.753904, 0.753121}},

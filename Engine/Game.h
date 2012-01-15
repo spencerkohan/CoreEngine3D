@@ -13,7 +13,7 @@
 #include "OpenGLRenderer.h"
 
 #if defined (PLATFORM_IOS)
-#import "TouchInputIOS.h"
+#include "TouchInputIOS.h"
 #endif
 
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)

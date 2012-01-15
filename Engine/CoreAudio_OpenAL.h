@@ -13,7 +13,13 @@ class CoreAudioOpenAL;
 extern CoreAudioOpenAL* OPENALAUDIO;
 
 #include "MathTypes.h"
+#if defined (PLATFORM_IOS) || defined (PLATFORM_OSX)
 #include <OpenAL/alc.h>
+#endif
+
+#if defined (PLATFORM_WIN)
+#include "alc.h"
+#endif
 
 struct CoreAudioFileInfo
 {
@@ -56,7 +62,12 @@ public:
 	void SetMaxSoundDistance(f32 maxDistance);
 	
 private:
+#if defined (PLATFORM_IOS) || defined (PLATFORM_OSX)
 	bool LoadSoundDataFromFile_APPLE(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo);
+#endif
+#if defined (PLATFORM_WIN)
+	bool LoadSoundDataFromFile_WIN(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo);
+#endif
 	bool CheckForOpenALError();
 	const char* GetPathToFile(const char* filename);
 	ALCcontext* m_context;

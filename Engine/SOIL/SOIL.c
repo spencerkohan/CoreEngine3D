@@ -28,7 +28,7 @@
 #endif
 
 #ifdef PLATFORM_IOS
-#import <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/gl.h>
 #endif
 	
 	#define APIENTRY
