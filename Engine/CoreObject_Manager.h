@@ -15,7 +15,7 @@
 class CoreObjectManager;
 extern CoreObjectManager* COREOBJECTMANAGER;
 
-#define COREOBJECT_MAX_OBJECTS 256
+#define COREOBJECT_MAX_OBJECTS 4096
 
 class CoreObjectManager
 {

@@ -15,6 +15,8 @@
 #endif
 
 #include "OpenGLRenderer.h"
+#include "Game.h"
+
 OpenGLRenderer* GLRENDERER = NULL;
 
 #include "matrix.h"
@@ -25,6 +27,8 @@ OpenGLRenderer* GLRENDERER = NULL;
 #include "zlib/zlib.h"
 #include "libpng/png.h"
 #include "SOIL/SOIL.h"
+
+#include "CoreDebug.h"
 
 #if defined (PLATFORM_OSX)
 #include <OpenGL/glu.h>
@@ -151,7 +155,7 @@ static Material g_Materials[NumRenderMaterials];
 static u32 texture_pointSpriteAtlas = 0;
 //static u32 texture_default = 0;
 
-void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 screenWidthPoints, f32 screenHeightPoints)
+void OpenGLRenderer::Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 screenWidthPoints, u32 screenHeightPoints)
 {
 	GLRENDERER = this;
 
@@ -182,8 +186,6 @@ void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 scre
 	
 #endif
 	
-	
-	
 	PrintOpenGLError("At init!");
 	
 	mat4f_LoadIdentity(m_identityMat);
@@ -207,7 +209,7 @@ void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 scre
 	mat4f_LoadOrtho(m_projMats[ProjMatType_Orthographic_NDC], -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f);
 	mat4f_LoadOrtho(m_projMats[ProjMatType_Orthographic_Points], 0.0f, screenWidth_points, screenHeight_points, 0.0f, 1.0f, -1.0f);
 	
-	printf("%s %s\n", glGetString(GL_RENDERER), glGetString(GL_VERSION));
+	COREDEBUG_PrintDebugMessage("%s %s", glGetString(GL_RENDERER), glGetString(GL_VERSION));
 
 	/*** INITIALIZE INITIALIZE INITIALIZE ***/
     
@@ -226,7 +228,11 @@ void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 scre
 #ifdef PLATFORM_OSX
 	m_supportsFeaturesFromiOS4 = true;
 #endif
-	
+
+#ifdef PLATFORM_WIN
+	m_supportsFeaturesFromiOS4 = glGenVertexArrays != NULL;
+#endif
+
 #ifdef PLATFORM_IOS
 	m_supportsFeaturesFromiOS4 = [[[UIDevice currentDevice] systemVersion] floatValue] >= 4.0f;
 #endif
@@ -235,7 +241,7 @@ void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 scre
     m_supportsMultisampling = NO;
 #else
     //const s32 processorCount = (s32)[[NSProcessInfo processInfo] processorCount];
-    //printf("This device has %d processors.\n",processorCount);
+    //COREDEBUG_PrintDebugMessage("This device has %d processors.",processorCount);
     
 	const s32 processorCount = 1;
     m_supportsMultisampling = m_supportsFeaturesFromiOS4 && processorCount > 1; //Hack to enable multi-sampling only on iPad 2
@@ -339,8 +345,6 @@ void OpenGLRenderer::Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 scre
 	m_numTexturedLines_saved = 0;
 	
 	ClearRenderables();
-	
-	CreateMaterials();
 }
 
 
@@ -617,7 +621,7 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 			}
 			/*else
 			 {
-			 printf("INSANE ERROR: You're trying to draw model '%s' but it hasn't been registered! WTF!?\n",pModelData->modelName);
+			 COREDEBUG_PrintDebugMessage("INSANE ERROR: You're trying to draw model '%s' but it hasn't been registered! WTF!?",pModelData->modelName);
 			 }*/
 		}
 	}
@@ -629,15 +633,15 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 		const ModelData* pModelData = renderableObjectArray[renderIndex].pModel;
 		
 		u32 renderIndexStart=renderIndex;
-		//printf("\n *** STARTING MODEL RUN ***\n");
-		//printf("Start Index %d Model Name: %s\n",renderIndexStart,pModelData->modelName);
+		//COREDEBUG_PrintDebugMessage(" *** STARTING MODEL RUN ***");
+		//COREDEBUG_PrintDebugMessage("Start Index %d Model Name: %s",renderIndexStart,pModelData->modelName);
 		
 		for (; renderIndex < numRenderableObjects && renderableObjectArray[renderIndex].pModel == pModelData; ++renderIndex);
 		
 		//unsigned int renderIndexEnd = renderIndex-1;
 		
-		//printf("End Index %d Model Name: %s\n",renderIndex,m_renderableObject3DList[renderIndexEnd]->pModel->modelName);
-		//printf("\n *** ENDING MODEL RUN ***\n\n");
+		//COREDEBUG_PrintDebugMessage("End Index %d Model Name: %s",renderIndex,m_renderableObject3DList[renderIndexEnd]->pModel->modelName);
+		//COREDEBUG_PrintDebugMessage(" *** ENDING MODEL RUN ***");
 		
 		//Now we can loop through the things that were using the same model
 		//FIRST: Loop through all primitives of the model, binding them as we go
@@ -746,9 +750,9 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 void OpenGLRenderer::RenderEffects()
 {
 #ifdef DEBUG_RENDERLOOP
-	//printf("Skipped swaps: %d\n",skippedTextureSwaps);
+	//COREDEBUG_PrintDebugMessage("Skipped swaps: %d",skippedTextureSwaps);
 	
-	//printf("**Render End.  Rendered %d objects.\n",m_numRenderableObject3Ds);
+	//COREDEBUG_PrintDebugMessage("**Render End.  Rendered %d objects.",m_numRenderableObject3Ds);
 #endif
 	
     //Do this to disable vertex array objects
@@ -1155,7 +1159,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
     if(m_numRenderableTrails > m_maxNumTrails)
     {
         m_maxNumTrails = m_numRenderableTrails;
-        printf("*** Max number of trails has increased to: %d\n",m_maxNumTrails);
+        COREDEBUG_PrintDebugMessage("*** Max number of trails has increased to: %d",m_maxNumTrails);
     }
     
     //Remove deleted renderables
@@ -1177,7 +1181,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			
 			--m_numRenderableGeom3Ds_UI;
 			
-			//printf("    Deleted a UI renderable handle %d, %d left.\n",pCurrGeom->GetHandle(), m_numRenderableGeom3Ds_UI);
+			//COREDEBUG_PrintDebugMessage("    Deleted a UI renderable handle %d, %d left.",pCurrGeom->GetHandle(), m_numRenderableGeom3Ds_UI);
 			
 			m_renderableObject3DsNeedSorting_UI = true;
 		}
@@ -1210,7 +1214,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			
 			--m_numRenderableGeom3Ds_Normal;
 			
-			//printf("    Deleted a normal renderable handle %d, %d left.\n",pCurrGeom->GetHandle(), m_numRenderableGeom3Ds_Normal);
+			//COREDEBUG_PrintDebugMessage("    Deleted a normal renderable handle %d, %d left.",pCurrGeom->GetHandle(), m_numRenderableGeom3Ds_Normal);
 			
 			m_renderableObject3DsNeedSorting_Normal = true;
 		}
@@ -1504,7 +1508,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 	}
 	
 #if DEBUG_DRAW && PARTICLE_TEST_PRINT
-	printf("Num particles: %d\n",m_numParticles);
+	COREDEBUG_PrintDebugMessage("Num particles: %d",m_numParticles);
 #endif
 	
 	glEnable(GL_CULL_FACE);
@@ -1512,7 +1516,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 	//Render renderables
 	
 #ifdef DEBUG_RENDERLOOP
-	printf("**Render start:\n\n");
+	COREDEBUG_PrintDebugMessage("**Render start:");
 	int skippedTextureSwaps = 0;
 #endif
 	
@@ -2046,12 +2050,19 @@ void OpenGLRenderer::RegisterModel(ModelData* pModelData)
             u32 vertexBufferID;
             glGenBuffers(1,&vertexBufferID);
 
-#ifdef PLATFORM_IOS
+#if defined (PLATFORM_IOS)
 			glGenVertexArraysOES(1, &currPrim->vertexArrayObjectID);
             glBindVertexArrayOES(currPrim->vertexArrayObjectID);
-#else
+#endif
+
+#if defined (PLATFORM_OSX)
 			glGenVertexArraysAPPLE(1, &currPrim->vertexArrayObjectID);
             glBindVertexArrayAPPLE(currPrim->vertexArrayObjectID);
+#endif
+
+#if defined (PLATFORM_WIN)
+			glGenVertexArrays(1, &currPrim->vertexArrayObjectID);
+            glBindVertexArray(currPrim->vertexArrayObjectID);
 #endif
             glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
             PrintOpenGLError("Binding vertex buffer");
@@ -2116,6 +2127,7 @@ RenderableGeometry3D* OpenGLRenderer::GetUnusedRenderableGeometry3D_Normal()
 {
 	if(m_numRenderableGeom3Ds_Normal == MAX_RENDERABLE_NORMAL_OBJECTS)
 	{
+		COREDEBUG_PrintDebugMessage("INSANE ERROR: You have run out of max renderable normal objects!");
 		return NULL;
 	}
 	
@@ -2168,7 +2180,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType
 	
 	if(pGeom == NULL)
 	{
-		printf("INSANE ERROR: You're out of RenderableObject3Ds!");
+		COREDEBUG_PrintDebugMessage("INSANE ERROR: You're out of RenderableObject3Ds!");
 	}
 	
 	pGeom->Init();
@@ -2187,14 +2199,14 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType
 	{
 		m_renderableObject3DsNeedSorting_UI = true;
 		
-		printf("Created a UI RenderableGeometry3D handle %d!  Count: %d\n",pGeom->GetHandle(),m_numRenderableGeom3Ds_UI);
+		COREDEBUG_PrintDebugMessage("Created a UI RenderableGeometry3D handle %d!  Count: %d",pGeom->GetHandle(),m_numRenderableGeom3Ds_UI);
 	}
 	//Normal
 	else
 	{
 		m_renderableObject3DsNeedSorting_Normal = true;
 		
-		//printf("Created a normal RenderableGeometry3D handle %d!  Count: %d\n",pGeom->GetHandle(),m_numRenderableGeom3Ds_Normal);
+		//COREDEBUG_PrintDebugMessage("Created a normal RenderableGeometry3D handle %d!  Count: %d",pGeom->GetHandle(),m_numRenderableGeom3Ds_Normal);
 	}
 	
 	if(pOut_Geom != NULL)
@@ -2236,7 +2248,7 @@ void OpenGLRenderer::AddParticleToQueue(Particle3D* pParticle, vec3* pPosition, 
 		
 		
 #if DEBUG_DRAW && PARTICLE_TEST_PRINT
-		//printf("-- Added particle(%d) with pos:<%f,%f,%f>, TTL: %f\n",m_numParticles,pCurrParticle->position.x, pCurrParticle->position.y, pCurrParticle->position.z, m_particleQueue[m_numParticles].timeToLive);
+		//COREDEBUG_PrintDebugMessage("-- Added particle(%d) with pos:<%f,%f,%f>, TTL: %f",m_numParticles,pCurrParticle->position.x, pCurrParticle->position.y, pCurrParticle->position.z, m_particleQueue[m_numParticles].timeToLive);
 #endif
 		
 		++pBucket->m_numParticles;
@@ -2406,7 +2418,7 @@ void OpenGLRenderer::UpdateParticleQueues(f32 timeElapsed)
 				--pBucket->m_numParticles;
 				
 #if DEBUG_DRAW && PARTICLE_TEST_PRINT
-				//printf("- Particle died...\n");
+				//COREDEBUG_PrintDebugMessage("- Particle died...");
 #endif	
 			}
 		}
@@ -2464,7 +2476,7 @@ void OpenGLRenderer::UpdateTrails(f32 timeElapsed)
         //Check if we should add a new particle
         if(createNewParticle)
         {
-            //printf("DistSq: %f\n",distSqFromLastParticle);
+            //COREDEBUG_PrintDebugMessage("DistSq: %f",distSqFromLastParticle);
             
             GFX_TrailParticle* pCurrParticle = &pCurrTrail->trailParticles[pCurrTrail->m_numTrailParticles];
             CopyVec3(&pCurrParticle->position,&pCurrTrail->currPos);
@@ -2573,7 +2585,7 @@ void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableOb
 {
 	if(pModel->modelID == -1)
 	{
-		printf("INSANE ERROR: You are tried to initialize a renderable with an unregistered model '%s'!  Skipping...\n",pModel->modelName);
+		COREDEBUG_PrintDebugMessage("INSANE ERROR: You are tried to initialize a renderable with an unregistered model '%s'!  Skipping...",pModel->modelName);
 		return;
 	}
 
@@ -2683,19 +2695,6 @@ void OpenGLRenderer::SortRenderableGeometry3DList(RenderableObjectType type)
 }
 
 
-const char* OpenGLRenderer::GetPathToFile(const char* filename)
-{
-#if defined PLATFORM_OSX || defined PLATFORM_IOS
-	NSString* fileString = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
-	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
-	
-	return [fullPath UTF8String];
-#else
-	return filename;
-#endif
-}
-
-
 s32 OpenGLRenderer::AddVertexShaderToList(const char* filename)
 {
 	if(m_numVertexShaders < MAX_COMPILED_VERTEX_SHADERS)
@@ -2737,33 +2736,33 @@ void OpenGLRenderer::LoadParticleAtlas(const char* filename)
 void OpenGLRenderer::CreateMaterials()
 {
 	//Vertex Shaders
-	const s32 VSH_TextureAndVertColor = AddVertexShaderToList("Shaders/TextureAndVertColor.vsh");
-	const s32 VSH_WiggleUsingTexcoordV = AddVertexShaderToList("Shaders/WiggleUsingTexcoordV.vsh");
-	const s32 VSH_FullScreenQuad = AddVertexShaderToList("Shaders/pp_default.vsh");
-    const s32 VSH_FullScreenQuadNoTexcoord = AddVertexShaderToList("Shaders/pp_noTexcoord.vsh");
-	const s32 VSH_VertColors = AddVertexShaderToList("Shaders/VertColors.vsh");
-    const s32 VSH_VertWithColorInput = AddVertexShaderToList("Shaders/VertWithColorInput.vsh");
-    const s32 VSH_VertWithColorInputAndTexture = AddVertexShaderToList("Shaders/VertWithColorInputAndTexture.vsh");
-    const s32 VSH_VertWithColorInputWithTexcoordOffset = AddVertexShaderToList("Shaders/VertWithColorInputWithTexcoordOffset.vsh");
-	const s32 VSH_TextureOnly = AddVertexShaderToList("Shaders/TextureOnly.vsh");
-    const s32 VSH_TextureWithColor = AddVertexShaderToList("Shaders/TextureWithColor.vsh");
-	const s32 VSH_ScreenspaceWithTexcoordOffset = AddVertexShaderToList("Shaders/ScreenspaceWithTexcoordOffset.vsh");
-	const s32 VSH_TextureOnlyWithTexcoordAndWorldOffset = AddVertexShaderToList("Shaders/TextureOnlyWithTexcoordAndWorldOffset.vsh");
-	const s32 VSH_PointSprite_Basic = AddVertexShaderToList("Shaders/PointSprite_Default.vsh");
-	const s32 VSH_SkinnedVertShader = AddVertexShaderToList("Shaders/SkinnedVertShader.vsh");
+	const s32 VSH_TextureAndVertColor = AddVertexShaderToList("ArtResources/Shaders/TextureAndVertColor.vsh");
+	const s32 VSH_WiggleUsingTexcoordV = AddVertexShaderToList("ArtResources/Shaders/WiggleUsingTexcoordV.vsh");
+	const s32 VSH_FullScreenQuad = AddVertexShaderToList("ArtResources/Shaders/pp_default.vsh");
+    const s32 VSH_FullScreenQuadNoTexcoord = AddVertexShaderToList("ArtResources/Shaders/pp_noTexcoord.vsh");
+	const s32 VSH_VertColors = AddVertexShaderToList("ArtResources/Shaders/VertColors.vsh");
+    const s32 VSH_VertWithColorInput = AddVertexShaderToList("ArtResources/Shaders/VertWithColorInput.vsh");
+    const s32 VSH_VertWithColorInputAndTexture = AddVertexShaderToList("ArtResources/Shaders/VertWithColorInputAndTexture.vsh");
+    const s32 VSH_VertWithColorInputWithTexcoordOffset = AddVertexShaderToList("ArtResources/Shaders/VertWithColorInputWithTexcoordOffset.vsh");
+	const s32 VSH_TextureOnly = AddVertexShaderToList("ArtResources/Shaders/TextureOnly.vsh");
+    const s32 VSH_TextureWithColor = AddVertexShaderToList("ArtResources/Shaders/TextureWithColor.vsh");
+	const s32 VSH_ScreenspaceWithTexcoordOffset = AddVertexShaderToList("ArtResources/Shaders/ScreenspaceWithTexcoordOffset.vsh");
+	const s32 VSH_TextureOnlyWithTexcoordAndWorldOffset = AddVertexShaderToList("ArtResources/Shaders/TextureOnlyWithTexcoordAndWorldOffset.vsh");
+	const s32 VSH_PointSprite_Basic = AddVertexShaderToList("ArtResources/Shaders/PointSprite_Default.vsh");
+	const s32 VSH_SkinnedVertShader = AddVertexShaderToList("ArtResources/Shaders/SkinnedVertShader.vsh");
 	
 	//Pixel Shaders
-	const s32 PP_BlendUsingTexture = AddPixelShaderToList("Shaders/BlendUsingTexture.fsh");
-	const s32 PP_PureColor = AddPixelShaderToList("Shaders/PureColor.fsh");
-    const s32 PS_TextureOnlySimple = AddPixelShaderToList("Shaders/TextureOnlySimple.fsh");
-    const s32 PS_TextureOnlyDiscard = AddPixelShaderToList("Shaders/TextureOnlyDiscard.fsh");
-    const s32 PS_TextureAndDiffuseColor = AddPixelShaderToList("Shaders/TextureAndDiffuseColor.fsh");
-    const s32 PS_TextureAndDiffuseColorDiscard = AddPixelShaderToList("Shaders/TextureAndDiffuseColorDiscard.fsh");
-	const s32 PS_TextureAndFogColorDiscard = AddPixelShaderToList("Shaders/TextureAndFogColorDiscard.fsh");
-	const s32 PS_Colors = AddPixelShaderToList("Shaders/Colors.fsh");
-	const s32 PS_PointSprite_ColorShine = AddPixelShaderToList("Shaders/PointSprite_ColorShine.fsh");
-    const s32 PS_TextureWithColor = AddPixelShaderToList("Shaders/TextureWithColor.fsh");
-	const s32 PS_SkinnedFragShader = AddPixelShaderToList("Shaders/SkinnedFragShader.fsh");
+	const s32 PP_BlendUsingTexture = AddPixelShaderToList("ArtResources/Shaders/BlendUsingTexture.fsh");
+	const s32 PP_PureColor = AddPixelShaderToList("ArtResources/Shaders/PureColor.fsh");
+    const s32 PS_TextureOnlySimple = AddPixelShaderToList("ArtResources/Shaders/TextureOnlySimple.fsh");
+    const s32 PS_TextureOnlyDiscard = AddPixelShaderToList("ArtResources/Shaders/TextureOnlyDiscard.fsh");
+    const s32 PS_TextureAndDiffuseColor = AddPixelShaderToList("ArtResources/Shaders/TextureAndDiffuseColor.fsh");
+    const s32 PS_TextureAndDiffuseColorDiscard = AddPixelShaderToList("ArtResources/Shaders/TextureAndDiffuseColorDiscard.fsh");
+	const s32 PS_TextureAndFogColorDiscard = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColorDiscard.fsh");
+	const s32 PS_Colors = AddPixelShaderToList("ArtResources/Shaders/Colors.fsh");
+	const s32 PS_PointSprite_ColorShine = AddPixelShaderToList("ArtResources/Shaders/PointSprite_ColorShine.fsh");
+    const s32 PS_TextureWithColor = AddPixelShaderToList("ArtResources/Shaders/TextureWithColor.fsh");
+	const s32 PS_SkinnedFragShader = AddPixelShaderToList("ArtResources/Shaders/SkinnedFragShader.fsh");
 	
 	
 	//Vertex Shaders
@@ -3224,6 +3223,8 @@ void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
     {       
         return;
     }
+
+	std::string filePath = GAME->GetPathToFile(fileName);
 	
     switch (imageType)
     {
@@ -3231,7 +3232,7 @@ void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
 		{
 			*pGLTexture = SOIL_load_OGL_texture
 			(
-			 GetPathToFile(fileName),
+			filePath.c_str(),
 			 SOIL_LOAD_AUTO,
 			 SOIL_CREATE_NEW_ID,
 			 SOIL_FLAG_INVERT_Y
@@ -3245,7 +3246,7 @@ void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
 			bool hasAlpha;
 			GLubyte *textureImage;
 			
-			const bool success = LoadPNGImage(GetPathToFile(fileName), width, height, hasAlpha, &textureImage, flipY);
+			const bool success = LoadPNGImage(filePath.c_str(), width, height, hasAlpha, &textureImage, flipY);
 			
 			if(success)
 			{
@@ -3281,7 +3282,7 @@ void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
 			}
 			else
 			{
-				printf("INSANE ERROR: LoadTexture failed to load the file: %s\n",fileName);
+				COREDEBUG_PrintDebugMessage("INSANE ERROR: LoadTexture failed to load the file: %s",fileName);
 			}
             
             break;
@@ -3473,7 +3474,7 @@ void OpenGLRenderer::SetMaterial(RenderMaterial material)
 	UploadSharedUniforms();
 	
 #ifdef DEBUG_RENDERLOOP
-	//printf("Changing material: %s\n",g_MaterialNames[material]);
+	//COREDEBUG_PrintDebugMessage("Changing material: %s",g_MaterialNames[material]);
 #endif
 }
 
@@ -3597,7 +3598,7 @@ void OpenGLRenderer::PostProcess(RenderMaterial ppMaterial, RenderTarget* render
 		}
 		default:
 		{
-			//NSLog(@"Error: Unsupported PostProcessDrawArea selected.\n");
+			//NSLog(@"Error: Unsupported PostProcessDrawArea selected.");
 		}
 			
 	}
@@ -3609,7 +3610,7 @@ void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 	/*int iErr = glGetError();
 	if (iErr != GL_NO_ERROR)
 	{
-		printf("GL error: %d (0x%x)\n\n", iErr, iErr);
+		COREDEBUG_PrintDebugMessage("GL error: %d (0x%x)", iErr, iErr);
 	}*/
 	
 #if defined (PLATFORM_OSX)
@@ -3618,7 +3619,7 @@ void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 	
 	if ((errCode = glGetError()) != GL_NO_ERROR) {
 		errString = gluErrorString(errCode);
-		fprintf (stderr, "OpenGL Error: %s\n", errString);
+		fCOREDEBUG_PrintDebugMessage (stderr, "OpenGL Error: %s", errString);
 	}
 #endif
 }
@@ -3734,7 +3735,7 @@ bool OpenGLRenderer::CompileShader(u32 *shader, s32 type, s32 count, const char*
 	
     if (!source)
 	{
-		printf("ERROR: CompileShader-> Failed to load shader file: %s\n",filename);
+		COREDEBUG_PrintDebugMessage("ERROR: CompileShader-> Failed to load shader file: %s",filename);
         return false;
     }
     
@@ -3745,13 +3746,13 @@ bool OpenGLRenderer::CompileShader(u32 *shader, s32 type, s32 count, const char*
 	//Release the source code!
 	free((void*)source);
 
-    s32 logLength;
+    s32 logLength = 0;
     glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength > 0)
 	{
         GLchar *log = (GLchar *)malloc(logLength);
         glGetShaderInfoLog(*shader, logLength, &logLength, log);
-        printf("Compile log for %s: %s\n",filename,log);
+        COREDEBUG_PrintDebugMessage("Compile log for %s: %s",filename,log);
         free(log);
     }
 
@@ -3776,7 +3777,7 @@ bool OpenGLRenderer::LinkProgram(u32 prog)
     if (logLength > 0) {
         GLchar *log = (GLchar *)malloc(logLength);
         glGetProgramInfoLog(prog, logLength, &logLength, log);
-        printf("Program link log: %s\n",log);
+        COREDEBUG_PrintDebugMessage("Program link log: %s",log);
         free(log);
     }
     
@@ -3800,13 +3801,13 @@ s32 OpenGLRenderer::ValidateProgram(u32 prog)
     {
         GLchar *log = (GLchar *)malloc(logLength+1);
         glGetProgramInfoLog(prog, logLength, &logLength, log);
-        printf("Program validate log:\n%s", log);
+        COREDEBUG_PrintDebugMessage("Program validate log:%s", log);
         free(log);
     }
     
     glGetProgramiv(prog, GL_VALIDATE_STATUS, &status);
     if (status == GL_FALSE)
-		printf("Failed to validate program %d", prog);
+		COREDEBUG_PrintDebugMessage("Failed to validate program %d", prog);
 	
 	return status;
 }
@@ -3816,7 +3817,7 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 {
 	PrintOpenGLError("Before creating shader program.");
 	
-	//ALog(@"Creating Shader: VSH:'%@' + FSH:'%@'\n",g_VertexShader_Filenames[vertexShader],g_PixelShader_Filenames[pixelShader]);
+	//ALog(@"Creating Shader: VSH:'%@' + FSH:'%@'",g_VertexShader_Filenames[vertexShader],g_PixelShader_Filenames[pixelShader]);
 
 	// create shader program
 	const u32 shaderProgram = glCreateProgram();
@@ -3829,7 +3830,7 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 	// create and compile vertex shader
 	if (!CreateVertexShader(vertexShaderIndex))
 	{
-		//NSLog(@"ERROR: createShaderProgram -> failed to create vertex shader '%@'.\n",g_VertexShader_Filenames[vertexShader]);
+		//NSLog(@"ERROR: createShaderProgram -> failed to create vertex shader '%@'.",g_VertexShader_Filenames[vertexShader]);
 		glDeleteProgram(shaderProgram);
 		
 		return false;
@@ -3839,7 +3840,7 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 	// create and compile pixel shader
 	if (!CreatePixelShader(pixelShaderIndex))
 	{
-		//NSLog(@"ERROR: createShaderProgram -> failed to create pixel shader '%@'.\n",g_PixelShader_Filenames[pixelShader]);
+		//NSLog(@"ERROR: createShaderProgram -> failed to create pixel shader '%@'.",g_PixelShader_Filenames[pixelShader]);
 		glDeleteProgram(shaderProgram);
 		
 		return false;
@@ -3907,7 +3908,7 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 	// link program
 	if (!LinkProgram(shaderProgram))
 	{	
-		//NSLog(@"ERROR: createShaderProgram -> failed to link program ('%@.vsh' + '%@.fsh')\n",g_VertexShader_Filenames[vertexShader],g_PixelShader_Filenames[pixelShader]);
+		//NSLog(@"ERROR: createShaderProgram -> failed to link program ('%@.vsh' + '%@.fsh')",g_VertexShader_Filenames[vertexShader],g_PixelShader_Filenames[pixelShader]);
 		
 		s32 logLength;
 		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLength);
@@ -3915,7 +3916,7 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 		{
 			char* log = (GLchar *)malloc(logLength);
 			glGetProgramInfoLog(shaderProgram, logLength, &logLength, log);
-			printf("Reason: %s\n\n", log);
+			COREDEBUG_PrintDebugMessage("Reason: %s", log);
 			free(log);
 		}
 		
@@ -4045,7 +4046,7 @@ void OpenGLRenderer::UploadSharedUniforms()
 			}
 			default:
 			{
-				//NSLog(@"ERROR: uploadSharedUniforms-> You are uploading a weirdly typed uniform.\n");
+				//NSLog(@"ERROR: uploadSharedUniforms-> You are uploading a weirdly typed uniform.");
 				break;
 			}
 		}
@@ -4110,7 +4111,7 @@ void OpenGLRenderer::UploadUniqueUniforms(u8* const * pValuePointerArray)
 			}
 			default:
 			{
-				//NSLog(@"ERROR: uploadSharedUniforms-> You are uploading a weirdly typed uniform.\n");
+				//NSLog(@"ERROR: uploadSharedUniforms-> You are uploading a weirdly typed uniform.");
 				break;
 			}
 		}
@@ -4136,7 +4137,7 @@ void OpenGLRenderer::SetTexture(const u32* pTexture,u32 textureUnit)
             glActiveTexture(GL_TEXTURE0+textureUnit);
         }
         
-		//printf("Using Texture: %d\n",textureToUse);
+		//COREDEBUG_PrintDebugMessage("Using Texture: %d",textureToUse);
 		
         glBindTexture(GL_TEXTURE_2D, textureToUse);
     }
@@ -4152,9 +4153,9 @@ bool OpenGLRenderer::CreatePixelShader(s32 pixelShaderIndex)
 		return true;
 	}
 	
-	const char* filePath = GetPathToFile(pStatus->filename);
-	
-	if (!CompileShader(&pStatus->openGLID, GL_FRAGMENT_SHADER, 1, filePath))
+	std::string filePath = GAME->GetPathToFile(pStatus->filename);
+
+	if (!CompileShader(&pStatus->openGLID, GL_FRAGMENT_SHADER, 1, filePath.c_str()))
 	{
 		glDeleteShader(pStatus->openGLID);
 		pStatus->openGLID = 0;
@@ -4174,10 +4175,10 @@ bool OpenGLRenderer::CreateVertexShader(s32 vertexShaderIndex)
 	{
 		return true;
 	}
+
+	std::string filePath = GAME->GetPathToFile(pStatus->filename);
 	
-	const char* filePath = GetPathToFile(pStatus->filename);
-	
-	if (!CompileShader(&pStatus->openGLID, GL_VERTEX_SHADER, 1, filePath))
+	if (!CompileShader(&pStatus->openGLID, GL_VERTEX_SHADER, 1, filePath.c_str()))
 	{
 		glDeleteShader(pStatus->openGLID);
 		pStatus->openGLID = 0;
@@ -4272,7 +4273,7 @@ void OpenGLRenderer::AddUniform_Unique(RenderMaterial renderMaterial, const char
 	
 	if (uniformID == -1)
 	{
-		printf("ERROR: addUniform_Unique -> Unable to add uniform: %s for material %s!\n", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
+		COREDEBUG_PrintDebugMessage("ERROR: addUniform_Unique -> Unable to add uniform: %s for material %s!", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
 	}
 	
 	g_Materials[renderMaterial].uniforms_unique[index] = uniformID;
@@ -4289,7 +4290,7 @@ void OpenGLRenderer::AddUniform_Shared(RenderMaterial renderMaterial, const char
 	
 	if (g_Materials[renderMaterial].uniforms_shared[index].uniform == -1)
 	{
-		printf("ERROR: addUniform_Shared -> Unable to add uniform: %s for material %s!\n", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
+		COREDEBUG_PrintDebugMessage("ERROR: addUniform_Shared -> Unable to add uniform: %s for material %s!", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
 		
 		//Return early and don't add this uniform
 		return;
@@ -4309,7 +4310,7 @@ void OpenGLRenderer::AddUniform_Shared_Const(RenderMaterial renderMaterial, cons
 	
 	if (g_Materials[renderMaterial].uniforms_shared_const[index].uniform == -1)
 	{
-		printf("ERROR: addUniform_Shared_Const -> Unable to add uniform: %s for material %s!\n", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
+		COREDEBUG_PrintDebugMessage("ERROR: addUniform_Shared_Const -> Unable to add uniform: %s for material %s!", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
 		
 		//Return early and don't add this uniform
 		return;
@@ -4362,7 +4363,7 @@ CPVRTModelPOD* OpenGLRenderer::LoadPOD(const char* fileName)
 {
 	CPVRTModelPOD* newPod = new CPVRTModelPOD;
 	
-	EPVRTError readResult = newPod->ReadFromFile(GetPathToFile(fileName));
+	EPVRTError readResult = newPod->ReadFromFile(GAME->GetPathToFile(fileName).c_str());
 	
 	if(readResult == PVR_SUCCESS)
 	{
@@ -4429,7 +4430,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableSceneObject3D(RenderableSceneOb
 	
 	if(pScene == NULL)
 	{
-		printf("INSANE ERROR: You're out of RenderableSceneObject3Ds!");
+		COREDEBUG_PrintDebugMessage("INSANE ERROR: You're out of RenderableSceneObject3Ds!");
 	}
 	
 	pScene->Init();
@@ -4448,7 +4449,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableSceneObject3D(RenderableSceneOb
 		*pOut_SceneObject = pScene;
 	}
 	
-	//printf("Created a RenderableSceneObject3D handle: %d!  Count: %d\n",pScene->GetHandle(),m_numRenderableScenes);
+	//COREDEBUG_PrintDebugMessage("Created a RenderableSceneObject3D handle: %d!  Count: %d",pScene->GetHandle(),m_numRenderableScenes);
 	
 	return handle;
 }
@@ -4458,7 +4459,7 @@ AnimatedPOD* OpenGLRenderer::AddAnimatedPOD(CPVRTModelPOD* pPod, RenderableScene
 {
 	if(m_numAnimatedPods == MAX_ANIMATED_PODS)
 	{
-		printf("Insane Error: AddAnimatedPOD -> Reached max animated pods!  Added nothing.");
+		COREDEBUG_PrintDebugMessage("Insane Error: AddAnimatedPOD -> Reached max animated pods!  Added nothing.");
 		return NULL;
 	}
 	
@@ -4673,7 +4674,7 @@ void OpenGLRenderer::DrawAnimatedPOD(AnimatedPOD* pAnimatedPod)
 		{
 			// Set the number of bones that will influence each vertex in the mesh
 			pCurrMaterial->uniqueUniformValues[1] = (u8*)&Mesh.sBoneIdx.n;
-			//printf("Num bones: %d\n",Mesh.sBoneIdx.n);
+			//COREDEBUG_PrintDebugMessage("Num bones: %d",Mesh.sBoneIdx.n);
 			
 			/*
 			 If the current mesh has bone index and weight data then we need to
@@ -4726,7 +4727,7 @@ void OpenGLRenderer::DrawAnimatedPOD(AnimatedPOD* pAnimatedPod)
 			
 			//PrintOpenGLError("/*** Tried to render something ***/");
 			const u32 batchOffset = Mesh.sBoneBatches.pnBatchOffset[i32Batch]*3*sizeof(u16);
-			//printf("Batch offset: %d, Tris: %d\n",batchOffset,i32Tris * 3);
+			//COREDEBUG_PrintDebugMessage("Batch offset: %d, Tris: %d",batchOffset,i32Tris * 3);
 			glDrawElements(pCurrPrim->drawMethod, i32Tris * 3, GL_UNSIGNED_SHORT, BUFFER_OFFSET(batchOffset));
 		}
 	}
@@ -4802,13 +4803,13 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, CPVRTModelPOD* 
 			nameBuffer[totalLen-3] = 'p';
 			
 			LoadTexture(nameBuffer, ImageType_PNG, &pScene->pTexture[texIDX], GL_LINEAR_MIPMAP_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-			printf("Texture %d: %s\n",texIDX,nameBuffer);
+			COREDEBUG_PrintDebugMessage("Texture %d: %s",texIDX,nameBuffer);
 		}
 		
 		//Load up all the materials
 		for(u32 matIDX = 0; matIDX < pPod->nNumMaterial; ++matIDX)
 		{
-			printf("---- Material %d ----\n",matIDX);
+			COREDEBUG_PrintDebugMessage("---- Material %d ----",matIDX);
 			
 			SPODMaterial* pCurrMaterial = &pPod->pMaterial[matIDX];
 			RenderableMaterial* pSceneMaterial = &pScene->pMaterial[matIDX];
@@ -4821,19 +4822,19 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, CPVRTModelPOD* 
 				pSceneMaterial->customTexture0 = &pScene->pTexture[pCurrMaterial->nIdxTexDiffuse];
 				
 				SPODTexture* pCurrTexture = &pPod->pTexture[pCurrMaterial->nIdxTexDiffuse];
-				printf("Diffuse: %s\n", pCurrTexture->pszName);
+				COREDEBUG_PrintDebugMessage("Diffuse: %s", pCurrTexture->pszName);
 			}
 			
 			if(pCurrMaterial->nIdxTexAmbient != -1)
 			{
 				SPODTexture* pCurrTexture = &pPod->pTexture[pCurrMaterial->nIdxTexAmbient];
-				printf("Ambient: %s\n", pCurrTexture->pszName);
+				COREDEBUG_PrintDebugMessage("Ambient: %s", pCurrTexture->pszName);
 			}
 			
 			if(pCurrMaterial->nIdxTexSpecularColour != -1)
 			{
 				SPODTexture* pCurrTexture = &pPod->pTexture[pCurrMaterial->nIdxTexSpecularColour];
-				printf("Specular: %s\n", pCurrTexture->pszName);
+				COREDEBUG_PrintDebugMessage("Specular: %s", pCurrTexture->pszName);
 			}
 			
 			if(pCurrMaterial->nIdxTexBump != -1)
@@ -4841,40 +4842,40 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, CPVRTModelPOD* 
 				pSceneMaterial->customTexture1 = &pScene->pTexture[pCurrMaterial->nIdxTexBump];
 
 				SPODTexture* pCurrTexture = &pPod->pTexture[pCurrMaterial->nIdxTexBump];
-				printf("Bump: %s\n", pCurrTexture->pszName);
+				COREDEBUG_PrintDebugMessage("Bump: %s", pCurrTexture->pszName);
 			}
 			
 			if(pCurrMaterial->nIdxTexEmissive != -1)
 			{
 				SPODTexture* pCurrTexture = &pPod->pTexture[pCurrMaterial->nIdxTexEmissive];
-				printf("Emissive: %s\n", pCurrTexture->pszName);
+				COREDEBUG_PrintDebugMessage("Emissive: %s", pCurrTexture->pszName);
 			}
 			
 			if(pCurrMaterial->nIdxTexGlossiness != -1)
 			{
 				SPODTexture* pCurrTexture = &pPod->pTexture[pCurrMaterial->nIdxTexGlossiness];
-				printf("Glossiness: %s\n", pCurrTexture->pszName);
+				COREDEBUG_PrintDebugMessage("Glossiness: %s", pCurrTexture->pszName);
 			}
 			
 			if(pCurrMaterial->nIdxTexOpacity != -1)
 			{
 				SPODTexture* pCurrTexture = &pPod->pTexture[pCurrMaterial->nIdxTexOpacity];
-				printf("Opacity: %s\n", pCurrTexture->pszName);
+				COREDEBUG_PrintDebugMessage("Opacity: %s", pCurrTexture->pszName);
 			}
 			
 			if(pCurrMaterial->nIdxTexReflection != -1)
 			{
 				SPODTexture* pCurrTexture = &pPod->pTexture[pCurrMaterial->nIdxTexReflection];
-				printf("Reflection: %s\n", pCurrTexture->pszName);
+				COREDEBUG_PrintDebugMessage("Reflection: %s", pCurrTexture->pszName);
 			}
 			
 			if(pCurrMaterial->nIdxTexRefraction != -1)
 			{
 				SPODTexture* pCurrTexture = &pPod->pTexture[pCurrMaterial->nIdxTexRefraction];
-				printf("Refraction: %s\n", pCurrTexture->pszName);
+				COREDEBUG_PrintDebugMessage("Refraction: %s", pCurrTexture->pszName);
 			}
 
-			printf("\n");
+			COREDEBUG_PrintDebugMessage("");
 			
 			pSceneMaterial->flags = RenderFlagDefaults_3DCard_NoAlpha|RenderFlag_Visible|RenderFlag_Initialized;
 			
@@ -5071,16 +5072,16 @@ bool OpenGLRenderer::InitSceneFromPOD(RenderableScene3D* pScene, CPVRTModelPOD* 
 			
 
 			//DEBUG!
-			/*printf("\n****************\nNum indices: %d, Triangles: %d\n****************\n",pSceneMesh->pModelData->primitiveArray[0].numVerts,pSceneMesh->pModelData->primitiveArray[0].numVerts/3);
+			/*COREDEBUG_PrintDebugMessage("****************Num indices: %d, Triangles: %d****************",pSceneMesh->pModelData->primitiveArray[0].numVerts,pSceneMesh->pModelData->primitiveArray[0].numVerts/3);
 			for(int indexIDX=0; indexIDX<pSceneMesh->pModelData->primitiveArray[0].numVerts; ++indexIDX)
 			{
 				const u32 index = pSceneMesh->pModelData->primitiveArray[0].indexData[indexIDX];
-				printf("Index %d: %d\n",indexIDX,index);
+				COREDEBUG_PrintDebugMessage("Index %d: %d",indexIDX,index);
 
 				u8* pData = &pSceneMesh->pModelData->primitiveArray[0].vertexData[index*pSceneMesh->pModelData->stride];
 				vec3* pPos = (vec3*)&pData[0];
 				vec2* pUV = (vec2*)&pData[12];
-				printf("Vert: V:<%f,%f,%f>, T:<%f,%f>\n",pPos->x,pPos->y,pPos->z,pUV->x,pUV->y);
+				COREDEBUG_PrintDebugMessage("Vert: V:<%f,%f,%f>, T:<%f,%f>",pPos->x,pPos->y,pPos->z,pUV->x,pUV->y);
 			}*/
 		}
 		

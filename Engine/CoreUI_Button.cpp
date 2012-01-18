@@ -122,64 +122,64 @@ void CoreUI_Button::Init(u32 width, u32 height, CoreUI_AttachSide attachSide, s3
 	{
 		case CoreUI_AttachSide_None:
 		{
-			m_position.x = offsetX;
-			m_position.y = offsetY;
+			m_position.x = (f32)offsetX;
+			m_position.y = (f32)offsetY;
 			
 			break;
 		}
 		case CoreUI_AttachSide_Left:
 		{
-			m_position.x = offsetX;
-			m_position.y = offsetY;
+			m_position.x = (f32)offsetX;
+			m_position.y = (f32)offsetY;
 			
 			break;
 		}
 		case CoreUI_AttachSide_Right:
 		{
-			m_position.x = GLRENDERER->screenWidth_points+offsetX;
-			m_position.y = offsetY;
+			m_position.x = (f32)GLRENDERER->screenWidth_points+offsetX;
+			m_position.y = (f32)offsetY;
 			
 			break;
 		}
 		case CoreUI_AttachSide_Top:
 		{
-			m_position.x = GLRENDERER->screenWidth_points/2+offsetX;
-			m_position.y = offsetY;
+			m_position.x = (f32)GLRENDERER->screenWidth_points/2+offsetX;
+			m_position.y = (f32)offsetY;
 			
 			break;
 		}
 		case CoreUI_AttachSide_Bottom:
 		{
-			m_position.x = GLRENDERER->screenWidth_points/2+offsetX;
-			m_position.y = GLRENDERER->screenHeight_points+offsetY;
+			m_position.x = (f32)GLRENDERER->screenWidth_points/2+offsetX;
+			m_position.y = (f32)GLRENDERER->screenHeight_points+offsetY;
 			
 			break;
 		}
 		case CoreUI_AttachSide_TopLeft:
 		{
-			m_position.x = offsetX;
-			m_position.y = offsetY;
+			m_position.x = (f32)offsetX;
+			m_position.y = (f32)offsetY;
 			
 			break;
 		}
 		case CoreUI_AttachSide_BottomLeft:
 		{
-			m_position.x = offsetX;
-			m_position.y = GLRENDERER->screenHeight_points+offsetY;
+			m_position.x = (f32)offsetX;
+			m_position.y = (f32)GLRENDERER->screenHeight_points+offsetY;
 			
 			break;
 		}
 		case CoreUI_AttachSide_TopRight:
 		{
-			m_position.x = GLRENDERER->screenWidth_points+offsetX;
-			m_position.y = offsetY;
+			m_position.x = (f32)GLRENDERER->screenWidth_points+offsetX;
+			m_position.y = (f32)offsetY;
 			
 			break;
 		}
 		case CoreUI_AttachSide_BottomRight:
 		{
-			m_position.x = GLRENDERER->screenWidth_points+offsetX;
-			m_position.y = GLRENDERER->screenHeight_points+offsetY;
+			m_position.x = (f32)GLRENDERER->screenWidth_points+offsetX;
+			m_position.y = (f32)GLRENDERER->screenHeight_points+offsetY;
 			
 			break;
 		}
@@ -196,7 +196,7 @@ void CoreUI_Button::Init(u32 width, u32 height, CoreUI_AttachSide attachSide, s3
 	
 	pGeom->material.uniqueUniformValues[0] = (u8*)&m_diffuseColor;
 
-	mat4f_LoadScaleFromFloats(pGeom->worldMat,width,height,1.0f);
+	mat4f_LoadScaleFromFloats(pGeom->worldMat,(f32)width,(f32)height,1.0f);
 	
 	vec3* pPos = mat4f_GetPos(pGeom->worldMat);
 	pPos->x = m_position.x;

@@ -403,11 +403,15 @@ bool CoreAudioOpenAL::GetSourceIsStopped(u32 soundSourceID)
 	return state == AL_STOPPED;
 }
 
-void CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoundBufferID)
+bool CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoundBufferID)
 {
+#if defined (PLATFORM_WIN)
+	return false;
+#endif
+
 	if (pSoundBufferID == NULL || *pSoundBufferID != 0)
     {       
-        return;
+        return false;
     }
 	
 	u32 soundBufferID;
@@ -415,7 +419,7 @@ void CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoun
 	
 	if(CheckForOpenALError())
 	{
-		return;
+		return false;
 	}
 	
 	CoreAudioFileInfo fileInfo;
@@ -425,13 +429,13 @@ void CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoun
 #endif
 
 #if defined (PLATFORM_WIN)
-	LoadSoundDataFromFile_WIN(filename, &fileInfo);
+	//LoadSoundDataFromFile_WIN(filename, &fileInfo);
 #endif
 
 	if(CheckForOpenALError())
 	{
 		alDeleteBuffers(1, &soundBufferID);
-		return;
+		return false;
 	}
 	
 	// Copy wav data into AL Buffer
@@ -440,10 +444,12 @@ void CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoun
 	if(CheckForOpenALError())
 	{
 		alDeleteBuffers(1, &soundBufferID);
-		return;
+		return false;
 	}
 	
 	delete[] fileInfo.data;
 
 	*pSoundBufferID = soundBufferID;
+
+	return true;
 }

@@ -10,7 +10,7 @@
 #include "stddef.h" //for NULL -_-
 #include <cstdio>
 
-#define COREOBJECTMANAGER_DEBUG 0
+#define COREOBJECTMANAGER_DEBUG 1
 
 #if COREOBJECTMANAGER_DEBUG
 #include <cassert>

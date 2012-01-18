@@ -10,6 +10,11 @@
 #include "MathUtil.h"
 #include "matrix.h"
 
+#if defined (PLATFORM_WIN)
+#include <direct.h>
+#include <stdlib.h>
+#endif
+
 Game* GAME = NULL;
 
 const MaterialSettings g_Game_BlobShadowSettings =
@@ -33,6 +38,26 @@ ItemArtDescription g_Game_BlobShadowDesc =
 
 void Game::Init()
 {
+#if defined (PLATFORM_WIN)
+	char currentPath[_MAX_PATH];
+	//GetCurrentDirectory(_MAX_PATH,currentPath);
+	GetModuleFileName(0,currentPath,_MAX_PATH);
+	std::string pathString(currentPath);
+
+	s32 lastSlashIndex = 0;
+	for(u32 i=0; i<pathString.size(); ++i)
+	{
+		if(pathString[i] == '\\')
+		{
+			lastSlashIndex = i;
+		}
+	}
+
+	m_path = pathString.substr(0,lastSlashIndex+1);
+
+	OutputDebugString(m_path.c_str());
+#endif
+
 	m_numLoadedArtDescriptions = 0;
 	m_numArtDescriptionsToLoadTexturesFor = 0;
 	m_numLoadedSoundDescriptions = 0;
@@ -90,22 +115,24 @@ s32 Game::AddSongToPlaylist(const char* songFilenameMP3)
 }
 
 
-const char* Game::GetPathToFile(const char* filename)
+std::string Game::GetPathToFile(const char* filename)
 {
 #if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
 	NSString* fileString = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
 	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
 	
 	return [fullPath UTF8String];
-#else
-	return filename;
+#endif
+
+#if defined (PLATFORM_WIN)
+	return m_path + std::string(filename);
 #endif
 }
 
 
 void Game::PlaySongByID(s32 songID, f32 volume, bool isLooping)
 {
-	if(songID >= m_numSongsInPlaylist)
+	if(songID >= (s32)m_numSongsInPlaylist)
 	{
 		return;
 	}

@@ -30,6 +30,8 @@ extern OpenGLRenderer* GLRENDERER;
 #include <OpenGLES/ES2/glext.h>
 #endif
 
+#include <string>
+
 #include "MathUtil.h"
 #include "GraphicsTypes.h"
 #include "PhysicsTypes.h"
@@ -161,7 +163,7 @@ public:
 	
 	//public functions
 	
-	void Init(f32 screenWidthPixels, f32 screenHeightPixels,f32 screenWidthPoints, f32 screenHeightPoints);
+	void Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 screenWidthPoints, u32 screenHeightPoints);
 	bool InitSceneFromPOD(RenderableScene3D* pScene, CPVRTModelPOD* pPod, u32 viewFlags, const char* relativePath);
 	void CleanUp();
 	void LoadParticleAtlas(const char* filename);
@@ -222,10 +224,10 @@ public:
 	void DEBUGDRAW_DrawCylinder(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color);
 	
 	//public member variables
-	f32 screenWidth_points;
-	f32 screenHeight_points;
-	f32 screenWidth_pixels;
-	f32 screenHeight_pixels;
+	u32 screenWidth_points;
+	u32 screenHeight_points;
+	u32 screenWidth_pixels;
+	u32 screenHeight_pixels;
 	f32 aspectRatio;
 	bool paused;
 	
@@ -264,8 +266,7 @@ private:
 	bool CompileShader(u32 *shader, s32 type, s32 count, const char* filename);
 	bool LinkProgram(u32 prog);
 	s32 ValidateProgram(u32 prog);
-	const char* GetPathToFile(const char* filename);
-	
+
 	bool CreatePixelShader(s32 pixelShaderIndex);
 	bool CreateVertexShader(s32 vertexShaderIndex);
 	s32 AddVertexShaderToList(const char* filename);

@@ -41,9 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="..\..\Engine\zlib\libz.a">
-      <Filter>Libs\zlib</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\libpng\png.c">
@@ -242,6 +239,54 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine\CoreAudio_OpenAL.mm">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\compress.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\inflate.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\crc32.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\deflate.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\gzclose.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\gzread.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\gzwrite.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\infback.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\inffast.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\inftrees.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\trees.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\uncompr.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\zutil.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\adler32.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\zlib\gzlib.c">
+      <Filter>Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreDebug.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -512,6 +557,36 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine\glew\glew.h">
       <Filter>Libs\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\zlib\inflate.h">
+      <Filter>Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\zlib\crc32.h">
+      <Filter>Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\zlib\deflate.h">
+      <Filter>Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\zlib\gzguts.h">
+      <Filter>Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\zlib\inffast.h">
+      <Filter>Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\zlib\inffixed.h">
+      <Filter>Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\zlib\inftrees.h">
+      <Filter>Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\zlib\trees.h">
+      <Filter>Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\zlib\zutil.h">
+      <Filter>Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreDebug.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

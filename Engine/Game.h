@@ -106,7 +106,7 @@ public:
 	void SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec3* pDirection, u32 breakableIndex, const vec4* diffuseColor, RenderLayer renderLayer);
 	s32 AddSongToPlaylist(const char* songFilenameMP3);
 	void PlaySongByID(s32 songID, f32 volume, bool isLooping);
-	const char* GetPathToFile(const char* filename);
+	std::string GetPathToFile(const char* filename);
 protected:
 	
 	void LoadItemArt();	//Call to load all the art in the list
@@ -151,6 +151,10 @@ private:
 #endif
 	
 	CoreObjectManager* m_coreObjectManager;
+
+#if defined (PLATFORM_WIN)
+	std::string m_path;
+#endif
 };
 
 #endif

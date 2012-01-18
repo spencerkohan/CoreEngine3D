@@ -18,7 +18,7 @@ extern CoreAudioOpenAL* OPENALAUDIO;
 #endif
 
 #if defined (PLATFORM_WIN)
-#include "alc.h"
+#include <alc.h>
 #endif
 
 struct CoreAudioFileInfo
@@ -40,7 +40,7 @@ class CoreAudioOpenAL
 public:
 	bool Init();
 	void CleanUp();
-	void CreateSoundBufferFromFile(const char* filename, u32* pSoundBufferID);
+	bool CreateSoundBufferFromFile(const char* filename, u32* pSoundBufferID);
 	u32 CreateSoundSourceFromBuffer(u32 bufferID);
 	void DeleteSoundBuffer(u32* soundBufferID);
 	void DeleteSoundSource(u32* soundSourceID);
