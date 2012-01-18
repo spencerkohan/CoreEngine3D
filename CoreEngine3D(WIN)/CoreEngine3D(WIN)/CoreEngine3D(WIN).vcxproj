@@ -43,7 +43,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>HAVE__STAT;HAVE_SLEEP;HAVE_WINDOWS_H;HAVE_WINDOWS_H;HAVE_STDINT_H;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:/Program Files/OpenAL 1.1 SDK/include/;$(projectDir)/../../Engine/zlib</AdditionalIncludeDirectories>
@@ -64,7 +64,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>HAVE__STAT;HAVE_SLEEP;HAVE_WINDOWS_H;HAVE_WINDOWS_H;HAVE_STDINT_H;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:/Program Files/OpenAL 1.1 SDK/include/;$(projectDir)/../../Engine/zlib</AdditionalIncludeDirectories>
