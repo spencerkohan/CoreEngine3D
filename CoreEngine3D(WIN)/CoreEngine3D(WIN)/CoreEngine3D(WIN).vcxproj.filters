@@ -38,6 +38,9 @@
     <Filter Include="Libs\glew">
       <UniqueIdentifier>{f7bfc310-e485-4de4-aaaa-f3ef3e608e4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Libs\alut">
+      <UniqueIdentifier>{87afd03c-1b30-4abe-b8ef-1f6d6a8a0ac3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -587,6 +590,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine\CoreDebug.h">
       <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\alut\alut.h">
+      <Filter>Libs\alut</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

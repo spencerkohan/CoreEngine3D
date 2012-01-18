@@ -40,11 +40,10 @@
   <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HAVE__STAT;HAVE_SLEEP;HAVE_WINDOWS_H;HAVE_WINDOWS_H;HAVE_STDINT_H;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:/Program Files/OpenAL 1.1 SDK/include/;$(projectDir)/../../Engine/zlib</AdditionalIncludeDirectories>
@@ -54,19 +53,18 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew;$(projectDir)/../../Engine/alut</AdditionalLibraryDirectories>
+      <AdditionalDependencies>alut.lib;OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HAVE__STAT;HAVE_SLEEP;HAVE_WINDOWS_H;HAVE_WINDOWS_H;HAVE_STDINT_H;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:/Program Files/OpenAL 1.1 SDK/include/;$(projectDir)/../../Engine/zlib</AdditionalIncludeDirectories>
@@ -78,8 +76,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew;$(projectDir)/../../Engine/alut</AdditionalLibraryDirectories>
+      <AdditionalDependencies>alut.lib;OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -178,6 +176,7 @@
     <ClCompile Include="..\..\Engine\ViewFlags.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Engine\alut\alut.h" />
     <ClInclude Include="..\..\Engine\AnimationController.h" />
     <ClInclude Include="..\..\Engine\ArrayUtil.h" />
     <ClInclude Include="..\..\Engine\base64.h" />

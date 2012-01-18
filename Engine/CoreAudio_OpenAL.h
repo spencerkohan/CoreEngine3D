@@ -65,9 +65,7 @@ private:
 #if defined (PLATFORM_IOS) || defined (PLATFORM_OSX)
 	bool LoadSoundDataFromFile_APPLE(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo);
 #endif
-#if defined (PLATFORM_WIN)
-	bool LoadSoundDataFromFile_WIN(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo);
-#endif
+
 	bool CheckForOpenALError();
 	const char* GetPathToFile(const char* filename);
 	ALCcontext* m_context;

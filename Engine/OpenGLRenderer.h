@@ -211,7 +211,7 @@ public:
 	
 	void FlashScreen(const vec3* pColor, f32 timeInSeconds);
 	void ShakeScreen(f32 shakeAmount,f32 shakeSpeed, f32 shakeTime);
-	void LoadTexture(const char* fileName,ImageType imageType, u32* pGLTexture, u32 filterMode, u32 wrapModeU, u32 wrapModeV, bool flipY = false);
+	bool LoadTexture(const char* fileName,ImageType imageType, u32* pGLTexture, u32 filterMode, u32 wrapModeU, u32 wrapModeV, bool flipY = false);
 	GFX_Trail* CreateTrail(GFX_Trail** pCallbackTrail, vec3* pInitialPos, f32 timeToLive, const GFX_TrailSettings* pTrailSettings, u32 renderFlags);
 	
 	void DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, u32 texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats);

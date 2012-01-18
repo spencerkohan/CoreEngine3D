@@ -8,6 +8,7 @@
 
 #include "CoreAudio_OpenAL.h"
 #include "MathUtil.h"
+#include "Game.h"
 
 #include "stddef.h" //for NULL -_-
 #include <cstdio>
@@ -21,6 +22,7 @@ CoreAudioOpenAL* OPENALAUDIO = NULL;
 #endif
 
 #if defined (PLATFORM_WIN)
+#include "alut\alut.h"
 #include "al.h"
 #endif
 
@@ -34,6 +36,10 @@ bool CoreAudioOpenAL::Init()
 {
 	OPENALAUDIO = this;
 	
+#if defined (PLATFORM_WIN)
+	alutInitWithoutContext(NULL,NULL);
+#endif
+
 	m_maxSoundDistance = 1.0f;
 
 	// Initialization
@@ -66,6 +72,8 @@ void CoreAudioOpenAL::CleanUp()
 	
 	// close the device
 	alcCloseDevice(m_device);
+
+	alutExit();
 }
 
 const char* CoreAudioOpenAL::GetPathToFile(const char* filename)
@@ -80,12 +88,6 @@ const char* CoreAudioOpenAL::GetPathToFile(const char* filename)
 #endif
 }
 
-#if defined (PLATFORM_WIN)
-bool LoadSoundDataFromFile_WIN(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo)
-{
-	return false;
-}
-#endif
 
 #if defined (PLATFORM_IOS) || defined (PLATFORM_OSX)
 bool CoreAudioOpenAL::LoadSoundDataFromFile_APPLE(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo)
@@ -211,8 +213,7 @@ bool CoreAudioOpenAL::LoadSoundDataFromFile_APPLE(const char* filename, CoreAudi
     pOut_AudioFileInfo->dataSize = audioDataByteCount;
     pOut_AudioFileInfo->format = alFormat;
     pOut_AudioFileInfo->data = (u8*)buffer;
-    //*estimatedDurationOut = estimatedDuration;
-	
+
     return true;
 }
 #endif
@@ -406,6 +407,13 @@ bool CoreAudioOpenAL::GetSourceIsStopped(u32 soundSourceID)
 bool CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoundBufferID)
 {
 #if defined (PLATFORM_WIN)
+	const u32 soundBufferID_ALUT = alutCreateBufferFromFile(GAME->GetPathToFile(filename).c_str());
+	if(soundBufferID_ALUT)
+	{
+		*pSoundBufferID = soundBufferID_ALUT;
+		return true;
+	}
+
 	return false;
 #endif
 
@@ -426,10 +434,6 @@ bool CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoun
 
 #if defined (PLATFORM_IOS) || defined (PLATFORM_OSX)
 	LoadSoundDataFromFile_APPLE(filename, &fileInfo);
-#endif
-
-#if defined (PLATFORM_WIN)
-	//LoadSoundDataFromFile_WIN(filename, &fileInfo);
 #endif
 
 	if(CheckForOpenALError())

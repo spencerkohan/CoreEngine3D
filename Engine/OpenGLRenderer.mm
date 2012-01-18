@@ -3215,13 +3215,13 @@ void OpenGLRenderer::CleanUp()
 }
 
 
-void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* pGLTexture, u32 filterMode, u32 wrapModeU, u32 wrapModeV, bool flipY)
+bool OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* pGLTexture, u32 filterMode, u32 wrapModeU, u32 wrapModeV, bool flipY)
 {
 	//You're not allowed to load different textures into one location
     //You're not allowed to load into NULL
     if (pGLTexture == NULL || *pGLTexture != 0)
     {       
-        return;
+        return false;
     }
 
 	std::string filePath = GAME->GetPathToFile(fileName);
@@ -3294,6 +3294,17 @@ void OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
             break;
         }
     }
+
+	if(*pGLTexture)
+	{
+		return true;
+	}
+	else
+	{
+		COREDEBUG_PrintDebugMessage("INSANE ERROR: Failed to load texture: %s!",fileName);
+
+		return false;
+	}
 }
 
 
