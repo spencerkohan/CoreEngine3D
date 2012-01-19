@@ -1,5 +1,6 @@
 #include "CoreDebug.h"
 #include <cstdio>
+#include <cstdarg>
 
 #if defined (PLATFORM_WIN)
 #include <Windows.h>
@@ -12,6 +13,7 @@ void COREDEBUG_PrintDebugMessage(const char* debugMessage, ...)
 	va_list args;
 	va_start(args,debugMessage);
 	sprintf(coreDebugMessageBuffer,debugMessage,args);
+	va_end(args);
 
 	const size_t strLen = strlen(coreDebugMessageBuffer);
 	sprintf(&coreDebugMessageBuffer[strLen],"\n");

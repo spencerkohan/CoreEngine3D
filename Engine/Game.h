@@ -143,6 +143,8 @@ private:
 	CoreAudioOpenAL* m_pCoreAudioOpenAL;
 
 	s32 m_currSongID;
+	u32 m_currSongBuffer;
+	u32 m_currSongSource;
 	char* m_songPlaylist[GAME_MAX_SONGS_IN_PLAYLIST];
 	u32 m_numSongsInPlaylist;
 	

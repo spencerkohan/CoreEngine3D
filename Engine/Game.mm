@@ -58,6 +58,9 @@ void Game::Init()
 	OutputDebugString(m_path.c_str());
 #endif
 
+	m_currSongSource = 0;
+	m_currSongBuffer = 0;
+
 	m_numLoadedArtDescriptions = 0;
 	m_numArtDescriptionsToLoadTexturesFor = 0;
 	m_numLoadedSoundDescriptions = 0;
@@ -100,6 +103,23 @@ void Game::CleanUp()
 void Game::Update(f32 timeElapsed)
 {
 	UpdateBreakables(timeElapsed);
+
+#if defined (PLATFORM_OSX) || defined(PLATFORM_WIN)
+	
+	for(u32 i=0; i<MOUSESTATE_MAX_MOUSEBUTTONS; ++i)
+	{
+		const MouseButtonState moustState = m_mouseState.buttonState[i];
+
+		if(moustState == MouseButtonState_Began)
+		{
+			m_mouseState.buttonState[i] = MouseButtonState_Held;
+		}
+		else if(moustState == MouseButtonState_Ended)
+		{
+			m_mouseState.buttonState[i] = MouseButtonState_None;
+		}
+	}
+#endif
 }
 
 s32 Game::AddSongToPlaylist(const char* songFilenameMP3)
@@ -157,7 +177,23 @@ void Game::PlaySongByID(s32 songID, f32 volume, bool isLooping)
 	m_pAudioPlayer.numberOfLoops = isLooping?-1:0;
 	
 	[m_pAudioPlayer play];
+#endif
 
+#if defined (PLATFORM_WIN)
+	/*if(m_currSongSource != 0)
+	{
+		OPENALAUDIO->DeleteSoundSource(&m_currSongSource);
+	}
+
+	if(m_currSongBuffer != 0)
+	{
+		OPENALAUDIO->DeleteSoundBuffer(&m_currSongBuffer);
+	}
+
+	std::string filePath = GetPathToFile(m_songPlaylist[songID]);
+	OPENALAUDIO->CreateSoundBufferFromFile(filePath.c_str(),&m_currSongBuffer);
+	m_currSongSource = OPENALAUDIO->CreateSoundSourceFromBuffer(m_currSongBuffer);
+	OPENALAUDIO->PlaySoundSource(m_currSongSource,1.0f,1.0f,true);*/
 #endif
 	
 	m_currSongID = songID;

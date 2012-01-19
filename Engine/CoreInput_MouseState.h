@@ -17,6 +17,7 @@ enum MouseButtonState
 {
 	MouseButtonState_None,
 	MouseButtonState_Began,
+	MouseButtonState_Held,
 	MouseButtonState_Ended,
 };
 
