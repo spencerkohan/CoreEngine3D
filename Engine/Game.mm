@@ -399,26 +399,17 @@ void Game::UpdateBreakables(f32 timeElapsed)
         {
 			Breakable* pLastBreakable = &m_updatingBreakables[m_numBreakables-1];
 			
+			//Get handles to both renderables
+			RenderableGeometry3D* pCurrGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pCurrBreakable->handleRenderable);
+			//Delete the current geom because it's getting overwritten
+			pCurrGeom->Uninit();
+
 			if(m_numBreakables > 1)
 			{
-				//Get handles to both renderables
-				RenderableGeometry3D* pCurrGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pCurrBreakable->handleRenderable);
-				
 				RenderableGeometry3D* pLastGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pLastBreakable->handleRenderable);
-				
-				//This is the bad part
-				
-				//Delete the current geom because it's getting overwritten
-				pCurrGeom->Uninit();
-				
+
 				//Overwrite the breakable
 				*pCurrBreakable = *pLastBreakable;
-								
-				//Have to relink up the uniform values because they're basicaly gone
-				//TODO: maybe one day have these be based on handles as well
-				//Referring to last geom because that's what the current handle is referring to now
-				pLastGeom->material.uniqueUniformValues[0] = (u8*)&pCurrBreakable->texcoordOffset;
-				pLastGeom->material.uniqueUniformValues[1] = (u8*)&pCurrBreakable->diffuseColor;
 			}
 			
 			--m_numBreakables;
@@ -466,6 +457,12 @@ void Game::UpdateBreakables(f32 timeElapsed)
         
         mat4f_LoadScaledZRotation_IgnoreTranslation(pCurrGeom->worldMat, pCurrBreakable->currSpinAngle, radius);
         
+										
+		//Have to relink up the uniform values because they're basicaly gone
+		//TODO: make this better
+		pCurrGeom->material.uniqueUniformValues[0] = (u8*)&pCurrBreakable->texcoordOffset;
+		pCurrGeom->material.uniqueUniformValues[1] = (u8*)&pCurrBreakable->diffuseColor;
+
 		//Bouncing disabled for now
 		
         /*if(pData->pSettings->doesBounce && pBreakablePos->y <= 0.0f)
