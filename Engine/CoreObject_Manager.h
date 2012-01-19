@@ -11,20 +11,107 @@
 
 #include "CoreObject.h"
 #include "MathTypes.h"
+#include "CoreDebug.h"
 
 class CoreObjectManager;
 extern CoreObjectManager* COREOBJECTMANAGER;
 
 #define COREOBJECT_MAX_OBJECTS 4096
+#define COREOBJECT_MAX_OBJECT_TYPES 64
+
+template <class T>
+class CoreObjectFactory
+{
+	friend class CoreObjectManager;
+public:
+	CoreObjectFactory()
+	{
+		m_pObjectList = NULL;
+		m_numObjects = 0;
+		m_maxObjects = 0;
+	}
+
+	T* CreateObject(s32 type)
+	{
+		if(m_numObjects == m_maxObjects)
+		{
+			COREDEBUG_PrintDebugMessage("INSANE ERROR: You can't make any more objects!");
+
+			return NULL;
+		}
+		
+		T* pObject = &m_pObjectList[m_numObjects++];
+		pObject->Init(type);
+
+		return pObject;
+	}
+
+	void UpdateObjectList(f32 timeElapsed)
+	{
+		//Delete dead objects
+		for(u32 i=0; i<m_numObjects; ++i)
+		{
+			T* pCurrObject = &m_pObjectList[i];
+			if(pCurrObject->m_markedForDeletion)
+			{
+				pCurrObject->Uninit();
+
+				T* pLastObject = &m_pObjectList[m_numObjects-1];
+
+				if(m_numObjects > 1)
+				{
+					//overwrite current enemy with last enemy
+					*pCurrObject = *pLastObject;
+
+					//Memory location of the object has moved so update the handle
+					//to point to the new memory location
+					pCurrObject->UpdateHandle();
+				}
+
+				--m_numObjects;
+			}
+		}
+
+		//Update remaining objects
+		for(u32 i=0; i<m_numObjects; ++i)
+		{
+			T* pCurrObject = &m_pObjectList[i];
+			pCurrObject->Update(timeElapsed);
+		}
+	}
+private:
+	void Resize(u32 maxObjects)
+	{
+		m_pObjectList = new T[maxObjects];
+		m_maxObjects = maxObjects;
+	}
+
+	T* m_pObjectList;
+	u32 m_numObjects;
+	u32 m_maxObjects;
+};
 
 class CoreObjectManager
 {
+	friend class CoreObject;
 public:
 	CoreObjectManager();
 	void Clear();
-	bool AddObject(CoreObject* pCoreObject);
+	bool AddObject(CoreObject* pCoreObject);	//use outside this class is deprecated
 	
 	CoreObject* GetObjectByHandle(CoreObjectHandle handle);
+template <typename T>
+	CoreObjectFactory<T>* CreateObjectFactory(u32 maxObjects)
+	{
+		CoreObjectFactory<T>* newFactory = new CoreObjectFactory<T>;
+		T::InitClass();
+		m_pObjectFactories[m_numObjectFactories] = (void*)newFactory;
+
+		((CoreObjectFactory<T>*)m_pObjectFactories[m_numObjectFactories])->Resize(maxObjects);
+		++m_numObjectFactories;
+
+		return newFactory;
+	}
 private:
 	void RemoveObjectByHandle(CoreObjectHandle handle);
 	void UpdateHandle(CoreObject* pCoreObject);
@@ -40,8 +127,10 @@ private:
 	//Handles that are currently being used
 	CoreObjectHandle m_usedHandles[COREOBJECT_MAX_OBJECTS];
 	u32 m_numUsedHandles;
-	
-	friend class CoreObject;
+
+	//Factories
+	void* m_pObjectFactories[COREOBJECT_MAX_OBJECT_TYPES];
+	u32 m_numObjectFactories;
 };
 
 #endif

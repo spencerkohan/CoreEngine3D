@@ -14,6 +14,7 @@ extern ModelData g_Square1x1_modelData;
 extern ModelData g_Fullscreen_Model_modelData;
 extern ModelData g_Square_Tiled_16_modelData;
 extern ModelData g_Square_Tiled_8_modelData;
+extern ModelData g_Square_Tiled_4_modelData;
 extern ModelData g_Square_Tiled_2_modelData;
 
 #endif

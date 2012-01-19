@@ -38,6 +38,13 @@ ItemArtDescription g_Game_BlobShadowDesc =
 
 void Game::Init()
 {
+	//Register the common models people will use
+	GLRENDERER->RegisterModel(&g_Square1x1_modelData);
+	GLRENDERER->RegisterModel(&g_Square_Tiled_2_modelData);
+	GLRENDERER->RegisterModel(&g_Square_Tiled_4_modelData);
+	GLRENDERER->RegisterModel(&g_Square_Tiled_8_modelData);
+	GLRENDERER->RegisterModel(&g_Square_Tiled_16_modelData);
+
 #if defined (PLATFORM_WIN)
 	char currentPath[_MAX_PATH];
 	//GetCurrentDirectory(_MAX_PATH,currentPath);
@@ -120,6 +127,11 @@ void Game::Update(f32 timeElapsed)
 		}
 	}
 #endif
+
+	//Lazy so constantly load new resources
+	//It can't be THAT bad
+	LoadItemArt();
+	LoadItemSounds();
 }
 
 s32 Game::AddSongToPlaylist(const char* songFilenameMP3)

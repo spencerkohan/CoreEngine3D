@@ -24,15 +24,23 @@ struct CoreObjectHandleObject
 
 class CoreObject
 {
+	friend class CoreObjectManager;
 public:
+	static void InitClass(){};
+
 	CoreObjectHandle GetHandle();
 	virtual void UpdateHandle();	//Call when the memory location changes
-	virtual void Init();
+	void DeleteObject();			//Use with new system
+
+	virtual void Init(s32 type = 0);
 	virtual void Uninit();
-	
+	virtual void Update(f32 timeElapsed){};
+	bool m_markedForDeletion;
 private:
+	
+
 	CoreObjectHandle handle;
-	friend class CoreObjectManager;
+	
 };
 
 #endif

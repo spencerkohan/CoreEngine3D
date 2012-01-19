@@ -157,6 +157,7 @@ private:
 #if defined (PLATFORM_WIN)
 	std::string m_path;
 #endif
+
 };
 
 #endif

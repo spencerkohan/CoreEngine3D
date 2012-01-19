@@ -220,6 +220,7 @@
     <ClInclude Include="..\..\Engine\Models\Square_Anim_256x64.h" />
     <ClInclude Include="..\..\Engine\Models\Square_Tiled_16.h" />
     <ClInclude Include="..\..\Engine\Models\Square_Tiled_2.h" />
+    <ClInclude Include="..\..\Engine\Models\Square_Tiled_4.h" />
     <ClInclude Include="..\..\Engine\Models\Square_Tiled_8.h" />
     <ClInclude Include="..\..\Engine\Models\square_tophalf.h" />
     <ClInclude Include="..\..\Engine\OpenGLRenderer.h" />

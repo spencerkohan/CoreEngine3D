@@ -16,14 +16,20 @@ CoreObjectHandle CoreObject::GetHandle()
 	return handle;
 }
 
+void CoreObject::DeleteObject()
+{
+	m_markedForDeletion = true;
+}
+
 //Call when the memory location changes
 void CoreObject::UpdateHandle()
 {
 	COREOBJECTMANAGER->UpdateHandle(this);
 }
 
-void CoreObject::Init()
+void CoreObject::Init(s32 type)
 {
+	m_markedForDeletion = false;
 	COREOBJECTMANAGER->AddObject(this);
 }
 

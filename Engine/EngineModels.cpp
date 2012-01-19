@@ -26,4 +26,5 @@
 #include "Models/fullscreen_model.h"
 #include "Models/Square_Tiled_16.h"
 #include "Models/Square_Tiled_8.h"
+#include "Models/Square_Tiled_4.h"
 #include "Models/Square_Tiled_2.h"

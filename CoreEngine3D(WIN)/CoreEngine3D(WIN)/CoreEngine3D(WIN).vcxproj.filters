@@ -594,5 +594,8 @@
     <ClInclude Include="..\..\Engine\alut\alut.h">
       <Filter>Libs\alut</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine\Models\Square_Tiled_4.h">
+      <Filter>Engine\Models</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
