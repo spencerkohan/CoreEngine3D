@@ -44,7 +44,7 @@ public:
 	u32 CreateSoundSourceFromBuffer(u32 bufferID);
 	void DeleteSoundBuffer(u32* soundBufferID);
 	void DeleteSoundSource(u32* soundSourceID);
-	void PlaySoundSource(u32 soundSourceID, f32 volume, f32 pitch, bool isLooping);
+	bool PlaySoundSource(u32 soundSourceID, f32 volume, f32 pitch, bool isLooping);
 	void PauseSoundSource(u32 soundSourceID);
 	void StopSoundSource(u32 soundSourceID);
 	void RewindSoundSource(u32 soundSourceID);
@@ -67,6 +67,7 @@ private:
 #endif
 
 	bool CheckForOpenALError();
+	bool CheckForALUTError();
 	const char* GetPathToFile(const char* filename);
 	ALCcontext* m_context;
 	ALCdevice* m_device;

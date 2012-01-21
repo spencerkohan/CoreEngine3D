@@ -218,6 +218,20 @@ bool CoreAudioOpenAL::LoadSoundDataFromFile_APPLE(const char* filename, CoreAudi
 }
 #endif
 
+bool CoreAudioOpenAL::CheckForALUTError()
+{
+	ALenum error = alutGetError();
+	if(error == ALUT_ERROR_NO_ERROR)
+	{
+		return false;
+	}
+
+	//std::string errorString(alutGetErrorString(error));
+	COREDEBUG_PrintDebugMessage("ALUT ERROR: %s",alutGetErrorString(error));
+
+	return true;
+}
+
 bool CoreAudioOpenAL::CheckForOpenALError()
 {
 	ALenum error = alGetError();
@@ -226,31 +240,31 @@ bool CoreAudioOpenAL::CheckForOpenALError()
 	{
 		case AL_INVALID_NAME:
 		{
-			printf("Invalid Name paramater passed to AL call.\n");
+			COREDEBUG_PrintDebugMessage("OpenAL ERROR: Invalid Name paramater passed to AL call.\n");
 			
 			return true;
 		}
 		case AL_INVALID_ENUM:
 		{
-			printf("Invalid parameter passed to AL call.\n");
+			COREDEBUG_PrintDebugMessage("OpenAL ERROR: Invalid parameter passed to AL call.\n");
 			
 			return true;
 		}
 		case AL_INVALID_VALUE:
 		{
-			printf("Invalid enum parameter value.\n");
+			COREDEBUG_PrintDebugMessage("OpenAL ERROR: Invalid enum parameter value.\n");
 			
 			return true;
 		}                          
 		case AL_INVALID_OPERATION:
 		{
-			printf("Illegal call.\n");
+			COREDEBUG_PrintDebugMessage("OpenAL ERROR: Illegal call.\n");
 			
 			return true;
 		}                      
 		case AL_OUT_OF_MEMORY:
 		{
-			printf("Out of memory!\n");
+			COREDEBUG_PrintDebugMessage("OpenAL ERROR: Out of memory!\n");
 			
 			return true;
 		}
@@ -260,6 +274,7 @@ bool CoreAudioOpenAL::CheckForOpenALError()
 		}
 		default:
 		{
+			COREDEBUG_PrintDebugMessage("OpenAL ERROR: unknown error");
 			return true;
 		}
 	}
@@ -296,15 +311,24 @@ void CoreAudioOpenAL::SetListenerVolume(f32 volume)
 	CheckForOpenALError();
 }
 
-
-void CoreAudioOpenAL::PlaySoundSource(u32 soundSourceID, f32 volume, f32 pitch, bool isLooping)
+bool CoreAudioOpenAL::PlaySoundSource(u32 soundSourceID, f32 volume, f32 pitch, bool isLooping)
 {
+	if(soundSourceID == 0)
+	{
+		return false;
+	}
+
 	SetSoundSourceIsLooping(soundSourceID, isLooping);
 	SetSoundSourcePitch(soundSourceID, pitch);
 	SetSoundSourceVolume(soundSourceID, volume);
 	
 	alSourcePlay(soundSourceID);
-	CheckForOpenALError();
+	if(CheckForOpenALError())
+	{
+		return false;
+	}
+
+	return true;
 }
 
 
@@ -412,7 +436,13 @@ bool CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoun
     }
 
 #if defined (PLATFORM_WIN)
-	const u32 soundBufferID_ALUT = alutCreateBufferFromFile(GAME->GetPathToFile(filename).c_str());
+	std::string filePath = GAME->GetPathToFile(filename);
+	const u32 soundBufferID_ALUT = alutCreateBufferFromFile(filePath.c_str());
+	if(CheckForALUTError())
+	{
+		return false;
+	}
+
 	if(soundBufferID_ALUT)
 	{
 		*pSoundBufferID = soundBufferID_ALUT;
