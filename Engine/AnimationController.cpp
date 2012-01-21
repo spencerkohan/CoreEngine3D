@@ -9,6 +9,7 @@
 #include "AnimationController.h"
 #include "stddef.h" //for NULL -_-
 #include "Hash.h"
+#include <cassert>
 
 AnimationController* ANIMCONTROLLER = NULL;
 
@@ -105,7 +106,7 @@ void AnimationPlayer::Update(f32 timeElapsed)
 	
 	m_currFrame += timeElapsed*(f32)m_pCurrAnim->FPS*m_playSpeed;
 	
-	if(m_currFrame > (m_pCurrAnim->endFrame+1))
+	if(m_currFrame >= (m_pCurrAnim->endFrame+1))
 	{
 		if(m_pCurrAnim->isLooping)
 		{

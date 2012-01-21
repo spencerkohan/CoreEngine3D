@@ -35,13 +35,15 @@ public:
 	{
 		if(m_numObjects == m_maxObjects)
 		{
-			COREDEBUG_PrintDebugMessage("INSANE ERROR: You can't make any more objects!");
+			//COREDEBUG_PrintDebugMessage("INSANE ERROR: You can't make any more objects!");
 
 			return NULL;
 		}
 		
 		T* pObject = &m_pObjectList[m_numObjects++];
 		pObject->Init(type);
+
+		COREDEBUG_PrintDebugMessage("CoreObjectFactory: Created an object!\n");
 
 		return pObject;
 	}
@@ -69,6 +71,12 @@ public:
 				}
 
 				--m_numObjects;
+
+				COREDEBUG_PrintDebugMessage("CoreObjectFactory: Deleted an object!\n");
+			}
+			else
+			{
+				++i;
 			}
 		}
 
@@ -87,7 +95,7 @@ public:
 
 		T::InitClass();
 	}
-	private:
+	//private:
 
 	T* m_pObjectList;
 	u32 m_numObjects;

@@ -406,6 +406,11 @@ bool CoreAudioOpenAL::GetSourceIsStopped(u32 soundSourceID)
 
 bool CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoundBufferID)
 {
+	if (pSoundBufferID == NULL || *pSoundBufferID != 0)
+    {       
+        return false;
+    }
+
 #if defined (PLATFORM_WIN)
 	const u32 soundBufferID_ALUT = alutCreateBufferFromFile(GAME->GetPathToFile(filename).c_str());
 	if(soundBufferID_ALUT)
@@ -417,11 +422,6 @@ bool CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoun
 	return false;
 #endif
 
-	if (pSoundBufferID == NULL || *pSoundBufferID != 0)
-    {       
-        return false;
-    }
-	
 	u32 soundBufferID;
 	alGenBuffers(1, &soundBufferID);
 	

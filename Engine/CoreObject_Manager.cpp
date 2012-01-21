@@ -10,6 +10,8 @@
 #include "stddef.h" //for NULL -_-
 #include <cstdio>
 
+//TODO:  http://gamesfromwithin.com/managing-data-relationships
+
 #define COREOBJECTMANAGER_DEBUG 1
 
 #if COREOBJECTMANAGER_DEBUG
