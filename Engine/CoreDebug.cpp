@@ -8,6 +8,8 @@
 
 void COREDEBUG_PrintDebugMessage(const char* debugMessage, ...)
 {
+#if defined (DEBUG)
+
 	//HACK: this will crash one day and you will die from memory stomps
 	static char coreDebugMessageBuffer[2048];
 	va_list args;
@@ -24,5 +26,7 @@ void COREDEBUG_PrintDebugMessage(const char* debugMessage, ...)
 
 #if defined(PLATFORM_WIN)
 	OutputDebugString(coreDebugMessageBuffer);
+#endif
+
 #endif
 }
