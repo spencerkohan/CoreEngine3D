@@ -28,7 +28,6 @@ CoreObjectManager::CoreObjectManager()
 
 void CoreObjectManager::Clear()
 {
-	m_numObjectFactories = 0;
 	m_numObjects = 0;
 	m_numUsedHandles = 0;
 	

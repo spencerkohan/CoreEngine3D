@@ -12,12 +12,12 @@
 #include "CoreObject.h"
 #include "MathTypes.h"
 #include "CoreDebug.h"
+#include "stddef.h" //for NULL -_-
 
 class CoreObjectManager;
 extern CoreObjectManager* COREOBJECTMANAGER;
 
 #define COREOBJECT_MAX_OBJECTS 4096
-#define COREOBJECT_MAX_OBJECT_TYPES 64
 
 template <class T>
 class CoreObjectFactory
@@ -79,12 +79,15 @@ public:
 			pCurrObject->Update(timeElapsed);
 		}
 	}
-private:
-	void Resize(u32 maxObjects)
+
+	void Init(u32 maxObjects)
 	{
 		m_pObjectList = new T[maxObjects];
 		m_maxObjects = maxObjects;
+
+		T::InitClass();
 	}
+	private:
 
 	T* m_pObjectList;
 	u32 m_numObjects;
@@ -100,18 +103,6 @@ public:
 	bool AddObject(CoreObject* pCoreObject);	//use outside this class is deprecated
 	
 	CoreObject* GetObjectByHandle(CoreObjectHandle handle);
-template <typename T>
-	CoreObjectFactory<T>* CreateObjectFactory(u32 maxObjects)
-	{
-		CoreObjectFactory<T>* newFactory = new CoreObjectFactory<T>;
-		T::InitClass();
-		m_pObjectFactories[m_numObjectFactories] = (void*)newFactory;
-
-		((CoreObjectFactory<T>*)m_pObjectFactories[m_numObjectFactories])->Resize(maxObjects);
-		++m_numObjectFactories;
-
-		return newFactory;
-	}
 private:
 	void RemoveObjectByHandle(CoreObjectHandle handle);
 	void UpdateHandle(CoreObject* pCoreObject);
@@ -127,10 +118,6 @@ private:
 	//Handles that are currently being used
 	CoreObjectHandle m_usedHandles[COREOBJECT_MAX_OBJECTS];
 	u32 m_numUsedHandles;
-
-	//Factories
-	void* m_pObjectFactories[COREOBJECT_MAX_OBJECT_TYPES];
-	u32 m_numObjectFactories;
 };
 
 #endif
