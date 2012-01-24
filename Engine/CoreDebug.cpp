@@ -8,7 +8,7 @@
 
 void COREDEBUG_PrintDebugMessage(const char* debugMessage, ...)
 {
-#if defined (DEBUG)
+#if defined (_DEBUG)
 
 	//HACK: this will crash one day and you will die from memory stomps
 	static char coreDebugMessageBuffer[2048];

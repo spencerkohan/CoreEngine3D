@@ -40,12 +40,18 @@ public:
 			return NULL;
 		}
 		
-		T* pObject = &m_pObjectList[m_numObjects++];
-		pObject->Init(type);
+		T* pObject = &m_pObjectList[m_numObjects];
+		if(pObject->Init(type))
+		{
+			++m_numObjects;
+			COREDEBUG_PrintDebugMessage("CoreObjectFactory: Created an object!\n");
 
-		COREDEBUG_PrintDebugMessage("CoreObjectFactory: Created an object!\n");
-
-		return pObject;
+			return pObject;
+		}
+		
+		COREDEBUG_PrintDebugMessage("INSANE ERROR! CoreObjectFactory: Failed to create object!  Could not initialize object.\n");
+		
+		return NULL;
 	}
 
 	void UpdateObjectList(f32 timeElapsed)

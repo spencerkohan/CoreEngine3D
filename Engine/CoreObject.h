@@ -32,7 +32,7 @@ public:
 	virtual void UpdateHandle();	//Call when the memory location changes
 	void DeleteObject();			//Use with new system
 
-	virtual void Init(s32 type = 0);
+	virtual bool Init(s32 type = 0);
 	virtual void Uninit();
 	virtual void Update(f32 timeElapsed){};
 	bool m_markedForDeletion;

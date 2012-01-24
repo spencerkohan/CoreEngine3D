@@ -27,10 +27,10 @@ void CoreObject::UpdateHandle()
 	COREOBJECTMANAGER->UpdateHandle(this);
 }
 
-void CoreObject::Init(s32 type)
+bool CoreObject::Init(s32 type)
 {
 	m_markedForDeletion = false;
-	COREOBJECTMANAGER->AddObject(this);
+	return COREOBJECTMANAGER->AddObject(this);
 }
 
 void CoreObject::Uninit()

@@ -46,6 +46,9 @@ extern Game* GAME;
 
 #define GAME_MAX_BREAKABLES 256
 
+#define GAME_MAX_LAYER_DESCRIPTIONS 8
+#define GAME_MAX_SPAWNABLE_ENTITIES 256
+
 extern const MaterialSettings g_Game_BlobShadowSettings;
 extern ItemArtDescription g_Game_BlobShadowDesc;
 
@@ -83,11 +86,59 @@ struct Breakable
     f32 currSpinAngle;
 };
 
+struct SpawnableEntity
+{
+	u32 type;
+	vec3 position;
+	vec2 scale;
+};
+
+enum LevelLayer
+{
+	LevelLayer_Invalid = -1,
+	LevelLayer_Parallax4,
+	LevelLayer_Parallax3,
+	LevelLayer_Parallax2,
+	LevelLayer_Parallax1,
+	LevelLayer_Parallax0,
+	LevelLayer_Main,
+	LevelLayer_Collision,
+	NumLevelLayers,
+};
+
+struct LayerDescription
+{
+	char* name;
+	char* textureFileName;
+	u32 textureSizeX;
+	u32 textureSizeY;
+	u32 firstGID;
+	u32 tileSizeX;
+	u32 tileSizeY;
+};
+
+struct Tile
+{
+	s32 tileID;
+	CoreObjectHandle hRenderable;
+	vec2 texCoordOffset;
+};
+
+struct Layer
+{
+	LayerDescription* description;
+	u32 numTilesX;
+	u32 numTilesY;
+	s32* pLevelData;
+	vec3 position;
+	u32 loadedTextureID;
+	Tile* tiles;
+};
 
 class Game
 {
 public:
-	virtual void Init();
+	virtual bool Init();
 	virtual void Update(f32 timeElapsed);
 	virtual void CleanUp();
 #if defined (PLATFORM_IOS)
@@ -107,8 +158,8 @@ public:
 	s32 AddSongToPlaylist(const char* songFilenameMP3);
 	void PlaySongByID(s32 songID, f32 volume, bool isLooping);
 	std::string GetPathToFile(const char* filename);
-protected:
-	
+protected:	//Only stuff that can be called from the game.cpp goes here
+	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileSizeScaleDiv);
 	void LoadItemArt();	//Call to load all the art in the list
 	void LoadItemSounds();
 	void ClearItemArt();	//Call when you're going to load more art and some of it might be the same
@@ -118,7 +169,11 @@ protected:
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState m_deviceInputState;
 #endif
-	
+	SpawnableEntity m_spawnableEntities[GAME_MAX_SPAWNABLE_ENTITIES];
+	u32 m_numSpawnableEntities;
+	LayerDescription m_layerDescriptions[GAME_MAX_LAYER_DESCRIPTIONS];
+	Layer m_layers[NumLevelLayers];
+
 private:
 	bool WillArtDescriptionBeLoaded(ItemArtDescription* pArtDesc);
 	bool WillSoundDescriptionBeLoaded(ItemSoundDescription* pArtDesc);

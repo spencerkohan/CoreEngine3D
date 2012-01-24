@@ -10,6 +10,11 @@
 #include "MathUtil.h"
 #include "matrix.h"
 
+#include "zlib/zlib.h"
+#include "pugixml/src/pugixml.hpp"
+#include "base64.h"
+#include "Hash.h"
+
 #if defined (PLATFORM_WIN)
 #include <direct.h>
 #include <stdlib.h>
@@ -36,7 +41,7 @@ ItemArtDescription g_Game_BlobShadowDesc =
 	&g_Square1x1_modelData//ModelData*		pModelData;
 };
 
-void Game::Init()
+bool Game::Init()
 {
 	//Register the common models people will use
 	GLRENDERER->RegisterModel(&g_Square1x1_modelData);
@@ -99,6 +104,8 @@ void Game::Init()
 	m_coreObjectManager = new CoreObjectManager;
 	
 	GAME = this;
+
+	return true;
 }
 
 void Game::CleanUp()
@@ -603,3 +610,296 @@ void Game::SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec
 }
 
 
+bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileSizeScaleDiv)
+{
+	m_numSpawnableEntities = 0;
+
+	std::string filenameWithPath(path+filename);
+	
+    pugi::xml_document doc;
+	
+	pugi::xml_parse_result result = doc.load_file(GetPathToFile(filenameWithPath.c_str()).c_str());
+	
+	if(result)
+	{
+		COREDEBUG_PrintDebugMessage("Parsing map file was successful!\n");
+
+		pugi::xml_node map = doc.child("map");
+		
+		s32 layerCount = 0;
+		for (pugi::xml_node layer = map.child("tileset"); layer; layer = layer.next_sibling("tileset"),++layerCount)
+		{
+			LayerDescription* pDesc = &m_layerDescriptions[layerCount];
+
+			const char* descName = layer.attribute("name").value();
+			const size_t descNameSize = strlen(descName);
+			pDesc->name = new char[descNameSize+1];
+			strcpy(pDesc->name, descName);
+			
+			pDesc->firstGID = atoi(layer.attribute("firstgid").value());
+			pDesc->tileSizeX = atoi(layer.attribute("tilewidth").value());
+			pDesc->tileSizeY = atoi(layer.attribute("tileheight").value());
+			
+			pugi::xml_node textureNode = layer.child("image");
+			
+			const char* textureName = textureNode.attribute("source").value();
+			const size_t textureNameSize = strlen(textureName);
+			pDesc->textureFileName = new char[textureNameSize+1];
+			strcpy(pDesc->textureFileName, textureName);
+			
+			pDesc->textureSizeX = atoi(textureNode.attribute("width").value());
+			pDesc->textureSizeY = atoi(textureNode.attribute("height").value());
+		}
+		
+		for (pugi::xml_node layer = map.child("layer"); layer; layer = layer.next_sibling("layer"))
+		{
+			const char* layerName = layer.attribute("name").value();
+			
+			LayerDescription* pCurrDesc = NULL;
+			
+			for(s32 layerIDX=0; layerIDX<layerCount; ++layerIDX)
+			{
+				LayerDescription* pDescToCheck = &m_layerDescriptions[layerIDX];
+				if(strcmp(pDescToCheck->name, layerName) == 0)
+				{
+					pCurrDesc = pDescToCheck;
+					break;
+				}
+			}
+			
+			if(pCurrDesc == NULL)
+			{
+				continue;
+			}
+
+			s32* pData = NULL;
+
+			const u32 width = atoi(layer.attribute("width").value());
+			const u32 height = atoi(layer.attribute("height").value());
+
+			COREDEBUG_PrintDebugMessage("\nLayer %s, width: %d, height, %d",layerName,width,height);
+			
+			LevelLayer currLayer = LevelLayer_Invalid;
+			
+			if(strcmp(layerName, "Main") == 0)
+			{
+				currLayer = LevelLayer_Main;
+			}
+			else if(strcmp(layerName, "Parallax0") == 0)
+			{
+				currLayer = LevelLayer_Parallax0;
+			}
+			else if(strcmp(layerName, "Parallax1") == 0)
+			{
+				currLayer = LevelLayer_Parallax1;
+			}
+			else if(strcmp(layerName, "Parallax2") == 0)
+			{
+				currLayer = LevelLayer_Parallax2;
+			}
+			else if(strcmp(layerName, "Parallax3") == 0)
+			{
+				currLayer = LevelLayer_Parallax3;
+			}
+			else if(strcmp(layerName, "Parallax4") == 0)
+			{
+				currLayer = LevelLayer_Parallax4;
+			}
+			else if(strcmp(layerName, "collision") == 0)
+			{
+				currLayer = LevelLayer_Collision;
+			}
+			
+			if(currLayer == LevelLayer_Invalid)
+			{
+				COREDEBUG_PrintDebugMessage("Invalid Layer: Skipping...");
+
+				continue;
+			}
+			
+			Layer* pCurrLayer = &m_layers[currLayer];
+			
+			const u32 numTiles = width*height;
+	
+			switch(currLayer)
+			{
+				case LevelLayer_Parallax4:
+				case LevelLayer_Parallax3:
+				case LevelLayer_Parallax2:
+				case LevelLayer_Parallax1:
+				case LevelLayer_Parallax0:
+				case LevelLayer_Main:
+				{
+					pCurrLayer->numTilesX = width;
+					pCurrLayer->numTilesY = height;
+					
+					pData = new s32[numTiles];
+					
+					pCurrLayer->pLevelData = pData;
+					
+					CopyVec3(&pCurrLayer->position,&vec3_zero);
+					
+					pCurrLayer->description = pCurrDesc;
+					
+					std::string textureFileName(pCurrDesc->textureFileName);
+					std::string texFilenameWithPath(path+textureFileName);
+					
+					GLRENDERER->LoadTexture(texFilenameWithPath.c_str(), ImageType_PNG, &pCurrLayer->loadedTextureID, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,true);
+					
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+			
+			if(pData == NULL)
+			{
+				//If we have no data to write into, we might as well skip
+				COREDEBUG_PrintDebugMessage("This layer will not be saved. Skipping...");
+
+				continue;
+			}
+			
+			pugi::xml_node data = layer.child("data");
+			//std::cout << "data: " << data.first_child().value() << '\n';
+			
+			char* dataToDecode = (char*)data.first_child().value();
+			
+			const int BUFFER_SIZE = 4096;
+			
+			unsigned char decodedData[BUFFER_SIZE];
+			
+			size_t outputLength = base64_decode(dataToDecode,decodedData, BUFFER_SIZE);
+
+			COREDEBUG_PrintDebugMessage("base64_decode...");
+			
+			const u32 dataSize = numTiles*sizeof(u32);
+			unsigned long bufferSize = dataSize;
+			
+			switch(uncompress((Bytef*)pData, &bufferSize, (Bytef*)decodedData, outputLength))
+			{
+				case Z_OK:
+				{
+					COREDEBUG_PrintDebugMessage("ZLIB uncompress was successful!\n");
+					
+					break;
+				}
+				case Z_MEM_ERROR:
+				{
+					COREDEBUG_PrintDebugMessage("ZLIB ERROR: Uncompress failed due to MEMORY ERROR.  Exiting program...\n");
+					return false;
+				}
+				case Z_BUF_ERROR:
+				{
+					COREDEBUG_PrintDebugMessage("ZLIB ERROR: Uncompress failed due to BUFFER ERROR.  Exiting program...\n");
+					return false;
+				}
+				case Z_DATA_ERROR:
+				{
+					COREDEBUG_PrintDebugMessage("ZLIB ERROR: Uncompress failed due to DATA ERROR.  Exiting program...\n");
+					return false;
+				}
+			}
+			
+			for(u32 y=0; y<height; ++y)
+			{
+				for(u32 x=0; x<width; ++x)
+				{
+					s32* currInt = &ARRAY2D(pData, x, y, width);
+					*currInt &= 0x00FFFFFF;
+
+					*currInt -= pCurrLayer->description->firstGID;
+					
+					//std::cout << *currInt << ", ";
+					
+				}
+				//std::cout << '\n';
+			}
+			
+			//Make a matrix scaled to the size of the tile
+			
+			const s32 tileDisplaySizeX = pCurrDesc->tileSizeX/tileSizeScaleDiv;
+			const s32 tileDisplaySizeY = pCurrDesc->tileSizeY/tileSizeScaleDiv;
+			
+			f32 tileMat[16];
+			mat4f_LoadScale(tileMat, (f32)tileDisplaySizeX);
+			vec3* pTilePos = mat4f_GetPos(tileMat);
+			
+			pTilePos->z = 0.0f;
+			
+			const f32 halfTileSizeX = (f32)(tileDisplaySizeX/2);
+			const f32 halfTileSizeY = (f32)(tileDisplaySizeY/2);
+			
+			const u32 numTextureTilesX = pCurrDesc->textureSizeX/pCurrDesc->tileSizeX;
+			const u32 numTextureTilesY = pCurrDesc->textureSizeY/pCurrDesc->tileSizeY;
+
+			const f32 uIncrement = 1.0f/(f32)numTextureTilesX;
+			const f32 vIncrement = 1.0f/(f32)numTextureTilesY;
+			
+			RenderLayer renderLayer = (RenderLayer)(RenderLayer_Background0+currLayer);
+			
+			pCurrLayer->tiles = new Tile[width*height];
+			
+			ModelData* pModelData = numTextureTilesX == 8?&g_Square_Tiled_8_modelData:&g_Square_Tiled_16_modelData;
+			
+			for(u32 y=0; y<height; ++y)
+			{
+				for(u32 x=0; x<width; ++x)
+				{
+					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+					pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
+
+					s32 tileID = ARRAY2D(pData, x, y, width);
+					
+					pTile->tileID = tileID;
+
+					if(tileID == -1)
+					{
+						continue;
+					}
+				}
+			}
+		}
+		
+		for (pugi::xml_node layer = map.child("objectgroup"); layer; layer = layer.next_sibling("objectgroup"))
+		{
+			const char* layerName = layer.attribute("name").value();
+
+			COREDEBUG_PrintDebugMessage("Layer: %s",layerName);
+			
+			for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
+			{
+				//const char* name = object.attribute("name").value();
+				const char* typeString = object.attribute("type").value();
+				//std::cout << name << '\n';
+
+				SpawnableEntity* pCurrEnt = &m_spawnableEntities[m_numSpawnableEntities];
+				const u32 entType = Hash(typeString);
+				pCurrEnt->type = entType;
+				
+				const int x = atoi(object.attribute("x").value())/tileSizeScaleDiv;
+				const int y = atoi(object.attribute("y").value())/tileSizeScaleDiv;
+				
+				const int width = atoi(object.attribute("width").value())/tileSizeScaleDiv;
+				const int height = atoi(object.attribute("height").value())/tileSizeScaleDiv;
+				
+				pCurrEnt->position.x = x+(f32)(width/2);
+				pCurrEnt->position.y = y+(f32)(height/2);
+				pCurrEnt->position.z = 0.0f;
+				
+				pCurrEnt->scale.x = width;
+				pCurrEnt->scale.y = height;
+
+				++m_numSpawnableEntities;
+			}
+		}
+	}
+	else
+	{
+		COREDEBUG_PrintDebugMessage("Failed to load level file.  FILE NOT FOUND!");
+	}
+	
+	return true;
+}
