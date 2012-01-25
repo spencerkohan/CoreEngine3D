@@ -160,6 +160,7 @@ public:
 	std::string GetPathToFile(const char* filename);
 protected:	//Only stuff that can be called from the game.cpp goes here
 	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileSizeScaleDiv);
+	void UpdateTiledLevelPosition(vec3* pPosition);
 	void LoadItemArt();	//Call to load all the art in the list
 	void LoadItemSounds();
 	void ClearItemArt();	//Call when you're going to load more art and some of it might be the same
@@ -202,6 +203,8 @@ private:
 	u32 m_currSongSource;
 	char* m_songPlaylist[GAME_MAX_SONGS_IN_PLAYLIST];
 	u32 m_numSongsInPlaylist;
+
+	u32 m_tileSizeScaleDiv;
 	
 #if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
 	AVAudioPlayer* m_pAudioPlayer;

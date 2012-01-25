@@ -609,9 +609,145 @@ void Game::SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec
 	++m_numBreakables;
 }
 
+void Game::UpdateTiledLevelPosition(vec3* pPosition)
+{
+	//const f32 scrollSpeed = 0.5f;
+	
+	LevelLayer currLayer = LevelLayer_Invalid;
+
+	for(s32 i=0; i<NumLevelLayers; ++i)
+	{
+#ifndef _DEBUG
+		if(i == (s32)LevelLayer_Collision)
+		{
+			continue;
+		}
+#endif
+
+		Layer* pCurrLayer = &m_layers[i];
+		if(pCurrLayer->tiles == NULL)
+		{
+			continue;
+		}
+		
+		RenderLayer renderLayer = (RenderLayer)(RenderLayer_Background0+i);
+
+		//If this is the collision layer, it should move at the same rate as the main layer
+		const s32 adjustedIndex = (i==(s32)LevelLayer_Collision)?(s32)LevelLayer_Main:i;
+		const s32 scrollIndex = 1+(s32)LevelLayer_Main-adjustedIndex;	//TODO: index into an array of values maybe
+
+		//pCurrLayer->position.x -= timeElapsed*(f32)(scrollIndex*scrollIndex*scrollIndex)*scrollSpeed;
+		ScaleVec3(&pCurrLayer->position,pPosition,1.0f/(f32)scrollIndex);
+
+		const u32 numTextureTilesX = pCurrLayer->description->textureSizeX/pCurrLayer->description->tileSizeX;
+		const u32 numTextureTilesY = pCurrLayer->description->textureSizeY/pCurrLayer->description->tileSizeY;
+
+		const f32 uIncrement = 1.0f/(f32)numTextureTilesX;
+		const f32 vIncrement = 1.0f/(f32)numTextureTilesY;
+
+		ModelData* pModelData = NULL;
+		
+		switch(numTextureTilesX)
+		{
+			case 2:
+			{
+				pModelData = &g_Square_Tiled_2_modelData;
+				break;
+			}
+			case 4:
+			{
+				pModelData = &g_Square_Tiled_4_modelData;
+				break;
+			}
+			case 8:
+			{
+				pModelData = &g_Square_Tiled_8_modelData;
+
+				break;
+			}
+			case 16:
+			{
+				pModelData = &g_Square_Tiled_16_modelData;
+
+				break;
+			}
+		}
+
+		const s32 tileDisplaySizeX = pCurrLayer->description->tileSizeX/m_tileSizeScaleDiv;
+		const s32 tileDisplaySizeY = pCurrLayer->description->tileSizeY/m_tileSizeScaleDiv;
+
+		const s32 halfTileSizeX = tileDisplaySizeX/2;
+		const s32 halfTileSizeY = tileDisplaySizeY/2;
+		const s32 width = pCurrLayer->numTilesX;
+		const s32 height = pCurrLayer->numTilesY;
+		
+		const s32 distCheckRightAdd = GLRENDERER->screenWidth_points+halfTileSizeX;
+		
+		for(int y=0; y<height; ++y)
+		{
+			for(int x=0; x<width; ++x)
+			{
+				Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+				if(pTile->tileID == -1)
+				{
+					continue;
+				}
+
+				const s32 tileBasePos = x*tileDisplaySizeX+halfTileSizeX;
+				
+				if(-pCurrLayer->position.x > tileBasePos+halfTileSizeX
+				   || -pCurrLayer->position.x+distCheckRightAdd < tileBasePos)
+				{
+					if(pTile->hRenderable != INVALID_COREOBJECT_HANDLE)
+					{
+						RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+						pCurrRenderable->Uninit();
+						pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
+					}
+				}
+				else
+				{
+					RenderableGeometry3D* pCurrRenderable;
+
+					if(pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
+					{
+						f32 tileMat[16];
+						mat4f_LoadScale(tileMat, (f32)tileDisplaySizeX);
+
+						pTile->hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(&pCurrRenderable);
+	
+						assert(pTile->hRenderable != INVALID_COREOBJECT_HANDLE);
+
+						GLRENDERER->InitRenderableGeometry3D(pCurrRenderable, pModelData, MT_TextureOnlyWithTexcoordOffset, &pCurrLayer->loadedTextureID, tileMat, renderLayer, View_0, RenderFlagDefaults_2DTexture_AlphaBlended|RenderFlag_Visible);
+	
+						const s32 tileID_X = pTile->tileID%numTextureTilesX;
+						const s32 tileID_Y = pTile->tileID/numTextureTilesX;
+					
+						pTile->texCoordOffset.x = uIncrement*(f32)tileID_X;
+						pTile->texCoordOffset.y = vIncrement*(f32)tileID_Y;
+					}
+					else
+					{
+						pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+					}
+
+					vec3* pCurrPos = mat4f_GetPos(pCurrRenderable->worldMat);
+					pCurrPos->x = 0.5f+tileBasePos+((s32)pCurrLayer->position.x);
+					pCurrPos->y = (f32)(y*tileDisplaySizeY+halfTileSizeY);
+
+					//TODO: do something better than this if possible
+					pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
+				}
+			}
+		}
+	}
+}
+
 
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileSizeScaleDiv)
 {
+	m_tileSizeScaleDiv = tileSizeScaleDiv;
+
 	m_numSpawnableEntities = 0;
 
 	std::string filenameWithPath(path+filename);
