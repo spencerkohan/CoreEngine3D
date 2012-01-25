@@ -743,11 +743,17 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileSize
 					pCurrLayer->description = pCurrDesc;
 					
 					//Loads the collision texture if you're in debug mode
-#ifdef _DEBUG
+					//Loads all other textures regardless
+#ifndef _DEBUG
+				if(currLayer != LevelLayer_Collision)
+				{
+#endif
 					std::string textureFileName(pCurrDesc->textureFileName);
 					std::string texFilenameWithPath(path+textureFileName);
 					
 					GLRENDERER->LoadTexture(texFilenameWithPath.c_str(), ImageType_PNG, &pCurrLayer->loadedTextureID, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,true);
+#ifndef _DEBUG
+				}
 #endif
 					break;
 				}
