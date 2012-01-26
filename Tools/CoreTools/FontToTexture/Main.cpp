@@ -167,6 +167,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		binaryFile << (f32)(currY+padding)/(f32)maxTextureIndex;
 		binaryFile << (f32)(currX+width-padding)/(f32)maxTextureIndex;
 		binaryFile << (f32)(currY+height-padding)/(f32)maxTextureIndex;
+
+		//TODO: might need some kind of height adjustment output I'm not sure yet
  
 		// Here We Fill In The Data For The Expanded Bitmap.
 		// Notice That We Are Using A Two Channel Bitmap (One For
