@@ -53,8 +53,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew;$(projectDir)/../../Engine/alut</AdditionalLibraryDirectories>
-      <AdditionalDependencies>alut.lib;OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew;$(projectDir)/../../Engine/alut;$(projectDir)/../../Engine/freetype/win32</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freetype248ST.lib;alut.lib;OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -76,8 +76,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew;$(projectDir)/../../Engine/alut</AdditionalLibraryDirectories>
-      <AdditionalDependencies>alut.lib;OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew;$(projectDir)/../../Engine/alut;$(projectDir)/../../Engine/freetype/win32</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freetype248ST.lib;alut.lib;OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
