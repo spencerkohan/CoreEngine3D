@@ -41,6 +41,9 @@
     <Filter Include="Libs\alut">
       <UniqueIdentifier>{87afd03c-1b30-4abe-b8ef-1f6d6a8a0ac3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Libs\GRPNG">
+      <UniqueIdentifier>{0f59c308-3337-4cb0-9a74-46422afc0767}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -291,6 +294,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine\CoreDebug.cpp">
       <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\GRPng\writepng.c">
+      <Filter>Libs\GRPNG</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -596,6 +602,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine\Models\Square_Tiled_4.h">
       <Filter>Engine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\GRPng\writepng.h">
+      <Filter>Libs\GRPNG</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

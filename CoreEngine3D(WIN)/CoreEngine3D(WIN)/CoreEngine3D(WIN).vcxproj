@@ -51,7 +51,8 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:/Program Files/OpenAL 1.1 SDK/include/;$(projectDir)/../../Engine/zlib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:/Program Files/OpenAL 1.1 SDK/include/;$(projectDir)/../../Engine/zlib;$(projectDir)/../../Engine/libpng/</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -72,7 +73,8 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:/Program Files/OpenAL 1.1 SDK/include/;$(projectDir)/../../Engine/zlib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:/Program Files/OpenAL 1.1 SDK/include/;$(projectDir)/../../Engine/zlib;$(projectDir)/../../Engine/libpng/</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,6 +95,7 @@
     <ClCompile Include="..\..\Engine\Game.mm">
       <FileType>Document</FileType>
     </ClCompile>
+    <ClCompile Include="..\..\Engine\GRPng\writepng.c" />
     <ClCompile Include="..\..\Engine\matrix.mm">
       <FileType>Document</FileType>
     </ClCompile>
@@ -202,6 +205,7 @@
     <ClInclude Include="..\..\Engine\GameUtil.h" />
     <ClInclude Include="..\..\Engine\glew\glew.h" />
     <ClInclude Include="..\..\Engine\GraphicsTypes.h" />
+    <ClInclude Include="..\..\Engine\GRPng\writepng.h" />
     <ClInclude Include="..\..\Engine\Hash.h" />
     <ClInclude Include="..\..\Engine\libpng\png.h" />
     <ClInclude Include="..\..\Engine\libpng\pngconf.h" />

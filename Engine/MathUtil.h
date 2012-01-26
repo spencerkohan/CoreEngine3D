@@ -12,6 +12,7 @@
 #define SQUARE(X) ((X) * (X))
 
 //1D
+s32 PowerOf2(s32 num);
 f32 DegreesToRadians(f32 degrees);
 f32 Lerp(f32 f0, f32 f1, f32 t);
 s32	  ClampS32(s32 n, s32 clampMin, s32 clampMax);

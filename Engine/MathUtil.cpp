@@ -14,6 +14,16 @@ int mlcg,p,q;
 static const f32 g_MathUtil_Epsilon = 0.0001f;
 
 
+// This Function Gets The First Power Of 2 >= The
+// Int That We Pass It.
+s32 PowerOf2(s32 num)
+{
+    int rval=1;
+    // rval<<=1 Is A Prettier Way Of Writing rval*=2;
+    while(rval<num) rval<<=1;
+    return rval;
+}
+
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 void SwapS32(s32* l, s32* r)
