@@ -12,6 +12,9 @@
 #include "Engine/MathUtil.h"
 #include "Engine/GRPNG/writepng.h"
 
+#include <iostream>
+#include <fstream>
+
 void PauseBeforeExit()
 {
 	#ifdef _DEBUG
@@ -24,7 +27,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	if(argc < 4)
 	{
-		printf("Useage:  FontToTexture filename.ttf fontsize(pixels) texturesize(pixels) outputfilename.png\nExiting...\n");
+		printf("Useage:  FontToTexture filename.ttf fontsize(pixels) texturesize(pixels) padding(pixels) outputfilename.png outputfilename.bin\nExiting...\n");
 		PauseBeforeExit();
 		return -1;
 	}	
@@ -70,22 +73,44 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-	printf("Outputting %s...\n",argv[4]);
+	printf("Outputting %s...\n",argv[5]);
 
-	const s32 textureSize = PowerOf2(atoi(argv[3]));
+	const s32 inputTextureSize = atoi(argv[3]);
+	const s32 textureSize = PowerOf2(inputTextureSize);
+
+	if(textureSize != inputTextureSize)
+	{
+		printf("Warning: Texture size %d is not a power of 2.  Setting texture size to %d...\n",inputTextureSize,textureSize);
+	}
+
+	const u32 maxTextureIndex = textureSize-1;
+
+	const s32 padding = atoi(argv[4]);
 
 	//Multiply by 64 to counter freetype's 1/64th pixel scale
 	const s32 fontSize = atoi(argv[2])*64;
 
-	u8* pFontBuffer = new u8[textureSize*textureSize];
-	u32 currX = 0;
-	u32 currY = 0;
+	const u32 fontBufferSize = textureSize*textureSize;
+	u8* pFontBuffer = new u8[fontBufferSize];
+	memset(pFontBuffer,0,fontBufferSize);
+	u32 currX = padding;
+	u32 currY = padding;
 
 	//Apparently a normal DPI size for a screen is 96
 	const u32 deviceDPI = 96;
 	FT_Set_Char_Size( face, fontSize, fontSize, deviceDPI, deviceDPI);
 
 	u32 maxHeightForRow = 0;
+
+	//Open binary file for writing out offsets
+	std::ofstream binaryFile;
+	binaryFile.open (argv[6], std::ios::out | std::ios::trunc | std::ios::binary);
+	if(!binaryFile.is_open())
+	{
+		printf("ERROR: failed to open file '%s' for writing! Exiting...\n",argv[6]);
+		PauseBeforeExit();
+		return -1;
+	}
 
 	for(u32 i=32; i<127; ++i)
 	{
@@ -111,31 +136,37 @@ int _tmain(int argc, _TCHAR* argv[])
 		// This Reference Will Make Accessing The Bitmap Easier.
 		FT_Bitmap& bitmap=bitmap_glyph->bitmap;
 
-		// Use Our Helper Function To Get The Widths Of
-		// The Bitmap Data That We Will Need In Order To Create
-		// Our Texture.
-		//int width = next_p2( bitmap.width );
-		//int height = next_p2( bitmap.rows );
-
 		const s32 width = bitmap.width;
 		const s32 height = bitmap.rows;
 
-		u32 indexX = currX;
-
-		currX += width;
-		if(currX >= textureSize)
+		const u32 maxX = currX+width+padding;
+		
+		if(maxX >= textureSize)
 		{
-			currX = 0;
-			indexX = 0;
-			currY += maxHeightForRow;
+			currX = padding;
+			currY += maxHeightForRow+padding;
 			maxHeightForRow = 0;
 
 			if(currY >= textureSize)
 			{
-				printf("ERROR: all the characters cannot fit onto the texture! Exiting...\n",argv[4]);
+				binaryFile.close();
+				printf("ERROR: all the characters cannot fit onto the texture! Exiting...\n",argv[5]);
 				PauseBeforeExit();
+
+				return -1;
 			}
 		}
+
+		if(height > maxHeightForRow)
+		{
+			maxHeightForRow = bitmap.rows;
+		}
+
+		//write out current offsets to binary file
+		binaryFile << (f32)(currX+padding)/(f32)maxTextureIndex;
+		binaryFile << (f32)(currY+padding)/(f32)maxTextureIndex;
+		binaryFile << (f32)(currX+width-padding)/(f32)maxTextureIndex;
+		binaryFile << (f32)(currY+height-padding)/(f32)maxTextureIndex;
  
 		// Here We Fill In The Data For The Expanded Bitmap.
 		// Notice That We Are Using A Two Channel Bitmap (One For
@@ -150,21 +181,21 @@ int _tmain(int argc, _TCHAR* argv[])
 			for(int x=0; x < width; x++)
 			{
 				const u8 pixelValue = bitmap.buffer[x + bitmap.width*y];
-				pFontBuffer[indexX+x + textureSize*(y+currY)] = pixelValue;
+				pFontBuffer[currX+x + textureSize*(y+currY)] = pixelValue;
 				//printf("pixelvalue: %d\n",pixelValue);
 			}
 		}
 
-		if(bitmap.rows > maxHeightForRow)
-		{
-			maxHeightForRow = bitmap.rows;
-		}
+		currX += width+padding;
 	}
 
-	FILE* pOutputFile = fopen(argv[4], "wb");
+	//We're done with this file
+	binaryFile.close();
+
+	FILE* pOutputFile = fopen(argv[5], "wb");
 	if(pOutputFile == NULL)
 	{
-		printf("ERROR: failed to open file '%s' for writing! Exiting...\n",argv[4]);
+		printf("ERROR: failed to open file '%s' for writing! Exiting...\n",argv[5]);
 		PauseBeforeExit();
 
 		return -1;
@@ -187,6 +218,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	if(writepng_init(&pngInfo) != 0)
 	{
+		fclose(pOutputFile);
 		printf("ERROR: initializing PNG struct! Exiting...\n");
 		PauseBeforeExit();
 	}
@@ -199,6 +231,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		if(writepng_encode_row(&pngInfo) != 0)
 		{
+			fclose(pOutputFile);
 			printf("ERROR: libpng error encoding PNG! Exiting...\n");
 			writepng_cleanup(&pngInfo);
 			PauseBeforeExit();
@@ -208,6 +241,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	if(writepng_encode_finish(&pngInfo) != 0)
 	{
+		fclose(pOutputFile);
 		printf("ERROR: error finalizing the PNG! Exiting...\n");
 		writepng_cleanup(&pngInfo);
 		PauseBeforeExit();
@@ -216,6 +250,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//delete[] rowBuffer;
 
 	writepng_cleanup(&pngInfo);
+
+	fclose(pOutputFile);
 
 	printf("Finished!\n");
 	PauseBeforeExit();
