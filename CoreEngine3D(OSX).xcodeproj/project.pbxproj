@@ -10,7 +10,7 @@
 		23310A3514AD91120001D4E3 /* CoreInput_MouseState.h in Headers */ = {isa = PBXBuildFile; fileRef = 23310A3414AD91120001D4E3 /* CoreInput_MouseState.h */; };
 		23310A3814AD91220001D4E3 /* CoreInput_MouseState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23310A3714AD91220001D4E3 /* CoreInput_MouseState.cpp */; };
 		2355542114B044CA00BF618F /* CoreAudio_OpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 2355541F14B044CA00BF618F /* CoreAudio_OpenAL.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2355542214B044CA00BF618F /* CoreAudio_OpenAL.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2355542014B044CA00BF618F /* CoreAudio_OpenAL.mm */; };
+		2355542214B044CA00BF618F /* CoreAudio_OpenAL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2355542014B044CA00BF618F /* CoreAudio_OpenAL.cpp */; };
 		237B3BBC14AF0BE3009196A2 /* Square_Tiled_2.h in Headers */ = {isa = PBXBuildFile; fileRef = 237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */; };
 		23F4265514AC4C4700F27DAB /* CoreInput_GamePad.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265414AC4C4700F27DAB /* CoreInput_GamePad.h */; };
 		23F4265714AC4C5F00F27DAB /* CoreInput_GamePad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23F4265614AC4C5F00F27DAB /* CoreInput_GamePad.cpp */; };
@@ -31,7 +31,7 @@
 		23FCBCC314A1E09A00C5EA7C /* EngineModels.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBBD814A1E09A00C5EA7C /* EngineModels.cpp */; };
 		23FCBCC414A1E09A00C5EA7C /* EngineModels.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBBD914A1E09A00C5EA7C /* EngineModels.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBCC514A1E09A00C5EA7C /* Game.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBBDA14A1E09A00C5EA7C /* Game.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		23FCBCC614A1E09A00C5EA7C /* Game.mm in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBBDB14A1E09A00C5EA7C /* Game.mm */; };
+		23FCBCC614A1E09A00C5EA7C /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBBDB14A1E09A00C5EA7C /* Game.cpp */; };
 		23FCBCC714A1E09A00C5EA7C /* GameUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBBDC14A1E09A00C5EA7C /* GameUtil.cpp */; };
 		23FCBCC814A1E09A00C5EA7C /* GameUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBBDD14A1E09A00C5EA7C /* GameUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBCC914A1E09A00C5EA7C /* GraphicsTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBBDE14A1E09A00C5EA7C /* GraphicsTypes.cpp */; };
@@ -128,8 +128,6 @@
 		23FCBD2F14A1E09A00C5EA7C /* pugiconfig.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC4B14A1E09A00C5EA7C /* pugiconfig.hpp */; };
 		23FCBD3014A1E09A00C5EA7C /* pugixml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC4C14A1E09A00C5EA7C /* pugixml.cpp */; };
 		23FCBD3114A1E09A00C5EA7C /* pugixml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC4D14A1E09A00C5EA7C /* pugixml.hpp */; };
-		23FCBD3214A1E09A00C5EA7C /* Random.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC4E14A1E09A00C5EA7C /* Random.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		23FCBD3314A1E09A00C5EA7C /* Random.mm in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC4F14A1E09A00C5EA7C /* Random.mm */; };
 		23FCBD3414A1E09A00C5EA7C /* RenderFlags.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC5014A1E09A00C5EA7C /* RenderFlags.cpp */; };
 		23FCBD3514A1E09A00C5EA7C /* RenderFlags.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC5114A1E09A00C5EA7C /* RenderFlags.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBD3614A1E09A00C5EA7C /* RenderLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC5214A1E09A00C5EA7C /* RenderLayer.cpp */; };
@@ -154,7 +152,7 @@
 		23310A3414AD91120001D4E3 /* CoreInput_MouseState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_MouseState.h; sourceTree = "<group>"; };
 		23310A3714AD91220001D4E3 /* CoreInput_MouseState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_MouseState.cpp; sourceTree = "<group>"; };
 		2355541F14B044CA00BF618F /* CoreAudio_OpenAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAudio_OpenAL.h; sourceTree = "<group>"; };
-		2355542014B044CA00BF618F /* CoreAudio_OpenAL.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CoreAudio_OpenAL.mm; sourceTree = "<group>"; };
+		2355542014B044CA00BF618F /* CoreAudio_OpenAL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = CoreAudio_OpenAL.cpp; sourceTree = "<group>"; };
 		237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_2.h; sourceTree = "<group>"; };
 		23F4265414AC4C4700F27DAB /* CoreInput_GamePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_GamePad.h; sourceTree = "<group>"; };
 		23F4265614AC4C5F00F27DAB /* CoreInput_GamePad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_GamePad.cpp; sourceTree = "<group>"; };
@@ -180,7 +178,7 @@
 		23FCBBD814A1E09A00C5EA7C /* EngineModels.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EngineModels.cpp; sourceTree = "<group>"; };
 		23FCBBD914A1E09A00C5EA7C /* EngineModels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EngineModels.h; sourceTree = "<group>"; };
 		23FCBBDA14A1E09A00C5EA7C /* Game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Game.h; sourceTree = "<group>"; };
-		23FCBBDB14A1E09A00C5EA7C /* Game.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Game.mm; sourceTree = "<group>"; };
+		23FCBBDB14A1E09A00C5EA7C /* Game.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Game.cpp; sourceTree = "<group>"; };
 		23FCBBDC14A1E09A00C5EA7C /* GameUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameUtil.cpp; sourceTree = "<group>"; };
 		23FCBBDD14A1E09A00C5EA7C /* GameUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameUtil.h; sourceTree = "<group>"; };
 		23FCBBDE14A1E09A00C5EA7C /* GraphicsTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GraphicsTypes.cpp; sourceTree = "<group>"; };
@@ -277,8 +275,6 @@
 		23FCBC4B14A1E09A00C5EA7C /* pugiconfig.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pugiconfig.hpp; sourceTree = "<group>"; };
 		23FCBC4C14A1E09A00C5EA7C /* pugixml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pugixml.cpp; sourceTree = "<group>"; };
 		23FCBC4D14A1E09A00C5EA7C /* pugixml.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pugixml.hpp; sourceTree = "<group>"; };
-		23FCBC4E14A1E09A00C5EA7C /* Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
-		23FCBC4F14A1E09A00C5EA7C /* Random.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Random.mm; sourceTree = "<group>"; };
 		23FCBC5014A1E09A00C5EA7C /* RenderFlags.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderFlags.cpp; sourceTree = "<group>"; };
 		23FCBC5114A1E09A00C5EA7C /* RenderFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderFlags.h; sourceTree = "<group>"; };
 		23FCBC5214A1E09A00C5EA7C /* RenderLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderLayer.cpp; sourceTree = "<group>"; };
@@ -368,7 +364,7 @@
 			isa = PBXGroup;
 			children = (
 				2355541F14B044CA00BF618F /* CoreAudio_OpenAL.h */,
-				2355542014B044CA00BF618F /* CoreAudio_OpenAL.mm */,
+				2355542014B044CA00BF618F /* CoreAudio_OpenAL.cpp */,
 				23310A3414AD91120001D4E3 /* CoreInput_MouseState.h */,
 				23310A3714AD91220001D4E3 /* CoreInput_MouseState.cpp */,
 				23F4266314AC8A1D00F27DAB /* CoreInput_DeviceInputState.cpp */,
@@ -389,7 +385,7 @@
 				23FCBBD814A1E09A00C5EA7C /* EngineModels.cpp */,
 				23FCBBD914A1E09A00C5EA7C /* EngineModels.h */,
 				23FCBBDA14A1E09A00C5EA7C /* Game.h */,
-				23FCBBDB14A1E09A00C5EA7C /* Game.mm */,
+				23FCBBDB14A1E09A00C5EA7C /* Game.cpp */,
 				23FCBBDC14A1E09A00C5EA7C /* GameUtil.cpp */,
 				23FCBBDD14A1E09A00C5EA7C /* GameUtil.h */,
 				23FCBBDE14A1E09A00C5EA7C /* GraphicsTypes.cpp */,
@@ -409,8 +405,6 @@
 				23FCBC1614A1E09A00C5EA7C /* Physics.cpp */,
 				23FCBC1714A1E09A00C5EA7C /* Physics.h */,
 				23FCBC1814A1E09A00C5EA7C /* PhysicsTypes.h */,
-				23FCBC4E14A1E09A00C5EA7C /* Random.h */,
-				23FCBC4F14A1E09A00C5EA7C /* Random.mm */,
 				23FCBC5014A1E09A00C5EA7C /* RenderFlags.cpp */,
 				23FCBC5114A1E09A00C5EA7C /* RenderFlags.h */,
 				23FCBC5214A1E09A00C5EA7C /* RenderLayer.cpp */,
@@ -632,7 +626,6 @@
 				23FCBD2E14A1E09A00C5EA7C /* foreach.hpp in Headers */,
 				23FCBD2F14A1E09A00C5EA7C /* pugiconfig.hpp in Headers */,
 				23FCBD3114A1E09A00C5EA7C /* pugixml.hpp in Headers */,
-				23FCBD3214A1E09A00C5EA7C /* Random.h in Headers */,
 				23FCBD3514A1E09A00C5EA7C /* RenderFlags.h in Headers */,
 				23FCBD3714A1E09A00C5EA7C /* RenderLayer.h in Headers */,
 				23FCBD8314A1E09A00C5EA7C /* image_DXT.h in Headers */,
@@ -708,7 +701,7 @@
 				23FCBCBD14A1E09A00C5EA7C /* base64.cpp in Sources */,
 				23FCBCBF14A1E09A00C5EA7C /* CoreUI_Button.cpp in Sources */,
 				23FCBCC314A1E09A00C5EA7C /* EngineModels.cpp in Sources */,
-				23FCBCC614A1E09A00C5EA7C /* Game.mm in Sources */,
+				23FCBCC614A1E09A00C5EA7C /* Game.cpp in Sources */,
 				23FCBCC714A1E09A00C5EA7C /* GameUtil.cpp in Sources */,
 				23FCBCC914A1E09A00C5EA7C /* GraphicsTypes.cpp in Sources */,
 				23FCBCCB14A1E09A00C5EA7C /* Hash.cpp in Sources */,
@@ -754,7 +747,6 @@
 				23FCBD2A14A1E09A00C5EA7C /* PVRTVector.cpp in Sources */,
 				23FCBD2C14A1E09A00C5EA7C /* PVRTVertex.cpp in Sources */,
 				23FCBD3014A1E09A00C5EA7C /* pugixml.cpp in Sources */,
-				23FCBD3314A1E09A00C5EA7C /* Random.mm in Sources */,
 				23FCBD3414A1E09A00C5EA7C /* RenderFlags.cpp in Sources */,
 				23FCBD3614A1E09A00C5EA7C /* RenderLayer.cpp in Sources */,
 				23FCBD8214A1E09A00C5EA7C /* image_DXT.c in Sources */,
@@ -766,7 +758,7 @@
 				23F4265714AC4C5F00F27DAB /* CoreInput_GamePad.cpp in Sources */,
 				23F4266514AC8A1E00F27DAB /* CoreInput_DeviceInputState.cpp in Sources */,
 				23310A3814AD91220001D4E3 /* CoreInput_MouseState.cpp in Sources */,
-				2355542214B044CA00BF618F /* CoreAudio_OpenAL.mm in Sources */,
+				2355542214B044CA00BF618F /* CoreAudio_OpenAL.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

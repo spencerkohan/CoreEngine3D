@@ -6,6 +6,9 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
+#ifndef __TOUCHINPUT_H
+#define __TOUCHINPUT_H
+
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
@@ -30,3 +33,5 @@
 - (void)accelerometer:(UIAccelerometer*)accelerometer didAccelerate:(UIAcceleration*)acceleration;
 
 @end
+
+#endif

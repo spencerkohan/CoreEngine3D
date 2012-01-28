@@ -67,7 +67,9 @@ private:
 #endif
 
 	bool CheckForOpenALError();
+#if defined(PLATFORM_WIN)
 	bool CheckForALUTError();
+#endif
 	const char* GetPathToFile(const char* filename);
 	ALCcontext* m_context;
 	ALCdevice* m_device;
