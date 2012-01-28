@@ -3630,7 +3630,7 @@ void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 	
 	if ((errCode = glGetError()) != GL_NO_ERROR) {
 		errString = gluErrorString(errCode);
-		fCOREDEBUG_PrintDebugMessage (stderr, "OpenGL Error: %s", errString);
+		COREDEBUG_PrintDebugMessage ("OpenGL Error: %s", errString);
 	}
 #endif
 }

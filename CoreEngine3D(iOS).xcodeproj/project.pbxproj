@@ -19,6 +19,7 @@
 		2335820D14D3A5C300F66DA0 /* CoreObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 2335820314D3A5C300F66DA0 /* CoreObject.h */; };
 		2335820E14D3A5C300F66DA0 /* Hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2335820414D3A5C300F66DA0 /* Hash.cpp */; };
 		2335820F14D3A5C300F66DA0 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 2335820514D3A5C300F66DA0 /* Hash.h */; };
+		234BA1E914D4ADAE00784CAE /* Square_Tiled_4.h in Headers */ = {isa = PBXBuildFile; fileRef = 234BA1E814D4ADAE00784CAE /* Square_Tiled_4.h */; };
 		2355541B14B01EBA00BF618F /* CoreAudio_OpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2355541E14B01F0C00BF618F /* CoreAudio_OpenAL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.cpp */; };
 		23629FBE14AB17A700DCC97F /* AnimationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23629FBA14AB17A300DCC97F /* AnimationController.cpp */; };
@@ -168,6 +169,7 @@
 		2335820314D3A5C300F66DA0 /* CoreObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreObject.h; sourceTree = "<group>"; };
 		2335820414D3A5C300F66DA0 /* Hash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hash.cpp; sourceTree = "<group>"; };
 		2335820514D3A5C300F66DA0 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
+		234BA1E814D4ADAE00784CAE /* Square_Tiled_4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_4.h; sourceTree = "<group>"; };
 		2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAudio_OpenAL.h; sourceTree = "<group>"; };
 		2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = CoreAudio_OpenAL.cpp; sourceTree = "<group>"; };
 		23629FBA14AB17A300DCC97F /* AnimationController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationController.cpp; sourceTree = "<group>"; };
@@ -423,11 +425,12 @@
 		DDA6F4AF149C1A920035A1BF /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				237B3BBE14AF0D52009196A2 /* Square_Tiled_2.h */,
 				DDA6F4B0149C1A920035A1BF /* fullscreen_model.h */,
 				DDA6F4B4149C1A920035A1BF /* square1x1.h */,
 				DDA6F4B9149C1A920035A1BF /* Square_Tiled_16.h */,
 				DDA6F4BA149C1A920035A1BF /* Square_Tiled_8.h */,
+				234BA1E814D4ADAE00784CAE /* Square_Tiled_4.h */,
+				237B3BBE14AF0D52009196A2 /* Square_Tiled_2.h */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -644,6 +647,7 @@
 				2335820B14D3A5C300F66DA0 /* CoreObject_Manager.h in Headers */,
 				2335820D14D3A5C300F66DA0 /* CoreObject.h in Headers */,
 				2335820F14D3A5C300F66DA0 /* Hash.h in Headers */,
+				234BA1E914D4ADAE00784CAE /* Square_Tiled_4.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

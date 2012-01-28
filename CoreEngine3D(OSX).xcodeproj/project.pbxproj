@@ -9,6 +9,13 @@
 /* Begin PBXBuildFile section */
 		23310A3514AD91120001D4E3 /* CoreInput_MouseState.h in Headers */ = {isa = PBXBuildFile; fileRef = 23310A3414AD91120001D4E3 /* CoreInput_MouseState.h */; };
 		23310A3814AD91220001D4E3 /* CoreInput_MouseState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23310A3714AD91220001D4E3 /* CoreInput_MouseState.cpp */; };
+		234BA1E014D4AD8700784CAE /* CoreDebug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 234BA1DA14D4AD8700784CAE /* CoreDebug.cpp */; };
+		234BA1E114D4AD8700784CAE /* CoreDebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 234BA1DB14D4AD8700784CAE /* CoreDebug.h */; };
+		234BA1E214D4AD8700784CAE /* CoreObject_Manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 234BA1DC14D4AD8700784CAE /* CoreObject_Manager.cpp */; };
+		234BA1E314D4AD8700784CAE /* CoreObject_Manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 234BA1DD14D4AD8700784CAE /* CoreObject_Manager.h */; };
+		234BA1E414D4AD8700784CAE /* CoreObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 234BA1DE14D4AD8700784CAE /* CoreObject.cpp */; };
+		234BA1E514D4AD8700784CAE /* CoreObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 234BA1DF14D4AD8700784CAE /* CoreObject.h */; };
+		234BA1E714D4AD9500784CAE /* Square_Tiled_4.h in Headers */ = {isa = PBXBuildFile; fileRef = 234BA1E614D4AD9500784CAE /* Square_Tiled_4.h */; };
 		2355542114B044CA00BF618F /* CoreAudio_OpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 2355541F14B044CA00BF618F /* CoreAudio_OpenAL.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2355542214B044CA00BF618F /* CoreAudio_OpenAL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2355542014B044CA00BF618F /* CoreAudio_OpenAL.cpp */; };
 		237B3BBC14AF0BE3009196A2 /* Square_Tiled_2.h in Headers */ = {isa = PBXBuildFile; fileRef = 237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */; };
@@ -151,6 +158,13 @@
 /* Begin PBXFileReference section */
 		23310A3414AD91120001D4E3 /* CoreInput_MouseState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_MouseState.h; sourceTree = "<group>"; };
 		23310A3714AD91220001D4E3 /* CoreInput_MouseState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_MouseState.cpp; sourceTree = "<group>"; };
+		234BA1DA14D4AD8700784CAE /* CoreDebug.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreDebug.cpp; sourceTree = "<group>"; };
+		234BA1DB14D4AD8700784CAE /* CoreDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDebug.h; sourceTree = "<group>"; };
+		234BA1DC14D4AD8700784CAE /* CoreObject_Manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreObject_Manager.cpp; sourceTree = "<group>"; };
+		234BA1DD14D4AD8700784CAE /* CoreObject_Manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreObject_Manager.h; sourceTree = "<group>"; };
+		234BA1DE14D4AD8700784CAE /* CoreObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreObject.cpp; sourceTree = "<group>"; };
+		234BA1DF14D4AD8700784CAE /* CoreObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreObject.h; sourceTree = "<group>"; };
+		234BA1E614D4AD9500784CAE /* Square_Tiled_4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_4.h; sourceTree = "<group>"; };
 		2355541F14B044CA00BF618F /* CoreAudio_OpenAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAudio_OpenAL.h; sourceTree = "<group>"; };
 		2355542014B044CA00BF618F /* CoreAudio_OpenAL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = CoreAudio_OpenAL.cpp; sourceTree = "<group>"; };
 		237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_2.h; sourceTree = "<group>"; };
@@ -363,6 +377,12 @@
 		23FCBBCB14A1E09A00C5EA7C /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				234BA1DA14D4AD8700784CAE /* CoreDebug.cpp */,
+				234BA1DB14D4AD8700784CAE /* CoreDebug.h */,
+				234BA1DC14D4AD8700784CAE /* CoreObject_Manager.cpp */,
+				234BA1DD14D4AD8700784CAE /* CoreObject_Manager.h */,
+				234BA1DE14D4AD8700784CAE /* CoreObject.cpp */,
+				234BA1DF14D4AD8700784CAE /* CoreObject.h */,
 				2355541F14B044CA00BF618F /* CoreAudio_OpenAL.h */,
 				2355542014B044CA00BF618F /* CoreAudio_OpenAL.cpp */,
 				23310A3414AD91120001D4E3 /* CoreInput_MouseState.h */,
@@ -460,6 +480,7 @@
 				23FCBC0714A1E09A00C5EA7C /* square1x1.h */,
 				23FCBC0C14A1E09A00C5EA7C /* Square_Tiled_16.h */,
 				23FCBC0D14A1E09A00C5EA7C /* Square_Tiled_8.h */,
+				234BA1E614D4AD9500784CAE /* Square_Tiled_4.h */,
 				237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */,
 			);
 			path = Models;
@@ -643,6 +664,10 @@
 				23310A3514AD91120001D4E3 /* CoreInput_MouseState.h in Headers */,
 				237B3BBC14AF0BE3009196A2 /* Square_Tiled_2.h in Headers */,
 				2355542114B044CA00BF618F /* CoreAudio_OpenAL.h in Headers */,
+				234BA1E114D4AD8700784CAE /* CoreDebug.h in Headers */,
+				234BA1E314D4AD8700784CAE /* CoreObject_Manager.h in Headers */,
+				234BA1E514D4AD8700784CAE /* CoreObject.h in Headers */,
+				234BA1E714D4AD9500784CAE /* Square_Tiled_4.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -759,6 +784,9 @@
 				23F4266514AC8A1E00F27DAB /* CoreInput_DeviceInputState.cpp in Sources */,
 				23310A3814AD91220001D4E3 /* CoreInput_MouseState.cpp in Sources */,
 				2355542214B044CA00BF618F /* CoreAudio_OpenAL.cpp in Sources */,
+				234BA1E014D4AD8700784CAE /* CoreDebug.cpp in Sources */,
+				234BA1E214D4AD8700784CAE /* CoreObject_Manager.cpp in Sources */,
+				234BA1E414D4AD8700784CAE /* CoreObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
