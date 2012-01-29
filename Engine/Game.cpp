@@ -157,10 +157,16 @@ s32 Game::AddSongToPlaylist(const char* songFilenameMP3)
 std::string Game::GetPathToFile(const char* filename)
 {
 #if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+
 	NSString* fileString = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
 	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
 	
-	return [fullPath UTF8String];
+	std::string pathString([fullPath UTF8String]);
+	
+	[pool drain];
+	
+	return pathString;
 #endif
 
 #if defined (PLATFORM_WIN)

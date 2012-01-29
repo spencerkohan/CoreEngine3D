@@ -78,23 +78,11 @@ void CoreAudioOpenAL::CleanUp()
 #endif
 }
 
-const char* CoreAudioOpenAL::GetPathToFile(const char* filename)
-{
-#if defined PLATFORM_OSX || defined PLATFORM_IOS
-	NSString* fileString = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
-	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
-	
-	return [fullPath UTF8String];
-#else
-	return filename;
-#endif
-}
-
 
 #if defined (PLATFORM_IOS) || defined (PLATFORM_OSX)
 bool CoreAudioOpenAL::LoadSoundDataFromFile_APPLE(const char* filename, CoreAudioFileInfo* pOut_AudioFileInfo)
 {
-	CFStringRef filenameStr = CFStringCreateWithCString( NULL, GetPathToFile(filename), kCFStringEncodingUTF8 );
+	CFStringRef filenameStr = CFStringCreateWithCString( NULL, GAME->GetPathToFile(filename).c_str(), kCFStringEncodingUTF8 );
     CFURLRef url = CFURLCreateWithFileSystemPath( NULL, filenameStr, kCFURLPOSIXPathStyle, false );
     CFRelease( filenameStr );
 	
@@ -185,7 +173,7 @@ bool CoreAudioOpenAL::LoadSoundDataFromFile_APPLE(const char* filename, CoreAudi
         return false;
     }
 	
-    UInt32 numBytesToRead = audioDataByteCount;
+    UInt32 numBytesToRead = (UInt32)audioDataByteCount;
     void* buffer = malloc( numBytesToRead );
 	
     if ( buffer == NULL )
@@ -207,12 +195,10 @@ bool CoreAudioOpenAL::LoadSoundDataFromFile_APPLE(const char* filename, CoreAudi
     if ( numBytesToRead != audioDataByteCount )
     {
         fprintf( stderr, "Tried to read %lld bytes from the audio file but only got %d bytes\n", audioDataByteCount, (int)numBytesToRead );
-        free(buffer);
-        return false;
     }
 	
     pOut_AudioFileInfo->sampleRate = basicDescription.mSampleRate;
-    pOut_AudioFileInfo->dataSize = audioDataByteCount;
+    pOut_AudioFileInfo->dataSize = numBytesToRead;
     pOut_AudioFileInfo->format = alFormat;
     pOut_AudioFileInfo->data = (u8*)buffer;
 
@@ -468,7 +454,10 @@ bool CoreAudioOpenAL::CreateSoundBufferFromFile(const char* filename, u32* pSoun
 	CoreAudioFileInfo fileInfo;
 
 #if defined (PLATFORM_IOS) || defined (PLATFORM_OSX)
-	LoadSoundDataFromFile_APPLE(filename, &fileInfo);
+	if(LoadSoundDataFromFile_APPLE(filename, &fileInfo) == false)
+	{
+		return false;
+	}
 #endif
 
 	if(CheckForOpenALError())
