@@ -11,7 +11,7 @@
 
 #include <cassert>
 
-CoreObjectHandle CoreObject::GetHandle()
+CoreObjectHandle CoreObject::GetHandle() const
 {
 	return handle;
 }

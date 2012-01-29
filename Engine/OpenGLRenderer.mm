@@ -1198,7 +1198,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 		{
 			RenderableGeometry3D* pLastGeom = &m_renderableGeometry3DList_Normal[m_numRenderableGeom3Ds_Normal-1];
 			
-			assert(pCurrGeom->GetHandle() == INVALID_COREOBJECT_HANDLE);
+			//assert(pCurrGeom->GetHandle() == INVALID_COREOBJECT_HANDLE);
 			
 			if(m_numRenderableGeom3Ds_Normal > 1)
 			{
@@ -2215,7 +2215,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType
 		*pOut_Geom = pGeom;
 	}
 	
-	assert(pGeom->GetHandle() != INVALID_COREOBJECT_HANDLE);
+	//assert(pGeom->GetHandle() != INVALID_COREOBJECT_HANDLE);
 	
 	return handle;
 }

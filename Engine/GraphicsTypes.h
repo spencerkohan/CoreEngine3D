@@ -572,8 +572,6 @@ public:
 		
 		material.flags &= ~RenderFlag_Visible;
 		material.flags |= RenderFlag_MarkedForRemoval;
-		
-		assert(GetHandle() == INVALID_COREOBJECT_HANDLE);
 	}
 };
 

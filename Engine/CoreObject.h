@@ -28,7 +28,7 @@ class CoreObject
 public:
 	static void InitClass(){};
 
-	CoreObjectHandle GetHandle();
+	CoreObjectHandle GetHandle() const;
 	virtual void UpdateHandle();	//Call when the memory location changes
 	void DeleteObject();			//Use with new system
 
