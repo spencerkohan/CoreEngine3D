@@ -2181,6 +2181,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType
 	if(pGeom == NULL)
 	{
 		COREDEBUG_PrintDebugMessage("INSANE ERROR: You're out of RenderableObject3Ds!");
+		return INVALID_COREOBJECT_HANDLE;
 	}
 	
 	pGeom->Init();
@@ -4442,6 +4443,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableSceneObject3D(RenderableSceneOb
 	if(pScene == NULL)
 	{
 		COREDEBUG_PrintDebugMessage("INSANE ERROR: You're out of RenderableSceneObject3Ds!");
+		return INVALID_COREOBJECT_HANDLE;
 	}
 	
 	pScene->Init();

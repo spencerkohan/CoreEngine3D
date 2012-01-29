@@ -158,7 +158,7 @@ bool CoreAudioOpenAL::LoadSoundDataFromFile_APPLE(const char* filename, CoreAudi
 				alFormat = AL_FORMAT_MONO16;
 				else
 				{
-					alFormat = AL_FORMAT_MONO16;
+					//alFormat = AL_FORMAT_MONO16;
 					fprintf( stderr, "Expected 8 or 16 bits for the mono channel but got %d\n", (int)basicDescription.mBitsPerChannel );
 					AudioFileClose( audioFile );
 					return false;

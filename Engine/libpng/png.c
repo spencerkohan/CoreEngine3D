@@ -197,13 +197,13 @@ png_user_version_check(png_structp png_ptr, png_const_charp user_png_ver)
           (user_png_ver[0] == '0' && user_png_ver[2] < '9'))
       {
 #ifdef PNG_WARNINGS_SUPPORTED
-         size_t pos = 0;
+         //size_t pos = 0;
          char m[128];
 
-         pos = png_safecat(m, sizeof m, pos, "Application built with libpng-");
-         pos = png_safecat(m, sizeof m, pos, user_png_ver);
-         pos = png_safecat(m, sizeof m, pos, " but running with ");
-         pos = png_safecat(m, sizeof m, pos, png_libpng_ver);
+         //pos = png_safecat(m, sizeof m, pos, "Application built with libpng-");
+         //pos = png_safecat(m, sizeof m, pos, user_png_ver);
+         //pos = png_safecat(m, sizeof m, pos, " but running with ");
+         //pos = png_safecat(m, sizeof m, pos, png_libpng_ver);
 
          png_warning(png_ptr, m);
 #endif

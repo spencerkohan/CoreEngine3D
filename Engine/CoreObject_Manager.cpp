@@ -48,7 +48,7 @@ bool CoreObjectManager::AddObject(CoreObject *pCoreObject)
 	if(m_numObjects >= COREOBJECT_MAX_OBJECTS)
 	{
 #if COREOBJECTMANAGER_DEBUG
-		printf("ERROR: Out of core objects!\n");
+		COREDEBUG_PrintDebugMessage("ERROR: Out of core objects!\n");
 #endif
 		return false;
 	}
@@ -57,7 +57,7 @@ bool CoreObjectManager::AddObject(CoreObject *pCoreObject)
 	if(handle == INVALID_COREOBJECT_HANDLE)
 	{
 #if COREOBJECTMANAGER_DEBUG
-		printf("ERROR: Failed to get handle!\n");
+		COREDEBUG_PrintDebugMessage("ERROR: Failed to get handle!\n");
 #endif
 		return false;
 	}
@@ -83,7 +83,7 @@ u32 CoreObjectManager::GetUnusedHandle()
 	if(m_numFreeHandles == INVALID_COREOBJECT_HANDLE)
 	{
 #if COREOBJECTMANAGER_DEBUG
-		printf("ERROR: Out of object handles!\n");
+		COREDEBUG_PrintDebugMessage("ERROR: Out of object handles!\n");
 #endif
 		return 0;
 	}
@@ -91,7 +91,7 @@ u32 CoreObjectManager::GetUnusedHandle()
 	if(m_numUsedHandles == COREOBJECT_MAX_OBJECTS)
 	{
 #if COREOBJECTMANAGER_DEBUG
-		printf("ERROR: Out of coreobjects!\n");
+		COREDEBUG_PrintDebugMessage("ERROR: Out of coreobjects!\n");
 #endif
 		return 0;
 	}
@@ -107,7 +107,7 @@ u32 CoreObjectManager::GetUnusedHandle()
 	++m_numUsedHandles;
 
 #if COREOBJECTMANAGER_DEBUG
-	//printf("Created handle: %d\n",handle);
+	//COREDEBUG_PrintDebugMessage("Created handle: %d\n",handle);
 #endif
 	
 	return handle;
@@ -126,7 +126,7 @@ CoreObject* CoreObjectManager::GetObjectByHandle(CoreObjectHandle handle)
 	}
 	
 #if COREOBJECTMANAGER_DEBUG	
-	printf("ERROR: Tried to get object for handle %d but it could not be found!\n", handle);
+	COREDEBUG_PrintDebugMessage("ERROR: Tried to get object for handle %d but it could not be found!\n", handle);
 #endif
 	
 	return NULL;
@@ -138,6 +138,13 @@ CoreObject* CoreObjectManager::GetObjectByHandle(CoreObjectHandle handle)
 void CoreObjectManager::UpdateHandle(CoreObject* pCoreObject)
 {
 	const u32 handle = pCoreObject->GetHandle();
+	if(handle == INVALID_COREOBJECT_HANDLE)
+	{
+#if COREOBJECTMANAGER_DEBUG	
+		COREDEBUG_PrintDebugMessage("Warning: UpdateHandle->Tried to update invalid object handle.");
+#endif
+		return;
+	}
 	
 	for(u32 i=0; i<m_numObjects; ++i)
 	{
@@ -153,7 +160,7 @@ void CoreObjectManager::UpdateHandle(CoreObject* pCoreObject)
 		}
 	}
 #if COREOBJECTMANAGER_DEBUG	
-	printf("ERROR: Tried to update handle %d but it could not be found!\n", handle);
+	COREDEBUG_PrintDebugMessage("ERROR: Tried to update handle %d but it could not be found!\n", handle);
 #endif
 }
 
@@ -178,7 +185,7 @@ void CoreObjectManager::FreeHandle(CoreObjectHandle handle)
 	}
 	
 #if COREOBJECTMANAGER_DEBUG	
-	printf("ERROR: Tried to free handle %d but it could not be found!\n",handle);
+	COREDEBUG_PrintDebugMessage("ERROR: Tried to free handle %d but it could not be found!\n",handle);
 #endif
 }
 
@@ -189,7 +196,7 @@ void CoreObjectManager::RemoveObjectByHandle(CoreObjectHandle handle)
 	{
 		
 #if COREOBJECTMANAGER_DEBUG
-		printf("ERROR: Tried to remove invalid handle!\n");
+		COREDEBUG_PrintDebugMessage("ERROR: Tried to remove invalid handle!\n");
 #endif
 		
 		return;
@@ -212,7 +219,7 @@ void CoreObjectManager::RemoveObjectByHandle(CoreObjectHandle handle)
 			--m_numObjects;
 			
 #if COREOBJECTMANAGER_DEBUG
-			//printf("Removed handle: %d\n",handle);
+			//COREDEBUG_PrintDebugMessage("Removed handle: %d\n",handle);
 #endif
 
 			return;
@@ -220,7 +227,7 @@ void CoreObjectManager::RemoveObjectByHandle(CoreObjectHandle handle)
 	}
 	
 #if COREOBJECTMANAGER_DEBUG	
-	printf("ERROR: Tried to remove handle %d but it could not be found!\n", handle);
+	COREDEBUG_PrintDebugMessage("ERROR: Tried to remove handle %d but it could not be found!\n", handle);
 #endif
 	
 }

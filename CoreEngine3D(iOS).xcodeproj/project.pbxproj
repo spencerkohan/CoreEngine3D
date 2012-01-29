@@ -179,7 +179,7 @@
 		237B3BBE14AF0D52009196A2 /* Square_Tiled_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_2.h; sourceTree = "<group>"; };
 		23F4265D14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEBUGMODEL_CircleXY.h; sourceTree = "<group>"; };
 		23FCBE5B14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreEngine3D-Prefix.pch"; path = "CoreEngine3D(iOS)/CoreEngine3D-Prefix.pch"; sourceTree = SOURCE_ROOT; };
-		DDA6F314149C19E10035A1BF /* libCoreEngine3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libCoreEngine3D.a; path = "libCoreEngine3D(iOS).a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDA6F314149C19E10035A1BF /* libCoreEngine3D(iOS).a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libCoreEngine3D(iOS).a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDA6F49B149C1A920035A1BF /* ArrayUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArrayUtil.cpp; sourceTree = "<group>"; };
 		DDA6F49C149C1A920035A1BF /* ArrayUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayUtil.h; sourceTree = "<group>"; };
 		DDA6F49D149C1A920035A1BF /* base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = base64.cpp; sourceTree = "<group>"; };
@@ -330,7 +330,7 @@
 		DDA6F315149C19E10035A1BF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DDA6F314149C19E10035A1BF /* libCoreEngine3D.a */,
+				DDA6F314149C19E10035A1BF /* libCoreEngine3D(iOS).a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -669,7 +669,7 @@
 			);
 			name = "CoreEngine3D(iOS)";
 			productName = CoreEngine3D;
-			productReference = DDA6F314149C19E10035A1BF /* libCoreEngine3D.a */;
+			productReference = DDA6F314149C19E10035A1BF /* libCoreEngine3D(iOS).a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -793,6 +793,8 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					PLATFORM_IOS,
@@ -817,6 +819,8 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					PLATFORM_IOS,
 					"$(inherited)",
@@ -836,6 +840,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/CoreEngine3D.dst;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreEngine3D(iOS)/CoreEngine3D-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
@@ -849,6 +855,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/CoreEngine3D.dst;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreEngine3D(iOS)/CoreEngine3D-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
