@@ -716,7 +716,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 
 						pTile->hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(&pCurrRenderable);
 	
-						assert(pTile->hRenderable != INVALID_COREOBJECT_HANDLE);
+						//assert(pTile->hRenderable != INVALID_COREOBJECT_HANDLE);
 
 						GLRENDERER->InitRenderableGeometry3D(pCurrRenderable, pModelData, MT_TextureOnlyWithTexcoordOffset, &pCurrLayer->loadedTextureID, tileMat, renderLayer, View_0, RenderFlagDefaults_2DTexture_AlphaBlended|RenderFlag_Visible);
 	
