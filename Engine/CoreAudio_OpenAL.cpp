@@ -345,6 +345,12 @@ void CoreAudioOpenAL::RewindSoundSource(u32 soundSourceID)
 
 u32 CoreAudioOpenAL::CreateSoundSourceFromBuffer(u32 bufferID)
 {
+	assert(bufferID);
+	if(bufferID == 0)
+	{
+		return 0;
+	}
+	
 	u32 soundSourceID;
 	alGenSources(1,&soundSourceID);
 	
