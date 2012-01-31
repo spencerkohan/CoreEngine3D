@@ -29,6 +29,7 @@
 		237B3BBF14AF0D52009196A2 /* Square_Tiled_2.h in Headers */ = {isa = PBXBuildFile; fileRef = 237B3BBE14AF0D52009196A2 /* Square_Tiled_2.h */; };
 		23F4265E14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265D14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h */; };
 		23FCBE5C14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBE5B14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch */; };
+		DD805AAA14D79E59006C6D10 /* Square_Tiled_32.h in Headers */ = {isa = PBXBuildFile; fileRef = DD805AA914D79E59006C6D10 /* Square_Tiled_32.h */; };
 		DDA6F559149C1A930035A1BF /* ArrayUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F49B149C1A920035A1BF /* ArrayUtil.cpp */; };
 		DDA6F55A149C1A930035A1BF /* ArrayUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F49C149C1A920035A1BF /* ArrayUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F55B149C1A930035A1BF /* base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F49D149C1A920035A1BF /* base64.cpp */; };
@@ -179,6 +180,7 @@
 		237B3BBE14AF0D52009196A2 /* Square_Tiled_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_2.h; sourceTree = "<group>"; };
 		23F4265D14AC5BEE00F27DAB /* DEBUGMODEL_CircleXY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEBUGMODEL_CircleXY.h; sourceTree = "<group>"; };
 		23FCBE5B14A1E8A300C5EA7C /* CoreEngine3D-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreEngine3D-Prefix.pch"; path = "CoreEngine3D(iOS)/CoreEngine3D-Prefix.pch"; sourceTree = SOURCE_ROOT; };
+		DD805AA914D79E59006C6D10 /* Square_Tiled_32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_32.h; sourceTree = "<group>"; };
 		DDA6F314149C19E10035A1BF /* libCoreEngine3D(iOS).a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libCoreEngine3D(iOS).a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDA6F49B149C1A920035A1BF /* ArrayUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArrayUtil.cpp; sourceTree = "<group>"; };
 		DDA6F49C149C1A920035A1BF /* ArrayUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayUtil.h; sourceTree = "<group>"; };
@@ -427,6 +429,7 @@
 			children = (
 				DDA6F4B0149C1A920035A1BF /* fullscreen_model.h */,
 				DDA6F4B4149C1A920035A1BF /* square1x1.h */,
+				DD805AA914D79E59006C6D10 /* Square_Tiled_32.h */,
 				DDA6F4B9149C1A920035A1BF /* Square_Tiled_16.h */,
 				DDA6F4BA149C1A920035A1BF /* Square_Tiled_8.h */,
 				234BA1E814D4ADAE00784CAE /* Square_Tiled_4.h */,
@@ -648,6 +651,7 @@
 				2335820D14D3A5C300F66DA0 /* CoreObject.h in Headers */,
 				2335820F14D3A5C300F66DA0 /* Hash.h in Headers */,
 				234BA1E914D4ADAE00784CAE /* Square_Tiled_4.h in Headers */,
+				DD805AAA14D79E59006C6D10 /* Square_Tiled_32.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

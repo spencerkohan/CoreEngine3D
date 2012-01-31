@@ -153,6 +153,7 @@
 		23FCBD8D14A1E09A00C5EA7C /* SpriteSheetAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBCAB14A1E09A00C5EA7C /* SpriteSheetAnimator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBD9314A1E09A00C5EA7C /* ViewFlags.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBCB514A1E09A00C5EA7C /* ViewFlags.cpp */; };
 		23FCBD9414A1E09A00C5EA7C /* ViewFlags.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBCB614A1E09A00C5EA7C /* ViewFlags.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DD805AAD14D79E67006C6D10 /* Square_Tiled_32.h in Headers */ = {isa = PBXBuildFile; fileRef = DD805AAC14D79E67006C6D10 /* Square_Tiled_32.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -307,6 +308,7 @@
 		23FCBCAB14A1E09A00C5EA7C /* SpriteSheetAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteSheetAnimator.h; sourceTree = "<group>"; };
 		23FCBCB514A1E09A00C5EA7C /* ViewFlags.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ViewFlags.cpp; sourceTree = "<group>"; };
 		23FCBCB614A1E09A00C5EA7C /* ViewFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewFlags.h; sourceTree = "<group>"; };
+		DD805AAC14D79E67006C6D10 /* Square_Tiled_32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_32.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -478,6 +480,7 @@
 				23FCBC0314A1E09A00C5EA7C /* fullscreen_model.h */,
 				23FCBC0414A1E09A00C5EA7C /* model_cube.h */,
 				23FCBC0714A1E09A00C5EA7C /* square1x1.h */,
+				DD805AAC14D79E67006C6D10 /* Square_Tiled_32.h */,
 				23FCBC0C14A1E09A00C5EA7C /* Square_Tiled_16.h */,
 				23FCBC0D14A1E09A00C5EA7C /* Square_Tiled_8.h */,
 				234BA1E614D4AD9500784CAE /* Square_Tiled_4.h */,
@@ -668,6 +671,7 @@
 				234BA1E314D4AD8700784CAE /* CoreObject_Manager.h in Headers */,
 				234BA1E514D4AD8700784CAE /* CoreObject.h in Headers */,
 				234BA1E714D4AD9500784CAE /* Square_Tiled_4.h in Headers */,
+				DD805AAD14D79E67006C6D10 /* Square_Tiled_32.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

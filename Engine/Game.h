@@ -106,32 +106,49 @@ enum LevelLayer
 	NumLevelLayers,
 };
 
-struct LayerDescription
+struct TiledLevelDescription
 {
+	s32 tileDisplaySizeX;
+	s32 tileDisplaySizeY;
+	s32 halfTileSizeX;
+	s32 halfTileSizeY;
+};
+
+struct TileSetDescription
+{
+	//Data
 	char* name;
 	char* textureFileName;
+	u32 loadedTextureID;
+	u32 firstTileIndex;
 	u32 textureSizeX;
 	u32 textureSizeY;
-	u32 firstGID;
 	u32 tileSizeX;
 	u32 tileSizeY;
+	
+	//Useful calculations
+	u32 numTextureTilesX;
+	u32 numTextureTilesY;
+	f32 uIncrement;
+	f32 vIncrement;
+	ModelData* pModelData;
 };
 
 struct Tile
 {
 	s32 tileID;
+	TileSetDescription* pDesc;
 	CoreObjectHandle hRenderable;
 	vec2 texCoordOffset;
 };
 
 struct Layer
 {
-	LayerDescription* description;
 	u32 numTilesX;
 	u32 numTilesY;
 	s32* pLevelData;
 	vec3 position;
-	u32 loadedTextureID;
+	
 	Tile* tiles;
 };
 
@@ -159,7 +176,7 @@ public:
 	void PlaySongByID(s32 songID, f32 volume, bool isLooping);
 	std::string GetPathToFile(const char* filename);
 protected:	//Only stuff that can be called from the game.cpp goes here
-	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileSizeScaleDiv);
+	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels);
 	void UpdateTiledLevelPosition(vec3* pPosition);
 	void LoadItemArt();	//Call to load all the art in the list
 	void LoadItemSounds();
@@ -172,9 +189,10 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 #endif
 	SpawnableEntity m_spawnableEntities[GAME_MAX_SPAWNABLE_ENTITIES];
 	u32 m_numSpawnableEntities;
-	LayerDescription m_layerDescriptions[GAME_MAX_LAYER_DESCRIPTIONS];
+	TileSetDescription m_layerDescriptions[GAME_MAX_LAYER_DESCRIPTIONS];
+	u32 m_numLayerDescriptions;
 	Layer m_layers[NumLevelLayers];
-
+	TiledLevelDescription m_tiledLevelDescription;
 private:
 	bool WillArtDescriptionBeLoaded(ItemArtDescription* pArtDesc);
 	bool WillSoundDescriptionBeLoaded(ItemSoundDescription* pArtDesc);
@@ -203,8 +221,6 @@ private:
 	u32 m_currSongSource;
 	char* m_songPlaylist[GAME_MAX_SONGS_IN_PLAYLIST];
 	u32 m_numSongsInPlaylist;
-
-	u32 m_tileSizeScaleDiv;
 	
 #if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
 	AVAudioPlayer* m_pAudioPlayer;

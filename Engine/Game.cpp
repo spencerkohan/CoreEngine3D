@@ -43,12 +43,19 @@ ItemArtDescription g_Game_BlobShadowDesc =
 
 bool Game::Init()
 {
+	for(int i=0; i<NumLevelLayers; ++i)
+	{
+		m_layers[i].tiles = NULL;
+		CopyVec3(&m_layers[i].position,&vec3_zero);
+	}
+	
 	//Register the common models people will use
 	GLRENDERER->RegisterModel(&g_Square1x1_modelData);
 	GLRENDERER->RegisterModel(&g_Square_Tiled_2_modelData);
 	GLRENDERER->RegisterModel(&g_Square_Tiled_4_modelData);
 	GLRENDERER->RegisterModel(&g_Square_Tiled_8_modelData);
 	GLRENDERER->RegisterModel(&g_Square_Tiled_16_modelData);
+	GLRENDERER->RegisterModel(&g_Square_Tiled_32_modelData);
 
 #if defined (PLATFORM_WIN)
 	char currentPath[_MAX_PATH];
@@ -110,6 +117,20 @@ bool Game::Init()
 
 void Game::CleanUp()
 {
+	for(int i=0; i<NumLevelLayers; ++i)
+	{
+		if(m_layers[i].tiles != NULL)
+		{
+			delete[] m_layers[i].tiles;
+		}
+	}
+	
+	for(u32 i=0; i<m_numLayerDescriptions; ++i)
+	{
+		TileSetDescription* pDesc = &m_layerDescriptions[i];
+		GLRENDERER->DeleteTexture(&pDesc->loadedTextureID);
+	}
+	
 	delete m_pCoreAudioOpenAL;
 	delete m_coreObjectManager;
 }
@@ -615,6 +636,8 @@ void Game::SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec
 
 void Game::UpdateTiledLevelPosition(vec3* pPosition)
 {
+	const s32 distCheckRightAdd = GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileSizeX;
+	
 	for(s32 i=0; i<NumLevelLayers; ++i)
 	{
 #ifndef _DEBUG
@@ -639,49 +662,8 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		//pCurrLayer->position.x -= timeElapsed*(f32)(scrollIndex*scrollIndex*scrollIndex)*scrollSpeed;
 		ScaleVec3(&pCurrLayer->position,pPosition,1.0f/(f32)scrollIndex);
 
-		const u32 numTextureTilesX = pCurrLayer->description->textureSizeX/pCurrLayer->description->tileSizeX;
-		const u32 numTextureTilesY = pCurrLayer->description->textureSizeY/pCurrLayer->description->tileSizeY;
-
-		const f32 uIncrement = 1.0f/(f32)numTextureTilesX;
-		const f32 vIncrement = 1.0f/(f32)numTextureTilesY;
-
-		ModelData* pModelData = NULL;
-		
-		switch(numTextureTilesX)
-		{
-			case 2:
-			{
-				pModelData = &g_Square_Tiled_2_modelData;
-				break;
-			}
-			case 4:
-			{
-				pModelData = &g_Square_Tiled_4_modelData;
-				break;
-			}
-			case 8:
-			{
-				pModelData = &g_Square_Tiled_8_modelData;
-
-				break;
-			}
-			case 16:
-			{
-				pModelData = &g_Square_Tiled_16_modelData;
-
-				break;
-			}
-		}
-
-		const s32 tileDisplaySizeX = pCurrLayer->description->tileSizeX/m_tileSizeScaleDiv;
-		const s32 tileDisplaySizeY = pCurrLayer->description->tileSizeY/m_tileSizeScaleDiv;
-
-		const s32 halfTileSizeX = tileDisplaySizeX/2;
-		const s32 halfTileSizeY = tileDisplaySizeY/2;
 		const s32 width = pCurrLayer->numTilesX;
 		const s32 height = pCurrLayer->numTilesY;
-		
-		const s32 distCheckRightAdd = GLRENDERER->screenWidth_points+halfTileSizeX;
 		
 		for(int y=0; y<height; ++y)
 		{
@@ -692,10 +674,11 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 				{
 					continue;
 				}
+				TileSetDescription* pDesc = pTile->pDesc;
 
-				const s32 tileBasePos = x*tileDisplaySizeX+halfTileSizeX;
+				const s32 tileBasePos = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileSizeX;
 				
-				if(-pCurrLayer->position.x > tileBasePos+halfTileSizeX
+				if(-pCurrLayer->position.x > tileBasePos+m_tiledLevelDescription.halfTileSizeX
 				   || -pCurrLayer->position.x+distCheckRightAdd < tileBasePos)
 				{
 					if(pTile->hRenderable != INVALID_COREOBJECT_HANDLE)
@@ -712,19 +695,19 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					if(pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
 					{
 						f32 tileMat[16];
-						mat4f_LoadScale(tileMat, (f32)tileDisplaySizeX);
+						mat4f_LoadScale(tileMat, (f32)m_tiledLevelDescription.tileDisplaySizeX);
 
 						pTile->hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(&pCurrRenderable);
 	
 						//assert(pTile->hRenderable != INVALID_COREOBJECT_HANDLE);
 
-						GLRENDERER->InitRenderableGeometry3D(pCurrRenderable, pModelData, MT_TextureOnlyWithTexcoordOffset, &pCurrLayer->loadedTextureID, tileMat, renderLayer, View_0, RenderFlagDefaults_2DTexture_AlphaBlended|RenderFlag_Visible);
+						GLRENDERER->InitRenderableGeometry3D(pCurrRenderable, pDesc->pModelData, MT_TextureOnlyWithTexcoordOffset, &pTile->pDesc->loadedTextureID, tileMat, renderLayer, View_0, RenderFlagDefaults_2DTexture_AlphaBlended|RenderFlag_Visible);
 	
-						const s32 tileID_X = pTile->tileID%numTextureTilesX;
-						const s32 tileID_Y = pTile->tileID/numTextureTilesX;
+						const s32 tileID_X = pTile->tileID%pDesc->numTextureTilesX;
+						const s32 tileID_Y = pTile->tileID/pDesc->numTextureTilesX;
 					
-						pTile->texCoordOffset.x = uIncrement*(f32)tileID_X;
-						pTile->texCoordOffset.y = vIncrement*(f32)tileID_Y;
+						pTile->texCoordOffset.x = pDesc->uIncrement*(f32)tileID_X;
+						pTile->texCoordOffset.y = pDesc->vIncrement*(f32)tileID_Y;
 					}
 					else
 					{
@@ -733,7 +716,8 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 
 					vec3* pCurrPos = mat4f_GetPos(pCurrRenderable->worldMat);
 					pCurrPos->x = 0.5f+tileBasePos+((s32)pCurrLayer->position.x);
-					pCurrPos->y = (f32)(y*tileDisplaySizeY+halfTileSizeY);
+					
+					pCurrPos->y = (f32)(y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileSizeY);
 
 					//TODO: do something better than this if possible
 					pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
@@ -744,10 +728,8 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 }
 
 
-bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileSizeScaleDiv)
+bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels)
 {
-	m_tileSizeScaleDiv = tileSizeScaleDiv;
-
 	m_numSpawnableEntities = 0;
 
 	std::string filenameWithPath(path+filename);
@@ -762,17 +744,26 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileSize
 
 		pugi::xml_node map = doc.child("map");
 		
-		s32 layerCount = 0;
-		for (pugi::xml_node layer = map.child("tileset"); layer; layer = layer.next_sibling("tileset"),++layerCount)
+		const u32 mapTileSizeX = atoi(map.attribute("tilewidth").value());
+		//const u32 mapTileSizeY = atoi(map.attribute("tileheight").value());
+		const f32 tileSizeScaleDiv = (f32)tileWidthPixels/(f32)mapTileSizeX;
+		
+		m_tiledLevelDescription.tileDisplaySizeX = tileWidthPixels;
+		m_tiledLevelDescription.tileDisplaySizeY = tileWidthPixels;
+		m_tiledLevelDescription.halfTileSizeX = m_tiledLevelDescription.tileDisplaySizeX/2;
+		m_tiledLevelDescription.halfTileSizeY = m_tiledLevelDescription.tileDisplaySizeY/2;
+		
+		m_numLayerDescriptions = 0;
+		for (pugi::xml_node layer = map.child("tileset"); layer; layer = layer.next_sibling("tileset"),++m_numLayerDescriptions)
 		{
-			LayerDescription* pDesc = &m_layerDescriptions[layerCount];
+			TileSetDescription* pDesc = &m_layerDescriptions[m_numLayerDescriptions];
 
 			const char* descName = layer.attribute("name").value();
 			const size_t descNameSize = strlen(descName);
 			pDesc->name = new char[descNameSize+1];
 			strcpy(pDesc->name, descName);
 			
-			pDesc->firstGID = atoi(layer.attribute("firstgid").value());
+			pDesc->firstTileIndex = atoi(layer.attribute("firstgid").value());
 			pDesc->tileSizeX = atoi(layer.attribute("tilewidth").value());
 			pDesc->tileSizeY = atoi(layer.attribute("tileheight").value());
 			
@@ -785,28 +776,59 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileSize
 			
 			pDesc->textureSizeX = atoi(textureNode.attribute("width").value());
 			pDesc->textureSizeY = atoi(textureNode.attribute("height").value());
+			
+			//Load the tile texture into memory
+			std::string textureFileName(pDesc->textureFileName);
+			std::string texFilenameWithPath(path+textureFileName);
+			
+			GLRENDERER->LoadTexture(texFilenameWithPath.c_str(), ImageType_PNG, &pDesc->loadedTextureID, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,true);
+			
+			//Do some useful calculations
+			
+			pDesc->numTextureTilesX = pDesc->textureSizeX/pDesc->tileSizeX;
+			pDesc->numTextureTilesY = pDesc->textureSizeY/pDesc->tileSizeY;
+			
+			pDesc->uIncrement = 1.0f/(f32)pDesc->numTextureTilesX;
+			pDesc->vIncrement = 1.0f/(f32)pDesc->numTextureTilesY;
+
+			switch(pDesc->numTextureTilesX)
+			{
+				case 2:
+				{
+					pDesc->pModelData = &g_Square_Tiled_2_modelData;
+					
+					break;
+				}
+				case 4:
+				{
+					pDesc->pModelData = &g_Square_Tiled_4_modelData;
+					
+					break;
+				}
+				case 8:
+				{
+					pDesc->pModelData = &g_Square_Tiled_8_modelData;
+					
+					break;
+				}
+				case 16:
+				{
+					pDesc->pModelData = &g_Square_Tiled_16_modelData;
+					
+					break;
+				}
+				case 32:
+				{
+					pDesc->pModelData = &g_Square_Tiled_32_modelData;
+					
+					break;
+				}
+			}
 		}
 		
 		for (pugi::xml_node layer = map.child("layer"); layer; layer = layer.next_sibling("layer"))
 		{
 			const char* layerName = layer.attribute("name").value();
-			
-			LayerDescription* pCurrDesc = NULL;
-			
-			for(s32 layerIDX=0; layerIDX<layerCount; ++layerIDX)
-			{
-				LayerDescription* pDescToCheck = &m_layerDescriptions[layerIDX];
-				if(strcmp(pDescToCheck->name, layerName) == 0)
-				{
-					pCurrDesc = pDescToCheck;
-					break;
-				}
-			}
-			
-			if(pCurrDesc == NULL)
-			{
-				continue;
-			}
 
 			s32* pData = NULL;
 
@@ -875,22 +897,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileSize
 					pCurrLayer->pLevelData = pData;
 					
 					CopyVec3(&pCurrLayer->position,&vec3_zero);
-					
-					pCurrLayer->description = pCurrDesc;
-					
-					//Loads the collision texture if you're in debug mode
-					//Loads all other textures regardless
-#ifndef _DEBUG
-				if(currLayer != LevelLayer_Collision)
-				{
-#endif
-					std::string textureFileName(pCurrDesc->textureFileName);
-					std::string texFilenameWithPath(path+textureFileName);
-					
-					GLRENDERER->LoadTexture(texFilenameWithPath.c_str(), ImageType_PNG, &pCurrLayer->loadedTextureID, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,true);
-#ifndef _DEBUG
-				}
-#endif
+
 					break;
 				}
 				default:
@@ -948,34 +955,10 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileSize
 				}
 			}
 			
-			for(u32 y=0; y<height; ++y)
-			{
-				for(u32 x=0; x<width; ++x)
-				{
-					s32* currInt = &ARRAY2D(pData, x, y, width);
-					*currInt &= 0x00FFFFFF;
-
-					*currInt -= pCurrLayer->description->firstGID;
-					
-					//std::cout << *currInt << ", ";
-					
-				}
-				//std::cout << '\n';
-			}
-			
-			//Make a matrix scaled to the size of the tile
-			
-			const s32 tileDisplaySizeX = pCurrDesc->tileSizeX/tileSizeScaleDiv;
-			//const s32 tileDisplaySizeY = pCurrDesc->tileSizeY/tileSizeScaleDiv;
-			
-			f32 tileMat[16];
-			mat4f_LoadScale(tileMat, (f32)tileDisplaySizeX);
-			vec3* pTilePos = mat4f_GetPos(tileMat);
-			
-			pTilePos->z = 0.0f;
-			
+			//Allocate an array of tiles
 			pCurrLayer->tiles = new Tile[width*height];
 			
+			//
 			for(u32 y=0; y<height; ++y)
 			{
 				for(u32 x=0; x<width; ++x)
@@ -984,6 +967,33 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileSize
 					pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
 
 					s32 tileID = ARRAY2D(pData, x, y, width);
+					tileID &= 0x00FFFFFF;	//Remove the flags
+					//Now tileID is a tile index
+					
+					//Now find the tileset it belongs to
+					u32 maxTilesetIndex = 1;
+					TileSetDescription* pFoundDesc = &m_layerDescriptions[0];
+					
+					for(s32 tilesetIDX=0; tilesetIDX<m_numLayerDescriptions; ++tilesetIDX)
+					{
+						TileSetDescription* pDesc = &m_layerDescriptions[tilesetIDX];
+						
+						if(tileID >= pDesc->firstTileIndex)
+						{
+							if(pDesc->firstTileIndex >= maxTilesetIndex)
+							{
+								pFoundDesc = pDesc;
+								maxTilesetIndex = pDesc->firstTileIndex;
+							}
+						}
+					}
+					
+					//Save the tileset description in the tile.
+					//It makes it easier to load the tile later.
+					pTile->pDesc = pFoundDesc;
+					
+					//Now subtract the highest tileset index from the tileID
+					tileID -= maxTilesetIndex;
 					
 					pTile->tileID = tileID;
 
@@ -1011,11 +1021,11 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileSize
 				const u32 entType = Hash(typeString);
 				pCurrEnt->type = entType;
 				
-				const int x = atoi(object.attribute("x").value())/tileSizeScaleDiv;
-				const int y = atoi(object.attribute("y").value())/tileSizeScaleDiv;
+				const f32 x = (f32)atoi(object.attribute("x").value())/tileSizeScaleDiv;
+				const f32 y = (f32)atoi(object.attribute("y").value())/tileSizeScaleDiv;
 				
-				const int width = atoi(object.attribute("width").value())/tileSizeScaleDiv;
-				const int height = atoi(object.attribute("height").value())/tileSizeScaleDiv;
+				const f32 width = (f32)atoi(object.attribute("width").value())/tileSizeScaleDiv;
+				const f32 height = (f32)atoi(object.attribute("height").value())/tileSizeScaleDiv;
 				
 				pCurrEnt->position.x = x+(f32)(width/2);
 				pCurrEnt->position.y = y+(f32)(height/2);
