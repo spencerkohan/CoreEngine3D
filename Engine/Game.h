@@ -104,6 +104,7 @@ enum LevelLayer
 	LevelLayer_Main,
 	LevelLayer_Collision,
 	LevelLayer_TileObjectArt,
+	LevelLayer_CameraExtents,
 	NumLevelLayers,
 };
 
@@ -184,6 +185,7 @@ public:
 	f32 GetHalfTileSize();
 	f32 GetPixelsPerMeter();
 protected:	//Only stuff that can be called from the game.cpp goes here
+	void ConstrainCameraToTiledLevel();
 	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters);
 	void UpdateTiledLevelPosition(vec3* pPosition);
 	void LoadItemArt();	//Call to load all the art in the list

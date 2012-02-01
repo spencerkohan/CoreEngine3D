@@ -649,6 +649,10 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 			continue;
 		}
 #endif
+		if(i == (s32)LevelLayer_CameraExtents)
+		{
+			continue;
+		}
 
 		Layer* pCurrLayer = &m_layers[i];
 		if(pCurrLayer->tiles == NULL)
@@ -775,6 +779,37 @@ f32 Game::GetHalfTileSize()
 f32 Game::GetPixelsPerMeter()
 {
 	return m_pixelsPerMeter;
+}
+
+void Game::ConstrainCameraToTiledLevel()
+{
+	Layer* pMainLayer = &m_layers[LevelLayer_CameraExtents];
+	
+	const f32 halfTileSize = GetHalfTileSize();
+	
+	const f32 maxCameraY = halfTileSize*pMainLayer->numTilesY-GLRENDERER->screenHeight_points;
+	if(m_camPos.y > maxCameraY)
+	{
+		m_camPos.y = maxCameraY;
+	}
+	
+	const f32 maxCameraX = halfTileSize*pMainLayer->numTilesX;
+	if(m_camPos.x > maxCameraX)
+	{
+		m_camPos.x = maxCameraX;
+	}
+	
+	const f32 minCameraY = 0.0f;
+	if(m_camPos.y < minCameraY)
+	{
+		m_camPos.y = minCameraY;
+	}
+	
+	const f32 minCameraX = 0.0f;
+	if(m_camPos.x < minCameraX)
+	{
+		m_camPos.x = minCameraX;
+	}
 }
 
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
@@ -923,6 +958,10 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			{
 				currLayer = LevelLayer_TileObjectArt;
 			}
+			else if(strcmp(layerName, "CameraExtents") == 0)
+			{
+				currLayer = LevelLayer_CameraExtents;
+			}
 			
 			if(currLayer == LevelLayer_Invalid)
 			{
@@ -945,6 +984,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				case LevelLayer_Main:
 				case LevelLayer_Collision:
 				case LevelLayer_TileObjectArt:
+				case LevelLayer_CameraExtents:
 				{
 					pCurrLayer->numTilesX = width;
 					pCurrLayer->numTilesY = height;
