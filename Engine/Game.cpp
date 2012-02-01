@@ -748,14 +748,39 @@ void Game::GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* p
 
 void Game::GetPositionFromTileIndices(u32 index_X, u32 index_Y, vec3* pOut_position)
 {
-	pOut_position->x = index_X * m_tiledLevelDescription.tileDisplaySizeX - m_camPos.x + m_tiledLevelDescription.halfTileSizeX;
-	pOut_position->y = index_Y * m_tiledLevelDescription.tileDisplaySizeY - m_camPos.y + m_tiledLevelDescription.halfTileSizeY;
+	pOut_position->x = index_X * m_tiledLevelDescription.tileDisplaySizeX + m_tiledLevelDescription.halfTileSizeX;
+	pOut_position->y = index_Y * m_tiledLevelDescription.tileDisplaySizeY + m_tiledLevelDescription.halfTileSizeY;
 	pOut_position->z = 0.0f;
 }
 
-
-bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels)
+s32 Game::GetCollisionFromTileIndices(u32 index_X, u32 index_Y)
 {
+	Layer* pLayer = &m_layers[LevelLayer_Collision];
+	
+	Tile* pTile = &ARRAY2D(pLayer->tiles, index_X, index_Y, pLayer->numTilesX);
+	
+	return pTile->tileID;
+}
+
+f32 Game::GetTileSize()
+{
+	return m_tiledLevelDescription.tileDisplaySizeX;
+}
+
+f32 Game::GetHalfTileSize()
+{
+	return m_tiledLevelDescription.halfTileSizeX;
+}
+
+f32 Game::GetPixelsPerMeter()
+{
+	return m_pixelsPerMeter;
+}
+
+bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
+{
+	m_pixelsPerMeter = (f32)tileWidthPixels/tileSizeMeters;
+	
 	m_numSpawnableEntities = 0;
 
 	std::string filenameWithPath(path+filename);
@@ -890,7 +915,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			{
 				currLayer = LevelLayer_Parallax4;
 			}
-			else if(strcmp(layerName, "collision") == 0)
+			else if(strcmp(layerName, "Collision") == 0)
 			{
 				currLayer = LevelLayer_Collision;
 			}

@@ -176,8 +176,15 @@ public:
 	s32 AddSongToPlaylist(const char* songFilenameMP3);
 	void PlaySongByID(s32 songID, f32 volume, bool isLooping);
 	std::string GetPathToFile(const char* filename);
+	void GetTileIndicesFromScreenPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
+	void GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
+	void GetPositionFromTileIndices(u32 index_X, u32 index_Y, vec3* pOut_position);
+	s32 GetCollisionFromTileIndices(u32 index_X, u32 index_Y);
+	f32 GetTileSize();
+	f32 GetHalfTileSize();
+	f32 GetPixelsPerMeter();
 protected:	//Only stuff that can be called from the game.cpp goes here
-	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels);
+	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters);
 	void UpdateTiledLevelPosition(vec3* pPosition);
 	void LoadItemArt();	//Call to load all the art in the list
 	void LoadItemSounds();
@@ -185,9 +192,7 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	void ClearItemSounds();
 	void DeleteAllItemArt();	//Call to delete all the art in the list regardless
 	void DeleteAllItemSounds();
-	void GetTileIndicesFromScreenPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
-	void GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
-	void GetPositionFromTileIndices(u32 index_X, u32 index_Y, vec3* pOut_position);
+
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState m_deviceInputState;
 #endif
@@ -201,6 +206,7 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	
 	vec3 m_camPos;
 private:
+	f32 m_pixelsPerMeter;
 	bool WillArtDescriptionBeLoaded(ItemArtDescription* pArtDesc);
 	bool WillSoundDescriptionBeLoaded(ItemSoundDescription* pArtDesc);
 	
