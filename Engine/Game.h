@@ -46,7 +46,7 @@ extern Game* GAME;
 
 #define GAME_MAX_BREAKABLES 256
 
-#define GAME_MAX_LAYER_DESCRIPTIONS 8
+#define GAME_MAX_TILESET_DESCRIPTIONS 8
 #define GAME_MAX_SPAWNABLE_ENTITIES 256
 
 extern const MaterialSettings g_Game_BlobShadowSettings;
@@ -103,6 +103,7 @@ enum LevelLayer
 	LevelLayer_Parallax0,
 	LevelLayer_Main,
 	LevelLayer_Collision,
+	LevelLayer_TileObjectArt,
 	NumLevelLayers,
 };
 
@@ -184,15 +185,21 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	void ClearItemSounds();
 	void DeleteAllItemArt();	//Call to delete all the art in the list regardless
 	void DeleteAllItemSounds();
+	void GetTileIndicesFromScreenPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
+	void GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
+	void GetPositionFromTileIndices(u32 index_X, u32 index_Y, vec3* pOut_position);
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState m_deviceInputState;
 #endif
 	SpawnableEntity m_spawnableEntities[GAME_MAX_SPAWNABLE_ENTITIES];
 	u32 m_numSpawnableEntities;
-	TileSetDescription m_layerDescriptions[GAME_MAX_LAYER_DESCRIPTIONS];
-	u32 m_numLayerDescriptions;
+	TileSetDescription m_tileSetDescriptions[GAME_MAX_TILESET_DESCRIPTIONS];
+	u32 m_numTileSetDescriptions;
 	Layer m_layers[NumLevelLayers];
 	TiledLevelDescription m_tiledLevelDescription;
+	f32 m_view[16];
+	
+	vec3 m_camPos;
 private:
 	bool WillArtDescriptionBeLoaded(ItemArtDescription* pArtDesc);
 	bool WillSoundDescriptionBeLoaded(ItemSoundDescription* pArtDesc);
