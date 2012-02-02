@@ -836,6 +836,11 @@ void Game::ConstrainCameraToTiledLevel()
 {
 	Layer* pMainLayer = &m_layers[LevelLayer_CameraExtents];
 	
+	if(pMainLayer->pLevelData == NULL)
+	{
+		pMainLayer = &m_layers[LevelLayer_Main];
+	}
+	
 	const f32 halfTileSize = GetHalfTileSize();
 	
 	const f32 maxCameraY = halfTileSize*pMainLayer->numTilesY-GLRENDERER->screenHeight_points;
