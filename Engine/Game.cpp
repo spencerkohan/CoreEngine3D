@@ -634,6 +634,31 @@ void Game::SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec
 	++m_numBreakables;
 }
 
+
+CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, vec2* pOut_texCoordOffset, bool usesViewMatrix)
+{
+	f32 tileMat[16];
+	mat4f_LoadScale(tileMat, (f32)m_tiledLevelDescription.tileDisplaySizeX);
+	
+	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
+
+	u32 baseFlag = usesViewMatrix ? RenderFlagDefaults_2DTexture_AlphaBlended_UseView:RenderFlagDefaults_2DTexture_AlphaBlended;
+	
+	GLRENDERER->InitRenderableGeometry3D(*pGeom, pDesc->pModelData, MT_TextureOnlyWithTexcoordOffset, &pDesc->loadedTextureID, tileMat, renderLayer, View_0, baseFlag|RenderFlag_Visible);
+	
+	const s32 tileID_X = tileID%pDesc->numTextureTilesX;
+	const s32 tileID_Y = tileID/pDesc->numTextureTilesX;
+	
+	if(pOut_texCoordOffset != NULL)
+	{
+		pOut_texCoordOffset->x = pDesc->uIncrement*(f32)tileID_X;
+		pOut_texCoordOffset->y = pDesc->vIncrement*(f32)tileID_Y;
+	}
+	
+	return hRenderable;
+}
+
+
 void Game::UpdateTiledLevelPosition(vec3* pPosition)
 {
 	vec3 position;
@@ -672,70 +697,96 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		const s32 width = pCurrLayer->numTilesX;
 		const s32 height = pCurrLayer->numTilesY;
 		
-		for(int y=0; y<height; ++y)
+		//If it's the TileObjectArt layer, just update the uniforms
+		if(i == (s32)LevelLayer_TileObjectArt)
 		{
-			const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileSizeY;
-			
-			for(int x=0; x<width; ++x)
+			for(int y=0; y<height; ++y)
 			{
-				Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
-				if(pTile->tileID == -1)
+				for(int x=0; x<width; ++x)
 				{
-					continue;
-				}
-				TileSetDescription* pDesc = pTile->pDesc;
-
-				const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileSizeX;
-				
-				
-				if(-pCurrLayer->position.x > tileBasePosX+m_tiledLevelDescription.halfTileSizeX
-				   || -pCurrLayer->position.x+distCheckRightAdd < tileBasePosX)
-				{
-					if(pTile->hRenderable != INVALID_COREOBJECT_HANDLE)
+					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+					if(pTile->tileID == -1)
 					{
-						RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
-						pCurrRenderable->Uninit();
-						pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
-					}
-				}
-				else
-				{
-					RenderableGeometry3D* pCurrRenderable;
-
-					if(pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
-					{
-						f32 tileMat[16];
-						mat4f_LoadScale(tileMat, (f32)m_tiledLevelDescription.tileDisplaySizeX);
-
-						pTile->hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(&pCurrRenderable);
-	
-						//assert(pTile->hRenderable != INVALID_COREOBJECT_HANDLE);
-
-						GLRENDERER->InitRenderableGeometry3D(pCurrRenderable, pDesc->pModelData, MT_TextureOnlyWithTexcoordOffset, &pTile->pDesc->loadedTextureID, tileMat, renderLayer, View_0, RenderFlagDefaults_2DTexture_AlphaBlended|RenderFlag_Visible);
-	
-						const s32 tileID_X = pTile->tileID%pDesc->numTextureTilesX;
-						const s32 tileID_Y = pTile->tileID/pDesc->numTextureTilesX;
-					
-						pTile->texCoordOffset.x = pDesc->uIncrement*(f32)tileID_X;
-						pTile->texCoordOffset.y = pDesc->vIncrement*(f32)tileID_Y;
-					}
-					else
-					{
-						pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+						continue;
 					}
 
-					vec3* pCurrPos = mat4f_GetPos(pCurrRenderable->worldMat);
-					pCurrPos->x = 0.5f+tileBasePosX+((s32)pCurrLayer->position.x);
-					pCurrPos->y = 0.5f+tileBasePosY+((s32)pCurrLayer->position.y);
-					//pCurrPos->y = (f32)(y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileSizeY);
-
-					//TODO: do something better than this if possible
-					pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
+					RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+					if(pCurrRenderable)
+					{
+						//TODO: do something better than this if possible
+						pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
+					}
 				}
 			}
 		}
+		//If it's any other layer, do the whole delete/create tiles thing
+		else
+		{
+			for(int y=0; y<height; ++y)
+			{
+				const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileSizeY;
+				
+				for(int x=0; x<width; ++x)
+				{
+					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+					if(pTile->tileID == -1)
+					{
+						continue;
+					}
+					
+					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileSizeX;
+					
+					
+					if(-pCurrLayer->position.x > tileBasePosX+m_tiledLevelDescription.halfTileSizeX
+					   || -pCurrLayer->position.x+distCheckRightAdd < tileBasePosX)
+					{
+						if(pTile->hRenderable != INVALID_COREOBJECT_HANDLE)
+						{
+							RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+							pCurrRenderable->Uninit();
+							pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
+						}
+					}
+					else
+					{
+						RenderableGeometry3D* pCurrRenderable;
+						
+						if(pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
+						{
+							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,&pTile->texCoordOffset,false);
+						}
+						else
+						{
+							pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+						}
+						
+						vec3* pCurrPos = mat4f_GetPos(pCurrRenderable->worldMat);
+						pCurrPos->x = 0.5f+tileBasePosX+((s32)pCurrLayer->position.x);
+						pCurrPos->y = 0.5f+tileBasePosY+((s32)pCurrLayer->position.y);
+						//pCurrPos->y = (f32)(y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileSizeY);
+						
+						//TODO: do something better than this if possible
+						pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
+					}
+				}
+			}
+		}
+		
+		
 	}
 }
+
+const vec3* Game::GetCameraPosition()
+{
+	return &m_camPos;
+}
+
+#if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
+DeviceInputState* Game::GetDeviceInputState()
+{
+	return &m_deviceInputState;
+}
+#endif
 
 void Game::GetTileIndicesFromScreenPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y)
 {
@@ -811,6 +862,42 @@ void Game::ConstrainCameraToTiledLevel()
 		m_camPos.x = minCameraX;
 	}
 }
+
+
+void Game::ConvertTileID(s32* p_InOut_tileID, TileSetDescription** pOut_tileDesc)
+{
+	s32 tileID = *p_InOut_tileID;
+	tileID &= 0x00FFFFFF;	//Remove the flags
+	//Now tileID is a tile index
+	
+	//Now find the tileset it belongs to
+	u32 maxTilesetIndex = 1;
+	TileSetDescription* pFoundDesc = &m_tileSetDescriptions[0];
+	
+	for(s32 tilesetIDX=0; tilesetIDX<m_numTileSetDescriptions; ++tilesetIDX)
+	{
+		TileSetDescription* pDesc = &m_tileSetDescriptions[tilesetIDX];
+		
+		if(tileID >= pDesc->firstTileIndex)
+		{
+			if(pDesc->firstTileIndex >= maxTilesetIndex)
+			{
+				pFoundDesc = pDesc;
+				maxTilesetIndex = pDesc->firstTileIndex;
+			}
+		}
+	}
+	
+	//Save the tileset description in the tile.
+	//It makes it easier to load the tile later.
+	*pOut_tileDesc = pFoundDesc;
+	
+	//Now subtract the highest tileset index from the tileID
+	tileID -= maxTilesetIndex;
+	
+	*p_InOut_tileID = tileID;
+}
+
 
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
 {
@@ -1055,7 +1142,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			//Allocate an array of tiles
 			pCurrLayer->tiles = new Tile[width*height];
 			
-			//
+			//Set all the tile indices up
 			for(u32 y=0; y<height; ++y)
 			{
 				for(u32 x=0; x<width; ++x)
@@ -1063,40 +1150,27 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
 					pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
 
-					s32 tileID = ARRAY2D(pData, x, y, width);
-					tileID &= 0x00FFFFFF;	//Remove the flags
-					//Now tileID is a tile index
+					pTile->tileID = ARRAY2D(pData, x, y, width);
 					
-					//Now find the tileset it belongs to
-					u32 maxTilesetIndex = 1;
-					TileSetDescription* pFoundDesc = &m_tileSetDescriptions[0];
-					
-					for(s32 tilesetIDX=0; tilesetIDX<m_numTileSetDescriptions; ++tilesetIDX)
+					ConvertTileID(&pTile->tileID, &pTile->pDesc);
+				}
+			}
+			
+			//Create the renderables for all the object art tiles
+			if(currLayer == LevelLayer_TileObjectArt)
+			{
+				for(u32 y=0; y<height; ++y)
+				{
+					for(u32 x=0; x<width; ++x)
 					{
-						TileSetDescription* pDesc = &m_tileSetDescriptions[tilesetIDX];
-						
-						if(tileID >= pDesc->firstTileIndex)
+						Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+						if(pTile->tileID == -1)
 						{
-							if(pDesc->firstTileIndex >= maxTilesetIndex)
-							{
-								pFoundDesc = pDesc;
-								maxTilesetIndex = pDesc->firstTileIndex;
-							}
+							continue;
 						}
-					}
-					
-					//Save the tileset description in the tile.
-					//It makes it easier to load the tile later.
-					pTile->pDesc = pFoundDesc;
-					
-					//Now subtract the highest tileset index from the tileID
-					tileID -= maxTilesetIndex;
-					
-					pTile->tileID = tileID;
-
-					if(tileID == -1)
-					{
-						continue;
+						
+						RenderableGeometry3D* pGeom;
+						pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pGeom,RenderLayer_AlphaBlended2,&pTile->texCoordOffset,true);
 					}
 				}
 			}
@@ -1110,28 +1184,75 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			
 			for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
 			{
-				//const char* name = object.attribute("name").value();
-				const char* typeString = object.attribute("type").value();
-				//std::cout << name << '\n';
-
 				SpawnableEntity* pCurrEnt = &m_spawnableEntities[m_numSpawnableEntities];
-				const u32 entType = Hash(typeString);
-				pCurrEnt->type = entType;
 				
-				f32 x = (f32)atoi(object.attribute("x").value())*unitConversionScale;
-				f32 y = (f32)atoi(object.attribute("y").value())*unitConversionScale;
+				const char* nameString = object.attribute("name").value();
+				//COREDEBUG_PrintDebugMessage("Object Name: %s",nameString);
+				pCurrEnt->name = Hash(nameString);
 				
-				///tileSizeScaleDiv
-				f32 width = (f32)atoi(object.attribute("width").value())*unitConversionScale;
-				f32 height = (f32)atoi(object.attribute("height").value())*unitConversionScale;
+				const f32 x = (f32)atoi(object.attribute("x").value())*unitConversionScale;
+				const f32 y = (f32)atoi(object.attribute("y").value())*unitConversionScale;
 				
-				pCurrEnt->position.x = x+(f32)(width/2);
-				pCurrEnt->position.y = y+(f32)(height/2);
+				pCurrEnt->position.x = x;
+				pCurrEnt->position.y = y;
+				
+				f32 width;
+				f32 height;
+				
+				pugi::xml_attribute gidAttrib = object.attribute("gid");
+				if(gidAttrib.empty() == false)
+				{
+					pCurrEnt->tileID = gidAttrib.as_int();
+					ConvertTileID(&pCurrEnt->tileID, &pCurrEnt->pDesc);
+					
+					width = GAME->GetTileSize();
+					height = GAME->GetTileSize();
+					
+					//TODO: this might be wrong.  Will need more testing
+					pCurrEnt->position.x += width/2;
+					pCurrEnt->position.y -= height/2;
+					
+					GetTileIndicesFromPosition((vec2*)&pCurrEnt->position, &pCurrEnt->tileIndexX, &pCurrEnt->tileIndexY);
+				}
+				else
+				{
+					pCurrEnt->tileID = -1;
+					pCurrEnt->pDesc = NULL;
+					
+					width = (f32)atoi(object.attribute("width").value())*unitConversionScale;
+					height = (f32)atoi(object.attribute("height").value())*unitConversionScale;
+					
+					pCurrEnt->position.x += width/2.0f;
+					pCurrEnt->position.y += height/2.0f;
+					
+					pCurrEnt->tileIndexX = 0;
+					pCurrEnt->tileIndexY = 0;
+				}
+				
 				pCurrEnt->position.z = 0.0f;
+			
+				const char* typeString = object.attribute("type").value();
+				pCurrEnt->type = Hash(typeString);
 				
 				pCurrEnt->scale.x = width;
 				pCurrEnt->scale.y = height;
-
+				
+				//Find properties of the object
+				pugi::xml_node properties = object.child("properties");
+				if(properties.empty() == false)
+				{
+					for (pugi::xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
+					{
+						//LinkedEntity property
+						const char* propNameString = property.attribute("name").value();
+						if(strcmp(propNameString,"LinkedEntity") == 0)
+						{
+							const char* propNameString = property.attribute("value").value();
+							pCurrEnt->linkedEntityName = Hash(propNameString);
+						}
+					}
+				}
+				
 				++m_numSpawnableEntities;
 			}
 		}

@@ -86,12 +86,7 @@ struct Breakable
     f32 currSpinAngle;
 };
 
-struct SpawnableEntity
-{
-	u32 type;
-	vec3 position;
-	vec2 scale;
-};
+
 
 enum LevelLayer
 {
@@ -134,6 +129,19 @@ struct TileSetDescription
 	f32 uIncrement;
 	f32 vIncrement;
 	ModelData* pModelData;
+};
+
+struct SpawnableEntity
+{
+	u32 type;
+	u32 name;
+	u32 linkedEntityName;
+	vec3 position;
+	vec2 scale;
+	s32 tileID;
+	TileSetDescription* pDesc;
+	u32 tileIndexX;
+	u32 tileIndexY;
 };
 
 struct Tile
@@ -184,6 +192,10 @@ public:
 	f32 GetTileSize();
 	f32 GetHalfTileSize();
 	f32 GetPixelsPerMeter();
+	const vec3* GetCameraPosition();
+#if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
+	DeviceInputState* GetDeviceInputState();
+#endif
 protected:	//Only stuff that can be called from the game.cpp goes here
 	void ConstrainCameraToTiledLevel();
 	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters);
@@ -194,7 +206,8 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	void ClearItemSounds();
 	void DeleteAllItemArt();	//Call to delete all the art in the list regardless
 	void DeleteAllItemSounds();
-
+	void ConvertTileID(s32* p_InOut_tileID, TileSetDescription** pOut_tileDesc);
+	CoreObjectHandle CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, vec2* pOut_texCoordOffset, bool usesViewMatrix);
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState m_deviceInputState;
 #endif
