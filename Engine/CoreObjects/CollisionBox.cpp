@@ -63,9 +63,9 @@ void CollisionBox::UpdateCornerPositions()
 }
 
 
-bool CollisionBox::Init(s32 type)
+bool CollisionBox::Init(u32 type)
 {
-	CoreObject::Init();
+	CoreObject::Init(type);
 	
 	m_type = (CollisionBoxType)type;
 	

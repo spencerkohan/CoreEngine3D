@@ -1283,6 +1283,8 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 					
 					u32 scriptMessage = 0;
 					CoreObjectHandle triggerObject = INVALID_COREOBJECT_HANDLE;
+					u32 collisionType = 0;
+					ScriptObject::ScriptStatus scriptStatus = ScriptObject::ScriptStatus_On;
 					
 					for (pugi::xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
 					{
@@ -1303,9 +1305,30 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 								triggerObject = Hash(propNameString);
 							}
 						}
+						
+						{
+							const char* propNameString = property.attribute("name").value();
+							if(strcmp(propNameString,"CollisionType") == 0)
+							{
+								const char* propNameString = property.attribute("value").value();
+								collisionType = Hash(propNameString);
+							}
+						}
+						
+						{
+							const char* propNameString = property.attribute("name").value();
+							if(strcmp(propNameString,"ScriptStatus") == 0)
+							{
+								const char* propNameString = property.attribute("value").value();
+								if(strcmp(propNameString,"Off") == 0)
+								{
+									scriptStatus = ScriptObject::ScriptStatus_Off;
+								}
+							}
+						}
 					}
 					
-					pScriptObject->SpawnInit(pCurrEnt,scriptMessage,triggerObject);
+					pScriptObject->SpawnInit(pCurrEnt,scriptMessage,triggerObject,collisionType,scriptStatus);
 				}
 				else
 				{

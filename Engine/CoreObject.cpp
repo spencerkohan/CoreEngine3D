@@ -21,14 +21,21 @@ void CoreObject::DeleteObject()
 	m_markedForDeletion = true;
 }
 
+u32 CoreObject::GetEntityType()
+{
+	return m_entityTypeHash;
+}
+
 //Call when the memory location changes
 void CoreObject::UpdateHandle()
 {
 	COREOBJECTMANAGER->UpdateHandle(this);
 }
 
-bool CoreObject::Init(s32 type)
+bool CoreObject::Init(u32 type)
 {
+	m_entityTypeHash = type;
+	
 	m_markedForDeletion = false;
 	return COREOBJECTMANAGER->AddObject(this);
 }

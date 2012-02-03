@@ -2184,7 +2184,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType
 		return INVALID_COREOBJECT_HANDLE;
 	}
 	
-	pGeom->Init();
+	pGeom->Init(0);
 	
 	const CoreObjectHandle handle = pGeom->GetHandle();
 	
@@ -3367,6 +3367,7 @@ void OpenGLRenderer::DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const
 
 void OpenGLRenderer::DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color)
 {
+#ifdef _DEBUG
 	//TODO: put safety check in here
 	const u32 numPoints = m_numDebugLinePoints[drawMode];
 	
@@ -3377,11 +3378,13 @@ void OpenGLRenderer::DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec
     CopyVec4(&m_debugLinePoints[drawMode][numPoints+1].color,color);
     
     m_numDebugLinePoints[drawMode] += 2;
+#endif
 }
 
 
 void OpenGLRenderer::DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color1, const vec4* color2)
 {
+#ifdef _DEBUG
 	//TODO: put safety check in here
 	const u32 numPoints = m_numDebugLinePoints[drawMode];
 	
@@ -3392,11 +3395,13 @@ void OpenGLRenderer::DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec
     CopyVec4(&m_debugLinePoints[drawMode][numPoints+1].color,color2);
     
     m_numDebugLinePoints[drawMode] += 2;
+#endif
 }
 
 
 void OpenGLRenderer::DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color)
 {
+#ifdef _DEBUG
 	if(m_numDebugDrawObjects[drawMode] == DEBUGDRAW_MAXDEBUGOBJECTS)
 	{
 		return;
@@ -3409,11 +3414,13 @@ void OpenGLRenderer::DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, mat4f matrix
     pObject->objectType = DebugDrawObjectType_CircleXY;
     
     ++m_numDebugDrawObjects[drawMode];
+#endif
 }
 
 
 void OpenGLRenderer::DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color)
 {
+#ifdef _DEBUG
 	if(m_numDebugDrawObjects[drawMode] == DEBUGDRAW_MAXDEBUGOBJECTS)
 	{
 		return;
@@ -3426,31 +3433,37 @@ void OpenGLRenderer::DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, mat4f matrix
     pObject->objectType = DebugDrawObjectType_CircleXZ;
     
     ++m_numDebugDrawObjects[drawMode];
+#endif
 }
 
 
 void OpenGLRenderer::DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, const vec3* pCenter, f32 radius, const vec4* color)
 {
+#ifdef _DEBUG
 	mat4f scaleMat;
 	mat4f_LoadScale(scaleMat, radius);
 	CopyVec3(mat4f_GetPos(scaleMat),pCenter);
 	
 	DEBUGDRAW_DrawCircleXY(drawMode,scaleMat,color);
+#endif
 }
 
 
 void OpenGLRenderer::DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, const vec3* pCenter, f32 radius, const vec4* color)
 {
+#ifdef _DEBUG
 	mat4f scaleMat;
 	mat4f_LoadScale(scaleMat, radius);
 	CopyVec3(mat4f_GetPos(scaleMat),pCenter);
 	
 	DEBUGDRAW_DrawCircleXZ(drawMode,scaleMat,color);
+#endif
 }
 
 
 void OpenGLRenderer::DEBUGDRAW_DrawCylinder(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color)
 {
+#ifdef _DEBUG
 	if(m_numDebugDrawObjects[drawMode] == DEBUGDRAW_MAXDEBUGOBJECTS)
 	{
 		return;
@@ -3463,6 +3476,7 @@ void OpenGLRenderer::DEBUGDRAW_DrawCylinder(DebugDrawMode drawMode, mat4f matrix
     pObject->objectType = DebugDrawObjectType_Cylinder;
     
     ++m_numDebugDrawObjects[drawMode];
+#endif
 }
 
 
@@ -4446,7 +4460,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableSceneObject3D(RenderableSceneOb
 		return INVALID_COREOBJECT_HANDLE;
 	}
 	
-	pScene->Init();
+	pScene->Init(0);
 	
 	const CoreObjectHandle handle = pScene->GetHandle();
 	

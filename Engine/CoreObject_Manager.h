@@ -31,7 +31,7 @@ public:
 		m_maxObjects = 0;
 	}
 
-	T* CreateObject(s32 type)
+	T* CreateObject(u32 type)
 	{
 		if(m_numObjects == m_maxObjects)
 		{

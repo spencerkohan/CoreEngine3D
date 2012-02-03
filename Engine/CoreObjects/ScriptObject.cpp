@@ -16,6 +16,8 @@
 #include "CoreObjectFactories.h"
 #include "CollisionBox.h"
 
+#include "Hash.h"
+
 vec3* ScriptObject::GetPosition()
 {
 	return &m_position;
@@ -29,7 +31,7 @@ void ScriptObject::Link()
 }
 
 
-void ScriptObject::SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreObjectHandle triggerObject)
+void ScriptObject::SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreObjectHandle triggerObject, u32 collisionType, ScriptStatus status)
 {
 	CopyVec3(&m_position, &pEntity->position);
 	
@@ -46,34 +48,56 @@ void ScriptObject::SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreO
 	m_tileIndex_Y = pEntity->tileIndexY;
 	
 	m_triggerMessage = triggerMessage;
-	m_collType = CollisionType_Tile;	//TODO: load a type
+	m_collMode = CollisionMode_Tile;	//TODO: load a type
 	
 	m_numTriggers = 0;
 	m_numAllowedTriggers = 1;	//TODO: load this
 	
 	m_hTriggerObject = triggerObject;
+	
+	m_collisionType = collisionType;
+	
+	m_scriptStatus = status;
 }
 
 
-bool ScriptObject::Init(s32 type)
+bool ScriptObject::Init(u32 type)
 {
-	CoreObject::Init();
+	CoreObject::Init(type);
 	
-	m_type = type;
-
+	m_scriptStatus = ScriptStatus_On;
+	
 	m_isFirstUpdate = true;
 
 	return true;
 }
 
-void ScriptObject::AttemptTileTrigger(u32 tileIndex_X, u32 tileIndex_Y)
+void ScriptObject::AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileIndex_Y)
 {
-	if(m_collType != CollisionType_Tile)
+	if(m_numAllowedTriggers == 0)
 	{
 		return;
 	}
 	
-	if(m_numAllowedTriggers == 0)
+	if(m_scriptStatus == ScriptStatus_Off)
+	{
+		return;
+	}
+	
+	if(m_collMode != CollisionMode_Tile)
+	{
+		return;
+	}
+	
+	if(!(m_tileIndex_X == tileIndex_X
+		  && m_tileIndex_Y == tileIndex_Y))
+	{
+		return;
+	}
+	
+	
+	
+	if(m_collisionType != 0 && m_collisionType != objectType)
 	{
 		return;
 	}
@@ -89,6 +113,24 @@ void ScriptObject::AttemptTileTrigger(u32 tileIndex_X, u32 tileIndex_Y)
 		}
 		
 		--m_numAllowedTriggers;
+		
+		if(m_numAllowedTriggers == 0)
+		{
+			//TODO: not sure if I should leave this
+			m_scriptStatus = ScriptStatus_Off;
+		}
+	}
+}
+
+void ScriptObject::ProcessMessage(u32 message)	//Pass in a hash value
+{
+	if(message == Hash("On"))
+	{
+		m_scriptStatus = ScriptStatus_On;
+	}
+	else if(message == Hash("Off"))
+	{
+		m_scriptStatus = ScriptStatus_Off;
 	}
 }
 

@@ -27,19 +27,19 @@ class CoreObject
 	friend class CoreObjectManager;
 public:
 	static void InitClass(){};
-
+	u32 GetEntityType();
 	CoreObjectHandle GetHandle() const;
 	virtual void UpdateHandle();	//Call when the memory location changes
 	void DeleteObject();			//Use with new system
 
-	virtual bool Init(s32 type = 0);
+	virtual bool Init(u32 type);
 	virtual void Uninit();
 	virtual void Update(f32 timeElapsed){};
 	bool m_markedForDeletion;
 	virtual void ProcessMessage(u32 message){};	//Pass in a hash value
 private:
 	
-
+	u32 m_entityTypeHash;
 	CoreObjectHandle handle;
 	
 };

@@ -36,7 +36,7 @@ public:
 		u32 numBoxes;
 	};
 	
-	virtual bool Init(s32 type);
+	virtual bool Init(u32 type);
 	virtual void Update(f32 timeElapsed);
 	virtual void Uninit();
 	

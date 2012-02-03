@@ -5,8 +5,8 @@ CoreObjectFactory<ScriptObject> g_Factory_ScriptObject;
 
 void CoreObjectFactories_Init()
 {
-	g_Factory_CollisionBox.Init(16);
-	g_Factory_ScriptObject.Init(16);
+	g_Factory_CollisionBox.Init(32);
+	g_Factory_ScriptObject.Init(32);
 }
 
 void CoreObjectFactories_Update(f32 timeElapsed)
