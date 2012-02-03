@@ -44,6 +44,7 @@ extern const color4f color4f_red;
 extern const color4f color4f_white;
 extern const color4f color4f_green;
 extern const color4f color4f_blue;
+extern const color4f color4f_pink;
 
 extern const u32 PVRTEX_PIXELTYPE;			// pixel type is always in the last 16bits of the flags
 

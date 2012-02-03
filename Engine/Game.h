@@ -126,8 +126,7 @@ struct TileSetDescription
 	//Useful calculations
 	u32 numTextureTilesX;
 	u32 numTextureTilesY;
-	f32 uIncrement;
-	f32 vIncrement;
+	f32 halfTexelOffset;
 	ModelData* pModelData;
 };
 

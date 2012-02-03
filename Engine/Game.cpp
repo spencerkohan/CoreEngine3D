@@ -651,8 +651,8 @@ CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDes
 	
 	if(pOut_texCoordOffset != NULL)
 	{
-		pOut_texCoordOffset->x = pDesc->uIncrement*(f32)tileID_X;
-		pOut_texCoordOffset->y = pDesc->vIncrement*(f32)tileID_Y;
+		pOut_texCoordOffset->x = (f32)tileID_X/(f32)pDesc->numTextureTilesX;
+		pOut_texCoordOffset->y = (f32)tileID_Y/(f32)pDesc->numTextureTilesY;
 	}
 	
 	return hRenderable;
@@ -967,8 +967,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			pDesc->numTextureTilesX = pDesc->textureSizeX/pDesc->tileSizeX;
 			pDesc->numTextureTilesY = pDesc->textureSizeY/pDesc->tileSizeY;
 			
-			pDesc->uIncrement = 1.0f/(f32)pDesc->numTextureTilesX;
-			pDesc->vIncrement = 1.0f/(f32)pDesc->numTextureTilesY;
+			pDesc->halfTexelOffset = 0.5f/pDesc->textureSizeX;
 
 			switch(pDesc->numTextureTilesX)
 			{

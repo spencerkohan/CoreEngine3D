@@ -36,6 +36,7 @@ public:
 	virtual void Uninit();
 	virtual void Update(f32 timeElapsed){};
 	bool m_markedForDeletion;
+	virtual void ProcessMessage(u32 message){};	//Pass in a hash value
 private:
 	
 
