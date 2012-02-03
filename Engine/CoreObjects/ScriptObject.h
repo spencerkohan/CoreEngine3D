@@ -28,7 +28,7 @@ public:
 	enum Action
 	{
 		Action_WaitForCollision,
-		Action_WaitForTrigger,
+		//Action_WaitForTrigger,
 		Action_Num,
 	};
 	

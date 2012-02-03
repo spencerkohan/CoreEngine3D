@@ -34,7 +34,7 @@ public:
 	s32 animID_playWhenFinished;
 	u32 startFrame;
 	u32 endFrame;
-	u32 FPS;
+	f32 FPS;
 	bool isLooping;
 	AnimEvent m_animationEvents[ANIMATION_MAX_ANIM_EVENTS];
 };
@@ -43,7 +43,7 @@ public:
 struct AnimationSet
 {
 public:
-	void AddAnimation(s32 animID, u32 startFrame, u32 endFrame, u32 FPS, bool isLooping, s32 animID_NextAnim);
+	void AddAnimation(s32 animID, u32 startFrame, u32 endFrame, f32 FPS, bool isLooping, s32 animID_NextAnim);
 	Animation* GetAnimationByID(s32 animID);
 	Animation m_animations[ANIMATION_MAX_ANIMATIONS];
 	u32 m_numAnimations;

@@ -14,7 +14,7 @@
 AnimationController* ANIMCONTROLLER = NULL;
 
 //ANIMATION SET
-void AnimationSet::AddAnimation(s32 animID, u32 startFrame, u32 endFrame, u32 FPS, bool isLooping, s32 animID_NextAnim)
+void AnimationSet::AddAnimation(s32 animID, u32 startFrame, u32 endFrame, f32 FPS, bool isLooping, s32 animID_NextAnim)
 {
 	if(m_numAnimations == ANIMATION_MAX_ANIMATIONS)
 	{

@@ -157,8 +157,6 @@ bool CollisionBox::CollideWithWorld(u32 collisionTypeFlags, CollisionResult* pOu
 
 void CollisionBox::Update(f32 timeElapsed)
 {
-	
-	
 	vec4 color;
 	
 	switch((CollisionBoxType)m_type)
