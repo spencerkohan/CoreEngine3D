@@ -141,6 +141,8 @@ struct SpawnableEntity
 	TileSetDescription* pDesc;
 	u32 tileIndexX;
 	u32 tileIndexY;
+	
+	u32 objectHandle;
 };
 
 struct Tile
@@ -174,6 +176,7 @@ public:
 #if defined (PLATFORM_OSX) || defined(PLATFORM_WIN)
 	MouseInputState m_mouseState;
 #endif
+	CoreObjectHandle SpawnableEntityHandleByNameHash(u32 nameHash);
 	CoreUI_Button* AddUIButton(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32));
 	void UpdateButtons(TouchState touchState, vec2 *pTouchPosBegin, vec2* pTouchPosCurr);
 	void ClearAllButtons();
@@ -198,6 +201,7 @@ public:
 protected:	//Only stuff that can be called from the game.cpp goes here
 	void ConstrainCameraToTiledLevel();
 	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters);
+	void LinkScriptObjects();//HACK: somewhat hacky
 	void UpdateTiledLevelPosition(vec3* pPosition);
 	void LoadItemArt();	//Call to load all the art in the list
 	void LoadItemSounds();

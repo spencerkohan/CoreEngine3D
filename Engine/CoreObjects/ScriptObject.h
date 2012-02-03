@@ -18,6 +18,13 @@
 class ScriptObject: public CoreObject
 {
 public:
+	enum CollisionType
+	{
+		CollisionType_Tile,
+		CollisionType_TriggerBox,
+		CollisionType_Num,
+	};
+	
 	enum Action
 	{
 		Action_WaitForCollision,
@@ -33,8 +40,10 @@ public:
 	
 	bool GetPositionIsInside(const vec2* pTouchPos);
 
-	void SpawnInit(SpawnableEntity* pEntity);
-
+	void SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreObjectHandle triggerObject);
+	void AttemptTileTrigger(u32 tileIndex_X, u32 tileIndex_Y);
+	
+	void Link();
 private:	
 
 	s32 m_type;
@@ -48,8 +57,16 @@ private:
 	s32 m_numAllowedTriggers;
 	u32 m_numTriggers;
 	
+	u32 m_tileIndex_X;
+	u32 m_tileIndex_Y;
+	
+	u32 m_triggerMessage;
+	
 	CoreObjectHandle m_hTriggerObject;
+	
 	CoreObjectHandle m_hTriggerVolume;
+	
+	CollisionType m_collType;
 };
 
 void ScriptObject_Init();

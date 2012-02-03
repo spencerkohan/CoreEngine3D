@@ -15,6 +15,8 @@
 #include "base64.h"
 #include "Hash.h"
 
+#include "CoreObjects/CoreObjectFactories.h"
+
 #if defined (PLATFORM_WIN)
 #include <direct.h>
 #include <stdlib.h>
@@ -904,6 +906,32 @@ void Game::ConvertTileID(s32* p_InOut_tileID, TileSetDescription** pOut_tileDesc
 }
 
 
+void Game::LinkScriptObjects()//HACK: somewhat hacky
+{
+	//For the sake of speed and simplicity, check for and trigger ScriptObjects here
+	for(u32 i=0; i<g_Factory_ScriptObject.m_numObjects; ++i)
+	{
+		ScriptObject* pScriptObject = &g_Factory_ScriptObject.m_pObjectList[i];
+		pScriptObject->Link();
+	}
+}
+
+
+CoreObjectHandle Game::SpawnableEntityHandleByNameHash(u32 nameHash)
+{
+	for(u32 i=0; i<m_numSpawnableEntities; ++i)
+	{
+		SpawnableEntity* pEnt = &m_spawnableEntities[i];
+		if(pEnt->name == nameHash)
+		{
+			return pEnt->objectHandle;
+		}
+	}
+	
+	return INVALID_COREOBJECT_HANDLE;
+}
+
+
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
 {
 	m_pixelsPerMeter = (f32)tileWidthPixels/tileSizeMeters;
@@ -1189,6 +1217,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
 			{
 				SpawnableEntity* pCurrEnt = &m_spawnableEntities[m_numSpawnableEntities];
+				pCurrEnt->objectHandle = INVALID_COREOBJECT_HANDLE;
 				
 				const char* nameString = object.attribute("name").value();
 				//COREDEBUG_PrintDebugMessage("Object Name: %s",nameString);
@@ -1243,19 +1272,59 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				
 				//Find properties of the object
 				pugi::xml_node properties = object.child("properties");
-				if(properties.empty() == false)
+	
+				//TODO: this is kinda sad
+				const u32 scriptObjectType = Hash("ScriptObject");
+				if(pCurrEnt->type == scriptObjectType)
 				{
+					ScriptObject* pScriptObject = g_Factory_ScriptObject.CreateObject(0);
+					
+					pCurrEnt->objectHandle = pScriptObject->GetHandle();
+					
+					u32 scriptMessage = 0;
+					CoreObjectHandle triggerObject = INVALID_COREOBJECT_HANDLE;
+					
 					for (pugi::xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
 					{
-						//LinkedEntity property
-						const char* propNameString = property.attribute("name").value();
-						if(strcmp(propNameString,"LinkedEntity") == 0)
 						{
-							const char* propNameString = property.attribute("value").value();
-							pCurrEnt->linkedEntityName = Hash(propNameString);
+							const char* propNameString = property.attribute("name").value();
+							if(strcmp(propNameString,"TriggerMessage") == 0)
+							{
+								const char* propNameString = property.attribute("value").value();
+								scriptMessage = Hash(propNameString);
+							}
+						}
+						
+						{
+							const char* propNameString = property.attribute("name").value();
+							if(strcmp(propNameString,"TriggerObject") == 0)
+							{
+								const char* propNameString = property.attribute("value").value();
+								triggerObject = Hash(propNameString);
+							}
+						}
+					}
+					
+					pScriptObject->SpawnInit(pCurrEnt,scriptMessage,triggerObject);
+				}
+				else
+				{
+					if(properties.empty() == false)
+					{
+						for (pugi::xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
+						{
+							//LinkedEntity property
+							const char* propNameString = property.attribute("name").value();
+							if(strcmp(propNameString,"LinkedEntity") == 0)
+							{
+								const char* propNameString = property.attribute("value").value();
+								pCurrEnt->linkedEntityName = Hash(propNameString);
+							}
 						}
 					}
 				}
+				
+				
 				
 				++m_numSpawnableEntities;
 			}
