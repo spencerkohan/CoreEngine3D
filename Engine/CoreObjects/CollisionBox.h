@@ -43,7 +43,9 @@ public:
 	bool GetPositionIsInside(const vec2* pPos);
 	
 	const vec3* GetTopLeft();
+	const vec3* GetBottomLeft();
 	const vec3* GetBottomRight();
+	const vec3* GetBoxCenter();
 	
 	void SpawnInit(f32 xLeft, f32 yTop, f32 xRight, f32 yBottom, const vec3* pReferencePos);
 	void UpdatePosition(const vec3* pPos);
@@ -63,6 +65,8 @@ private:
 	vec3 m_boxTR;
 	vec3 m_boxBL;
 	vec3 m_boxBR;
+	
+	vec3 m_boxCenter;
 	
 	CollisionBoxType m_type;
 	

@@ -783,6 +783,12 @@ const vec3* Game::GetCameraPosition()
 	return &m_camPos;
 }
 
+//use with caution
+void Game::SetCameraPosition(const vec3* pCamPos)
+{
+	CopyVec3(&m_camPos,pCamPos);
+}
+
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 DeviceInputState* Game::GetDeviceInputState()
 {
@@ -843,18 +849,24 @@ void Game::ConstrainCameraToTiledLevel()
 		pMainLayer = &m_layers[LevelLayer_Main];
 	}
 	
-	const f32 halfTileSize = GetHalfTileSize();
+	const f32 tileSize = GetTileSize();
 	
-	const f32 maxCameraY = halfTileSize*pMainLayer->numTilesY-GLRENDERER->screenHeight_points;
+	const f32 maxCameraY = tileSize*0.5f*pMainLayer->numTilesY-GLRENDERER->screenHeight_points;
 	if(m_camPos.y > maxCameraY)
 	{
 		m_camPos.y = maxCameraY;
 	}
-	
-	const f32 maxCameraX = halfTileSize*pMainLayer->numTilesX;
+
+	const f32 maxCameraX = tileSize*pMainLayer->numTilesX-GLRENDERER->screenWidth_points;
 	if(m_camPos.x > maxCameraX)
 	{
 		m_camPos.x = maxCameraX;
+	}
+	 
+	const f32 minCameraX = 0.0f;
+	if(m_camPos.x < minCameraX)
+	{
+		m_camPos.x = minCameraX;
 	}
 	
 	const f32 minCameraY = 0.0f;
@@ -863,11 +875,7 @@ void Game::ConstrainCameraToTiledLevel()
 		m_camPos.y = minCameraY;
 	}
 	
-	const f32 minCameraX = 0.0f;
-	if(m_camPos.x < minCameraX)
-	{
-		m_camPos.x = minCameraX;
-	}
+	
 }
 
 
@@ -929,6 +937,15 @@ CoreObjectHandle Game::SpawnableEntityHandleByNameHash(u32 nameHash)
 	}
 	
 	return INVALID_COREOBJECT_HANDLE;
+}
+
+
+void Game::ResetScriptObjects()
+{
+	for(u32 i=0; i<g_Factory_ScriptObject.m_numObjects; ++i)
+	{
+		g_Factory_ScriptObject.m_pObjectList[i].Reset();
+	}
 }
 
 
@@ -1285,6 +1302,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 					CoreObjectHandle triggerObject = INVALID_COREOBJECT_HANDLE;
 					u32 collisionType = 0;
 					ScriptObject::ScriptStatus scriptStatus = ScriptObject::ScriptStatus_On;
+					ScriptObject::CollisionMode collMode = pCurrEnt->tileID == -1 ? ScriptObject::CollisionMode_Box:ScriptObject::CollisionMode_Tile;
 					
 					for (pugi::xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
 					{
@@ -1328,7 +1346,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						}
 					}
 					
-					pScriptObject->SpawnInit(pCurrEnt,scriptMessage,triggerObject,collisionType,scriptStatus);
+					pScriptObject->SpawnInit(pCurrEnt,scriptMessage,triggerObject,collisionType,collMode,scriptStatus);
 				}
 				else
 				{

@@ -49,6 +49,8 @@ void mat4f_Multiply_Self_RHS(mat4f a, const mat4f b);
 void mat4f_Multiply(mat4f pOut_matrix, const mat4f a, const mat4f b);
 void mat4f_SetLookAtPos(mat4f pInOut_matrix,const vec3* camPos);
 void mat4f_LoadTranspose(mat4f pOut_matrix, const mat4f a);
+void mat4f_LoadScaledRotationFromLeftAndUp_IgnoreTranslation(f32* pOut_matrix, const vec3* pLeft, const vec3* pUp, const f32 scale);
+void mat4f_LoadScaledRotationFromUp_IgnoreTranslation(f32* pOut_matrix, const vec3* pUp, const f32 scale);
 //MATRIX 3x3
 void mat3f_Copy(mat4f pOut_matrix,mat4f m_copyFrom);
 void mat3f_Invert(mat4f pOut_matrix,mat4f pIn_Matrix);

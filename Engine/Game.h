@@ -195,6 +195,8 @@ public:
 	f32 GetHalfTileSize();
 	f32 GetPixelsPerMeter();
 	const vec3* GetCameraPosition();
+	void SetCameraPosition(const vec3* pCamPos);	//use with caution
+	void ResetScriptObjects();
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState* GetDeviceInputState();
 #endif
@@ -223,6 +225,8 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	f32 m_view[16];
 	
 	vec3 m_camPos;
+	vec3 m_desiredCamPos;
+	f32 m_camLerpT;
 private:
 	f32 m_pixelsPerMeter;
 	bool WillArtDescriptionBeLoaded(ItemArtDescription* pArtDesc);

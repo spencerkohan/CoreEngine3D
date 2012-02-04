@@ -60,6 +60,12 @@ void CollisionBox::UpdateCornerPositions()
 	
 	m_boxBR.x = m_boxTR.x;
 	m_boxBR.y = m_boxBL.y;
+	
+	//TODO: rename this function?
+	
+	m_boxCenter.x = (m_boxBL.x+m_boxBR.x) * 0.5f;
+	m_boxCenter.y = (m_boxTL.y+m_boxBR.y) * 0.5f;
+	m_boxCenter.z = 0.0f;
 }
 
 
@@ -86,6 +92,10 @@ bool CollisionBox::GetPositionIsInside(const vec2* pPos)
 	return false;
 }
 
+const vec3* CollisionBox::GetBottomLeft()
+{
+	return &m_boxBL;
+}
 
 const vec3* CollisionBox::GetTopLeft()
 {
@@ -95,6 +105,11 @@ const vec3* CollisionBox::GetTopLeft()
 const vec3* CollisionBox::GetBottomRight()
 {
 	return &m_boxBR;
+}
+
+const vec3* CollisionBox::GetBoxCenter()
+{
+	return &m_boxCenter;
 }
 
 bool CollisionBox::CollideWithWorld(u32 collisionTypeFlags, CollisionResult* pOut_Result)
@@ -157,6 +172,11 @@ bool CollisionBox::CollideWithWorld(u32 collisionTypeFlags, CollisionResult* pOu
 
 void CollisionBox::Update(f32 timeElapsed)
 {
+	
+#ifdef _DEBUG	
+	
+	//DEBUG DRAW!
+	
 	vec4 color;
 	
 	switch((CollisionBoxType)m_type)
@@ -206,6 +226,8 @@ void CollisionBox::Update(f32 timeElapsed)
 	GLRENDERER->DEBUGDRAW_DrawLineSegment(DebugDrawMode_2D, &m_boxTL, &m_boxBL, &color);
 	
 	GLRENDERER->DEBUGDRAW_DrawLineSegment(DebugDrawMode_2D, &m_boxTR, &m_boxBR, &color);
+#endif
+	
 }
 
 void CollisionBox::Uninit()

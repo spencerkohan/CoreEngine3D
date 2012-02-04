@@ -21,7 +21,7 @@ public:
 	enum CollisionMode
 	{
 		CollisionMode_Tile,
-		CollisionMode_TriggerBox,
+		CollisionMode_Box,
 		CollisionMode_Num,
 	};
 	
@@ -49,10 +49,11 @@ public:
 	bool GetPositionIsInside(const vec2* pTouchPos);
 
 	//TODO: make SpawnInit take a struct or something.  This is getting bad
-	void SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreObjectHandle triggerObject, u32 collisionType, ScriptStatus status);
+	void SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreObjectHandle triggerObject, u32 collisionType, CollisionMode collisionMode, ScriptStatus status);
 	void AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileIndex_Y);
-	
+	void AttemptBoxTrigger(u32 objectType, const vec3* pPosition);
 	void Link();
+	void Reset();
 private:	
 
 	bool m_isFirstUpdate;
@@ -77,6 +78,8 @@ private:
 	u32 m_collisionType;
 	
 	ScriptStatus m_scriptStatus;
+	
+	ScriptStatus m_initialScriptStatus;
 };
 
 void ScriptObject_Init();

@@ -31,7 +31,7 @@ void ScriptObject::Link()
 }
 
 
-void ScriptObject::SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreObjectHandle triggerObject, u32 collisionType, ScriptStatus status)
+void ScriptObject::SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreObjectHandle triggerObject, u32 collisionType, CollisionMode collisionMode, ScriptStatus status)
 {
 	CopyVec3(&m_position, &pEntity->position);
 	
@@ -48,8 +48,7 @@ void ScriptObject::SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreO
 	m_tileIndex_Y = pEntity->tileIndexY;
 	
 	m_triggerMessage = triggerMessage;
-	m_collMode = CollisionMode_Tile;	//TODO: load a type
-	
+
 	m_numTriggers = 0;
 	m_numAllowedTriggers = 1;	//TODO: load this
 	
@@ -57,7 +56,10 @@ void ScriptObject::SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreO
 	
 	m_collisionType = collisionType;
 	
+	m_collMode = collisionMode;
+	
 	m_scriptStatus = status;
+	m_initialScriptStatus = status;
 }
 
 
@@ -72,9 +74,76 @@ bool ScriptObject::Init(u32 type)
 	return true;
 }
 
+void ScriptObject::AttemptBoxTrigger(u32 objectType, const vec3* pPosition)
+{
+	if(m_numTriggers == m_numAllowedTriggers)
+	{
+		return;
+	}
+	
+	if(m_scriptStatus == ScriptStatus_Off)
+	{
+		return;
+	}
+	
+	if(m_collMode != CollisionMode_Box)
+	{
+		return;
+	}
+
+	if(m_collisionType != 0 && m_collisionType != objectType)
+	{
+		return;
+	}
+	
+	CollisionBox* pBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hCollisionBox);
+	if(pBox == NULL)
+	{
+		return;
+	}
+	
+	if(!pBox->GetPositionIsInside((vec2*)pPosition))
+	{
+		return;
+	}
+	
+	if(m_triggerMessage == Hash("SetCamera"))
+	{
+		vec3 camPos;
+		CopyVec3(&camPos,pBox->GetBottomLeft());
+		GAME->SetCameraPosition(&camPos);
+	}
+	else
+	{
+		CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
+		
+		if(pObject != NULL)
+		{
+			pObject->ProcessMessage(m_triggerMessage);
+		}
+	}
+	
+	
+	++m_numTriggers;
+	
+	if(m_numTriggers == m_numAllowedTriggers)
+	{
+		//TODO: not sure if I should leave this
+		m_scriptStatus = ScriptStatus_Off;
+	}
+}
+
+void ScriptObject::Reset()
+{
+	m_scriptStatus = m_initialScriptStatus;
+	m_numTriggers = 0;
+	m_numAllowedTriggers = 1;	//TODO: save initial
+}
+
+
 void ScriptObject::AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileIndex_Y)
 {
-	if(m_numAllowedTriggers == 0)
+	if(m_numTriggers == m_numAllowedTriggers)
 	{
 		return;
 	}
@@ -94,32 +163,28 @@ void ScriptObject::AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileI
 	{
 		return;
 	}
-	
-	
-	
+
 	if(m_collisionType != 0 && m_collisionType != objectType)
 	{
 		return;
 	}
 	
-	if(m_tileIndex_X == tileIndex_X
-	   && m_tileIndex_Y == tileIndex_Y)
+
+	CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
+	
+	if(pObject != NULL)
 	{
-		CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
-		
-		if(pObject != NULL)
-		{
-			pObject->ProcessMessage(m_triggerMessage);
-		}
-		
-		--m_numAllowedTriggers;
-		
-		if(m_numAllowedTriggers == 0)
-		{
-			//TODO: not sure if I should leave this
-			m_scriptStatus = ScriptStatus_Off;
-		}
+		pObject->ProcessMessage(m_triggerMessage);
 	}
+	
+	++m_numTriggers;
+	
+	if(m_numTriggers == m_numAllowedTriggers)
+	{
+		//TODO: not sure if I should leave this
+		m_scriptStatus = ScriptStatus_Off;
+	}
+	
 }
 
 void ScriptObject::ProcessMessage(u32 message)	//Pass in a hash value
