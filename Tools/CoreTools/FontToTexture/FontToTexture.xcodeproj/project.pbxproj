@@ -7,123 +7,115 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		230DFF4F14DF6C4100A4A64F /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 230DFF4E14DF6C4100A4A64F /* Main.cpp */; };
-		23EAA02314DF6AB800F0B167 /* Hash.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 23EAA02214DF6AB800F0B167 /* Hash.1 */; };
+		23BAE23714DF7ADB007FC3C8 /* libCoreEngine3D(OSX).a in Frameworks */ = {isa = PBXBuildFile; fileRef = 23BAE23614DF7ADB007FC3C8 /* libCoreEngine3D(OSX).a */; };
+		23C1F59514DF798600A3BFD6 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23C1F59414DF798600A3BFD6 /* Main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		23EAA01A14DF6AB800F0B167 /* CopyFiles */ = {
+		23C1F57014DF788800A3BFD6 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				23EAA02314DF6AB800F0B167 /* Hash.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		230DFF4E14DF6C4100A4A64F /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Main.cpp; path = ../../Main.cpp; sourceTree = "<group>"; };
-		23EAA01C14DF6AB800F0B167 /* Hash */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Hash; sourceTree = BUILT_PRODUCTS_DIR; };
-		23EAA02214DF6AB800F0B167 /* Hash.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Hash.1; sourceTree = "<group>"; };
+		23BAE23614DF7ADB007FC3C8 /* libCoreEngine3D(OSX).a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libCoreEngine3D(OSX).a"; path = "../../../../../../Library/Developer/Xcode/DerivedData/CoreTools-avoztlpqpknwnhdiipysaohuswpy/Build/Products/Debug/libCoreEngine3D(OSX).a"; sourceTree = "<group>"; };
+		23C1F57214DF788800A3BFD6 /* FontToTexture */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = FontToTexture; sourceTree = BUILT_PRODUCTS_DIR; };
+		23C1F59414DF798600A3BFD6 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		23EAA01914DF6AB800F0B167 /* Frameworks */ = {
+		23C1F56F14DF788800A3BFD6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23BAE23714DF7ADB007FC3C8 /* libCoreEngine3D(OSX).a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		23EAA01114DF6AB700F0B167 = {
+		23C1F56714DF788700A3BFD6 = {
 			isa = PBXGroup;
 			children = (
-				23EAA01F14DF6AB800F0B167 /* Hash */,
-				23EAA01D14DF6AB800F0B167 /* Products */,
+				23BAE23614DF7ADB007FC3C8 /* libCoreEngine3D(OSX).a */,
+				23C1F59414DF798600A3BFD6 /* Main.cpp */,
+				23C1F57314DF788800A3BFD6 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		23EAA01D14DF6AB800F0B167 /* Products */ = {
+		23C1F57314DF788800A3BFD6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				23EAA01C14DF6AB800F0B167 /* Hash */,
+				23C1F57214DF788800A3BFD6 /* FontToTexture */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		23EAA01F14DF6AB800F0B167 /* Hash */ = {
-			isa = PBXGroup;
-			children = (
-				230DFF4E14DF6C4100A4A64F /* Main.cpp */,
-				23EAA02214DF6AB800F0B167 /* Hash.1 */,
-			);
-			path = Hash;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		23EAA01B14DF6AB800F0B167 /* Hash */ = {
+		23C1F57114DF788800A3BFD6 /* FontToTexture */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 23EAA02614DF6AB800F0B167 /* Build configuration list for PBXNativeTarget "Hash" */;
+			buildConfigurationList = 23C1F57C14DF788800A3BFD6 /* Build configuration list for PBXNativeTarget "FontToTexture" */;
 			buildPhases = (
-				23EAA01814DF6AB800F0B167 /* Sources */,
-				23EAA01914DF6AB800F0B167 /* Frameworks */,
-				23EAA01A14DF6AB800F0B167 /* CopyFiles */,
+				23C1F56E14DF788800A3BFD6 /* Sources */,
+				23C1F56F14DF788800A3BFD6 /* Frameworks */,
+				23C1F57014DF788800A3BFD6 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = Hash;
-			productName = Hash;
-			productReference = 23EAA01C14DF6AB800F0B167 /* Hash */;
+			name = FontToTexture;
+			productName = FontToTexture;
+			productReference = 23C1F57214DF788800A3BFD6 /* FontToTexture */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		23EAA01314DF6AB700F0B167 /* Project object */ = {
+		23C1F56914DF788700A3BFD6 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0420;
 			};
-			buildConfigurationList = 23EAA01614DF6AB700F0B167 /* Build configuration list for PBXProject "Hash" */;
+			buildConfigurationList = 23C1F56C14DF788700A3BFD6 /* Build configuration list for PBXProject "FontToTexture" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 23EAA01114DF6AB700F0B167;
-			productRefGroup = 23EAA01D14DF6AB800F0B167 /* Products */;
+			mainGroup = 23C1F56714DF788700A3BFD6;
+			productRefGroup = 23C1F57314DF788800A3BFD6 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				23EAA01B14DF6AB800F0B167 /* Hash */,
+				23C1F57114DF788800A3BFD6 /* FontToTexture */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		23EAA01814DF6AB800F0B167 /* Sources */ = {
+		23C1F56E14DF788800A3BFD6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				230DFF4F14DF6C4100A4A64F /* Main.cpp in Sources */,
+				23C1F59514DF798600A3BFD6 /* Main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		23EAA02414DF6AB800F0B167 /* Debug */ = {
+		23C1F57A14DF788800A3BFD6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -143,13 +135,15 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../../../CoreEngine3D/Engine/freetype/include/;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = ../../../../CoreEngine3D/;
 			};
 			name = Debug;
 		};
-		23EAA02514DF6AB800F0B167 /* Release */ = {
+		23C1F57B14DF788800A3BFD6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -163,21 +157,31 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../../../CoreEngine3D/Engine/freetype/include/;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = ../../../../CoreEngine3D/;
 			};
 			name = Release;
 		};
-		23EAA02714DF6AB800F0B167 /* Debug */ = {
+		23C1F57D14DF788800A3BFD6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/CoreTools-avoztlpqpknwnhdiipysaohuswpy/Build/Products/Debug\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		23EAA02814DF6AB800F0B167 /* Release */ = {
+		23C1F57E14DF788800A3BFD6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/CoreTools-avoztlpqpknwnhdiipysaohuswpy/Build/Products/Debug\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -185,25 +189,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		23EAA01614DF6AB700F0B167 /* Build configuration list for PBXProject "Hash" */ = {
+		23C1F56C14DF788700A3BFD6 /* Build configuration list for PBXProject "FontToTexture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				23EAA02414DF6AB800F0B167 /* Debug */,
-				23EAA02514DF6AB800F0B167 /* Release */,
+				23C1F57A14DF788800A3BFD6 /* Debug */,
+				23C1F57B14DF788800A3BFD6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		23EAA02614DF6AB800F0B167 /* Build configuration list for PBXNativeTarget "Hash" */ = {
+		23C1F57C14DF788800A3BFD6 /* Build configuration list for PBXNativeTarget "FontToTexture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				23EAA02714DF6AB800F0B167 /* Debug */,
-				23EAA02814DF6AB800F0B167 /* Release */,
+				23C1F57D14DF788800A3BFD6 /* Debug */,
+				23C1F57E14DF788800A3BFD6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 23EAA01314DF6AB700F0B167 /* Project object */;
+	rootObject = 23C1F56914DF788700A3BFD6 /* Project object */;
 }

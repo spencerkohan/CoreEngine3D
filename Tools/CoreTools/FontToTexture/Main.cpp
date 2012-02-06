@@ -1,8 +1,11 @@
 // FontToTexture.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
+#include <cstdio>
+
+#if defined (PLATFORM_WIN)
 #include "conio.h"
+#endif
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -15,15 +18,19 @@
 #include <iostream>
 #include <fstream>
 
+void PauseBeforeExit();
+
 void PauseBeforeExit()
 {
+#if defined (PLATFORM_WIN)
 	#ifdef _DEBUG
 		printf("Press any key...\n");
 		getch();
 	#endif
+#endif
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
 	if(argc < 4)
 	{

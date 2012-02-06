@@ -2,9 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:Hash/Hash/Hash.xcodeproj">
+      location = "group:../../CoreEngine3D(OSX).xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:../../CoreEngine3D(OSX).xcodeproj">
+      location = "group:FontToTexture/FontToTexture.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Hash/Hash.xcodeproj">
    </FileRef>
 </Workspace>
