@@ -1,8 +1,8 @@
 // Hash.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
-#include "conio.h"
+//#include "stdafx.h"
+//#include "conio.h"
 
 #include "Engine\Hash.h"
 
