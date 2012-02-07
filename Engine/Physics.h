@@ -80,6 +80,6 @@ struct Physics_SpringNode
 };
 
 void Physics_UpdateSpringNode(Physics_SpringNode* springNode, f32 restLength, f32 springK);
-void Physics_UpdateAttachPoint(Physics_AttachPoint* attachPoint, f32 mass, const vec3* gravity, f32 DTSq, f32 DTOverPreviousDT, f32 damping);
+void Physics_UpdateAttachPoint(Physics_AttachPoint* attachPoint, f32 mass, const vec3* gravity, f32 DTSq, f32 DTOverPreviousDT);
 
 #endif

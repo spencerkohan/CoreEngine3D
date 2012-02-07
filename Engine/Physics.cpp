@@ -29,19 +29,13 @@ void Spring_Update(Spring* spring, f32 timeElapsedSq)
 
 //3D springs
 
-void Physics_UpdateAttachPoint(Physics_AttachPoint* attachPoint, f32 mass, const vec3* gravity, f32 DTSq, f32 DTOverPreviousDT, f32 damping)
+void Physics_UpdateAttachPoint(Physics_AttachPoint* attachPoint, f32 mass, const vec3* gravity, f32 DTSq, f32 DTOverPreviousDT)
 {
 	//Time-Corrected Verlet integration
 	//http://archive.gamedev.net/archive/reference/articles/article2200.html
 	
 	vec3 xNeg1;
 	CopyVec3(&xNeg1,&attachPoint->lastPosition);
-	
-	//Add damping force
-	vec3 dampingForce;
-	SubVec3(&dampingForce,&attachPoint->position,&attachPoint->lastPosition);
-	ScaleVec3_Self(&dampingForce,damping);
-	SubVec3_Self(&attachPoint->force,&dampingForce);
 	
 	//Acceleration
 	vec3 acceleration;
