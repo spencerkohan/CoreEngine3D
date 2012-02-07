@@ -18,6 +18,12 @@
 		234BA1E714D4AD9500784CAE /* Square_Tiled_4.h in Headers */ = {isa = PBXBuildFile; fileRef = 234BA1E614D4AD9500784CAE /* Square_Tiled_4.h */; };
 		2355542114B044CA00BF618F /* CoreAudio_OpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 2355541F14B044CA00BF618F /* CoreAudio_OpenAL.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2355542214B044CA00BF618F /* CoreAudio_OpenAL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2355542014B044CA00BF618F /* CoreAudio_OpenAL.cpp */; };
+		236904D414E0F41B0014F02D /* CollisionBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 236904CE14E0F41B0014F02D /* CollisionBox.cpp */; };
+		236904D514E0F41B0014F02D /* CollisionBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 236904CF14E0F41B0014F02D /* CollisionBox.h */; };
+		236904D614E0F41B0014F02D /* CoreObjectFactories.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 236904D014E0F41B0014F02D /* CoreObjectFactories.cpp */; };
+		236904D714E0F41B0014F02D /* CoreObjectFactories.h in Headers */ = {isa = PBXBuildFile; fileRef = 236904D114E0F41B0014F02D /* CoreObjectFactories.h */; };
+		236904D814E0F41B0014F02D /* ScriptObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 236904D214E0F41B0014F02D /* ScriptObject.cpp */; };
+		236904D914E0F41B0014F02D /* ScriptObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 236904D314E0F41B0014F02D /* ScriptObject.h */; };
 		237B3BBC14AF0BE3009196A2 /* Square_Tiled_2.h in Headers */ = {isa = PBXBuildFile; fileRef = 237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */; };
 		23F4265514AC4C4700F27DAB /* CoreInput_GamePad.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265414AC4C4700F27DAB /* CoreInput_GamePad.h */; };
 		23F4265714AC4C5F00F27DAB /* CoreInput_GamePad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23F4265614AC4C5F00F27DAB /* CoreInput_GamePad.cpp */; };
@@ -167,6 +173,12 @@
 		234BA1E614D4AD9500784CAE /* Square_Tiled_4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_4.h; sourceTree = "<group>"; };
 		2355541F14B044CA00BF618F /* CoreAudio_OpenAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAudio_OpenAL.h; sourceTree = "<group>"; };
 		2355542014B044CA00BF618F /* CoreAudio_OpenAL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = CoreAudio_OpenAL.cpp; sourceTree = "<group>"; };
+		236904CE14E0F41B0014F02D /* CollisionBox.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = CollisionBox.cpp; sourceTree = "<group>"; };
+		236904CF14E0F41B0014F02D /* CollisionBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollisionBox.h; sourceTree = "<group>"; };
+		236904D014E0F41B0014F02D /* CoreObjectFactories.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = CoreObjectFactories.cpp; sourceTree = "<group>"; };
+		236904D114E0F41B0014F02D /* CoreObjectFactories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreObjectFactories.h; sourceTree = "<group>"; };
+		236904D214E0F41B0014F02D /* ScriptObject.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ScriptObject.cpp; sourceTree = "<group>"; };
+		236904D314E0F41B0014F02D /* ScriptObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScriptObject.h; sourceTree = "<group>"; };
 		237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_2.h; sourceTree = "<group>"; };
 		23F4265414AC4C4700F27DAB /* CoreInput_GamePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_GamePad.h; sourceTree = "<group>"; };
 		23F4265614AC4C5F00F27DAB /* CoreInput_GamePad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_GamePad.cpp; sourceTree = "<group>"; };
@@ -321,6 +333,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		236904CD14E0F41B0014F02D /* CoreObjects */ = {
+			isa = PBXGroup;
+			children = (
+				236904CE14E0F41B0014F02D /* CollisionBox.cpp */,
+				236904CF14E0F41B0014F02D /* CollisionBox.h */,
+				236904D014E0F41B0014F02D /* CoreObjectFactories.cpp */,
+				236904D114E0F41B0014F02D /* CoreObjectFactories.h */,
+				236904D214E0F41B0014F02D /* ScriptObject.cpp */,
+				236904D314E0F41B0014F02D /* ScriptObject.h */,
+			);
+			path = CoreObjects;
+			sourceTree = "<group>";
+		};
 		23FCBB9A14A1DFBC00C5EA7C = {
 			isa = PBXGroup;
 			children = (
@@ -377,6 +402,7 @@
 		23FCBBCB14A1E09A00C5EA7C /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				236904CD14E0F41B0014F02D /* CoreObjects */,
 				234BA1DA14D4AD8700784CAE /* CoreDebug.cpp */,
 				234BA1DB14D4AD8700784CAE /* CoreDebug.h */,
 				234BA1DC14D4AD8700784CAE /* CoreObject_Manager.cpp */,
@@ -668,6 +694,9 @@
 				234BA1E514D4AD8700784CAE /* CoreObject.h in Headers */,
 				234BA1E714D4AD9500784CAE /* Square_Tiled_4.h in Headers */,
 				DD805AAD14D79E67006C6D10 /* Square_Tiled_32.h in Headers */,
+				236904D514E0F41B0014F02D /* CollisionBox.h in Headers */,
+				236904D714E0F41B0014F02D /* CoreObjectFactories.h in Headers */,
+				236904D914E0F41B0014F02D /* ScriptObject.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -787,6 +816,9 @@
 				234BA1E014D4AD8700784CAE /* CoreDebug.cpp in Sources */,
 				234BA1E214D4AD8700784CAE /* CoreObject_Manager.cpp in Sources */,
 				234BA1E414D4AD8700784CAE /* CoreObject.cpp in Sources */,
+				236904D414E0F41B0014F02D /* CollisionBox.cpp in Sources */,
+				236904D614E0F41B0014F02D /* CoreObjectFactories.cpp in Sources */,
+				236904D814E0F41B0014F02D /* ScriptObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
