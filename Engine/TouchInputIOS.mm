@@ -14,6 +14,8 @@
 
 - (id) init:(DeviceInputState*) pDeviceInputState
 {	
+	m_orientation = UIInterfaceOrientationPortrait;
+	
 	m_inputState = pDeviceInputState;
 	
 	for (u32 i=0; i<MAX_MULTITOUCH; ++i)
@@ -268,6 +270,11 @@
 	}
 }
 
+- (void)SetOrientation:(UIInterfaceOrientation)orientation
+{
+	m_orientation = orientation;
+}
+
 
 -(void)PostGameUpdate
 {
@@ -333,11 +340,53 @@
 - (void)accelerometer:(UIAccelerometer*)accelerometer didAccelerate:(UIAcceleration*)acceleration
 {
 	const f32 kFilteringFactor	= 0.1f;
-    
-	//Use a basic low-pass filter to only keep the gravity in the accelerometer values
-	m_inputState->m_accelerometerValue.x = acceleration.x * kFilteringFactor + m_inputState->m_accelerometerValue.x * (1.0 - kFilteringFactor);
-	m_inputState->m_accelerometerValue.y = acceleration.y * kFilteringFactor + m_inputState->m_accelerometerValue.y * (1.0 - kFilteringFactor);
-	m_inputState->m_accelerometerValue.z = acceleration.z * kFilteringFactor + m_inputState->m_accelerometerValue.z * (1.0 - kFilteringFactor);
+	
+    switch(m_orientation)
+	{
+		case UIInterfaceOrientationPortrait:
+		{
+			//Use a basic low-pass filter to only keep the gravity in the accelerometer values
+			m_inputState->m_accelerometerValue.x = acceleration.x * kFilteringFactor + m_inputState->m_accelerometerValue.x * (1.0 - kFilteringFactor);
+			m_inputState->m_accelerometerValue.y = acceleration.y * kFilteringFactor + m_inputState->m_accelerometerValue.y * (1.0 - kFilteringFactor);
+			m_inputState->m_accelerometerValue.z = acceleration.z * kFilteringFactor + m_inputState->m_accelerometerValue.z * (1.0 - kFilteringFactor);
+			
+			break;
+		}
+		case UIInterfaceOrientationPortraitUpsideDown:
+		{
+			//Use a basic low-pass filter to only keep the gravity in the accelerometer values
+			m_inputState->m_accelerometerValue.x = -acceleration.x * kFilteringFactor + m_inputState->m_accelerometerValue.x * (1.0 - kFilteringFactor);
+			m_inputState->m_accelerometerValue.y = -acceleration.y * kFilteringFactor + m_inputState->m_accelerometerValue.y * (1.0 - kFilteringFactor);
+			m_inputState->m_accelerometerValue.z = -acceleration.z * kFilteringFactor + m_inputState->m_accelerometerValue.z * (1.0 - kFilteringFactor);
+			
+			break;
+		}
+		case UIInterfaceOrientationLandscapeLeft:
+		{
+			//Use a basic low-pass filter to only keep the gravity in the accelerometer values
+			m_inputState->m_accelerometerValue.x = acceleration.y * kFilteringFactor + m_inputState->m_accelerometerValue.x * (1.0 - kFilteringFactor);
+			m_inputState->m_accelerometerValue.y = acceleration.x * kFilteringFactor + m_inputState->m_accelerometerValue.y * (1.0 - kFilteringFactor);
+			m_inputState->m_accelerometerValue.z = acceleration.z * kFilteringFactor + m_inputState->m_accelerometerValue.z * (1.0 - kFilteringFactor);
+			
+			break;
+		}
+		case UIInterfaceOrientationLandscapeRight:
+		{
+			//Use a basic low-pass filter to only keep the gravity in the accelerometer values
+			m_inputState->m_accelerometerValue.x = -acceleration.y * kFilteringFactor + m_inputState->m_accelerometerValue.x * (1.0 - kFilteringFactor);
+			m_inputState->m_accelerometerValue.y = -acceleration.x * kFilteringFactor + m_inputState->m_accelerometerValue.y * (1.0 - kFilteringFactor);
+			m_inputState->m_accelerometerValue.z = -acceleration.z * kFilteringFactor + m_inputState->m_accelerometerValue.z * (1.0 - kFilteringFactor);
+			
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+	
+	
+	
 }
 
 

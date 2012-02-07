@@ -43,7 +43,7 @@ void Spring_Update(Spring* spring, f32 timeElapsedSq);
  2)	Create a bunch of spring nodes that have pointers to the attach points.
  3)	You have to keep a previousDT in your moby so just set it to the same as DT the first frame
  and then correctly keep a previousDT every frame after that.
- 4)	Make some variables you will use for passing into the inverse mass (1/mass) parameter of your
+ 4)	Make some variables you will use for passing into the mass parameter of your
  GAMEUTIL_Physics_UpdateAttachPoint later.
  5)  Zero out all forces on your attach points.
  6)	Calculate DT/PreviousDT once and call GAMEUTIL_Physics_UpdateSpringNode on all your spring nodes every frame.
@@ -80,7 +80,6 @@ struct Physics_SpringNode
 };
 
 void Physics_UpdateSpringNode(Physics_SpringNode* springNode, f32 restLength, f32 springK);
-void Physics_UpdateSpringNode_Clamped(Physics_SpringNode* springNode, f32 restLength, f32 maxLength, f32 springK);
-void Physics_UpdateAttachPoint(Physics_AttachPoint* attachPoint, f32 inverseMass, const vec3* gravity, f32 DTSq, f32 DTOverPreviousDT, f32 damping);
+void Physics_UpdateAttachPoint(Physics_AttachPoint* attachPoint, f32 mass, const vec3* gravity, f32 DTSq, f32 DTOverPreviousDT, f32 damping);
 
 #endif

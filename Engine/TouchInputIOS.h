@@ -20,6 +20,7 @@
 	UITouch* m_pTouches[MAX_MULTITOUCH];
 	DeviceInputState* m_inputState;
 	u32 m_inputScale;
+	UIInterfaceOrientation m_orientation;
 }
 
 - (id) init:(DeviceInputState*) pDeviceInputState;
@@ -31,6 +32,7 @@
 - (void) PostGameUpdate;
 - (void) SetAccelerometerIsUsed:(BOOL)useAccelerometer;
 - (void)accelerometer:(UIAccelerometer*)accelerometer didAccelerate:(UIAcceleration*)acceleration;
+- (void)SetOrientation:(UIInterfaceOrientation)orientation;
 
 @end
 

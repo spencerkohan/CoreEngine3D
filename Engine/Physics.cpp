@@ -28,36 +28,8 @@ void Spring_Update(Spring* spring, f32 timeElapsedSq)
 
 
 //3D springs
-void Physics_UpdateSpringNode_Clamped(Physics_SpringNode* springNode, f32 restLength, f32 maxLength, f32 springK)
-{
-	Physics_AttachPoint* attachPointA = springNode->pointA;
-	Physics_AttachPoint* attachPointB = springNode->pointB;
-	
-	//Get stretch
-	//The direction points from pointA to pointB
-	vec3 stretch;
-	SubVec3(&stretch,&attachPointB->position,&attachPointA->position);
-	
-	//Get magnitude of stretch
-	f32 stretchLength = TryNormalizeVec3_Self(&stretch);
-	
-	//Enforce max length constraint
-	if(stretchLength > maxLength)
-	{
-		stretchLength = maxLength;
-		AddScaledVec3(&attachPointB->position,&attachPointA->position,&stretch,maxLength);
-	}
-	
-	//Calculate force
-	const f32 forceF = -springK * (stretchLength-restLength);
-	
-	//Add forces to attach points
-	AddScaledVec3_Self(&attachPointA->force, &stretch, -forceF);
-	AddScaledVec3_Self(&attachPointB->force, &stretch, forceF);
-}
 
-
-void Physics_UpdateAttachPoint(Physics_AttachPoint* attachPoint, f32 inverseMass, const vec3* gravity, f32 DTSq, f32 DTOverPreviousDT, f32 damping)
+void Physics_UpdateAttachPoint(Physics_AttachPoint* attachPoint, f32 mass, const vec3* gravity, f32 DTSq, f32 DTOverPreviousDT, f32 damping)
 {
 	//Time-Corrected Verlet integration
 	//http://archive.gamedev.net/archive/reference/articles/article2200.html
@@ -73,7 +45,7 @@ void Physics_UpdateAttachPoint(Physics_AttachPoint* attachPoint, f32 inverseMass
 	
 	//Acceleration
 	vec3 acceleration;
-	ScaleVec3(&acceleration,&attachPoint->force,inverseMass);
+	ScaleVec3(&acceleration,&attachPoint->force,1.0f/mass);
 	AddVec3_Self(&acceleration,gravity);
 	
 	vec3 x0;
