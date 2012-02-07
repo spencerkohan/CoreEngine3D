@@ -34,7 +34,7 @@ public:
 	void DeleteObject();			//Use with new system
 
 	virtual bool Init(u32 type);
-	virtual bool SpawnInit(void* pSpawnStruct){return true;};
+	virtual bool SpawnInit(void* pSpawnStruct) = 0;
 	virtual void Uninit();
 	virtual void Update(f32 timeElapsed){};
 	

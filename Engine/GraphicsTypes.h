@@ -570,6 +570,7 @@ public:
 	u32 sortValue;  //4 bytes
     u32 postRenderLayerSortValue; //4 bytes (optional)
 
+	virtual bool SpawnInit(void* pSpawnStruct){return true;};
 	virtual void Uninit()
 	{
 		CoreObject::Uninit();
@@ -607,7 +608,7 @@ public:
 	mat4f* pParentMat;
 	bool visible;
 	bool markedForRemoval;
-	
+	virtual bool SpawnInit(void* pSpawnStruct){return true;};
 	virtual void Uninit()
 	{
 		visible = false;

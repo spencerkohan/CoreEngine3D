@@ -171,7 +171,7 @@ public:
 	virtual bool Init();
 	virtual void Update(f32 timeElapsed);
 	virtual void CleanUp();
-	virtual CoreObject* CreateObject(u32 objectType) = 0;
+	virtual CoreObject* CreateObject(u32 objectType){return NULL;};
 #if defined (PLATFORM_IOS)
 	TouchInputIOS* m_pTouchInput;
 #endif

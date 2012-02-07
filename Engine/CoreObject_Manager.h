@@ -44,7 +44,7 @@ public:
 		if(pObject->Init(type))
 		{
 			++m_numObjects;
-			COREDEBUG_PrintDebugMessage("CoreObjectFactory: Created an object!\n");
+			//COREDEBUG_PrintDebugMessage("CoreObjectFactory: Created an object!\n");
 
 			return pObject;
 		}
@@ -78,7 +78,7 @@ public:
 
 				--m_numObjects;
 
-				COREDEBUG_PrintDebugMessage("CoreObjectFactory: Deleted an object!\n");
+				//COREDEBUG_PrintDebugMessage("CoreObjectFactory: Deleted an object!\n");
 			}
 			else
 			{

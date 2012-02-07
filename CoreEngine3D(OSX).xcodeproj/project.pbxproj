@@ -85,7 +85,6 @@
 		23FCBCFD14A1E09A00C5EA7C /* OpenGLRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC1414A1E09A00C5EA7C /* OpenGLRenderer.mm */; };
 		23FCBCFE14A1E09A00C5EA7C /* Physics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC1614A1E09A00C5EA7C /* Physics.cpp */; };
 		23FCBCFF14A1E09A00C5EA7C /* Physics.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC1714A1E09A00C5EA7C /* Physics.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		23FCBD0014A1E09A00C5EA7C /* PhysicsTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC1814A1E09A00C5EA7C /* PhysicsTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBD0114A1E09A00C5EA7C /* PVRTArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC1A14A1E09A00C5EA7C /* PVRTArray.h */; };
 		23FCBD0214A1E09A00C5EA7C /* PVRTBackground.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC1B14A1E09A00C5EA7C /* PVRTBackground.h */; };
 		23FCBD0314A1E09A00C5EA7C /* PVRTBoneBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC1C14A1E09A00C5EA7C /* PVRTBoneBatch.cpp */; };
@@ -240,7 +239,6 @@
 		23FCBC1414A1E09A00C5EA7C /* OpenGLRenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLRenderer.mm; sourceTree = "<group>"; };
 		23FCBC1614A1E09A00C5EA7C /* Physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Physics.cpp; sourceTree = "<group>"; };
 		23FCBC1714A1E09A00C5EA7C /* Physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Physics.h; sourceTree = "<group>"; };
-		23FCBC1814A1E09A00C5EA7C /* PhysicsTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhysicsTypes.h; sourceTree = "<group>"; };
 		23FCBC1A14A1E09A00C5EA7C /* PVRTArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRTArray.h; sourceTree = "<group>"; };
 		23FCBC1B14A1E09A00C5EA7C /* PVRTBackground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRTBackground.h; sourceTree = "<group>"; };
 		23FCBC1C14A1E09A00C5EA7C /* PVRTBoneBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRTBoneBatch.cpp; sourceTree = "<group>"; };
@@ -426,7 +424,6 @@
 				23FCBC1414A1E09A00C5EA7C /* OpenGLRenderer.mm */,
 				23FCBC1614A1E09A00C5EA7C /* Physics.cpp */,
 				23FCBC1714A1E09A00C5EA7C /* Physics.h */,
-				23FCBC1814A1E09A00C5EA7C /* PhysicsTypes.h */,
 				23FCBC5014A1E09A00C5EA7C /* RenderFlags.cpp */,
 				23FCBC5114A1E09A00C5EA7C /* RenderFlags.h */,
 				23FCBC5214A1E09A00C5EA7C /* RenderLayer.cpp */,
@@ -620,7 +617,6 @@
 				23FCBCF614A1E09A00C5EA7C /* Square_Tiled_8.h in Headers */,
 				23FCBCFC14A1E09A00C5EA7C /* OpenGLRenderer.h in Headers */,
 				23FCBCFF14A1E09A00C5EA7C /* Physics.h in Headers */,
-				23FCBD0014A1E09A00C5EA7C /* PhysicsTypes.h in Headers */,
 				23FCBD0114A1E09A00C5EA7C /* PVRTArray.h in Headers */,
 				23FCBD0214A1E09A00C5EA7C /* PVRTBackground.h in Headers */,
 				23FCBD0414A1E09A00C5EA7C /* PVRTBoneBatch.h in Headers */,
