@@ -39,15 +39,15 @@ public:
 	virtual bool Init(u32 type);
 	virtual void Update(f32 timeElapsed);
 	virtual void Uninit();
-	
+	virtual bool SpawnInit(void* pSpawnStruct);
+	void SpawnInit(const vec3* pRefPos, f32 xLeft, f32 xRight, f32 yTop, f32 yBottom);
 	bool GetPositionIsInside(const vec2* pPos);
 	
 	const vec3* GetTopLeft();
 	const vec3* GetBottomLeft();
 	const vec3* GetBottomRight();
 	const vec3* GetBoxCenter();
-	
-	void SpawnInit(f32 xLeft, f32 yTop, f32 xRight, f32 yBottom, const vec3* pReferencePos);
+
 	void UpdatePosition(const vec3* pPos);
 	
 	bool CollideWithWorld(u32 collisionTypeFlags, CollisionResult* pOut_Result);

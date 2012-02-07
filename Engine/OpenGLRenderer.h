@@ -34,7 +34,6 @@ extern OpenGLRenderer* GLRENDERER;
 
 #include "MathUtil.h"
 #include "GraphicsTypes.h"
-#include "PhysicsTypes.h"
 #include "MaterialDeclarations.h"
 #include "ArrayUtil.h"
 
@@ -92,6 +91,7 @@ enum RenderableObjectType
 
 enum DebugDrawMode
 {
+	DebugDrawMode_None = -1,
 	DebugDrawMode_2D,
 	DebugDrawMode_3D,
 	DebugDrawMode_Screen2D,
@@ -125,6 +125,7 @@ struct TexturedLineObject
 	f32 lineWidth0;
 	f32 lineWidth1;
 	f32 numTextureRepeats;
+	DebugDrawMode drawMode;
 };
 
 
@@ -214,7 +215,7 @@ public:
 	bool LoadTexture(const char* fileName,ImageType imageType, u32* pGLTexture, u32 filterMode, u32 wrapModeU, u32 wrapModeV, bool flipY = false);
 	GFX_Trail* CreateTrail(GFX_Trail** pCallbackTrail, vec3* pInitialPos, f32 timeToLive, const GFX_TrailSettings* pTrailSettings, u32 renderFlags);
 	
-	void DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, u32 texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats);
+	void DRAW_DrawTexturedLine(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, u32 texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats);
 	void DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color);
 	void DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color1, const vec4* color2);
 	void DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color);

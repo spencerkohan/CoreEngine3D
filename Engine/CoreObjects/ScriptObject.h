@@ -39,8 +39,6 @@ public:
 		ScriptStatus_Num,
 	};
 
-	virtual bool Init(u32 type);
-	virtual void Update(f32 timeElapsed);
 	virtual void Uninit();
 	virtual void ProcessMessage(u32 message);	//Pass in a hash value
 
@@ -49,10 +47,9 @@ public:
 	bool GetPositionIsInside(const vec2* pTouchPos);
 
 	//TODO: make SpawnInit take a struct or something.  This is getting bad
-	void SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreObjectHandle triggerObject, u32 collisionType, CollisionMode collisionMode, ScriptStatus status);
+	virtual bool SpawnInit(void* pSpawnStruct);
 	void AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileIndex_Y);
 	void AttemptBoxTrigger(u32 objectType, const vec3* pPosition);
-	void Link();
 	void Reset();
 private:	
 

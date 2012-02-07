@@ -35,10 +35,11 @@ void CoreObject::UpdateHandle()
 bool CoreObject::Init(u32 type)
 {
 	m_entityTypeHash = type;
-	
+
 	m_markedForDeletion = false;
 	return COREOBJECTMANAGER->AddObject(this);
 }
+
 
 void CoreObject::Uninit()
 {

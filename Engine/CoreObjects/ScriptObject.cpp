@@ -23,54 +23,82 @@ vec3* ScriptObject::GetPosition()
 	return &m_position;
 }
 
-void ScriptObject::Link()
+
+bool ScriptObject::SpawnInit(void* pSpawnStruct)
 {
-	//Convert name hash to object handle
-	const CoreObjectHandle objectHandle = GAME->SpawnableEntityHandleByNameHash(m_hTriggerObject);
-	m_hTriggerObject = objectHandle;
-}
+	m_isFirstUpdate = true;
+	
+	SpawnableEntity* pSpawnableEnt = (SpawnableEntity*)pSpawnStruct;
+	if(pSpawnableEnt == NULL)
+	{
+		return false;
+	}
+	
+	CopyVec3(&m_position, &pSpawnableEnt->position);
+	
+	m_triggerMessage = 0;
+	m_hTriggerObject = INVALID_COREOBJECT_HANDLE;
+	
+	m_collisionType = CollisionBoxType_Ghost;
+	m_scriptStatus = ScriptObject::ScriptStatus_On;
+	m_collMode = CollisionMode_Tile;
+	
+	m_collMode = pSpawnableEnt->tileID == -1 ? ScriptObject::CollisionMode_Box:ScriptObject::CollisionMode_Tile;
+
+	for (pugi::xml_node property = pSpawnableEnt->pProperties.child("property"); property; property = property.next_sibling("property"))
+	{
+		const char* propNameString = property.attribute("name").value();
+		const char* valueString = property.attribute("value").value();
+		
+		if(strcmp(propNameString,"TriggerMessage") == 0)
+		{
+			m_triggerMessage = Hash(valueString);
+		}
+		else if(strcmp(propNameString,"TriggerObject") == 0)
+		{
+			const u32 triggerObject = Hash(valueString);
+			SpawnableEntity* pEnt = GAME->GetSpawnableEntityByNameHash(triggerObject);
+			if(pEnt->pObject != NULL)
+			{
+				m_hTriggerObject = pEnt->pObject->GetHandle();
+			}
+		}
+		else if(strcmp(propNameString,"CollisionType") == 0)
+		{
+			m_collisionType = Hash(valueString);
+		}
+		else if(strcmp(propNameString,"ScriptStatus") == 0)
+		{
+			if(strcmp(valueString,"Off") == 0)
+			{
+				m_scriptStatus = ScriptObject::ScriptStatus_Off;
+			}
+		}
+	}
 
 
-void ScriptObject::SpawnInit(SpawnableEntity* pEntity, u32 triggerMessage, CoreObjectHandle triggerObject, u32 collisionType, CollisionMode collisionMode, ScriptStatus status)
-{
-	CopyVec3(&m_position, &pEntity->position);
+	m_hCollisionBox = INVALID_COREOBJECT_HANDLE;
 	
-	//TODO: make the bounding box based on the art
-	CollisionBox* pBox = g_Factory_CollisionBox.CreateObject(CollisionBoxType_Trigger);
-	m_hCollisionBox = pBox->GetHandle();
-	
-	const f32 halfWidth = pEntity->scale.x/2.0f;
-	const f32 halfHeight = pEntity->scale.y/2.0f;
-	
-	pBox->SpawnInit(-halfWidth+m_position.x, halfWidth+m_position.x, halfHeight+m_position.y, -halfHeight+m_position.y, &m_position);
-	
-	m_tileIndex_X = pEntity->tileIndexX;
-	m_tileIndex_Y = pEntity->tileIndexY;
-	
-	m_triggerMessage = triggerMessage;
+	//Will init the box using our own self!
+	if(pSpawnableEnt->tileID == -1)
+	{
+		const f32 halfWidth = pSpawnableEnt->scale.x/2.0f;
+		const f32 halfHeight = pSpawnableEnt->scale.y/2.0f;
+
+		CollisionBox* pBox = g_Factory_CollisionBox.CreateObject(CollisionBoxType_Trigger);
+		pBox->SpawnInit(&m_position, -halfWidth+m_position.x, halfWidth+m_position.x, halfHeight+m_position.y, -halfHeight+m_position.y);
+
+		m_hCollisionBox = pBox->GetHandle();
+	}
+
+	m_tileIndex_X = pSpawnableEnt->tileIndexX;
+	m_tileIndex_Y = pSpawnableEnt->tileIndexY;
 
 	m_numTriggers = 0;
 	m_numAllowedTriggers = 1;	//TODO: load this
-	
-	m_hTriggerObject = triggerObject;
-	
-	m_collisionType = collisionType;
-	
-	m_collMode = collisionMode;
-	
-	m_scriptStatus = status;
-	m_initialScriptStatus = status;
-}
 
-
-bool ScriptObject::Init(u32 type)
-{
-	CoreObject::Init(type);
+	m_initialScriptStatus = m_scriptStatus;
 	
-	m_scriptStatus = ScriptStatus_On;
-	
-	m_isFirstUpdate = true;
-
 	return true;
 }
 
@@ -111,7 +139,13 @@ void ScriptObject::AttemptBoxTrigger(u32 objectType, const vec3* pPosition)
 	{
 		vec3 camPos;
 		CopyVec3(&camPos,pBox->GetBottomLeft());
-		GAME->SetCameraPosition(&camPos);
+		GAME->SetCameraPosition(&camPos,0.0f);
+	}
+	else if(m_triggerMessage == Hash("MoveCamera"))
+	{
+		vec3 camPos;
+		CopyVec3(&camPos,pBox->GetBottomLeft());
+		GAME->SetCameraPosition(&camPos,1.5f);
 	}
 	else
 	{
@@ -204,11 +238,6 @@ bool ScriptObject::GetPositionIsInside(const vec2* pTouchPos)
 	return true;
 }
 
-
-void ScriptObject::Update(f32 timeElapsed)
-{
-	
-}
 
 void ScriptObject::Uninit()
 {

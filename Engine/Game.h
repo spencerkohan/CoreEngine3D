@@ -32,6 +32,8 @@
 #include <AVFoundation/AVFoundation.h>
 #endif
 
+#include "pugixml/src/pugixml.hpp"
+
 #include "CoreObject_Manager.h"
 
 class Game;
@@ -134,7 +136,7 @@ struct SpawnableEntity
 {
 	u32 type;
 	u32 name;
-	u32 linkedEntityName;
+	pugi::xml_node pProperties;
 	vec3 position;
 	vec2 scale;
 	s32 tileID;
@@ -142,7 +144,7 @@ struct SpawnableEntity
 	u32 tileIndexX;
 	u32 tileIndexY;
 	
-	u32 objectHandle;
+	CoreObject* pObject;
 };
 
 struct Tile
@@ -169,6 +171,7 @@ public:
 	virtual bool Init();
 	virtual void Update(f32 timeElapsed);
 	virtual void CleanUp();
+	virtual CoreObject* CreateObject(u32 objectType) = 0;
 #if defined (PLATFORM_IOS)
 	TouchInputIOS* m_pTouchInput;
 #endif
@@ -176,7 +179,7 @@ public:
 #if defined (PLATFORM_OSX) || defined(PLATFORM_WIN)
 	MouseInputState m_mouseState;
 #endif
-	CoreObjectHandle SpawnableEntityHandleByNameHash(u32 nameHash);
+	SpawnableEntity* GetSpawnableEntityByNameHash(u32 nameHash);
 	CoreUI_Button* AddUIButton(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32));
 	void UpdateButtons(TouchState touchState, vec2 *pTouchPosBegin, vec2* pTouchPosCurr);
 	void ClearAllButtons();
@@ -195,15 +198,15 @@ public:
 	f32 GetHalfTileSize();
 	f32 GetPixelsPerMeter();
 	const vec3* GetCameraPosition();
-	void SetCameraPosition(const vec3* pCamPos);	//use with caution
+	void SetCameraPosition(const vec3* pCamPos, f32 lerpTime);	//use with caution
 	void ResetScriptObjects();
+	Layer* GetLayer(LevelLayer layer);
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState* GetDeviceInputState();
 #endif
 protected:	//Only stuff that can be called from the game.cpp goes here
 	void ConstrainCameraToTiledLevel();
 	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters);
-	void LinkScriptObjects();//HACK: somewhat hacky
 	void UpdateTiledLevelPosition(vec3* pPosition);
 	void LoadItemArt();	//Call to load all the art in the list
 	void LoadItemSounds();
@@ -225,8 +228,11 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	f32 m_view[16];
 	
 	vec3 m_camPos;
+	vec3 m_startCamPos;
 	vec3 m_desiredCamPos;
-	f32 m_camLerpT;
+	f32 m_camLerpTimer;
+	f32 m_camLerpTotalTime;
+	
 private:
 	f32 m_pixelsPerMeter;
 	bool WillArtDescriptionBeLoaded(ItemArtDescription* pArtDesc);

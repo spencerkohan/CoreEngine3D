@@ -16,11 +16,29 @@
 
 #include "CoreObjectFactories.h"
 
-void CollisionBox::SpawnInit(f32 xLeft, f32 xRight, f32 yTop, f32 yBottom, const vec3* pReferencePos)
+bool CollisionBox::SpawnInit(void* pSpawnStruct)
 {
-	CopyVec3(&m_refPos,pReferencePos);
-	CopyVec3(&m_currPos,pReferencePos);
+	SpawnableEntity* pSpawnableEnt = (SpawnableEntity*)pSpawnStruct;
+	if(pSpawnableEnt == NULL)
+	{
+		return false;
+	}
 	
+	//vec3* pPos = &pSpawnableEnt->position;
+	
+	const f32 scaleX = pSpawnableEnt->scale.x;
+	const f32 scaleY = pSpawnableEnt->scale.y;
+	
+	SpawnInit(&pSpawnableEnt->position,-scaleX,scaleX,-scaleY,scaleY);
+	
+	return false;
+}
+
+void CollisionBox::SpawnInit(const vec3* pRefPos, f32 xLeft, f32 xRight, f32 yTop, f32 yBottom)
+{
+	CopyVec3(&m_refPos,pRefPos);
+	CopyVec3(&m_currPos,pRefPos);
+	 
 	m_xLeft = xLeft;
 	m_xRight = xRight;
 	m_yTop = yTop;

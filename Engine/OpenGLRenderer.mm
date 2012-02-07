@@ -789,14 +789,52 @@ void OpenGLRenderer::RenderEffects()
 	
 	//Set line material
     SetMaterial(MT_TextureAndDiffuseColor);
-    m_currProjMatType = ProjMatType_Perspective;
-    UploadWorldViewProjMatrix(m_identityMat);
 	
-	u32 currLineTexture = NULL;
+	u32 currLineTexture = 0;
+	
+	DebugDrawMode drawMode = DebugDrawMode_None;
 	
 	for(s32 renderLineIDX=0; renderLineIDX<m_numTexturedLines_saved; ++renderLineIDX)
 	{
 		TexturedLineObject* pCurrLine = &m_texturedLineObjects[renderLineIDX];
+		
+		if(drawMode != pCurrLine->drawMode)
+		{
+			drawMode = pCurrLine->drawMode;
+			
+			switch(pCurrLine->drawMode)
+			{
+				case DebugDrawMode_2D:
+				{
+					//Draw 2D lines
+					m_currProjMatType = ProjMatType_Orthographic_Points;
+					UploadWorldViewProjMatrix(m_identityMat);
+					
+					break;
+				}
+				case DebugDrawMode_3D:
+				{
+					//Draw 3D lines
+					m_currProjMatType = ProjMatType_Perspective;
+					UploadWorldViewProjMatrix(m_identityMat);
+					
+					break;
+				}
+				case DebugDrawMode_Screen2D:
+				{
+					//Draw to the screen with no view matrix in 2D
+					m_currProjMatType = ProjMatType_Orthographic_Points;
+					UploadWorldProjMatrix(m_identityMat);
+					
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+		}
+		
 		u32 nextLineTexture = pCurrLine->texturedID;
 		
 		if(nextLineTexture != currLineTexture)
@@ -2824,7 +2862,7 @@ void OpenGLRenderer::CreateMaterials()
 	}
 	
 	//MT_SkinnedWithNormalMapping
-    if(CreateShaderProgram(VSH_SkinnedVertShader,PS_SkinnedFragShader,attribs_skinned_simple,&g_Materials[MT_SkinnedWithNormalMapping].shaderProgram))
+    /*if(CreateShaderProgram(VSH_SkinnedVertShader,PS_SkinnedFragShader,attribs_skinned_simple,&g_Materials[MT_SkinnedWithNormalMapping].shaderProgram))
     {
 		AddUniform_Shared(MT_SkinnedWithNormalMapping,"lightPos",Uniform_Vec3,(u8*)&m_lightPos,1);
 		
@@ -2832,7 +2870,7 @@ void OpenGLRenderer::CreateMaterials()
 		AddUniform_Unique(MT_SkinnedWithNormalMapping,"BoneCount",Uniform_Int,1);
 		AddUniform_Unique(MT_SkinnedWithNormalMapping,"BoneMatrixArray",Uniform_Mat4x4,8);
 		AddUniform_Unique(MT_SkinnedWithNormalMapping,"BoneMatrixArrayIT",Uniform_Mat4x4,8);
-    }
+    }*/
     
     //MT_VertWithColorInput
     if(CreateShaderProgram(VSH_VertWithColorInput,PS_Colors,attribs_V,&g_Materials[MT_VertWithColorInput].shaderProgram))
@@ -3345,7 +3383,7 @@ GFX_Trail* OpenGLRenderer::CreateTrail(GFX_Trail** pCallbackTrail, vec3* pInitia
 }
 
 
-void OpenGLRenderer::DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, u32 texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats)
+void OpenGLRenderer::DRAW_DrawTexturedLine(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, u32 texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats)
 {
 	if(m_numTexturedLines == MAX_TEXTURED_LINES)
 	{
@@ -3359,6 +3397,7 @@ void OpenGLRenderer::DRAW_DrawTexturedLine(const vec3* p0, const vec3* p1, const
 	pNextLine->lineWidth0 = lineWidth0;
 	pNextLine->lineWidth1 = lineWidth1;
 	pNextLine->numTextureRepeats = numTextureRepeats;
+	pNextLine->drawMode = drawMode;
 	CopyVec4(&pNextLine->diffuseColor,pDiffuseColor);
 	
 	++m_numTexturedLines;

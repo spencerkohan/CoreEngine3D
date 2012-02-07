@@ -64,7 +64,6 @@
 		DDA6F57E149C1A930035A1BF /* OpenGLRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F4C1149C1A920035A1BF /* OpenGLRenderer.mm */; };
 		DDA6F57F149C1A930035A1BF /* Physics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F4C2149C1A920035A1BF /* Physics.cpp */; };
 		DDA6F580149C1A930035A1BF /* Physics.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4C3149C1A920035A1BF /* Physics.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DDA6F581149C1A930035A1BF /* PhysicsTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4C4149C1A920035A1BF /* PhysicsTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F582149C1A930035A1BF /* PVRTArray.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4C6149C1A920035A1BF /* PVRTArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F583149C1A930035A1BF /* PVRTBackground.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4C7149C1A920035A1BF /* PVRTBackground.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F584149C1A930035A1BF /* PVRTBoneBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F4C8149C1A920035A1BF /* PVRTBoneBatch.cpp */; };
@@ -222,7 +221,6 @@
 		DDA6F4C1149C1A920035A1BF /* OpenGLRenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLRenderer.mm; sourceTree = "<group>"; };
 		DDA6F4C2149C1A920035A1BF /* Physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Physics.cpp; sourceTree = "<group>"; };
 		DDA6F4C3149C1A920035A1BF /* Physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Physics.h; sourceTree = "<group>"; };
-		DDA6F4C4149C1A920035A1BF /* PhysicsTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhysicsTypes.h; sourceTree = "<group>"; };
 		DDA6F4C6149C1A920035A1BF /* PVRTArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRTArray.h; sourceTree = "<group>"; };
 		DDA6F4C7149C1A920035A1BF /* PVRTBackground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRTBackground.h; sourceTree = "<group>"; };
 		DDA6F4C8149C1A920035A1BF /* PVRTBoneBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRTBoneBatch.cpp; sourceTree = "<group>"; };
@@ -428,7 +426,6 @@
 				DDA6F4C1149C1A920035A1BF /* OpenGLRenderer.mm */,
 				DDA6F4C2149C1A920035A1BF /* Physics.cpp */,
 				DDA6F4C3149C1A920035A1BF /* Physics.h */,
-				DDA6F4C4149C1A920035A1BF /* PhysicsTypes.h */,
 				DDA6F4F5149C1A920035A1BF /* RenderFlags.cpp */,
 				DDA6F4F6149C1A920035A1BF /* RenderFlags.h */,
 				DDA6F4F7149C1A920035A1BF /* RenderLayer.cpp */,
@@ -614,7 +611,6 @@
 				DDA6F577149C1A930035A1BF /* Square_Tiled_8.h in Headers */,
 				DDA6F57D149C1A930035A1BF /* OpenGLRenderer.h in Headers */,
 				DDA6F580149C1A930035A1BF /* Physics.h in Headers */,
-				DDA6F581149C1A930035A1BF /* PhysicsTypes.h in Headers */,
 				DDA6F582149C1A930035A1BF /* PVRTArray.h in Headers */,
 				DDA6F583149C1A930035A1BF /* PVRTBackground.h in Headers */,
 				DDA6F585149C1A930035A1BF /* PVRTBoneBatch.h in Headers */,

@@ -10,8 +10,26 @@
  *
  */
 
-#include "PhysicsTypes.h"
 #include "MathUtil.h"
+
+//SpringNode
+typedef struct
+{
+	s32 attachPointA_Idx;
+	s32 attachPointB_Idx;
+} SpringNode;
+
+
+
+//Spring
+typedef struct
+{
+	f32 springK;
+	f32 springDamping;
+	f32 oldPos;
+	f32 currPos;
+	f32 goalPos;
+}Spring;
 
 //1D springs
 void Spring_Update(Spring* spring, f32 timeElapsedSq);

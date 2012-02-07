@@ -11,7 +11,6 @@
 #include "matrix.h"
 
 #include "zlib/zlib.h"
-#include "pugixml/src/pugixml.hpp"
 #include "base64.h"
 #include "Hash.h"
 
@@ -43,8 +42,11 @@ ItemArtDescription g_Game_BlobShadowDesc =
 	&g_Square1x1_modelData//ModelData*		pModelData;
 };
 
+
 bool Game::Init()
 {
+	m_camLerpTimer = -1.0f;
+	
 	for(int i=0; i<NumLevelLayers; ++i)
 	{
 		m_layers[i].tiles = NULL;
@@ -94,6 +96,8 @@ bool Game::Init()
 	
 #if defined (PLATFORM_IOS)
 	m_pTouchInput = [[[TouchInputIOS alloc]init:&m_deviceInputState]retain];
+	//HACK:
+	[m_pTouchInput SetAccelerometerIsUsed:YES];
 #endif
 	
 	m_pCoreAudioOpenAL = new CoreAudioOpenAL;
@@ -117,6 +121,7 @@ bool Game::Init()
 	return true;
 }
 
+
 void Game::CleanUp()
 {
 	for(int i=0; i<NumLevelLayers; ++i)
@@ -136,6 +141,7 @@ void Game::CleanUp()
 	delete m_pCoreAudioOpenAL;
 	delete m_coreObjectManager;
 }
+
 
 void Game::Update(f32 timeElapsed)
 {
@@ -158,11 +164,23 @@ void Game::Update(f32 timeElapsed)
 	}
 #endif
 
+	if(m_camLerpTimer > 0.0f)
+	{
+		m_camLerpTimer -= timeElapsed;
+		if(m_camLerpTimer < 0.0f)
+		{
+			m_camLerpTimer = 0.0f;
+		}
+		
+		LerpVec3(&m_camPos,&m_desiredCamPos,&m_startCamPos,m_camLerpTimer/m_camLerpTotalTime);
+	}
+	
 	//Lazy so constantly load new resources
 	//It can't be THAT bad
 	LoadItemArt();
 	LoadItemSounds();
 }
+
 
 s32 Game::AddSongToPlaylist(const char* songFilenameMP3)
 {
@@ -784,9 +802,20 @@ const vec3* Game::GetCameraPosition()
 }
 
 //use with caution
-void Game::SetCameraPosition(const vec3* pCamPos)
+void Game::SetCameraPosition(const vec3* pCamPos, f32 lerpTime)
 {
-	CopyVec3(&m_camPos,pCamPos);
+	if(lerpTime == 0.0f)
+	{
+		CopyVec3(&m_camPos,pCamPos);
+	}
+	else
+	{
+		m_camLerpTimer = lerpTime;
+		m_camLerpTotalTime = lerpTime;
+		
+		CopyVec3(&m_desiredCamPos,pCamPos);
+		CopyVec3(&m_startCamPos,&m_camPos);
+	}
 }
 
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
@@ -816,6 +845,7 @@ void Game::GetPositionFromTileIndices(u32 index_X, u32 index_Y, vec3* pOut_posit
 	pOut_position->z = 0.0f;
 }
 
+
 s32 Game::GetCollisionFromTileIndices(u32 index_X, u32 index_Y)
 {
 	Layer* pLayer = &m_layers[LevelLayer_Collision];
@@ -825,20 +855,24 @@ s32 Game::GetCollisionFromTileIndices(u32 index_X, u32 index_Y)
 	return pTile->tileID;
 }
 
+
 f32 Game::GetTileSize()
 {
 	return m_tiledLevelDescription.tileDisplaySizeX;
 }
+
 
 f32 Game::GetHalfTileSize()
 {
 	return m_tiledLevelDescription.halfTileSizeX;
 }
 
+
 f32 Game::GetPixelsPerMeter()
 {
 	return m_pixelsPerMeter;
 }
+
 
 void Game::ConstrainCameraToTiledLevel()
 {
@@ -914,34 +948,32 @@ void Game::ConvertTileID(s32* p_InOut_tileID, TileSetDescription** pOut_tileDesc
 }
 
 
-void Game::LinkScriptObjects()//HACK: somewhat hacky
+Layer* Game::GetLayer(LevelLayer layer)
 {
-	//For the sake of speed and simplicity, check for and trigger ScriptObjects here
-	for(u32 i=0; i<g_Factory_ScriptObject.m_numObjects; ++i)
-	{
-		ScriptObject* pScriptObject = &g_Factory_ScriptObject.m_pObjectList[i];
-		pScriptObject->Link();
-	}
+	return &m_layers[layer];
 }
 
 
-CoreObjectHandle Game::SpawnableEntityHandleByNameHash(u32 nameHash)
+SpawnableEntity*  Game::GetSpawnableEntityByNameHash(u32 nameHash)
 {
 	for(u32 i=0; i<m_numSpawnableEntities; ++i)
 	{
 		SpawnableEntity* pEnt = &m_spawnableEntities[i];
 		if(pEnt->name == nameHash)
 		{
-			return pEnt->objectHandle;
+			return pEnt;
 		}
 	}
 	
-	return INVALID_COREOBJECT_HANDLE;
+	return NULL;
 }
 
 
 void Game::ResetScriptObjects()
 {
+	//HACK
+	m_camLerpTimer = -1.0f;
+	
 	for(u32 i=0; i<g_Factory_ScriptObject.m_numObjects; ++i)
 	{
 		g_Factory_ScriptObject.m_pObjectList[i].Reset();
@@ -1234,7 +1266,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
 			{
 				SpawnableEntity* pCurrEnt = &m_spawnableEntities[m_numSpawnableEntities];
-				pCurrEnt->objectHandle = INVALID_COREOBJECT_HANDLE;
+				pCurrEnt->pObject = NULL;
 				
 				const char* nameString = object.attribute("name").value();
 				//COREDEBUG_PrintDebugMessage("Object Name: %s",nameString);
@@ -1288,81 +1320,17 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				pCurrEnt->scale.y = height;
 				
 				//Find properties of the object
-				pugi::xml_node properties = object.child("properties");
-	
-				//TODO: this is kinda sad
+				//TODO: not do this horrible thing
+				pCurrEnt->pProperties = object.child("properties");
+				
 				const u32 scriptObjectType = Hash("ScriptObject");
 				if(pCurrEnt->type == scriptObjectType)
 				{
-					ScriptObject* pScriptObject = g_Factory_ScriptObject.CreateObject(0);
-					
-					pCurrEnt->objectHandle = pScriptObject->GetHandle();
-					
-					u32 scriptMessage = 0;
-					CoreObjectHandle triggerObject = INVALID_COREOBJECT_HANDLE;
-					u32 collisionType = 0;
-					ScriptObject::ScriptStatus scriptStatus = ScriptObject::ScriptStatus_On;
-					ScriptObject::CollisionMode collMode = pCurrEnt->tileID == -1 ? ScriptObject::CollisionMode_Box:ScriptObject::CollisionMode_Tile;
-					
-					for (pugi::xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
-					{
-						{
-							const char* propNameString = property.attribute("name").value();
-							if(strcmp(propNameString,"TriggerMessage") == 0)
-							{
-								const char* propNameString = property.attribute("value").value();
-								scriptMessage = Hash(propNameString);
-							}
-						}
-						
-						{
-							const char* propNameString = property.attribute("name").value();
-							if(strcmp(propNameString,"TriggerObject") == 0)
-							{
-								const char* propNameString = property.attribute("value").value();
-								triggerObject = Hash(propNameString);
-							}
-						}
-						
-						{
-							const char* propNameString = property.attribute("name").value();
-							if(strcmp(propNameString,"CollisionType") == 0)
-							{
-								const char* propNameString = property.attribute("value").value();
-								collisionType = Hash(propNameString);
-							}
-						}
-						
-						{
-							const char* propNameString = property.attribute("name").value();
-							if(strcmp(propNameString,"ScriptStatus") == 0)
-							{
-								const char* propNameString = property.attribute("value").value();
-								if(strcmp(propNameString,"Off") == 0)
-								{
-									scriptStatus = ScriptObject::ScriptStatus_Off;
-								}
-							}
-						}
-					}
-					
-					pScriptObject->SpawnInit(pCurrEnt,scriptMessage,triggerObject,collisionType,collMode,scriptStatus);
+					pCurrEnt->pObject = g_Factory_ScriptObject.CreateObject(pCurrEnt->type);
 				}
 				else
 				{
-					if(properties.empty() == false)
-					{
-						for (pugi::xml_node property = properties.child("property"); property; property = property.next_sibling("property"))
-						{
-							//LinkedEntity property
-							const char* propNameString = property.attribute("name").value();
-							if(strcmp(propNameString,"LinkedEntity") == 0)
-							{
-								const char* propNameString = property.attribute("value").value();
-								pCurrEnt->linkedEntityName = Hash(propNameString);
-							}
-						}
-					}
+					pCurrEnt->pObject = this->CreateObject(pCurrEnt->type);
 				}
 				
 				
@@ -1370,11 +1338,23 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				++m_numSpawnableEntities;
 			}
 		}
+		
+		
+		//All the objects have been created, now initialize them!
+		for(u32 i=0; i<m_numSpawnableEntities; ++i)
+		{
+			SpawnableEntity* pEnt = &m_spawnableEntities[i];
+			if(pEnt->pObject != NULL)
+			{
+				pEnt->pObject->SpawnInit(pEnt);
+			}
+		}
 	}
 	else
 	{
 		COREDEBUG_PrintDebugMessage("Failed to load level file.  FILE NOT FOUND!");
 	}
+	
 	
 	return true;
 }
