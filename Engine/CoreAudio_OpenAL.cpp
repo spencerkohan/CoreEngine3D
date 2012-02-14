@@ -231,7 +231,7 @@ bool CoreAudioOpenAL::CheckForOpenALError()
 	{
 		case AL_INVALID_NAME:
 		{
-			COREDEBUG_PrintDebugMessage("OpenAL ERROR: Invalid Name paramater passed to AL call.\n");
+			COREDEBUG_PrintDebugMessage("OpenAL ERROR: Invalid Name parameter passed to AL call.\n");
 			
 			return true;
 		}
