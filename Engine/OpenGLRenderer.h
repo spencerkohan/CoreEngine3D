@@ -66,8 +66,6 @@ extern OpenGLRenderer* GLRENDERER;
 #define DEBUGDRAW_MAXLINESEGMENTS 512
 #define DEBUGDRAW_MAXDEBUGOBJECTS 32
 
-#define MAX_RENDERABLE_NORMAL_OBJECTS 2500
-#define MAX_RENDERABLE_UI_OBJECTS 64
 
 #define MAX_ANIMATED_PODS 16
 #define MAX_RENDERABLE_SCENES 128
@@ -174,6 +172,7 @@ public:
 	void RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableObjectArray, u32 numRenderableObjects);
 	void RenderEffects();
 	void SetClearColor(f32 r, f32 g, f32 b);
+	const vec3* GetClearColor();
 	void SetGravityDir(const vec3* pNewGravityDir);
 	void SetSortRenderablesByZ(bool sortRenderablesByZ, RenderLayer layerStart, RenderLayer layerEnd);
 	void Render(f32 timeElapsed);
@@ -235,9 +234,6 @@ public:
 private:
 	
 	//private functions
-	RenderableGeometry3D* GetUnusedRenderableGeometry3D_UI();
-	RenderableGeometry3D* GetUnusedRenderableGeometry3D_Normal();
-	RenderableSceneObject3D* GetUnusedRenderableSceneObject3D();
 	CoreObjectHandle CreateRenderableGeometry3D(RenderableObjectType renderableType,RenderableGeometry3D** pOut_Geom);
 	void SortRenderablesWithMaterialByZ(RenderMaterial materialID);
 	void SortRenderablesInLayerRangeByZ(RenderLayer layerBegin, RenderLayer layerEnd);
@@ -323,12 +319,9 @@ private:
     u32 m_currTextureInTextureUnit[MAX_NUM_TEXTURE_UNITS];
     u32 m_currTextureUnit;
     SinCosBucket m_sinCosBuckets[NUM_SINCOS_BUCKETS];
-    RenderableGeometry3D m_renderableGeometry3DList_Normal[MAX_RENDERABLE_NORMAL_OBJECTS];
-	RenderableGeometry3D m_renderableGeometry3DList_UI[MAX_RENDERABLE_UI_OBJECTS];
-	
+
 	AnimatedPOD m_animatedPODs[MAX_ANIMATED_PODS];
 	u32 m_numAnimatedPods;
-	RenderableSceneObject3D m_scenes[MAX_RENDERABLE_SCENES];
 
     RendererParticleBucket m_particleBuckets[NumParticleBuckets];
     u32 trailShaderUniform_accumulatedTime;
@@ -374,10 +367,6 @@ private:
 	
 	RenderLayer m_sortRenderablesLayerStart;
 	RenderLayer m_sortRenderablesLayerEnd;
-	
-	u32 m_numRenderableGeom3Ds_Normal;
-	u32 m_numRenderableGeom3Ds_UI;
-	u32 m_numRenderableScenes;	
 };
 
 

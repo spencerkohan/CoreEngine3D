@@ -40,6 +40,10 @@
 	
 }
 
+- (void)SetAcceleration:(const vec3*)pAccel
+{
+	CopyVec3(&m_inputState->m_accelerometerValue,pAccel);
+}
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event: (UIView*) pView
 {

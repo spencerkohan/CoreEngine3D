@@ -12,7 +12,7 @@
 
 //TODO:  http://gamesfromwithin.com/managing-data-relationships
 
-#define COREOBJECTMANAGER_DEBUG 1
+#define COREOBJECTMANAGER_DEBUG 0
 
 #if COREOBJECTMANAGER_DEBUG
 #include <cassert>
@@ -80,7 +80,7 @@ bool CoreObjectManager::AddObject(CoreObject *pCoreObject)
 
 u32 CoreObjectManager::GetUnusedHandle()
 {
-	if(m_numFreeHandles == INVALID_COREOBJECT_HANDLE)
+	if(m_numFreeHandles == 0)
 	{
 #if COREOBJECTMANAGER_DEBUG
 		COREDEBUG_PrintDebugMessage("ERROR: Out of object handles!\n");

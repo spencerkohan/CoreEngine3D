@@ -570,18 +570,16 @@ public:
 	u32 sortValue;  //4 bytes
     u32 postRenderLayerSortValue; //4 bytes (optional)
 
-	virtual bool SpawnInit(void* pSpawnStruct){return true;};
 	virtual void Uninit()
 	{
 		CoreObject::Uninit();
 		
 		material.flags &= ~RenderFlag_Visible;
-		material.flags |= RenderFlag_MarkedForRemoval;
 	}
 };
 
 
-struct RenderableScene3D
+struct RenderableScene3D: public CoreObject
 {
 	SceneMesh* pSceneMesh;
 	u32 numSceneMeshes;
@@ -596,6 +594,13 @@ struct RenderableScene3D
 	u32 numTexture;
 	
 	CPVRTModelPOD* pPod;
+	
+	virtual void Uninit()
+	{
+		CoreObject::Uninit();
+		
+		//TODO: make go invisible
+	}
 };
 
 class RenderableSceneObject3D: public CoreObject

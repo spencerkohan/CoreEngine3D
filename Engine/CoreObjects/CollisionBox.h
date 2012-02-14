@@ -6,8 +6,8 @@
 //  Copyright (c) 2011 Jody McAdams. All rights reserved.
 //
 
-#ifndef Game_iOS__CollisionBox_h
-#define Game_iOS__CollisionBox_h
+#ifndef __CollisionBox_h
+#define __CollisionBox_h
 
 #include "MathTypes.h"
 #include "GraphicsTypes.h"
@@ -69,8 +69,7 @@ private:
 	vec3 m_boxCenter;
 	
 	CollisionBoxType m_type;
-	
-	CollisionResult m_depenResult;
+
 	
 	void UpdateCornerPositions();
 };

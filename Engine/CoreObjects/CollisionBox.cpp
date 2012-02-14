@@ -23,13 +23,11 @@ bool CollisionBox::SpawnInit(void* pSpawnStruct)
 	{
 		return false;
 	}
-	
-	//vec3* pPos = &pSpawnableEnt->position;
-	
-	const f32 scaleX = pSpawnableEnt->scale.x;
-	const f32 scaleY = pSpawnableEnt->scale.y;
-	
-	SpawnInit(&pSpawnableEnt->position,-scaleX,scaleX,-scaleY,scaleY);
+
+	const f32 halfWidth = pSpawnableEnt->scale.x/2.0f;
+	const f32 halfHeight = pSpawnableEnt->scale.y/2.0f;
+
+	SpawnInit(&pSpawnableEnt->position, -halfWidth+pSpawnableEnt->position.x, halfWidth+pSpawnableEnt->position.x, halfHeight+pSpawnableEnt->position.y, -halfHeight+pSpawnableEnt->position.y);
 	
 	return false;
 }

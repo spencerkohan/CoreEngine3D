@@ -43,6 +43,20 @@ ItemArtDescription g_Game_BlobShadowDesc =
 };
 
 
+#if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
+void Game::SetTouchIndexIsLinked(s32 index, bool isLinked)
+{
+	m_touchIsLinked[index] = false;
+}
+#endif
+
+
+void Game::ResetCamera()
+{
+	m_camLerpTimer = -1.0f;
+}
+
+
 bool Game::Init()
 {
 	m_camLerpTimer = -1.0f;
@@ -655,7 +669,7 @@ void Game::SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec
 }
 
 
-CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, vec2* pOut_texCoordOffset, bool usesViewMatrix)
+CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix)
 {
 	f32 tileMat[16];
 	mat4f_LoadScale(tileMat, (f32)m_tiledLevelDescription.tileDisplaySizeX);
@@ -664,7 +678,7 @@ CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDes
 
 	u32 baseFlag = usesViewMatrix ? RenderFlagDefaults_2DTexture_AlphaBlended_UseView:RenderFlagDefaults_2DTexture_AlphaBlended;
 	
-	GLRENDERER->InitRenderableGeometry3D(*pGeom, pDesc->pModelData, MT_TextureOnlyWithTexcoordOffset, &pDesc->loadedTextureID, tileMat, renderLayer, View_0, baseFlag|RenderFlag_Visible);
+	GLRENDERER->InitRenderableGeometry3D(*pGeom, pDesc->pModelData, material, &pDesc->loadedTextureID, tileMat, renderLayer, View_0, baseFlag|RenderFlag_Visible);
 	
 	const s32 tileID_X = tileID%pDesc->numTextureTilesX;
 	const s32 tileID_Y = tileID/pDesc->numTextureTilesX;
@@ -705,11 +719,12 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 			continue;
 		}
 		
-		RenderLayer renderLayer = (RenderLayer)(RenderLayer_Background0+i);
-
+		const RenderLayer renderLayer = (RenderLayer)(RenderLayer_Background0+i);
+		const RenderMaterial renderMaterial = pCurrLayer->material;
+		
 		//If this is the collision layer, it should move at the same rate as the main layer
-		const s32 adjustedIndex = (i==(s32)LevelLayer_Collision || i==(s32)LevelLayer_TileObjectArt)?(s32)LevelLayer_Main:i;
-		const s32 scrollIndex = 1+(s32)LevelLayer_Main-adjustedIndex;	//TODO: index into an array of values maybe
+		const s32 adjustedIndex = (i==(s32)LevelLayer_Main0 || i==(s32)LevelLayer_Collision || i==(s32)LevelLayer_TileObjectArt)?(s32)LevelLayer_Main1:i;
+		const s32 scrollIndex = 1+(s32)LevelLayer_Main1-adjustedIndex;	//TODO: index into an array of values maybe
 
 		//pCurrLayer->position.x -= timeElapsed*(f32)(scrollIndex*scrollIndex*scrollIndex)*scrollSpeed;
 		ScaleVec3(&pCurrLayer->position,&position,1.0f/(f32)scrollIndex);
@@ -735,6 +750,17 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					{
 						//TODO: do something better than this if possible
 						pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
+						
+						if(renderMaterial == MT_TextureAndFogColorWithTexcoordOffset
+						   || renderMaterial == MT_TextureAndFogColorWithMipMapBlurWithTexcoordOffset)
+						{
+							pCurrRenderable->material.uniqueUniformValues[1] = (u8*)&pCurrLayer->fogColor;
+						}
+						
+						if(renderMaterial == MT_TextureAndFogColorWithMipMapBlurWithTexcoordOffset)
+						{
+							pCurrRenderable->material.uniqueUniformValues[2] = (u8*)&pCurrLayer->blurAmount;
+						}
 					}
 				}
 			}
@@ -773,7 +799,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 						
 						if(pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
 						{
-							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,&pTile->texCoordOffset,false);
+							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
 						}
 						else
 						{
@@ -783,10 +809,29 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 						vec3* pCurrPos = mat4f_GetPos(pCurrRenderable->worldMat);
 						pCurrPos->x = 0.5f+tileBasePosX+((s32)pCurrLayer->position.x);
 						pCurrPos->y = 0.5f+tileBasePosY+((s32)pCurrLayer->position.y);
-						//pCurrPos->y = (f32)(y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileSizeY);
-						
-						//TODO: do something better than this if possible
-						pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
+
+						if(pTile->isVisible)
+						{
+							pCurrRenderable->material.flags |= RenderFlag_Visible;
+							
+							//TODO: do something better than this if possible
+							pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
+							
+							if(renderMaterial == MT_TextureAndFogColorWithTexcoordOffset
+							   || renderMaterial == MT_TextureAndFogColorWithMipMapBlurWithTexcoordOffset)
+							{
+								pCurrRenderable->material.uniqueUniformValues[1] = (u8*)&pCurrLayer->fogColor;
+							}
+							
+							if(renderMaterial == MT_TextureAndFogColorWithMipMapBlurWithTexcoordOffset)
+							{
+								pCurrRenderable->material.uniqueUniformValues[2] = (u8*)&pCurrLayer->blurAmount;
+							}
+						}
+						else
+						{
+							pCurrRenderable->material.flags &= ~RenderFlag_Visible;
+						}
 					}
 				}
 			}
@@ -838,7 +883,7 @@ void Game::GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* p
 }
 
 
-void Game::GetPositionFromTileIndices(u32 index_X, u32 index_Y, vec3* pOut_position)
+void Game::GetPositionFromTileIndices(s32 index_X, s32 index_Y, vec3* pOut_position)
 {
 	pOut_position->x = index_X * m_tiledLevelDescription.tileDisplaySizeX + m_tiledLevelDescription.halfTileSizeX;
 	pOut_position->y = index_Y * m_tiledLevelDescription.tileDisplaySizeY + m_tiledLevelDescription.halfTileSizeY;
@@ -846,9 +891,15 @@ void Game::GetPositionFromTileIndices(u32 index_X, u32 index_Y, vec3* pOut_posit
 }
 
 
-s32 Game::GetCollisionFromTileIndices(u32 index_X, u32 index_Y)
+s32 Game::GetCollisionFromTileIndices(s32 index_X, s32 index_Y)
 {
 	Layer* pLayer = &m_layers[LevelLayer_Collision];
+	
+	if(index_X < 0 || index_X > pLayer->numTilesX-1
+	   || index_Y < 0 || index_Y > pLayer->numTilesY-1)
+	{
+		return -1;
+	}
 	
 	Tile* pTile = &ARRAY2D(pLayer->tiles, index_X, index_Y, pLayer->numTilesX);
 	
@@ -880,7 +931,7 @@ void Game::ConstrainCameraToTiledLevel()
 	
 	if(pMainLayer->pLevelData == NULL)
 	{
-		pMainLayer = &m_layers[LevelLayer_Main];
+		pMainLayer = &m_layers[LevelLayer_Main1];
 	}
 	
 	const f32 tileSize = GetTileSize();
@@ -969,14 +1020,12 @@ SpawnableEntity*  Game::GetSpawnableEntityByNameHash(u32 nameHash)
 }
 
 
-void Game::ResetScriptObjects()
+void Game::ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIndex_Y,bool isVisible)
 {
-	//HACK
-	m_camLerpTimer = -1.0f;
-	
-	for(u32 i=0; i<g_Factory_ScriptObject.m_numObjects; ++i)
+	Tile* pTile = &ARRAY2D(m_layers[levelLayer].tiles, tileIndex_X, tileIndex_Y, m_layers[levelLayer].numTilesX);
+	if(pTile != NULL && pTile->tileID != -1)
 	{
-		g_Factory_ScriptObject.m_pObjectList[i].Reset();
+		pTile->isVisible = isVisible;
 	}
 }
 
@@ -1094,9 +1143,13 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			
 			LevelLayer currLayer = LevelLayer_Invalid;
 			
-			if(strcmp(layerName, "Main") == 0)
+			if(strcmp(layerName, "Main0") == 0)
 			{
-				currLayer = LevelLayer_Main;
+				currLayer = LevelLayer_Main0;
+			}
+			if(strcmp(layerName, "Main1") == 0)
+			{
+				currLayer = LevelLayer_Main1;
 			}
 			else if(strcmp(layerName, "Parallax0") == 0)
 			{
@@ -1141,6 +1194,74 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			Layer* pCurrLayer = &m_layers[currLayer];
 			
 			const u32 numTiles = width*height;
+			
+			const vec3* pClearColor = GLRENDERER->GetClearColor();
+			
+			switch(currLayer)
+			{
+				case LevelLayer_Parallax4:
+				{
+					pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
+					
+					CopyVec3((vec3*)&pCurrLayer->fogColor,pClearColor);
+					pCurrLayer->fogColor.w = 0.95f;
+					pCurrLayer->blurAmount = 0.95f;
+					
+					break;
+				}
+				case LevelLayer_Parallax3:
+				{
+					pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
+					
+					CopyVec3((vec3*)&pCurrLayer->fogColor,pClearColor);
+					pCurrLayer->fogColor.w = 0.8f;
+					pCurrLayer->blurAmount = 0.8f;
+					
+					break;
+				}
+				case LevelLayer_Parallax2:
+				{
+					pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
+					
+					CopyVec3((vec3*)&pCurrLayer->fogColor,pClearColor);
+					pCurrLayer->fogColor.w = 0.6f;
+					pCurrLayer->blurAmount = 0.6f;
+					
+					break;
+				}
+				case LevelLayer_Parallax1:
+				{
+					pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
+					
+					CopyVec3((vec3*)&pCurrLayer->fogColor,pClearColor);
+					pCurrLayer->fogColor.w = 0.4f;
+					pCurrLayer->blurAmount = 0.4f;
+
+					break;
+				}
+				case LevelLayer_Parallax0:
+				{
+					pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
+					
+					CopyVec3((vec3*)&pCurrLayer->fogColor,pClearColor);
+					pCurrLayer->fogColor.w = 0.2f;
+
+					break;
+				}
+				case LevelLayer_TileObjectArt:
+				case LevelLayer_Collision:
+				case LevelLayer_Main0:
+				case LevelLayer_Main1:
+				{
+					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
 	
 			switch(currLayer)
 			{
@@ -1149,7 +1270,8 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				case LevelLayer_Parallax2:
 				case LevelLayer_Parallax1:
 				case LevelLayer_Parallax0:
-				case LevelLayer_Main:
+				case LevelLayer_Main0:
+				case LevelLayer_Main1:
 				case LevelLayer_Collision:
 				case LevelLayer_TileObjectArt:
 				case LevelLayer_CameraExtents:
@@ -1232,7 +1354,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 					pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
 
 					pTile->tileID = ARRAY2D(pData, x, y, width);
-					
+					pTile->isVisible = true;
 					ConvertTileID(&pTile->tileID, &pTile->pDesc);
 				}
 			}
@@ -1251,7 +1373,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						}
 						
 						RenderableGeometry3D* pGeom;
-						pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pGeom,RenderLayer_AlphaBlended2,&pTile->texCoordOffset,true);
+						pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pGeom,RenderLayer_AlphaBlended2,MT_TextureOnlyWithTexcoordOffset,&pTile->texCoordOffset,true);
 					}
 				}
 			}
@@ -1324,9 +1446,30 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				pCurrEnt->pProperties = object.child("properties");
 				
 				const u32 scriptObjectType = Hash("ScriptObject");
+				const u32 collisionBoxType = Hash("CollisionBox");
+				const u32 objectGroupType = Hash("ObjectGroup");
+				const u32 soundPlayerType = Hash("SoundPlayerType");
+				const u32 tileAffectorType = Hash("TileAffector");
+				
 				if(pCurrEnt->type == scriptObjectType)
 				{
 					pCurrEnt->pObject = g_Factory_ScriptObject.CreateObject(pCurrEnt->type);
+				}
+				else if(pCurrEnt->type == collisionBoxType)
+				{
+					pCurrEnt->pObject = g_Factory_CollisionBox.CreateObject(pCurrEnt->type);
+				}
+				else if(pCurrEnt->type == objectGroupType)
+				{
+					pCurrEnt->pObject = g_Factory_ObjectGroup.CreateObject(pCurrEnt->type);
+				}
+				else if(pCurrEnt->type == tileAffectorType)
+				{
+					pCurrEnt->pObject = g_Factory_TileAffector.CreateObject(pCurrEnt->type);
+				}
+				else if(pCurrEnt->type == soundPlayerType)
+				{
+					pCurrEnt->pObject = g_Factory_SoundPlayer.CreateObject(pCurrEnt->type);
 				}
 				else
 				{

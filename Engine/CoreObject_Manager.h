@@ -13,6 +13,7 @@
 #include "MathTypes.h"
 #include "CoreDebug.h"
 #include "stddef.h" //for NULL -_-
+#include "ArrayUtil.h"
 
 class CoreObjectManager;
 extern CoreObjectManager* COREOBJECTMANAGER;
@@ -30,6 +31,28 @@ public:
 		m_numObjects = 0;
 		m_maxObjects = 0;
 	}
+	
+	void Sort(bool (*compareFunc)(const T& lhs, const T& rhs))
+	{
+		Array_InsertionSort(m_pObjectList, m_numObjects, compareFunc);
+		
+		for(u32 i=0; i<m_numObjects; ++i)
+		{
+			m_pObjectList[i].UpdateHandle();
+		}
+	}
+	
+	void Sort(u32 startIndex, u32 count, bool (*compareFunc)(const T& lhs, const T& rhs))
+	{
+		Array_InsertionSort(&m_pObjectList[startIndex], count, compareFunc);
+		
+		for(u32 i=startIndex; i<count; ++i)
+		{
+			m_pObjectList[i].UpdateHandle();
+		}
+	}
+	
+	void Clear(){m_numObjects = 0;};
 
 	T* CreateObject(u32 type)
 	{

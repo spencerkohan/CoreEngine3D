@@ -24,6 +24,7 @@
 }
 
 - (id) init:(DeviceInputState*) pDeviceInputState;
+- (void)SetAcceleration:(const vec3*)pAccel;
 - (void)Update:(f32) timeElapsed;
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event: (UIView*) pView;
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event: (UIView*) pView;

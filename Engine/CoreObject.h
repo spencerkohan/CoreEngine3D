@@ -30,11 +30,12 @@ public:
 	static void InitClass(){};
 	u32 GetEntityType();
 	CoreObjectHandle GetHandle() const;
+	virtual void SetPosition(const vec3* pPosition){};//HACK: for now it's fine to have this here
 	virtual void UpdateHandle();	//Call when the memory location changes
 	void DeleteObject();			//Use with new system
 
 	virtual bool Init(u32 type);
-	virtual bool SpawnInit(void* pSpawnStruct) = 0;
+	virtual bool SpawnInit(void* pSpawnStruct){return true;};
 	virtual void Uninit();
 	virtual void Update(f32 timeElapsed){};
 	

@@ -98,7 +98,8 @@ enum LevelLayer
 	LevelLayer_Parallax2,
 	LevelLayer_Parallax1,
 	LevelLayer_Parallax0,
-	LevelLayer_Main,
+	LevelLayer_Main1,
+	LevelLayer_Main0,
 	LevelLayer_Collision,
 	LevelLayer_TileObjectArt,
 	LevelLayer_CameraExtents,
@@ -152,6 +153,7 @@ struct Tile
 	s32 tileID;
 	TileSetDescription* pDesc;
 	CoreObjectHandle hRenderable;
+	bool isVisible;
 	vec2 texCoordOffset;
 };
 
@@ -161,6 +163,10 @@ struct Layer
 	u32 numTilesY;
 	s32* pLevelData;
 	vec3 position;
+	
+	RenderMaterial material;
+	vec4 fogColor;
+	f32	blurAmount;
 	
 	Tile* tiles;
 };
@@ -172,12 +178,19 @@ public:
 	virtual void Update(f32 timeElapsed);
 	virtual void CleanUp();
 	virtual CoreObject* CreateObject(u32 objectType){return NULL;};
+	virtual void LoadLevel(s32 levelNumber){};
+	virtual void ReloadLevel(){};
 #if defined (PLATFORM_IOS)
 	TouchInputIOS* m_pTouchInput;
 #endif
 
 #if defined (PLATFORM_OSX) || defined(PLATFORM_WIN)
 	MouseInputState m_mouseState;
+#endif
+	void ResetCamera();
+
+#if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
+	void SetTouchIndexIsLinked(s32 index, bool isLinked);
 #endif
 	SpawnableEntity* GetSpawnableEntityByNameHash(u32 nameHash);
 	CoreUI_Button* AddUIButton(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32));
@@ -192,14 +205,14 @@ public:
 	std::string GetPathToFile(const char* filename);
 	void GetTileIndicesFromScreenPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
 	void GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
-	void GetPositionFromTileIndices(u32 index_X, u32 index_Y, vec3* pOut_position);
-	s32 GetCollisionFromTileIndices(u32 index_X, u32 index_Y);
+	void GetPositionFromTileIndices(s32 index_X, s32 index_Y, vec3* pOut_position);
+	s32 GetCollisionFromTileIndices(s32 index_X, s32 index_Y);
 	f32 GetTileSize();
 	f32 GetHalfTileSize();
 	f32 GetPixelsPerMeter();
 	const vec3* GetCameraPosition();
 	void SetCameraPosition(const vec3* pCamPos, f32 lerpTime);	//use with caution
-	void ResetScriptObjects();
+	void ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIndex_Y,bool isVisible);
 	Layer* GetLayer(LevelLayer layer);
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState* GetDeviceInputState();
@@ -215,7 +228,7 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	void DeleteAllItemArt();	//Call to delete all the art in the list regardless
 	void DeleteAllItemSounds();
 	void ConvertTileID(s32* p_InOut_tileID, TileSetDescription** pOut_tileDesc);
-	CoreObjectHandle CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, vec2* pOut_texCoordOffset, bool usesViewMatrix);
+	CoreObjectHandle CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix);
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState m_deviceInputState;
 #endif
@@ -232,6 +245,8 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	vec3 m_desiredCamPos;
 	f32 m_camLerpTimer;
 	f32 m_camLerpTotalTime;
+	
+	bool m_touchIsLinked[MAX_MULTITOUCH];
 	
 private:
 	f32 m_pixelsPerMeter;

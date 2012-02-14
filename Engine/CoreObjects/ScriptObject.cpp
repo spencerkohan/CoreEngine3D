@@ -37,11 +37,17 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 	CopyVec3(&m_position, &pSpawnableEnt->position);
 	
 	m_triggerMessage = 0;
+	m_untriggerMessage = 0;
 	m_hTriggerObject = INVALID_COREOBJECT_HANDLE;
 	
 	m_collisionType = CollisionBoxType_Ghost;
 	m_scriptStatus = ScriptObject::ScriptStatus_On;
 	m_collMode = CollisionMode_Tile;
+	
+	m_toggleTimeOn = 0.0f;
+	m_toggleTimeOff = 0.0f;
+	
+	m_action = Action_WaitForCollision;
 	
 	m_collMode = pSpawnableEnt->tileID == -1 ? ScriptObject::CollisionMode_Box:ScriptObject::CollisionMode_Tile;
 
@@ -53,6 +59,10 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 		if(strcmp(propNameString,"TriggerMessage") == 0)
 		{
 			m_triggerMessage = Hash(valueString);
+		}
+		else if(strcmp(propNameString,"UntriggerMessage") == 0)
+		{
+			m_untriggerMessage = Hash(valueString);
 		}
 		else if(strcmp(propNameString,"TriggerObject") == 0)
 		{
@@ -73,6 +83,25 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 			{
 				m_scriptStatus = ScriptObject::ScriptStatus_Off;
 			}
+		}
+		else if(strcmp(propNameString,"Action") == 0)
+		{
+			if(strcmp(valueString,"TimerToggle") == 0)
+			{
+				m_action = Action_TimerToggle;
+			}
+			else if(strcmp(valueString,"WaitForCollision") == 0)
+			{
+				m_action = Action_WaitForCollision;
+			}
+		}
+		else if(strcmp(propNameString,"ToggleTimeOn") == 0)
+		{
+			m_toggleTimeOn = atof(valueString);
+		}
+		else if(strcmp(propNameString,"ToggleTimeOff") == 0)
+		{
+			m_toggleTimeOff = atof(valueString);
 		}
 	}
 
@@ -99,11 +128,41 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 
 	m_initialScriptStatus = m_scriptStatus;
 	
+	m_toggleIsOn = true;
+	m_toggleTimer = 0.0f;
+	
+	if(m_toggleIsOn)
+	{
+		m_toggleTimer = m_toggleTimeOn;
+	}
+	else
+	{
+		m_toggleTimer = m_toggleTimeOff;
+	}
+	
 	return true;
 }
 
+
+void ScriptObject::SetPosition(const vec3* pPosition)
+{
+	CopyVec3(&m_position,pPosition);
+	
+	CollisionBox* pBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hCollisionBox);
+	if(pBox != NULL)
+	{
+		pBox->UpdatePosition(pPosition);
+	}
+}
+
+
 void ScriptObject::AttemptBoxTrigger(u32 objectType, const vec3* pPosition)
 {
+	if(m_action != Action_WaitForCollision)
+	{
+		return;
+	}
+	
 	if(m_numTriggers == m_numAllowedTriggers)
 	{
 		return;
@@ -143,9 +202,20 @@ void ScriptObject::AttemptBoxTrigger(u32 objectType, const vec3* pPosition)
 	}
 	else if(m_triggerMessage == Hash("MoveCamera"))
 	{
-		vec3 camPos;
-		CopyVec3(&camPos,pBox->GetBottomLeft());
-		GAME->SetCameraPosition(&camPos,1.5f);
+		CollisionBox* pCameraBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
+		
+		if(pCameraBox != NULL)
+		{
+			vec3 camPos;
+			CopyVec3(&camPos,pCameraBox->GetBottomLeft());
+			GAME->SetCameraPosition(&camPos,1.5f);
+		}
+		else
+		{
+			vec3 camPos;
+			CopyVec3(&camPos,pBox->GetBottomLeft());
+			GAME->SetCameraPosition(&camPos,1.5f);
+		}
 	}
 	else
 	{
@@ -167,6 +237,7 @@ void ScriptObject::AttemptBoxTrigger(u32 objectType, const vec3* pPosition)
 	}
 }
 
+
 void ScriptObject::Reset()
 {
 	m_scriptStatus = m_initialScriptStatus;
@@ -177,6 +248,11 @@ void ScriptObject::Reset()
 
 void ScriptObject::AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileIndex_Y)
 {
+	if(m_action != Action_WaitForCollision)
+	{
+		return;
+	}
+	
 	if(m_numTriggers == m_numAllowedTriggers)
 	{
 		return;
@@ -221,17 +297,65 @@ void ScriptObject::AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileI
 	
 }
 
+
 void ScriptObject::ProcessMessage(u32 message)	//Pass in a hash value
 {
 	if(message == Hash("On"))
 	{
+		COREDEBUG_PrintDebugMessage("ScriptObject: On");
 		m_scriptStatus = ScriptStatus_On;
 	}
 	else if(message == Hash("Off"))
 	{
+		COREDEBUG_PrintDebugMessage("ScriptObject: Off");
 		m_scriptStatus = ScriptStatus_Off;
 	}
 }
+
+
+void ScriptObject::Update(f32 timeElapsed)
+{
+	switch(m_action)
+	{
+		case Action_TimerToggle:
+		{
+			m_toggleTimer -= timeElapsed;
+			if(m_toggleTimer < 0.0f)
+			{
+				CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
+				if(pObject != NULL)
+				{
+					if(m_toggleIsOn)
+					{
+						m_toggleTimer = m_toggleTimeOff;
+						pObject->ProcessMessage(m_untriggerMessage);
+					}
+					else
+					{
+						m_toggleTimer = m_toggleTimeOn;
+						pObject->ProcessMessage(m_triggerMessage);
+					}
+					
+					m_toggleIsOn = !m_toggleIsOn;
+				}
+			}
+			
+			break;
+		}
+		case Action_WaitForCollision:
+		{
+#ifdef _DEBUG
+			
+#endif
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+}
+
 
 bool ScriptObject::GetPositionIsInside(const vec2* pTouchPos)
 {
