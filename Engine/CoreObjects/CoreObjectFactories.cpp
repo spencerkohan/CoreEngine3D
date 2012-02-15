@@ -1,4 +1,5 @@
 #include "CoreObjectFactories.h"
+#include "OpenGLRenderer.h"
 
 CoreObjectFactory<CollisionBox> g_Factory_CollisionBox;
 CoreObjectFactory<ScriptObject> g_Factory_ScriptObject;
@@ -28,8 +29,17 @@ void CoreObjectFactories_Update(f32 timeElapsed)
 	g_Factory_ObjectGroup.UpdateObjectList(timeElapsed);
 	g_Factory_TileAffector.UpdateObjectList(timeElapsed);
 	g_Factory_SoundPlayer.UpdateObjectList(timeElapsed);
-	g_Factory_Geometry_Normal.UpdateObjectList(timeElapsed);
-	g_Factory_Geometry_UI.UpdateObjectList(timeElapsed);
+	
+	if(g_Factory_Geometry_Normal.UpdateObjectList(timeElapsed))
+	{
+		GLRENDERER->ForceRenderablesNeedSorting_Normal();
+	}
+	
+	if(g_Factory_Geometry_UI.UpdateObjectList(timeElapsed))
+	{
+		GLRENDERER->ForceRenderablesNeedSorting_UI();
+	}
+	
 	g_Factory_RenderableSceneObject.UpdateObjectList(timeElapsed);
 }
 

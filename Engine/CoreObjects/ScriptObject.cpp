@@ -55,7 +55,7 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 	{
 		const char* propNameString = property.attribute("name").value();
 		const char* valueString = property.attribute("value").value();
-		
+
 		if(strcmp(propNameString,"TriggerMessage") == 0)
 		{
 			m_triggerMessage = Hash(valueString);
@@ -66,11 +66,22 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 		}
 		else if(strcmp(propNameString,"TriggerObject") == 0)
 		{
-			const u32 triggerObject = Hash(valueString);
-			SpawnableEntity* pEnt = GAME->GetSpawnableEntityByNameHash(triggerObject);
-			if(pEnt->pObject != NULL)
+			const u32 triggerObject = atoi(valueString);
+			SpawnableEntity* pEnt = GAME->GetSpawnableEntityByTiledUniqueID(triggerObject);
+			if(pEnt != NULL
+			   && pEnt->pObject != NULL)
 			{
 				m_hTriggerObject = pEnt->pObject->GetHandle();
+			}
+		}
+		else if(strcmp(propNameString,"ObjectGroup") == 0)
+		{
+			const u32 objectGroup = atoi(valueString);
+			SpawnableEntity* pEnt = GAME->GetSpawnableEntityByTiledUniqueID(objectGroup);
+			if(pEnt != NULL
+			   && pEnt->pObject != NULL)
+			{
+				m_hObjectGroup = pEnt->pObject->GetHandle();
 			}
 		}
 		else if(strcmp(propNameString,"CollisionType") == 0)
@@ -93,6 +104,10 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 			else if(strcmp(valueString,"WaitForCollision") == 0)
 			{
 				m_action = Action_WaitForCollision;
+			}
+			else if(strcmp(valueString,"WaitForObjects") == 0)
+			{
+				m_action = Action_WaitForObjects;
 			}
 		}
 		else if(strcmp(propNameString,"ToggleTimeOn") == 0)
@@ -315,6 +330,11 @@ void ScriptObject::ProcessMessage(u32 message)	//Pass in a hash value
 
 void ScriptObject::Update(f32 timeElapsed)
 {
+	if(m_scriptStatus == ScriptStatus_Off)
+	{
+		return;
+	}
+	
 	switch(m_action)
 	{
 		case Action_TimerToggle:
@@ -347,6 +367,29 @@ void ScriptObject::Update(f32 timeElapsed)
 #ifdef _DEBUG
 			
 #endif
+			break;
+		}
+		case Action_WaitForObjects:
+		{
+			CollisionBox* pBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hCollisionBox);
+			if(pBox != NULL)
+			{
+				ObjectGroup* pGroup = (ObjectGroup*)COREOBJECTMANAGER->GetObjectByHandle(m_hObjectGroup);
+				if(pGroup != NULL)
+				{
+					const bool contained = pGroup->ObjectsAreContained(pBox);
+					if(contained)
+					{
+						CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
+						if(pObject != NULL)
+						{
+							pObject->ProcessMessage(m_triggerMessage);
+							m_scriptStatus = ScriptStatus_Off;
+						}
+					}
+				}
+			}
+
 			break;
 		}
 		default:

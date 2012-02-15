@@ -207,7 +207,8 @@ public:
 	void DeleteTexture(u32* pTextureID);
 	void ClearParticles();
 	void SetScreenFadeColor(vec3* screenFadeColor);
-	void ForceRenderablesNeedSorting();
+	void ForceRenderablesNeedSorting_Normal();
+	void ForceRenderablesNeedSorting_UI();
 	
 	void FlashScreen(const vec3* pColor, f32 timeInSeconds);
 	void ShakeScreen(f32 shakeAmount,f32 shakeSpeed, f32 shakeTime);

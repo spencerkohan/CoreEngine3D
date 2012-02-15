@@ -1180,6 +1180,11 @@ void OpenGLRenderer::SetSortRenderablesByZ(bool sortRenderablesByZ, RenderLayer 
 
 void OpenGLRenderer::Render(f32 timeElapsed)
 {
+	for (int i=0; i<5; ++i)
+    {
+        m_currTextureInTextureUnit[i] = 0;
+    }
+	
 	if(!paused)
 	{
 		for(u32 i=0; i<DebugDrawMode_Num; ++i)
@@ -1981,14 +1986,6 @@ bool OpenGLRenderer::UpdateTextureFromData(u32* out_textureName, const void* dat
 	glTexImage2D(GL_TEXTURE_2D, 0, format, texWidth,texHeight, 0, format, type, data);
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
-	
-	for(int i=0; i<MAX_NUM_TEXTURE_UNITS; ++i)
-	{
-		if(m_currTextureInTextureUnit[i] == *out_textureName)
-		{
-			m_currTextureInTextureUnit[i] = 0;
-		}
-	}
 	
 	return true;
 }
@@ -2975,10 +2972,14 @@ void OpenGLRenderer::SetScreenFadeColor(vec3* screenFadeColor)
 }
 
 
-void OpenGLRenderer::ForceRenderablesNeedSorting()
+void OpenGLRenderer::ForceRenderablesNeedSorting_Normal()
+{
+	m_renderableObject3DsNeedSorting_Normal = true;
+}
+
+void OpenGLRenderer::ForceRenderablesNeedSorting_UI()
 {
 	m_renderableObject3DsNeedSorting_UI = true;
-	m_renderableObject3DsNeedSorting_Normal = true;
 }
 
 

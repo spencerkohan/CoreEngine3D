@@ -1005,12 +1005,12 @@ Layer* Game::GetLayer(LevelLayer layer)
 }
 
 
-SpawnableEntity*  Game::GetSpawnableEntityByNameHash(u32 nameHash)
+SpawnableEntity* Game::GetSpawnableEntityByTiledUniqueID(u32 tiledUniqueID)
 {
 	for(u32 i=0; i<m_numSpawnableEntities; ++i)
 	{
 		SpawnableEntity* pEnt = &m_spawnableEntities[i];
-		if(pEnt->name == nameHash)
+		if(pEnt->tiledUniqueID == tiledUniqueID)
 		{
 			return pEnt;
 		}
@@ -1390,9 +1390,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				SpawnableEntity* pCurrEnt = &m_spawnableEntities[m_numSpawnableEntities];
 				pCurrEnt->pObject = NULL;
 				
-				const char* nameString = object.attribute("name").value();
-				//COREDEBUG_PrintDebugMessage("Object Name: %s",nameString);
-				pCurrEnt->name = Hash(nameString);
+				pCurrEnt->tiledUniqueID = atoi(object.attribute("uniqueID").value());
 				
 				const f32 x = (f32)atoi(object.attribute("x").value())*unitConversionScale;
 				const f32 y = (f32)atoi(object.attribute("y").value())*unitConversionScale;

@@ -24,7 +24,9 @@
 }
 
 - (id) init:(DeviceInputState*) pDeviceInputState;
+#if TARGET_IPHONE_SIMULATOR
 - (void)SetAcceleration:(const vec3*)pAccel;
+#endif
 - (void)Update:(f32) timeElapsed;
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event: (UIView*) pView;
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event: (UIView*) pView;

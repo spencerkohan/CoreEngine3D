@@ -14,6 +14,7 @@
 
 #include "CoreObject.h"
 #include "Game.h"
+#include "CollisionBox.h"
 
 #define ObjectGroup_MAX_OBJECTS 16
 
@@ -24,6 +25,9 @@ public:
 	virtual void ProcessMessage(u32 message);	//Pass in a hash value
 
 	virtual bool SpawnInit(void* pSpawnStruct);
+	virtual void SetPosition(const vec3* pPosition);
+	
+	bool ObjectsAreContained(CollisionBox* pContainer);
 	
 private:	
 

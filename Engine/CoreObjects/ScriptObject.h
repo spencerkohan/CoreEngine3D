@@ -30,6 +30,7 @@ public:
 		Action_WaitForCollision,
 		Action_TimerToggle,
 		Action_Kill,
+		Action_WaitForObjects,
 		Action_Num,
 	};
 	
@@ -72,6 +73,7 @@ private:
 	u32 m_untriggerMessage;
 	
 	CoreObjectHandle m_hTriggerObject;
+	CoreObjectHandle m_hObjectGroup;
 
 	CollisionMode m_collMode;
 	u32 m_collisionType;

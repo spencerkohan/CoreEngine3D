@@ -10,6 +10,8 @@
 #define CoreEngine3D_iOS__CoreObject_h
 
 #include "MathTypes.h"
+#include "stddef.h" //for NULL -_-
+
 class CoreObject;
 class CoreObjectManager;
 
@@ -30,7 +32,8 @@ public:
 	static void InitClass(){};
 	u32 GetEntityType();
 	CoreObjectHandle GetHandle() const;
-	virtual void SetPosition(const vec3* pPosition){};//HACK: for now it's fine to have this here
+	virtual void SetPosition(const vec3* pPosition){}//HACK: for now it's fine to have this here
+	virtual const vec3* GetPosition(){return NULL;}//HACK: for now it's fine to have this here
 	virtual void UpdateHandle();	//Call when the memory location changes
 	void DeleteObject();			//Use with new system
 

@@ -77,14 +77,19 @@ public:
 		return NULL;
 	}
 
-	void UpdateObjectList(f32 timeElapsed)
+	//Returns true if an object was deleted in case you need
+	//to respond to that sort of thing
+	bool UpdateObjectList(f32 timeElapsed)
 	{
 		//Delete dead objects
+		bool deletedSomething = false;
 		for(u32 i=0; i<m_numObjects; ++i)
 		{
 			T* pCurrObject = &m_pObjectList[i];
 			if(pCurrObject->m_markedForDeletion)
 			{
+				deletedSomething = true;
+				
 				pCurrObject->Uninit();
 
 				T* pLastObject = &m_pObjectList[m_numObjects-1];
@@ -115,6 +120,8 @@ public:
 			T* pCurrObject = &m_pObjectList[i];
 			pCurrObject->Update(timeElapsed);
 		}
+		
+		return deletedSomething;
 	}
 
 	void Init(u32 maxObjects)

@@ -136,7 +136,7 @@ struct TileSetDescription
 struct SpawnableEntity
 {
 	u32 type;
-	u32 name;
+	u32 tiledUniqueID;
 	pugi::xml_node pProperties;
 	vec3 position;
 	vec2 scale;
@@ -192,7 +192,7 @@ public:
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	void SetTouchIndexIsLinked(s32 index, bool isLinked);
 #endif
-	SpawnableEntity* GetSpawnableEntityByNameHash(u32 nameHash);
+	SpawnableEntity* GetSpawnableEntityByTiledUniqueID(u32 tiledUniqueID);
 	CoreUI_Button* AddUIButton(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32));
 	void UpdateButtons(TouchState touchState, vec2 *pTouchPosBegin, vec2* pTouchPosCurr);
 	void ClearAllButtons();
