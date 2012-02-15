@@ -9,6 +9,8 @@
 #ifndef InfiniSurv_OSX__Game_h
 #define InfiniSurv_OSX__Game_h
 
+#include <Box2D/Box2D.h>
+
 #include "MathTypes.h"
 #include "OpenGLRenderer.h"
 
@@ -192,6 +194,7 @@ public:
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	void SetTouchIndexIsLinked(s32 index, bool isLinked);
 #endif
+	void InitBox2D();
 	SpawnableEntity* GetSpawnableEntityByTiledUniqueID(u32 tiledUniqueID);
 	CoreUI_Button* AddUIButton(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32));
 	void UpdateButtons(TouchState touchState, vec2 *pTouchPosBegin, vec2* pTouchPosCurr);
@@ -249,6 +252,8 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	bool m_touchIsLinked[MAX_MULTITOUCH];
 	
 private:
+	b2World* m_pWorld;
+	
 	f32 m_pixelsPerMeter;
 	bool WillArtDescriptionBeLoaded(ItemArtDescription* pArtDesc);
 	bool WillSoundDescriptionBeLoaded(ItemSoundDescription* pArtDesc);

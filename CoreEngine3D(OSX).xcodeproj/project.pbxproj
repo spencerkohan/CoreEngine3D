@@ -158,6 +158,7 @@
 		23FCBD8D14A1E09A00C5EA7C /* SpriteSheetAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBCAB14A1E09A00C5EA7C /* SpriteSheetAnimator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBD9314A1E09A00C5EA7C /* ViewFlags.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBCB514A1E09A00C5EA7C /* ViewFlags.cpp */; };
 		23FCBD9414A1E09A00C5EA7C /* ViewFlags.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBCB614A1E09A00C5EA7C /* ViewFlags.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DD2E8CA214EC406B00B333A2 /* libBox2D(OSX).a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD2E8CA114EC406A00B333A2 /* libBox2D(OSX).a */; };
 		DD805AAD14D79E67006C6D10 /* Square_Tiled_32.h in Headers */ = {isa = PBXBuildFile; fileRef = DD805AAC14D79E67006C6D10 /* Square_Tiled_32.h */; };
 /* End PBXBuildFile section */
 
@@ -318,6 +319,7 @@
 		23FCBCAB14A1E09A00C5EA7C /* SpriteSheetAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteSheetAnimator.h; sourceTree = "<group>"; };
 		23FCBCB514A1E09A00C5EA7C /* ViewFlags.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ViewFlags.cpp; sourceTree = "<group>"; };
 		23FCBCB614A1E09A00C5EA7C /* ViewFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewFlags.h; sourceTree = "<group>"; };
+		DD2E8CA114EC406A00B333A2 /* libBox2D(OSX).a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libBox2D(OSX).a"; path = "../../../Library/Developer/Xcode/DerivedData/PhysicsAIGame-ddeuqkqvtiipiwcknknqidfjquuh/Build/Products/Debug/libBox2D(OSX).a"; sourceTree = "<group>"; };
 		DD805AAC14D79E67006C6D10 /* Square_Tiled_32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_32.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -326,6 +328,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD2E8CA214EC406B00B333A2 /* libBox2D(OSX).a in Frameworks */,
 				23FCBBA914A1DFBC00C5EA7C /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -349,6 +352,7 @@
 		23FCBB9A14A1DFBC00C5EA7C = {
 			isa = PBXGroup;
 			children = (
+				DD2E8CA114EC406A00B333A2 /* libBox2D(OSX).a */,
 				23FCBBCB14A1E09A00C5EA7C /* Engine */,
 				23FCBBAE14A1DFBC00C5EA7C /* CoreEngine3D(OSX) */,
 				23FCBBA714A1DFBC00C5EA7C /* Frameworks */,
@@ -846,11 +850,11 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = ../CoreEngine3D/Engine/freetype/include/;
+				HEADER_SEARCH_PATHS = ../CoreEngine3D/Engine/Box2D/;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = ../CoreEngine3D/;
+				USER_HEADER_SEARCH_PATHS = "../CoreEngine3D/Engine/ ../CoreEngine3D/";
 			};
 			name = Debug;
 		};
@@ -869,10 +873,10 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = ../CoreEngine3D/Engine/freetype/include/;
+				HEADER_SEARCH_PATHS = ../CoreEngine3D/Engine/Box2D/;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = ../CoreEngine3D/;
+				USER_HEADER_SEARCH_PATHS = "../CoreEngine3D/Engine/ ../CoreEngine3D/";
 			};
 			name = Release;
 		};
@@ -887,6 +891,10 @@
 					"DEBUG=1",
 					PLATFORM_OSX,
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../Library/Developer/Xcode/DerivedData/PhysicsAIGame-ddeuqkqvtiipiwcknknqidfjquuh/Build/Products/Debug\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -899,6 +907,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreEngine3D(OSX)/CoreEngine3D(OSX)-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = PLATFORM_OSX;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../Library/Developer/Xcode/DerivedData/PhysicsAIGame-ddeuqkqvtiipiwcknknqidfjquuh/Build/Products/Debug\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

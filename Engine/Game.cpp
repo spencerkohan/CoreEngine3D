@@ -61,6 +61,8 @@ bool Game::Init()
 {
 	m_camLerpTimer = -1.0f;
 	
+	m_pWorld = NULL;
+	
 	for(int i=0; i<NumLevelLayers; ++i)
 	{
 		m_layers[i].tiles = NULL;
@@ -138,6 +140,11 @@ bool Game::Init()
 
 void Game::CleanUp()
 {
+	if(m_pWorld != NULL)
+	{
+		delete m_pWorld;
+	}
+	
 	for(int i=0; i<NumLevelLayers; ++i)
 	{
 		if(m_layers[i].tiles != NULL)
@@ -1027,6 +1034,17 @@ void Game::ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIn
 	{
 		pTile->isVisible = isVisible;
 	}
+}
+
+
+void Game::InitBox2D()
+{
+	b2Vec2 gravity;
+	gravity.Set(0.0f, -10.0f);
+	
+	m_pWorld = new b2World(gravity);
+	
+	
 }
 
 
