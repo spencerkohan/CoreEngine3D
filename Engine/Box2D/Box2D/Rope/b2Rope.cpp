@@ -43,6 +43,13 @@ b2Rope::~b2Rope()
 	b2Free(m_as);
 }
 
+///
+void b2Rope::SetGravity(float32 x, float32 y)
+{
+	m_gravity.x = x;
+	m_gravity.y = y;
+}
+
 void b2Rope::Initialize(const b2RopeDef* def)
 {
 	b2Assert(def->count >= 3);

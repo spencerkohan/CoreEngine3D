@@ -196,6 +196,11 @@ void Game::Update(f32 timeElapsed)
 		LerpVec3(&m_camPos,&m_desiredCamPos,&m_startCamPos,m_camLerpTimer/m_camLerpTotalTime);
 	}
 	
+	if(m_pWorld != NULL)
+	{
+		m_pWorld->Step(timeElapsed, 3, 3);
+	}
+	
 	//Lazy so constantly load new resources
 	//It can't be THAT bad
 	LoadItemArt();
@@ -1040,8 +1045,8 @@ void Game::ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIn
 void Game::InitBox2D()
 {
 	b2Vec2 gravity;
-	gravity.Set(0.0f, -10.0f);
-	
+	gravity.Set(0.0f, 10.0f*GetPixelsPerMeter());
+
 	m_pWorld = new b2World(gravity);
 	
 	

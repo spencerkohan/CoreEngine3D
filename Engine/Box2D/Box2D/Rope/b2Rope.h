@@ -89,6 +89,9 @@ public:
 
 	///
 	void SetAngle(float32 angle);
+	
+	///
+	void SetGravity(float32 x, float32 y);
 
 private:
 
