@@ -2662,13 +2662,13 @@ void OpenGLRenderer::CreateMaterials()
     const s32 PS_TextureAndDiffuseColor = AddPixelShaderToList("ArtResources/Shaders/TextureAndDiffuseColor.fsh");
     const s32 PS_TextureAndDiffuseColorDiscard = AddPixelShaderToList("ArtResources/Shaders/TextureAndDiffuseColorDiscard.fsh");
 	const s32 PS_TextureAndFogColorDiscard = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColorDiscard.fsh");
-	const s32 PS_TextureAndFogColor = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColor.fsh");
+	//const s32 PS_TextureAndFogColor = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColor.fsh");
 	const s32 PS_Colors = AddPixelShaderToList("ArtResources/Shaders/Colors.fsh");
 	const s32 PS_PointSprite_ColorShine = AddPixelShaderToList("ArtResources/Shaders/PointSprite_ColorShine.fsh");
     const s32 PS_TextureWithColor = AddPixelShaderToList("ArtResources/Shaders/TextureWithColor.fsh");
 	//const s32 PS_SkinnedFragShader = AddPixelShaderToList("ArtResources/Shaders/SkinnedFragShader.fsh");
 	
-	const s32 PS_TextureAndFogColorWithMipMapBlur = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColorWithMipmapBlur.fsh");
+	//const s32 PS_TextureAndFogColorWithMipMapBlur = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColorWithMipmapBlur.fsh");
 	
 	//Vertex Shaders
 	
@@ -2795,7 +2795,7 @@ void OpenGLRenderer::CreateMaterials()
 	}
 	
 	//MT_TextureAndFogColor
-	if(CreateShaderProgram(VSH_VertWithColorInputAndTexture,PS_TextureAndFogColor,attribs_VT,&g_Materials[MT_TextureAndFogColor].shaderProgram))
+	/*if(CreateShaderProgram(VSH_VertWithColorInputAndTexture,PS_TextureAndFogColor,attribs_VT,&g_Materials[MT_TextureAndFogColor].shaderProgram))
 	{
 		AddUniform_Unique(MT_TextureAndFogColor,"inputColor",Uniform_Vec4,1);
 	}
@@ -2813,7 +2813,7 @@ void OpenGLRenderer::CreateMaterials()
 		AddUniform_Unique(MT_TextureAndFogColorWithMipMapBlurWithTexcoordOffset,"texCoordOffset",Uniform_Vec2,1);
 		AddUniform_Unique(MT_TextureAndFogColorWithMipMapBlurWithTexcoordOffset,"inputColor",Uniform_Vec4,1);
 		AddUniform_Unique(MT_TextureAndFogColorWithMipMapBlurWithTexcoordOffset,"blurAmount",Uniform_Float,1);
-	}
+	}*/
 
     //MT_TextureAndDiffuseColor
 	if(CreateShaderProgram(VSH_VertWithColorInputAndTexture,PS_TextureAndDiffuseColor,attribs_VT,&g_Materials[MT_TextureAndDiffuseColor].shaderProgram))

@@ -25,6 +25,12 @@
 		236904D814E0F41B0014F02D /* ScriptObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 236904D214E0F41B0014F02D /* ScriptObject.cpp */; };
 		236904D914E0F41B0014F02D /* ScriptObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 236904D314E0F41B0014F02D /* ScriptObject.h */; };
 		237B3BBC14AF0BE3009196A2 /* Square_Tiled_2.h in Headers */ = {isa = PBXBuildFile; fileRef = 237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */; };
+		23D5EC1414EA401500D64D1B /* ObjectGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23D5EC0E14EA401500D64D1B /* ObjectGroup.cpp */; };
+		23D5EC1514EA401500D64D1B /* ObjectGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 23D5EC0F14EA401500D64D1B /* ObjectGroup.h */; };
+		23D5EC1614EA401500D64D1B /* SoundPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23D5EC1014EA401500D64D1B /* SoundPlayer.cpp */; };
+		23D5EC1714EA401500D64D1B /* SoundPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 23D5EC1114EA401500D64D1B /* SoundPlayer.h */; };
+		23D5EC1814EA401500D64D1B /* TileAffector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23D5EC1214EA401500D64D1B /* TileAffector.cpp */; };
+		23D5EC1914EA401500D64D1B /* TileAffector.h in Headers */ = {isa = PBXBuildFile; fileRef = 23D5EC1314EA401500D64D1B /* TileAffector.h */; };
 		23F4265514AC4C4700F27DAB /* CoreInput_GamePad.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265414AC4C4700F27DAB /* CoreInput_GamePad.h */; };
 		23F4265714AC4C5F00F27DAB /* CoreInput_GamePad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23F4265614AC4C5F00F27DAB /* CoreInput_GamePad.cpp */; };
 		23F4266114AC5C0900F27DAB /* DEBUGMODEL_CircleXY.h in Headers */ = {isa = PBXBuildFile; fileRef = 23F4265F14AC5C0900F27DAB /* DEBUGMODEL_CircleXY.h */; };
@@ -181,6 +187,12 @@
 		236904D214E0F41B0014F02D /* ScriptObject.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ScriptObject.cpp; sourceTree = "<group>"; };
 		236904D314E0F41B0014F02D /* ScriptObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ScriptObject.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		237B3BBB14AF0BE3009196A2 /* Square_Tiled_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_2.h; sourceTree = "<group>"; };
+		23D5EC0E14EA401500D64D1B /* ObjectGroup.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ObjectGroup.cpp; sourceTree = "<group>"; };
+		23D5EC0F14EA401500D64D1B /* ObjectGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectGroup.h; sourceTree = "<group>"; };
+		23D5EC1014EA401500D64D1B /* SoundPlayer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = SoundPlayer.cpp; sourceTree = "<group>"; };
+		23D5EC1114EA401500D64D1B /* SoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundPlayer.h; sourceTree = "<group>"; };
+		23D5EC1214EA401500D64D1B /* TileAffector.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = TileAffector.cpp; sourceTree = "<group>"; };
+		23D5EC1314EA401500D64D1B /* TileAffector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TileAffector.h; sourceTree = "<group>"; };
 		23F4265414AC4C4700F27DAB /* CoreInput_GamePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_GamePad.h; sourceTree = "<group>"; };
 		23F4265614AC4C5F00F27DAB /* CoreInput_GamePad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_GamePad.cpp; sourceTree = "<group>"; };
 		23F4265F14AC5C0900F27DAB /* DEBUGMODEL_CircleXY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DEBUGMODEL_CircleXY.h; sourceTree = "<group>"; };
@@ -339,6 +351,12 @@
 		236904CD14E0F41B0014F02D /* CoreObjects */ = {
 			isa = PBXGroup;
 			children = (
+				23D5EC0E14EA401500D64D1B /* ObjectGroup.cpp */,
+				23D5EC0F14EA401500D64D1B /* ObjectGroup.h */,
+				23D5EC1014EA401500D64D1B /* SoundPlayer.cpp */,
+				23D5EC1114EA401500D64D1B /* SoundPlayer.h */,
+				23D5EC1214EA401500D64D1B /* TileAffector.cpp */,
+				23D5EC1314EA401500D64D1B /* TileAffector.h */,
 				236904CE14E0F41B0014F02D /* CollisionBox.cpp */,
 				236904CF14E0F41B0014F02D /* CollisionBox.h */,
 				236904D014E0F41B0014F02D /* CoreObjectFactories.cpp */,
@@ -701,6 +719,9 @@
 				236904D514E0F41B0014F02D /* CollisionBox.h in Headers */,
 				236904D714E0F41B0014F02D /* CoreObjectFactories.h in Headers */,
 				236904D914E0F41B0014F02D /* ScriptObject.h in Headers */,
+				23D5EC1514EA401500D64D1B /* ObjectGroup.h in Headers */,
+				23D5EC1714EA401500D64D1B /* SoundPlayer.h in Headers */,
+				23D5EC1914EA401500D64D1B /* TileAffector.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -823,6 +844,9 @@
 				236904D414E0F41B0014F02D /* CollisionBox.cpp in Sources */,
 				236904D614E0F41B0014F02D /* CoreObjectFactories.cpp in Sources */,
 				236904D814E0F41B0014F02D /* ScriptObject.cpp in Sources */,
+				23D5EC1414EA401500D64D1B /* ObjectGroup.cpp in Sources */,
+				23D5EC1614EA401500D64D1B /* SoundPlayer.cpp in Sources */,
+				23D5EC1814EA401500D64D1B /* TileAffector.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

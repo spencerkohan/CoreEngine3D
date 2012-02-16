@@ -58,7 +58,7 @@ public:
 	{
 		if(m_numObjects == m_maxObjects)
 		{
-			//COREDEBUG_PrintDebugMessage("INSANE ERROR: You can't make any more objects!");
+			COREDEBUG_PrintDebugMessage("INSANE ERROR: You can't make any more objects!");
 
 			return NULL;
 		}

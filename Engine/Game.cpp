@@ -1224,50 +1224,60 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			{
 				case LevelLayer_Parallax4:
 				{
-					pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
+					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					
+					/*pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
 					
 					CopyVec3((vec3*)&pCurrLayer->fogColor,pClearColor);
 					pCurrLayer->fogColor.w = 0.95f;
-					pCurrLayer->blurAmount = 0.95f;
+					pCurrLayer->blurAmount = 0.95f;*/
 					
 					break;
 				}
 				case LevelLayer_Parallax3:
 				{
-					pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
+					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					
+					/*pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
 					
 					CopyVec3((vec3*)&pCurrLayer->fogColor,pClearColor);
 					pCurrLayer->fogColor.w = 0.8f;
-					pCurrLayer->blurAmount = 0.8f;
+					pCurrLayer->blurAmount = 0.8f;*/
 					
 					break;
 				}
 				case LevelLayer_Parallax2:
 				{
-					pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
+					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					
+					/*pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
 					
 					CopyVec3((vec3*)&pCurrLayer->fogColor,pClearColor);
 					pCurrLayer->fogColor.w = 0.6f;
-					pCurrLayer->blurAmount = 0.6f;
+					pCurrLayer->blurAmount = 0.6f;*/
 					
 					break;
 				}
 				case LevelLayer_Parallax1:
 				{
-					pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
+					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					
+					/*pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
 					
 					CopyVec3((vec3*)&pCurrLayer->fogColor,pClearColor);
 					pCurrLayer->fogColor.w = 0.4f;
-					pCurrLayer->blurAmount = 0.4f;
+					pCurrLayer->blurAmount = 0.4f;*/
 
 					break;
 				}
 				case LevelLayer_Parallax0:
 				{
-					pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
+					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					
+					/*pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
 					
 					CopyVec3((vec3*)&pCurrLayer->fogColor,pClearColor);
-					pCurrLayer->fogColor.w = 0.2f;
+					pCurrLayer->fogColor.w = 0.2f;*/
 
 					break;
 				}
