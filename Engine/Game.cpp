@@ -1042,16 +1042,20 @@ void Game::ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIn
 }
 
 
-void Game::InitBox2D()
+void Game::Box2D_Init()
 {
 	b2Vec2 gravity;
-	gravity.Set(0.0f, 10.0f*GetPixelsPerMeter());
+	gravity.Set(0.0f, 10.0f);
 
 	m_pWorld = new b2World(gravity);
 	
 	
 }
 
+b2World* Game::Box2D_GetWorld()
+{
+	return m_pWorld;
+}
 
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
 {
