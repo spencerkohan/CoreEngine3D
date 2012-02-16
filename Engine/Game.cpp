@@ -198,7 +198,7 @@ void Game::Update(f32 timeElapsed)
 	
 	if(m_Box2D_pWorld != NULL)
 	{
-		m_Box2D_pWorld->Step(timeElapsed, 4, 4);
+		m_Box2D_pWorld->Step(timeElapsed, 5, 5);
 	}
 	
 	//Lazy so constantly load new resources
@@ -1073,6 +1073,8 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 {
 	m_pixelsPerMeter = (f32)tileWidthPixels/tileSizeMeters;
 	
+	const f32 halfTilsSize = tileSizeMeters*0.5f;
+	
 	m_numSpawnableEntities = 0;
 
 	std::string filenameWithPath(path+filename);
@@ -1405,6 +1407,41 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 					pTile->tileID = ARRAY2D(pData, x, y, width);
 					pTile->isVisible = true;
 					ConvertTileID(&pTile->tileID, &pTile->pDesc);
+				}
+			}
+			
+			//Create collision if Box2D is enabled
+			//Collision!
+			if(m_Box2D_pWorld != NULL
+			   && currLayer == LevelLayer_Collision)
+			{
+				for(u32 y=0; y<height; ++y)
+				{
+					for(u32 x=0; x<width; ++x)
+					{
+						Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+						if(pTile->tileID == -1)
+						{
+							continue;
+						}
+						
+						vec3 pos;
+						GetPositionFromTileIndices(x, y, &pos);
+						
+						b2BodyDef bodyDef;
+						bodyDef.type = b2_staticBody;
+						
+						b2FixtureDef fixtureDef;
+						fixtureDef.density = 1;
+						b2PolygonShape polygonShape;
+						polygonShape.SetAsBox(halfTilsSize,halfTilsSize);
+						fixtureDef.shape = &polygonShape;
+						
+						bodyDef.position.Set(pos.x/m_pixelsPerMeter, pos.y/m_pixelsPerMeter);
+						
+						b2Body* pBody = m_Box2D_pWorld->CreateBody(&bodyDef);
+						pBody->CreateFixture(&fixtureDef);
+					}
 				}
 			}
 			

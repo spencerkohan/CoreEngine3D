@@ -863,25 +863,26 @@ void OpenGLRenderer::RenderEffects()
 		ScaleVec3(&sideVec0, &sideVec, pCurrLine->lineWidth0*0.5f);
 		ScaleVec3(&sideVec1, &sideVec, pCurrLine->lineWidth1*0.5f);
 		
-		const f32 numRepeats = pCurrLine->numTextureRepeats;
+		const f32 texcoordYStart = pCurrLine->texcoordYStart;
+		const f32 texcoordYEnd = pCurrLine->texcoordYEnd;
 		
 		m_texturedLineVerts[0].texcoord.x = 0.0f;
-		m_texturedLineVerts[0].texcoord.y = 0.0f;
+		m_texturedLineVerts[0].texcoord.y = texcoordYStart;
 		CopyVec3(&m_texturedLineVerts[0].position,&pCurrLine->line.p0);
 		AddVec3_Self(&m_texturedLineVerts[0].position, &sideVec0);
 		
 		m_texturedLineVerts[1].texcoord.x = 1.0f;
-		m_texturedLineVerts[1].texcoord.y = 0.0f;
+		m_texturedLineVerts[1].texcoord.y = texcoordYStart;
 		CopyVec3(&m_texturedLineVerts[1].position,&pCurrLine->line.p0);
 		AddScaledVec3_Self(&m_texturedLineVerts[1].position, &sideVec0,-1.0f);
 		
 		m_texturedLineVerts[2].texcoord.x = 0.0f;
-		m_texturedLineVerts[2].texcoord.y = numRepeats;
+		m_texturedLineVerts[2].texcoord.y = texcoordYEnd;
 		CopyVec3(&m_texturedLineVerts[2].position,&pCurrLine->line.p1);
 		AddVec3_Self(&m_texturedLineVerts[2].position, &sideVec1);
 		
 		m_texturedLineVerts[3].texcoord.x = 1.0f;
-		m_texturedLineVerts[3].texcoord.y = numRepeats;
+		m_texturedLineVerts[3].texcoord.y = texcoordYEnd;
 		CopyVec3(&m_texturedLineVerts[3].position,&pCurrLine->line.p1);
 		AddScaledVec3_Self(&m_texturedLineVerts[3].position, &sideVec1,-1.0f);
 		
@@ -3255,7 +3256,7 @@ GFX_Trail* OpenGLRenderer::CreateTrail(GFX_Trail** pCallbackTrail, vec3* pInitia
 }
 
 
-void OpenGLRenderer::DRAW_DrawTexturedLine(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, u32 texturedID, f32 lineWidth0, f32 lineWidth1, f32 numTextureRepeats)
+void OpenGLRenderer::DRAW_DrawTexturedLine(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* pDiffuseColor, u32 texturedID, f32 lineWidth0, f32 lineWidth1, f32 texcoordYStart, f32 texcoordYEnd)
 {
 	if(m_numTexturedLines == MAX_TEXTURED_LINES)
 	{
@@ -3268,7 +3269,8 @@ void OpenGLRenderer::DRAW_DrawTexturedLine(DebugDrawMode drawMode, const vec3* p
 	pNextLine->texturedID = texturedID;
 	pNextLine->lineWidth0 = lineWidth0;
 	pNextLine->lineWidth1 = lineWidth1;
-	pNextLine->numTextureRepeats = numTextureRepeats;
+	pNextLine->texcoordYStart = texcoordYStart;
+	pNextLine->texcoordYEnd = texcoordYEnd;
 	pNextLine->drawMode = drawMode;
 	CopyVec4(&pNextLine->diffuseColor,pDiffuseColor);
 	
