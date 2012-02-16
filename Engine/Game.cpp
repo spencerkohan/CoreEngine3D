@@ -61,7 +61,7 @@ bool Game::Init()
 {
 	m_camLerpTimer = -1.0f;
 	
-	m_pWorld = NULL;
+	m_Box2D_pWorld = NULL;
 	
 	for(int i=0; i<NumLevelLayers; ++i)
 	{
@@ -140,9 +140,9 @@ bool Game::Init()
 
 void Game::CleanUp()
 {
-	if(m_pWorld != NULL)
+	if(m_Box2D_pWorld != NULL)
 	{
-		delete m_pWorld;
+		delete m_Box2D_pWorld;
 	}
 	
 	for(int i=0; i<NumLevelLayers; ++i)
@@ -196,9 +196,9 @@ void Game::Update(f32 timeElapsed)
 		LerpVec3(&m_camPos,&m_desiredCamPos,&m_startCamPos,m_camLerpTimer/m_camLerpTotalTime);
 	}
 	
-	if(m_pWorld != NULL)
+	if(m_Box2D_pWorld != NULL)
 	{
-		m_pWorld->Step(timeElapsed, 3, 3);
+		m_Box2D_pWorld->Step(timeElapsed, 4, 4);
 	}
 	
 	//Lazy so constantly load new resources
@@ -1047,14 +1047,26 @@ void Game::Box2D_Init()
 	b2Vec2 gravity;
 	gravity.Set(0.0f, 10.0f);
 
-	m_pWorld = new b2World(gravity);
+	m_Box2D_pWorld = new b2World(gravity);
 	
-	
+	b2BodyDef bodyDef;
+	m_Box2D_pGroundBody = m_Box2D_pWorld->CreateBody(&bodyDef);
 }
+
 
 b2World* Game::Box2D_GetWorld()
 {
-	return m_pWorld;
+	return m_Box2D_pWorld;
+}
+
+b2Body* Game::Box2D_GetGroundBody()
+{
+	return m_Box2D_pGroundBody;
+}
+
+void Game::Box2D_SetGravity(f32 x, f32 y)
+{
+	m_Box2D_pWorld->SetGravity(b2Vec2(x,y));
 }
 
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
