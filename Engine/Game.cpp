@@ -1576,6 +1576,16 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				pEnt->pObject->SpawnInit(pEnt);
 			}
 		}
+		
+		//All the objects have been created, now do the post init!
+		for(u32 i=0; i<m_numSpawnableEntities; ++i)
+		{
+			SpawnableEntity* pEnt = &m_spawnableEntities[i];
+			if(pEnt->pObject != NULL)
+			{
+				pEnt->pObject->PostSpawnInit(pEnt);
+			}
+		}
 	}
 	else
 	{

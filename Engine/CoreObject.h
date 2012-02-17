@@ -33,12 +33,14 @@ public:
 	u32 GetEntityType();
 	CoreObjectHandle GetHandle() const;
 	virtual void SetPosition(const vec3* pPosition){}//HACK: for now it's fine to have this here
+	virtual void SetUp(const vec3* pUp){};//HACK: for now it's fine to have this here
 	virtual const vec3* GetPosition(){return NULL;}//HACK: for now it's fine to have this here
 	virtual void UpdateHandle();	//Call when the memory location changes
 	void DeleteObject();			//Use with new system
 
 	virtual bool Init(u32 type);
-	virtual bool SpawnInit(void* pSpawnStruct){return true;};
+	virtual bool SpawnInit(void* pSpawnStruct){return true;}
+	virtual bool PostSpawnInit(void* pSpawnStruct){return true;}
 	virtual void Uninit();
 	virtual void Update(f32 timeElapsed){};
 	
