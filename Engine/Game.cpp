@@ -383,9 +383,16 @@ void Game::LoadItemArt()
     {
 		ItemArtDescription* pCurrArtDesc = m_pArtDescriptionsToLoadTexturesFor[i];
 		const MaterialSettings* pMaterialSettings = pCurrArtDesc->materialSettings;
+
 		
 		//This will load the texture but if it's already loaded, it will do nothing
-		GLRENDERER->LoadTexture(pCurrArtDesc->textureFileName, pCurrArtDesc->imageType, &pCurrArtDesc->textureHandle, pMaterialSettings->textureFilterMode, pMaterialSettings->wrapModeU, pMaterialSettings->wrapModeV,pMaterialSettings->flipY);
+		const bool loadedATexture = GLRENDERER->LoadTexture(pCurrArtDesc->textureFileName, pCurrArtDesc->imageType, &pCurrArtDesc->textureHandle, pMaterialSettings->textureFilterMode, pMaterialSettings->wrapModeU, pMaterialSettings->wrapModeV,pMaterialSettings->flipY);
+		
+		//If we loaded a texture, we should force a resort for optimum performance
+		if(loadedATexture == true)
+		{
+			GLRENDERER->ForceRenderablesNeedSorting_Normal();
+		}
         
         //Store the descriptions we've loaded
 		//Some of them were already loaded but now we can keep track!
