@@ -3150,6 +3150,11 @@ bool OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
 			 SOIL_FLAG_INVERT_Y
 			 );
 			
+			if(*pGLTexture == 0)
+			{
+				COREDEBUG_PrintDebugMessage("INSANE ERROR: LoadTexture failed to load the file: %s",fileName);
+			}
+			
 			break;
 		}
         case ImageType_PNG:

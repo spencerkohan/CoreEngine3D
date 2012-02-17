@@ -1127,6 +1127,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			std::string textureFileName(pDesc->textureFileName);
 			std::string texFilenameWithPath(path+textureFileName);
 			
+			pDesc->loadedTextureID = 0;
 			GLRENDERER->LoadTexture(texFilenameWithPath.c_str(), ImageType_PNG, &pDesc->loadedTextureID, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,true);
 			
 			//Do some useful calculations
