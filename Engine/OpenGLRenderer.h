@@ -168,7 +168,6 @@ public:
 	void CleanUp();
 	void LoadParticleAtlas(const char* filename);
 	bool GetFadeFinished();
-	void ClearRenderables();
 	void ClearOneFrameGeometry();
 	void RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableObjectArray, u32 numRenderableObjects);
 	void RenderEffects();

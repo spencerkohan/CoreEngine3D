@@ -109,6 +109,10 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 			{
 				m_action = Action_WaitForObjects;
 			}
+			else if(strcmp(valueString,"TriggerOnInit") == 0)
+			{
+				m_action = Action_TriggerOnInit;
+			}
 		}
 		else if(strcmp(propNameString,"ToggleTimeOn") == 0)
 		{
@@ -158,6 +162,16 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 	return true;
 }
 
+
+bool ScriptObject::PostSpawnInit(void* pSpawnStruct)
+{
+	if(m_action == Action_TriggerOnInit)
+	{
+		Trigger();
+	}
+	
+	return true;
+}
 
 void ScriptObject::SetPosition(const vec3* pPosition)
 {
@@ -209,47 +223,7 @@ void ScriptObject::AttemptBoxTrigger(u32 objectType, const vec3* pPosition)
 		return;
 	}
 	
-	if(m_triggerMessage == Hash("SetCamera"))
-	{
-		vec3 camPos;
-		CopyVec3(&camPos,pBox->GetBottomLeft());
-		GAME->SetCameraPosition(&camPos,0.0f);
-	}
-	else if(m_triggerMessage == Hash("MoveCamera"))
-	{
-		CollisionBox* pCameraBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
-		
-		if(pCameraBox != NULL)
-		{
-			vec3 camPos;
-			CopyVec3(&camPos,pCameraBox->GetBottomLeft());
-			GAME->SetCameraPosition(&camPos,1.5f);
-		}
-		else
-		{
-			vec3 camPos;
-			CopyVec3(&camPos,pBox->GetBottomLeft());
-			GAME->SetCameraPosition(&camPos,1.5f);
-		}
-	}
-	else
-	{
-		CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
-		
-		if(pObject != NULL)
-		{
-			pObject->ProcessMessage(m_triggerMessage);
-		}
-	}
-	
-	
-	++m_numTriggers;
-	
-	if(m_numTriggers == m_numAllowedTriggers)
-	{
-		//TODO: not sure if I should leave this
-		m_scriptStatus = ScriptStatus_Off;
-	}
+	Trigger();
 }
 
 
@@ -294,12 +268,54 @@ void ScriptObject::AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileI
 		return;
 	}
 	
+	Trigger();
+}
 
-	CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
-	
-	if(pObject != NULL)
+void ScriptObject::Trigger()
+{
+	if(m_triggerMessage == Hash("SetCamera"))
 	{
-		pObject->ProcessMessage(m_triggerMessage);
+		CollisionBox* pBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hCollisionBox);
+		if(pBox == NULL)
+		{
+			return;
+		}
+		
+		vec3 camPos;
+		CopyVec3(&camPos,pBox->GetBottomLeft());
+		GAME->SetCameraPosition(&camPos,0.0f);
+	}
+	else if(m_triggerMessage == Hash("MoveCamera"))
+	{
+		CollisionBox* pCameraBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
+		
+		if(pCameraBox != NULL)
+		{
+			vec3 camPos;
+			CopyVec3(&camPos,pCameraBox->GetBottomLeft());
+			GAME->SetCameraPosition(&camPos,1.5f);
+		}
+		else
+		{
+			CollisionBox* pBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hCollisionBox);
+			if(pBox == NULL)
+			{
+				return;
+			}
+			
+			vec3 camPos;
+			CopyVec3(&camPos,pBox->GetBottomLeft());
+			GAME->SetCameraPosition(&camPos,1.5f);
+		}
+	}
+	else
+	{
+		CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
+		
+		if(pObject != NULL)
+		{
+			pObject->ProcessMessage(m_triggerMessage);
+		}
 	}
 	
 	++m_numTriggers;
@@ -309,9 +325,7 @@ void ScriptObject::AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileI
 		//TODO: not sure if I should leave this
 		m_scriptStatus = ScriptStatus_Off;
 	}
-	
 }
-
 
 void ScriptObject::ProcessMessage(u32 message)	//Pass in a hash value
 {

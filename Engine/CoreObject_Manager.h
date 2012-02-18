@@ -46,7 +46,7 @@ public:
 	{
 		Array_InsertionSort(&m_pObjectList[startIndex], count, compareFunc);
 		
-		for(u32 i=startIndex; i<count; ++i)
+		for(u32 i=startIndex; i<startIndex+count; ++i)
 		{
 			m_pObjectList[i].UpdateHandle();
 		}
@@ -81,9 +81,14 @@ public:
 	//to respond to that sort of thing
 	bool UpdateObjectList(f32 timeElapsed)
 	{
+		if(m_numObjects == 0)
+		{
+			return false;
+		}
+		
 		//Delete dead objects
 		bool deletedSomething = false;
-		for(u32 i=0; i<m_numObjects; ++i)
+		for(u32 i=0; i<m_numObjects;)
 		{
 			T* pCurrObject = &m_pObjectList[i];
 			if(pCurrObject->m_markedForDeletion)

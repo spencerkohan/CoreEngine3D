@@ -345,22 +345,12 @@ void OpenGLRenderer::Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 scre
 	PrintOpenGLError("Initialized Renderer");
 
 	m_numTexturedLines_saved = 0;
-	
-	ClearRenderables();
 }
 
 
 bool OpenGLRenderer::GetFadeFinished()
 {
 	return m_fadeState == FadeState_WaitingForFadeIn;
-}
-
-
-void OpenGLRenderer::ClearRenderables()
-{
-	g_Factory_Geometry_Normal.Clear();
-	g_Factory_Geometry_UI.Clear();
-	g_Factory_RenderableSceneObject.Clear();	
 }
 
 

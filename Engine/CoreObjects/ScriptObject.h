@@ -29,6 +29,7 @@ public:
 	{
 		Action_WaitForCollision,
 		Action_TimerToggle,
+		Action_TriggerOnInit,
 		Action_Kill,
 		Action_WaitForObjects,
 		Action_Num,
@@ -50,13 +51,15 @@ public:
 
 	//TODO: make SpawnInit take a struct or something.  This is getting bad
 	virtual bool SpawnInit(void* pSpawnStruct);
+	virtual bool PostSpawnInit(void* pSpawnStruct);
 	void AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileIndex_Y);
 	void AttemptBoxTrigger(u32 objectType, const vec3* pPosition);
 	void Reset();
 	virtual void SetPosition(const vec3* pPosition);
 	virtual void Update(f32 timeElapsed);
 private:	
-
+	void Trigger();
+	
 	bool m_isFirstUpdate;
 
 	vec3 m_position;

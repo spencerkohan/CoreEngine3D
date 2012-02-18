@@ -825,6 +825,11 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 							pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
 						}
 						
+						if(pCurrRenderable == NULL)
+						{
+							continue;
+						}
+						
 						vec3* pCurrPos = mat4f_GetPos(pCurrRenderable->worldMat);
 						pCurrPos->x = 0.5f+tileBasePosX+((s32)pCurrLayer->position.x);
 						pCurrPos->y = 0.5f+tileBasePosY+((s32)pCurrLayer->position.y);
