@@ -1054,14 +1054,14 @@ void Game::ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIn
 }
 
 
-void Game::Box2D_Init(bool continuousPhysicsEnabled)
+void Game::Box2D_Init(bool continuousPhysicsEnabled, bool allowObjectToSleep)
 {
 	b2Vec2 gravity;
 	gravity.Set(0.0f, 10.0f);
 
 	m_Box2D_pWorld = new b2World(gravity);
 	m_Box2D_pWorld->SetContinuousPhysics(continuousPhysicsEnabled);
-	
+	m_Box2D_pWorld->SetAllowSleeping(false);
 	b2BodyDef bodyDef;
 	m_Box2D_pGroundBody = m_Box2D_pWorld->CreateBody(&bodyDef);
 }

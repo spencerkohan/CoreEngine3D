@@ -194,7 +194,7 @@ public:
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	void SetTouchIndexIsLinked(s32 index, bool isLinked);
 #endif
-	void Box2D_Init(bool continuousPhysicsEnabled);
+	void Box2D_Init(bool continuousPhysicsEnabled,bool allowObjectToSleep);
 	b2World* Box2D_GetWorld();
 	b2Body* Box2D_GetGroundBody();
 	void Box2D_SetGravity(f32 x, f32 y);
