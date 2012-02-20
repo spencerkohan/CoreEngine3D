@@ -16,7 +16,7 @@
 struct SpriteFrameInfo
 {
 	vec2 textureOffset;
-	u32 textureHandle;
+	u32* pTextureHandle;
 	u32 cellsPerRow;
 };
 

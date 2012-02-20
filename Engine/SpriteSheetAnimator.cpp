@@ -50,7 +50,7 @@ bool SpriteSheetAnimator::GetSpriteInfoForFrame(u32 frame, SpriteFrameInfo* pOut
 	const f32 uIncrement = 1.0f/(f32)cellsPerRow;
 	const f32 vIncrement = 1.0f/(f32)cellsPerRow;
 	
-	pOut_SpriteFrameInfo->textureHandle = *pSheet->pTextureHandle;
+	pOut_SpriteFrameInfo->pTextureHandle = pSheet->pTextureHandle;
 	pOut_SpriteFrameInfo->cellsPerRow = cellsPerRow;
 	pOut_SpriteFrameInfo->textureOffset.x = uIncrement*(f32)cellX;
 	pOut_SpriteFrameInfo->textureOffset.y = vIncrement*(f32)cellY;
