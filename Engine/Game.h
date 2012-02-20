@@ -59,6 +59,15 @@ class Box2DDebugDraw;
 extern const MaterialSettings g_Game_BlobShadowSettings;
 extern ItemArtDescription g_Game_BlobShadowDesc;
 
+enum CollisionFilter
+{
+	CollisionFilter_Ground,
+	CollisionFilter_Player,
+	CollisionFilter_Enemy,
+	CollisionFilter_PlayerProjectile,
+	CollisionFilter_EnemyProjectile,
+};
+
 struct BreakableSettings
 {
     f32 lifetime;

@@ -376,12 +376,22 @@ u32 CoreAudioOpenAL::CreateSoundSourceFromBuffer(u32 bufferID)
 
 void CoreAudioOpenAL::DeleteSoundBuffer(u32* soundBufferID)
 {
+	if(*soundBufferID == 0)
+	{
+		return;
+	}
+	
 	alDeleteBuffers(1, soundBufferID);
 	*soundBufferID = 0;
 }
 
 void CoreAudioOpenAL::DeleteSoundSource(u32* soundSourceID)
 {
+	if(*soundSourceID == 0)
+	{
+		return;
+	}
+	
 	alDeleteSources(1, soundSourceID);
 	*soundSourceID = 0;
 }

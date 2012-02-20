@@ -10,13 +10,15 @@
 #define CoreEngine3D_OSX__CoreGameObject_h
 
 #include "CoreObject.h"
+#include <Box2D/Box2D.h>
 
 class CoreGameObject: public CoreObject
 {
 public:
-	virtual void SetPosition(const vec3* pPosition){}//HACK: for now it's fine to have this here
-	virtual void SetUp(const vec3* pUp){};//HACK: for now it's fine to have this here
-	virtual const vec3* GetPosition(){return NULL;}//HACK: for now it's fine to have this here
+	virtual void SetPosition(const vec3* pPosition){}
+	virtual void SetUp(const vec3* pUp){};
+	virtual const vec3* GetPosition(){return NULL;}
+	virtual const b2Body* Box2D_GetBody(){return NULL;}
 	
 	virtual void CollisionResponseCallback(CoreGameObject* pResponder, CoreGameObject* pCollider){};
 };
