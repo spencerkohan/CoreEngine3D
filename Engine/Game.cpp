@@ -13,6 +13,7 @@
 #include "zlib/zlib.h"
 #include "base64.h"
 #include "Hash.h"
+#include "Box2DDebugDraw.h"
 
 #include "CoreObjects/CoreObjectFactories.h"
 
@@ -62,6 +63,7 @@ bool Game::Init()
 	m_camLerpTimer = -1.0f;
 	
 	m_Box2D_pWorld = NULL;
+	m_Box2D_pDebugDraw = NULL;
 	
 	for(int i=0; i<NumLevelLayers; ++i)
 	{
@@ -199,8 +201,12 @@ void Game::Update(f32 timeElapsed)
 	if(m_Box2D_pWorld != NULL)
 	{
 		m_Box2D_pWorld->Step(timeElapsed, 5, 5);
+		
+#ifdef _DEBUG
+		m_Box2D_pWorld->DrawDebugData();
+#endif
 	}
-	
+
 	//Lazy so constantly load new resources
 	//It can't be THAT bad
 	LoadItemArt();
@@ -1056,10 +1062,15 @@ void Game::ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIn
 
 void Game::Box2D_Init(bool continuousPhysicsEnabled, bool allowObjectToSleep)
 {
+	m_Box2D_pDebugDraw = new Box2DDebugDraw;
+	m_Box2D_pDebugDraw->SetFlags(0xFFFFFFFF);
+	
 	b2Vec2 gravity;
 	gravity.Set(0.0f, 10.0f);
 
 	m_Box2D_pWorld = new b2World(gravity);
+	m_Box2D_pWorld->SetDebugDraw(m_Box2D_pDebugDraw);
+	
 	m_Box2D_pWorld->SetContinuousPhysics(continuousPhysicsEnabled);
 	m_Box2D_pWorld->SetAllowSleeping(false);
 	b2BodyDef bodyDef;
@@ -1070,6 +1081,11 @@ void Game::Box2D_Init(bool continuousPhysicsEnabled, bool allowObjectToSleep)
 b2World* Game::Box2D_GetWorld()
 {
 	return m_Box2D_pWorld;
+}
+
+void Game::Box2D_SetContactListener(b2ContactListener* pContactListener)
+{
+	m_Box2D_pWorld->SetContactListener(pContactListener);
 }
 
 b2Body* Game::Box2D_GetGroundBody()

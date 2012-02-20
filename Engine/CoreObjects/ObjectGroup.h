@@ -12,13 +12,13 @@
 #include "MathTypes.h"
 #include "GraphicsTypes.h"
 
-#include "CoreObject.h"
+#include "CoreGameObject.h"
 #include "Game.h"
 #include "CollisionBox.h"
 
 #define ObjectGroup_MAX_OBJECTS 16
 
-class ObjectGroup: public CoreObject
+class ObjectGroup: public CoreGameObject
 {
 public:
 	virtual void Uninit();

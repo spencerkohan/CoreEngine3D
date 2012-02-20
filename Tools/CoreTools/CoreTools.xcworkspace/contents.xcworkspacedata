@@ -8,6 +8,6 @@
       location = "group:FontToTexture/FontToTexture.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Hash/Hash.xcodeproj">
+      location = "group:Hash/HashString.xcodeproj">
    </FileRef>
 </Workspace>

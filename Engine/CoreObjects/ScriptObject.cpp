@@ -18,7 +18,7 @@
 
 #include "Hash.h"
 
-vec3* ScriptObject::GetPosition()
+const vec3* ScriptObject::GetPosition()
 {
 	return &m_position;
 }

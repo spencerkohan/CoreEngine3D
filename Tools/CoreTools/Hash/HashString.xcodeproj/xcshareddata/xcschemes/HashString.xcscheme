@@ -28,9 +28,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "23EAA01B14DF6AB800F0B167"
-               BuildableName = "Hash"
-               BlueprintName = "Hash"
-               ReferencedContainer = "container:Hash.xcodeproj">
+               BuildableName = "HashStringString"
+               BlueprintName = "HashString"
+               ReferencedContainer = "container:HashString.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,9 +46,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "23EAA01B14DF6AB800F0B167"
-            BuildableName = "Hash"
-            BlueprintName = "Hash"
-            ReferencedContainer = "container:Hash.xcodeproj">
+            BuildableName = "HashStringString"
+            BlueprintName = "HashString"
+            ReferencedContainer = "container:HashString.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -64,9 +64,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "23EAA01B14DF6AB800F0B167"
-            BuildableName = "Hash"
-            BlueprintName = "Hash"
-            ReferencedContainer = "container:Hash.xcodeproj">
+            BuildableName = "HashStringString"
+            BlueprintName = "HashString"
+            ReferencedContainer = "container:HashString.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -82,9 +82,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "23EAA01B14DF6AB800F0B167"
-            BuildableName = "Hash"
-            BlueprintName = "Hash"
-            ReferencedContainer = "container:Hash.xcodeproj">
+            BuildableName = "HashStringString"
+            BlueprintName = "HashString"
+            ReferencedContainer = "container:HashString.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

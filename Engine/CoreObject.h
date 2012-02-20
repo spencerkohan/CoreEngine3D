@@ -32,9 +32,7 @@ public:
 	static void InitClass(){};
 	u32 GetEntityType();
 	CoreObjectHandle GetHandle() const;
-	virtual void SetPosition(const vec3* pPosition){}//HACK: for now it's fine to have this here
-	virtual void SetUp(const vec3* pUp){};//HACK: for now it's fine to have this here
-	virtual const vec3* GetPosition(){return NULL;}//HACK: for now it's fine to have this here
+	
 	virtual void UpdateHandle();	//Call when the memory location changes
 	void DeleteObject();			//Use with new system
 

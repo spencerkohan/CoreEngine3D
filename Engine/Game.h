@@ -11,6 +11,7 @@
 
 #include <Box2D/Box2D.h>
 
+
 #include "MathTypes.h"
 #include "OpenGLRenderer.h"
 
@@ -40,6 +41,8 @@
 
 class Game;
 extern Game* GAME;
+
+class Box2DDebugDraw;
 
 #define GAME_MAX_BUTTONS 16
 
@@ -198,6 +201,7 @@ public:
 	b2World* Box2D_GetWorld();
 	b2Body* Box2D_GetGroundBody();
 	void Box2D_SetGravity(f32 x, f32 y);
+	void Box2D_SetContactListener(b2ContactListener* pContactListener);
 	SpawnableEntity* GetSpawnableEntityByTiledUniqueID(u32 tiledUniqueID);
 	CoreUI_Button* AddUIButton(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32));
 	void UpdateButtons(TouchState touchState, vec2 *pTouchPosBegin, vec2* pTouchPosCurr);
@@ -255,6 +259,8 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	bool m_touchIsLinked[MAX_MULTITOUCH];
 	
 private:
+	Box2DDebugDraw* m_Box2D_pDebugDraw;
+	
 	b2World* m_Box2D_pWorld;
 	b2Body* m_Box2D_pGroundBody;
 	

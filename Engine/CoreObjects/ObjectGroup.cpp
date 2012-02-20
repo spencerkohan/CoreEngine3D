@@ -14,6 +14,7 @@
 #include "OpenGLRenderer.h"
 #include "CoreObject_Manager.h"
 #include "CoreObjectFactories.h"
+#include "CoreGameObject.h"
 
 #include "Hash.h"
 
@@ -49,7 +50,7 @@ bool ObjectGroup::ObjectsAreContained(CollisionBox* pContainer)
 {
 	for(u32 i=0; i<m_numObjects; ++i)
 	{
-		CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_objectHandles[i]);
+		CoreGameObject* pObject = (CoreGameObject*)COREOBJECTMANAGER->GetObjectByHandle(m_objectHandles[i]);
 		if(pObject == NULL)
 		{
 			return false;
@@ -74,7 +75,7 @@ void ObjectGroup::SetPosition(const vec3* pPosition)
 {
 	for(u32 i=0; i<m_numObjects; ++i)
 	{
-		CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_objectHandles[i]);
+		CoreGameObject* pObject = (CoreGameObject*)COREOBJECTMANAGER->GetObjectByHandle(m_objectHandles[i]);
 		if(pObject != NULL)
 		{
 			pObject->SetPosition(pPosition);

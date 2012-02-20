@@ -12,10 +12,10 @@
 #include "MathTypes.h"
 #include "GraphicsTypes.h"
 
-#include "CoreObject.h"
+#include "CoreGameObject.h"
 #include "Game.h"
 
-class ScriptObject: public CoreObject
+class ScriptObject: public CoreGameObject
 {
 public:
 	enum CollisionMode
@@ -45,7 +45,7 @@ public:
 	virtual void Uninit();
 	virtual void ProcessMessage(u32 message);	//Pass in a hash value
 
-	vec3* GetPosition();
+	virtual const vec3* GetPosition();
 	
 	bool GetPositionIsInside(const vec2* pTouchPos);
 

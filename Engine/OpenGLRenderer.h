@@ -63,7 +63,7 @@ extern OpenGLRenderer* GLRENDERER;
 #define NUM_SINCOS_BUCKETS 10
 #define NUM_SINCOS_BUCKET_MAX_MULT 0.3f
 
-#define DEBUGDRAW_MAXLINESEGMENTS 512
+#define DEBUGDRAW_MAXLINESPOINTS 2048
 #define DEBUGDRAW_MAXDEBUGOBJECTS 32
 
 
@@ -329,7 +329,7 @@ private:
     u32 trailShaderUniform_scrollAmountU;
     u32 trailShaderUniform_scrollAmountV;
     GFX_Trail m_trails[MAX_TRAILS];
-    PointData m_debugLinePoints[DebugDrawMode_Num][DEBUGDRAW_MAXLINESEGMENTS*2];
+    PointData m_debugLinePoints[DebugDrawMode_Num][DEBUGDRAW_MAXLINESPOINTS];
     s32 m_numDebugLinePoints[DebugDrawMode_Num];
 	s32 m_numDebugLinePoints_saved[DebugDrawMode_Num];
     TexturedLineObject m_texturedLineObjects[MAX_TEXTURED_LINES];

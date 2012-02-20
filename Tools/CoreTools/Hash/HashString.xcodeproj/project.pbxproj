@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		23B39C4E14F21C410011CE9A /* libCoreEngine3D(OSX).a in Frameworks */ = {isa = PBXBuildFile; fileRef = 23B39C4C14F21C410011CE9A /* libCoreEngine3D(OSX).a */; };
 		23BAE23214DF7AAD007FC3C8 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23BAE23114DF7AAD007FC3C8 /* Main.cpp */; };
-		23BAE23514DF7AD1007FC3C8 /* libCoreEngine3D(OSX).a in Frameworks */ = {isa = PBXBuildFile; fileRef = 23BAE23414DF7AD1007FC3C8 /* libCoreEngine3D(OSX).a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,9 +24,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		23B39C4C14F21C410011CE9A /* libCoreEngine3D(OSX).a */ = {isa = PBXFileReference; lastKnownFileType = file; name = "libCoreEngine3D(OSX).a"; path = "../../../build/Release/libCoreEngine3D(OSX).a"; sourceTree = "<group>"; };
 		23BAE23114DF7AAD007FC3C8 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
-		23BAE23414DF7AD1007FC3C8 /* libCoreEngine3D(OSX).a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libCoreEngine3D(OSX).a"; path = "../../../../../../Library/Developer/Xcode/DerivedData/CoreTools-avoztlpqpknwnhdiipysaohuswpy/Build/Products/Debug/libCoreEngine3D(OSX).a"; sourceTree = "<group>"; };
-		23EAA01C14DF6AB800F0B167 /* Hash */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Hash; sourceTree = BUILT_PRODUCTS_DIR; };
+		23EAA01C14DF6AB800F0B167 /* HashString */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HashString; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -34,7 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				23BAE23514DF7AD1007FC3C8 /* libCoreEngine3D(OSX).a in Frameworks */,
+				23B39C4E14F21C410011CE9A /* libCoreEngine3D(OSX).a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,7 +44,7 @@
 		23EAA01114DF6AB700F0B167 = {
 			isa = PBXGroup;
 			children = (
-				23BAE23414DF7AD1007FC3C8 /* libCoreEngine3D(OSX).a */,
+				23B39C4C14F21C410011CE9A /* libCoreEngine3D(OSX).a */,
 				23BAE23114DF7AAD007FC3C8 /* Main.cpp */,
 				23EAA01D14DF6AB800F0B167 /* Products */,
 			);
@@ -53,7 +53,7 @@
 		23EAA01D14DF6AB800F0B167 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				23EAA01C14DF6AB800F0B167 /* Hash */,
+				23EAA01C14DF6AB800F0B167 /* HashString */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,9 +61,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		23EAA01B14DF6AB800F0B167 /* Hash */ = {
+		23EAA01B14DF6AB800F0B167 /* HashString */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 23EAA02614DF6AB800F0B167 /* Build configuration list for PBXNativeTarget "Hash" */;
+			buildConfigurationList = 23EAA02614DF6AB800F0B167 /* Build configuration list for PBXNativeTarget "HashString" */;
 			buildPhases = (
 				23EAA01814DF6AB800F0B167 /* Sources */,
 				23EAA01914DF6AB800F0B167 /* Frameworks */,
@@ -73,9 +73,9 @@
 			);
 			dependencies = (
 			);
-			name = Hash;
+			name = HashString;
 			productName = Hash;
-			productReference = 23EAA01C14DF6AB800F0B167 /* Hash */;
+			productReference = 23EAA01C14DF6AB800F0B167 /* HashString */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -86,7 +86,7 @@
 			attributes = {
 				LastUpgradeCheck = 0420;
 			};
-			buildConfigurationList = 23EAA01614DF6AB700F0B167 /* Build configuration list for PBXProject "Hash" */;
+			buildConfigurationList = 23EAA01614DF6AB700F0B167 /* Build configuration list for PBXProject "HashString" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -98,7 +98,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				23EAA01B14DF6AB800F0B167 /* Hash */,
+				23EAA01B14DF6AB800F0B167 /* HashString */,
 			);
 		};
 /* End PBXProject section */
@@ -169,7 +169,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/CoreTools-avoztlpqpknwnhdiipysaohuswpy/Build/Products/Debug\"",
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = HashString;
 			};
 			name = Debug;
 		};
@@ -180,14 +180,14 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/CoreTools-avoztlpqpknwnhdiipysaohuswpy/Build/Products/Debug\"",
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = HashString;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		23EAA01614DF6AB700F0B167 /* Build configuration list for PBXProject "Hash" */ = {
+		23EAA01614DF6AB700F0B167 /* Build configuration list for PBXProject "HashString" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				23EAA02414DF6AB800F0B167 /* Debug */,
@@ -196,7 +196,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		23EAA02614DF6AB800F0B167 /* Build configuration list for PBXNativeTarget "Hash" */ = {
+		23EAA02614DF6AB800F0B167 /* Build configuration list for PBXNativeTarget "HashString" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				23EAA02714DF6AB800F0B167 /* Debug */,
