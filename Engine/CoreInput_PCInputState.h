@@ -27,6 +27,8 @@ struct MouseInputState
 	MouseInputState();
 	CoreInput_ButtonState buttonState[MOUSESTATE_MAX_MOUSEBUTTONS];
 	vec2 position;
+	vec2 lastPosition;
+	bool sleeping;
 };
 
 struct KeyboardInputState

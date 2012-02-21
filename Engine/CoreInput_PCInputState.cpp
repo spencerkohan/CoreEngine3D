@@ -10,8 +10,13 @@
 
 MouseInputState::MouseInputState()
 {
+	sleeping = false;
+	
 	position.x = 0;
 	position.y = 0;
+	
+	lastPosition.x = 0;
+	lastPosition.y = 0;
 	
 	for(u32 i=0; i<MOUSESTATE_MAX_MOUSEBUTTONS; ++i)
 	{

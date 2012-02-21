@@ -184,6 +184,7 @@ void Game::Update(f32 timeElapsed)
 	}
 	
 	//Update controls
+	
 	for(u32 i=0; i<MOUSESTATE_MAX_MOUSEBUTTONS; ++i)
 	{
 		const CoreInput_ButtonState mouseState = m_mouseState.buttonState[i];
@@ -197,6 +198,9 @@ void Game::Update(f32 timeElapsed)
 			m_mouseState.buttonState[i] = CoreInput_ButtonState_None;
 		}
 	}
+	
+	//Save last position for sleep detection
+	CopyVec2(&m_mouseState.lastPosition,&m_mouseState.position);
 	
 	for(u32 i=0; i<256; ++i)
 	{
