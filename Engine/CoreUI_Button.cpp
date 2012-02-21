@@ -47,17 +47,17 @@ void CoreUI_Button::PressButton(TouchState touchState, vec2* pBeginTouchPos, vec
 				{
 					SetVec4(&m_diffuseColor,g_CoreUIButton_DefaultPressedBrightness,g_CoreUIButton_DefaultPressedBrightness,g_CoreUIButton_DefaultPressedBrightness,1.0f);
 					
-					m_buttonState = ButtonState_Pressed;
+					m_buttonState = CoreUI_ButtonState_Pressed;
 					
 					break;
 				}
 				case TouchState_Ended:
 				{
-					if(m_buttonState == ButtonState_Pressed)
+					if(m_buttonState == CoreUI_ButtonState_Pressed)
 					{
 						SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,1.0f);
 						
-						m_buttonState = ButtonState_Neutral;
+						m_buttonState = CoreUI_ButtonState_Neutral;
 						
 						m_callback(m_value);					
 					}
@@ -66,7 +66,7 @@ void CoreUI_Button::PressButton(TouchState touchState, vec2* pBeginTouchPos, vec
 				}
 				case TouchState_Stationary:
 				{
-					m_buttonState = ButtonState_Pressed;
+					m_buttonState = CoreUI_ButtonState_Pressed;
 					
 					break;
 				}
@@ -74,7 +74,7 @@ void CoreUI_Button::PressButton(TouchState touchState, vec2* pBeginTouchPos, vec
 				{
 					SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,1.0f);
 					
-					m_buttonState = ButtonState_Neutral;
+					m_buttonState = CoreUI_ButtonState_Neutral;
 					
 					break;
 				}
@@ -88,14 +88,14 @@ void CoreUI_Button::PressButton(TouchState touchState, vec2* pBeginTouchPos, vec
 		{
 			SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,1.0f);
 			
-			m_buttonState = ButtonState_Neutral;
+			m_buttonState = CoreUI_ButtonState_Neutral;
 		}
 	}
 	else
 	{
 		SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,1.0f);
 		
-		m_buttonState = ButtonState_Neutral;
+		m_buttonState = CoreUI_ButtonState_Neutral;
 	}
 }
 

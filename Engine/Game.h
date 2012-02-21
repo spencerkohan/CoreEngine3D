@@ -24,7 +24,7 @@
 #endif
 
 #if defined (PLATFORM_OSX) || defined (PLATFORM_WIN)
-#include "CoreInput_MouseState.h"
+#include "CoreInput_PCInputState.h"
 #endif
 
 #include "CoreUI_Button.h"
@@ -200,6 +200,7 @@ public:
 
 #if defined (PLATFORM_OSX) || defined(PLATFORM_WIN)
 	MouseInputState m_mouseState;
+	KeyboardInputState m_keyboardState;
 #endif
 	void ResetCamera();
 
@@ -266,6 +267,7 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	f32 m_camLerpTotalTime;
 	
 	bool m_touchIsLinked[MAX_MULTITOUCH];
+	bool m_paused;
 	
 private:
 	Box2DDebugDraw* m_Box2D_pDebugDraw;

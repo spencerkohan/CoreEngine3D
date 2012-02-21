@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 Jody McAdams. All rights reserved.
 //
 
-#include "CoreInput_MouseState.h"
+#include "CoreInput_PCInputState.h"
 
 MouseInputState::MouseInputState()
 {
@@ -15,6 +15,14 @@ MouseInputState::MouseInputState()
 	
 	for(u32 i=0; i<MOUSESTATE_MAX_MOUSEBUTTONS; ++i)
 	{
-		buttonState[i] = MouseButtonState_None;
+		buttonState[i] = CoreInput_ButtonState_None;
+	}
+}
+
+KeyboardInputState::KeyboardInputState()
+{
+	for(u32 i=0; i<256; ++i)
+	{
+		buttonState[i] = CoreInput_ButtonState_None;
 	}
 }

@@ -13,11 +13,11 @@
 #include "OpenGLRenderer.h"
 #include "CoreInput_DeviceInputState.h"
 
-enum ButtonState
+enum CoreUI_ButtonState
 {
-	ButtonState_Neutral,
-	ButtonState_Pressed,
-	ButtonState_Num,
+	CoreUI_ButtonState_Neutral,
+	CoreUI_ButtonState_Pressed,
+	CoreUI_ButtonState_Num,
 };
 
 enum CoreUI_AttachSide
@@ -53,7 +53,7 @@ public:
 	vec3 m_position;
 	vec4 m_diffuseColor;
 
-	ButtonState m_buttonState;
+	CoreUI_ButtonState m_buttonState;
 	CoreUI_AttachSide m_attachSide;
 	
 	CoreObjectHandle m_handle_r3D_button;

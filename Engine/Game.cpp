@@ -60,6 +60,8 @@ void Game::ResetCamera()
 
 bool Game::Init()
 {
+	m_paused = false;
+	
 	m_camLerpTimer = -1.0f;
 	
 	m_Box2D_pWorld = NULL;
@@ -168,24 +170,56 @@ void Game::CleanUp()
 
 void Game::Update(f32 timeElapsed)
 {
-	UpdateBreakables(timeElapsed);
-
 #if defined (PLATFORM_OSX) || defined(PLATFORM_WIN)
 	
+	//35 is the 'P' key
+	if(m_keyboardState.buttonState[35] == CoreInput_ButtonState_Began)
+	{
+		m_paused = !m_paused;
+		
+		//TODO: change how this works if you want to do
+		//fancy UI effects that won't draw any more because
+		//you paused the graphics
+		GLRENDERER->paused = m_paused;
+	}
+	
+	//Update controls
 	for(u32 i=0; i<MOUSESTATE_MAX_MOUSEBUTTONS; ++i)
 	{
-		const MouseButtonState moustState = m_mouseState.buttonState[i];
+		const CoreInput_ButtonState mouseState = m_mouseState.buttonState[i];
 
-		if(moustState == MouseButtonState_Began)
+		if(mouseState == CoreInput_ButtonState_Began)
 		{
-			m_mouseState.buttonState[i] = MouseButtonState_Held;
+			m_mouseState.buttonState[i] = CoreInput_ButtonState_Held;
 		}
-		else if(moustState == MouseButtonState_Ended)
+		else if(mouseState == CoreInput_ButtonState_Ended)
 		{
-			m_mouseState.buttonState[i] = MouseButtonState_None;
+			m_mouseState.buttonState[i] = CoreInput_ButtonState_None;
+		}
+	}
+	
+	for(u32 i=0; i<256; ++i)
+	{
+		const CoreInput_ButtonState keyState = m_keyboardState.buttonState[i];
+		
+		if(keyState == CoreInput_ButtonState_Began)
+		{
+			m_keyboardState.buttonState[i] = CoreInput_ButtonState_Held;
+		}
+		else if(keyState == CoreInput_ButtonState_Ended)
+		{
+			m_keyboardState.buttonState[i] = CoreInput_ButtonState_None;
 		}
 	}
 #endif
+	
+	//If the game is paused, we can bust out at this point
+	if(m_paused)
+	{
+		return;
+	}
+	
+	UpdateBreakables(timeElapsed);
 
 	if(m_camLerpTimer > 0.0f)
 	{
