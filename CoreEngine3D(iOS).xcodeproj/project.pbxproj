@@ -404,10 +404,9 @@
 		DDA6F498149C1A920035A1BF /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				DD408FB414DB5B730016BA1A /* CoreObjects */,
 				23D9D67114F36648002152D3 /* CoreInput_PCInputState.cpp */,
 				23D9D67214F36648002152D3 /* CoreInput_PCInputState.h */,
-				23EB371414F240BE00F36E7C /* CoreGameObject.h */,
-				DD408FB414DB5B730016BA1A /* CoreObjects */,
 				23DEF8E914F19CD900985385 /* Box2DDebugDraw.h */,
 				23DEF8EC14F19D1500985385 /* Box2DDebugDraw.cpp */,
 				233581FC14D3A5C300F66DA0 /* CoreDebug.cpp */,
@@ -416,6 +415,7 @@
 				2335820114D3A5C300F66DA0 /* CoreObject_Manager.h */,
 				2335820214D3A5C300F66DA0 /* CoreObject.cpp */,
 				2335820314D3A5C300F66DA0 /* CoreObject.h */,
+				23EB371414F240BE00F36E7C /* CoreGameObject.h */,
 				2335820414D3A5C300F66DA0 /* Hash.cpp */,
 				2335820514D3A5C300F66DA0 /* Hash.h */,
 				2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */,

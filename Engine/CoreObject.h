@@ -15,6 +15,12 @@
 class CoreObject;
 class CoreObjectManager;
 
+enum CoreObjectType
+{
+	CoreObjectType_CoreObject,
+	CoreObjectType_CoreGameObject,
+};
+
 typedef u32 CoreObjectHandle;
 #define INVALID_COREOBJECT_HANDLE 0
 
@@ -29,6 +35,7 @@ class CoreObject
 	friend class CoreObjectManager;
 	
 public:
+	virtual CoreObjectType GetType(){return CoreObjectType_CoreObject;}
 	static void InitClass(){};
 	u32 GetEntityType();
 	CoreObjectHandle GetHandle() const;

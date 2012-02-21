@@ -21,6 +21,8 @@ public:
 	virtual const b2Body* Box2D_GetBody(){return NULL;}
 	
 	virtual void CollisionResponseCallback(CoreGameObject* pResponder, CoreGameObject* pCollider){};
+	
+	virtual CoreObjectType GetType(){return CoreObjectType_CoreGameObject;}
 };
 
 #endif
