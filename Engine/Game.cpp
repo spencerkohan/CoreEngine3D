@@ -1140,7 +1140,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 {
 	m_pixelsPerMeter = (f32)tileWidthPixels/tileSizeMeters;
 	
-	const f32 halfTilsSize = tileSizeMeters*0.5f;
+	const f32 halfTileSize = tileSizeMeters*0.5f;
 	
 	m_numSpawnableEntities = 0;
 
@@ -1502,7 +1502,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						b2FixtureDef fixtureDef;
 						fixtureDef.density = 1;
 						b2PolygonShape polygonShape;
-						polygonShape.SetAsBox(halfTilsSize,halfTilsSize);
+						polygonShape.SetAsBox(halfTileSize,halfTileSize);
 						fixtureDef.shape = &polygonShape;
 						fixtureDef.filter.categoryBits = 1 << CollisionFilter_Ground;
 						fixtureDef.filter.maskBits = 0xFFFF;
