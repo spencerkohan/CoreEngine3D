@@ -33,10 +33,7 @@ public:
 	virtual void CollisionResponseCallback(const Box2D_CollisionInfo& collInfo){};
 	
 	virtual CoreObjectType GetType(){return CoreObjectType_CoreGameObject;}
-	
-	void Box2D_Init();
-	void Box2D_AddCollisionInfo(const Box2D_CollisionInfo& collInfo);
-	void Box2D_ProcessCollisions();
+
 private:
 	u32 m_Box2D_NumCollisionInfos;
 	Box2D_CollisionInfo m_Box2D_CollisionInfo[COREGAMEOBJECT_MAX_COLLISION_INFOS];

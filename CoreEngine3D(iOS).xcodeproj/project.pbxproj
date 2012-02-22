@@ -17,6 +17,8 @@
 		2335820D14D3A5C300F66DA0 /* CoreObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 2335820314D3A5C300F66DA0 /* CoreObject.h */; };
 		2335820E14D3A5C300F66DA0 /* Hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2335820414D3A5C300F66DA0 /* Hash.cpp */; };
 		2335820F14D3A5C300F66DA0 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 2335820514D3A5C300F66DA0 /* Hash.h */; };
+		233BBC0F14F4AF3900BB12FA /* Box2DContactListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 233BBC0D14F4AF3900BB12FA /* Box2DContactListener.cpp */; };
+		233BBC1014F4AF3900BB12FA /* Box2DContactListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 233BBC0E14F4AF3900BB12FA /* Box2DContactListener.h */; };
 		234BA1E914D4ADAE00784CAE /* Square_Tiled_4.h in Headers */ = {isa = PBXBuildFile; fileRef = 234BA1E814D4ADAE00784CAE /* Square_Tiled_4.h */; };
 		2355541B14B01EBA00BF618F /* CoreAudio_OpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2355541E14B01F0C00BF618F /* CoreAudio_OpenAL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.cpp */; };
@@ -142,7 +144,6 @@
 		DDD5218D14A024A800D6A0BC /* EngineModels.h in Headers */ = {isa = PBXBuildFile; fileRef = DDD5218B14A024A800D6A0BC /* EngineModels.h */; };
 		DDD521A314A03BEC00D6A0BC /* CoreInput_DeviceInputState.h in Headers */ = {isa = PBXBuildFile; fileRef = DDD521A214A03BEB00D6A0BC /* CoreInput_DeviceInputState.h */; };
 		DDD521A514A03BFE00D6A0BC /* CoreInput_DeviceInputState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDD521A414A03BFE00D6A0BC /* CoreInput_DeviceInputState.cpp */; };
-		DDDCD71214F4898100C896C5 /* CoreGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDDCD71114F4898100C896C5 /* CoreGameObject.cpp */; };
 		DDF73D37149C24D700D5DFB5 /* png.c in Sources */ = {isa = PBXBuildFile; fileRef = DDF73D18149C24D700D5DFB5 /* png.c */; };
 		DDF73D38149C24D700D5DFB5 /* png.h in Headers */ = {isa = PBXBuildFile; fileRef = DDF73D19149C24D700D5DFB5 /* png.h */; };
 		DDF73D39149C24D700D5DFB5 /* pngconf.h in Headers */ = {isa = PBXBuildFile; fileRef = DDF73D1A149C24D700D5DFB5 /* pngconf.h */; };
@@ -183,6 +184,8 @@
 		2335820314D3A5C300F66DA0 /* CoreObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreObject.h; sourceTree = "<group>"; };
 		2335820414D3A5C300F66DA0 /* Hash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hash.cpp; sourceTree = "<group>"; };
 		2335820514D3A5C300F66DA0 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
+		233BBC0D14F4AF3900BB12FA /* Box2DContactListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DContactListener.cpp; sourceTree = "<group>"; };
+		233BBC0E14F4AF3900BB12FA /* Box2DContactListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DContactListener.h; sourceTree = "<group>"; };
 		234BA1E814D4ADAE00784CAE /* Square_Tiled_4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_4.h; sourceTree = "<group>"; };
 		2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAudio_OpenAL.h; sourceTree = "<group>"; };
 		2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = CoreAudio_OpenAL.cpp; sourceTree = "<group>"; };
@@ -309,7 +312,6 @@
 		DDD5218B14A024A800D6A0BC /* EngineModels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EngineModels.h; sourceTree = "<group>"; };
 		DDD521A214A03BEB00D6A0BC /* CoreInput_DeviceInputState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_DeviceInputState.h; sourceTree = "<group>"; };
 		DDD521A414A03BFE00D6A0BC /* CoreInput_DeviceInputState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_DeviceInputState.cpp; sourceTree = "<group>"; };
-		DDDCD71114F4898100C896C5 /* CoreGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreGameObject.cpp; sourceTree = "<group>"; };
 		DDF73D18149C24D700D5DFB5 /* png.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = png.c; sourceTree = "<group>"; };
 		DDF73D19149C24D700D5DFB5 /* png.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = png.h; sourceTree = "<group>"; };
 		DDF73D1A149C24D700D5DFB5 /* pngconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pngconf.h; sourceTree = "<group>"; };
@@ -406,9 +408,10 @@
 		DDA6F498149C1A920035A1BF /* Engine */ = {
 			isa = PBXGroup;
 			children = (
-				DD408FB414DB5B730016BA1A /* CoreObjects */,
 				23D9D67114F36648002152D3 /* CoreInput_PCInputState.cpp */,
 				23D9D67214F36648002152D3 /* CoreInput_PCInputState.h */,
+				233BBC0D14F4AF3900BB12FA /* Box2DContactListener.cpp */,
+				233BBC0E14F4AF3900BB12FA /* Box2DContactListener.h */,
 				23DEF8E914F19CD900985385 /* Box2DDebugDraw.h */,
 				23DEF8EC14F19D1500985385 /* Box2DDebugDraw.cpp */,
 				233581FC14D3A5C300F66DA0 /* CoreDebug.cpp */,
@@ -418,7 +421,6 @@
 				2335820214D3A5C300F66DA0 /* CoreObject.cpp */,
 				2335820314D3A5C300F66DA0 /* CoreObject.h */,
 				23EB371414F240BE00F36E7C /* CoreGameObject.h */,
-				DDDCD71114F4898100C896C5 /* CoreGameObject.cpp */,
 				2335820414D3A5C300F66DA0 /* Hash.cpp */,
 				2335820514D3A5C300F66DA0 /* Hash.h */,
 				2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */,
@@ -468,6 +470,7 @@
 				DDD5217614A008C600D6A0BC /* CoreUI_Button.cpp */,
 				DDD521A214A03BEB00D6A0BC /* CoreInput_DeviceInputState.h */,
 				DDD521A414A03BFE00D6A0BC /* CoreInput_DeviceInputState.cpp */,
+				DD408FB414DB5B730016BA1A /* CoreObjects */,
 				DDF73D17149C24D700D5DFB5 /* libpng */,
 				DDF73D30149C24D700D5DFB5 /* pugixml */,
 				DDA6F544149C1A920035A1BF /* SOIL */,
@@ -712,6 +715,7 @@
 				23DEF8EA14F19CD900985385 /* Box2DDebugDraw.h in Headers */,
 				23EB371514F240BE00F36E7C /* CoreGameObject.h in Headers */,
 				23D9D67414F36648002152D3 /* CoreInput_PCInputState.h in Headers */,
+				233BBC1014F4AF3900BB12FA /* Box2DContactListener.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -850,7 +854,7 @@
 				DD25DC7314E1E308000ACF15 /* TileAffector.cpp in Sources */,
 				23DEF8ED14F19D1500985385 /* Box2DDebugDraw.cpp in Sources */,
 				23D9D67314F36648002152D3 /* CoreInput_PCInputState.cpp in Sources */,
-				DDDCD71214F4898100C896C5 /* CoreGameObject.cpp in Sources */,
+				233BBC0F14F4AF3900BB12FA /* Box2DContactListener.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
