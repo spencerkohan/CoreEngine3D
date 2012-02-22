@@ -93,14 +93,14 @@
 		23FCBCE814A1E09A00C5EA7C /* MathUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBBFE14A1E09A00C5EA7C /* MathUtil.cpp */; };
 		23FCBCE914A1E09A00C5EA7C /* MathUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBBFF14A1E09A00C5EA7C /* MathUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBCEA14A1E09A00C5EA7C /* matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0014A1E09A00C5EA7C /* matrix.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		23FCBCEB14A1E09A00C5EA7C /* matrix.mm in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC0114A1E09A00C5EA7C /* matrix.mm */; };
+		23FCBCEB14A1E09A00C5EA7C /* matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC0114A1E09A00C5EA7C /* matrix.cpp */; };
 		23FCBCEC14A1E09A00C5EA7C /* fullscreen_model.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0314A1E09A00C5EA7C /* fullscreen_model.h */; };
 		23FCBCED14A1E09A00C5EA7C /* model_cube.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0414A1E09A00C5EA7C /* model_cube.h */; };
 		23FCBCF014A1E09A00C5EA7C /* square1x1.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0714A1E09A00C5EA7C /* square1x1.h */; };
 		23FCBCF514A1E09A00C5EA7C /* Square_Tiled_16.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0C14A1E09A00C5EA7C /* Square_Tiled_16.h */; };
 		23FCBCF614A1E09A00C5EA7C /* Square_Tiled_8.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC0D14A1E09A00C5EA7C /* Square_Tiled_8.h */; };
 		23FCBCFC14A1E09A00C5EA7C /* OpenGLRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC1314A1E09A00C5EA7C /* OpenGLRenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		23FCBCFD14A1E09A00C5EA7C /* OpenGLRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC1414A1E09A00C5EA7C /* OpenGLRenderer.mm */; };
+		23FCBCFD14A1E09A00C5EA7C /* OpenGLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC1414A1E09A00C5EA7C /* OpenGLRenderer.cpp */; };
 		23FCBCFE14A1E09A00C5EA7C /* Physics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23FCBC1614A1E09A00C5EA7C /* Physics.cpp */; };
 		23FCBCFF14A1E09A00C5EA7C /* Physics.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC1714A1E09A00C5EA7C /* Physics.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23FCBD0114A1E09A00C5EA7C /* PVRTArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 23FCBC1A14A1E09A00C5EA7C /* PVRTArray.h */; };
@@ -265,14 +265,14 @@
 		23FCBBFE14A1E09A00C5EA7C /* MathUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathUtil.cpp; sourceTree = "<group>"; };
 		23FCBBFF14A1E09A00C5EA7C /* MathUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathUtil.h; sourceTree = "<group>"; };
 		23FCBC0014A1E09A00C5EA7C /* matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matrix.h; sourceTree = "<group>"; };
-		23FCBC0114A1E09A00C5EA7C /* matrix.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = matrix.mm; sourceTree = "<group>"; };
+		23FCBC0114A1E09A00C5EA7C /* matrix.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = matrix.cpp; sourceTree = "<group>"; };
 		23FCBC0314A1E09A00C5EA7C /* fullscreen_model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fullscreen_model.h; sourceTree = "<group>"; };
 		23FCBC0414A1E09A00C5EA7C /* model_cube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = model_cube.h; sourceTree = "<group>"; };
 		23FCBC0714A1E09A00C5EA7C /* square1x1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = square1x1.h; sourceTree = "<group>"; };
 		23FCBC0C14A1E09A00C5EA7C /* Square_Tiled_16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_16.h; sourceTree = "<group>"; };
 		23FCBC0D14A1E09A00C5EA7C /* Square_Tiled_8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_8.h; sourceTree = "<group>"; };
 		23FCBC1314A1E09A00C5EA7C /* OpenGLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLRenderer.h; sourceTree = "<group>"; };
-		23FCBC1414A1E09A00C5EA7C /* OpenGLRenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLRenderer.mm; sourceTree = "<group>"; };
+		23FCBC1414A1E09A00C5EA7C /* OpenGLRenderer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = OpenGLRenderer.cpp; sourceTree = "<group>"; };
 		23FCBC1614A1E09A00C5EA7C /* Physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Physics.cpp; sourceTree = "<group>"; };
 		23FCBC1714A1E09A00C5EA7C /* Physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Physics.h; sourceTree = "<group>"; };
 		23FCBC1A14A1E09A00C5EA7C /* PVRTArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRTArray.h; sourceTree = "<group>"; };
@@ -480,9 +480,9 @@
 				23FCBBFE14A1E09A00C5EA7C /* MathUtil.cpp */,
 				23FCBBFF14A1E09A00C5EA7C /* MathUtil.h */,
 				23FCBC0014A1E09A00C5EA7C /* matrix.h */,
-				23FCBC0114A1E09A00C5EA7C /* matrix.mm */,
+				23FCBC0114A1E09A00C5EA7C /* matrix.cpp */,
 				23FCBC1314A1E09A00C5EA7C /* OpenGLRenderer.h */,
-				23FCBC1414A1E09A00C5EA7C /* OpenGLRenderer.mm */,
+				23FCBC1414A1E09A00C5EA7C /* OpenGLRenderer.cpp */,
 				23FCBC1614A1E09A00C5EA7C /* Physics.cpp */,
 				23FCBC1714A1E09A00C5EA7C /* Physics.h */,
 				23FCBC5014A1E09A00C5EA7C /* RenderFlags.cpp */,
@@ -820,8 +820,8 @@
 				23FCBCE414A1E09A00C5EA7C /* MaterialDeclarations.cpp in Sources */,
 				23FCBCE614A1E09A00C5EA7C /* MathTypes.cpp in Sources */,
 				23FCBCE814A1E09A00C5EA7C /* MathUtil.cpp in Sources */,
-				23FCBCEB14A1E09A00C5EA7C /* matrix.mm in Sources */,
-				23FCBCFD14A1E09A00C5EA7C /* OpenGLRenderer.mm in Sources */,
+				23FCBCEB14A1E09A00C5EA7C /* matrix.cpp in Sources */,
+				23FCBCFD14A1E09A00C5EA7C /* OpenGLRenderer.cpp in Sources */,
 				23FCBCFE14A1E09A00C5EA7C /* Physics.cpp in Sources */,
 				23FCBD0314A1E09A00C5EA7C /* PVRTBoneBatch.cpp in Sources */,
 				23FCBD0514A1E09A00C5EA7C /* PVRTDecompress.cpp in Sources */,

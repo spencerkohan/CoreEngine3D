@@ -20,6 +20,8 @@
 		233BBC0F14F4AF3900BB12FA /* Box2DContactListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 233BBC0D14F4AF3900BB12FA /* Box2DContactListener.cpp */; };
 		233BBC1014F4AF3900BB12FA /* Box2DContactListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 233BBC0E14F4AF3900BB12FA /* Box2DContactListener.h */; };
 		233BBC7314F4C63600BB12FA /* CoreGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 233BBC7214F4C63600BB12FA /* CoreGameObject.cpp */; };
+		233BBC7714F4D3EC00BB12FA /* matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 233BBC7514F4D3EC00BB12FA /* matrix.cpp */; };
+		233BBC7814F4D3EC00BB12FA /* OpenGLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 233BBC7614F4D3EC00BB12FA /* OpenGLRenderer.cpp */; };
 		234BA1E914D4ADAE00784CAE /* Square_Tiled_4.h in Headers */ = {isa = PBXBuildFile; fileRef = 234BA1E814D4ADAE00784CAE /* Square_Tiled_4.h */; };
 		2355541B14B01EBA00BF618F /* CoreAudio_OpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2355541E14B01F0C00BF618F /* CoreAudio_OpenAL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.cpp */; };
@@ -67,13 +69,11 @@
 		DDA6F569149C1A930035A1BF /* MathUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F4AB149C1A920035A1BF /* MathUtil.cpp */; };
 		DDA6F56A149C1A930035A1BF /* MathUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4AC149C1A920035A1BF /* MathUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F56B149C1A930035A1BF /* matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4AD149C1A920035A1BF /* matrix.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DDA6F56C149C1A930035A1BF /* matrix.mm in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F4AE149C1A920035A1BF /* matrix.mm */; };
 		DDA6F56D149C1A930035A1BF /* fullscreen_model.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B0149C1A920035A1BF /* fullscreen_model.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F571149C1A930035A1BF /* square1x1.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B4149C1A920035A1BF /* square1x1.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F576149C1A930035A1BF /* Square_Tiled_16.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4B9149C1A920035A1BF /* Square_Tiled_16.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F577149C1A930035A1BF /* Square_Tiled_8.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4BA149C1A920035A1BF /* Square_Tiled_8.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F57D149C1A930035A1BF /* OpenGLRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4C0149C1A920035A1BF /* OpenGLRenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DDA6F57E149C1A930035A1BF /* OpenGLRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F4C1149C1A920035A1BF /* OpenGLRenderer.mm */; };
 		DDA6F57F149C1A930035A1BF /* Physics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6F4C2149C1A920035A1BF /* Physics.cpp */; };
 		DDA6F580149C1A930035A1BF /* Physics.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4C3149C1A920035A1BF /* Physics.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DDA6F582149C1A930035A1BF /* PVRTArray.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6F4C6149C1A920035A1BF /* PVRTArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -188,6 +188,8 @@
 		233BBC0D14F4AF3900BB12FA /* Box2DContactListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DContactListener.cpp; sourceTree = "<group>"; };
 		233BBC0E14F4AF3900BB12FA /* Box2DContactListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DContactListener.h; sourceTree = "<group>"; };
 		233BBC7214F4C63600BB12FA /* CoreGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreGameObject.cpp; sourceTree = "<group>"; };
+		233BBC7514F4D3EC00BB12FA /* matrix.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = matrix.cpp; sourceTree = "<group>"; };
+		233BBC7614F4D3EC00BB12FA /* OpenGLRenderer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = OpenGLRenderer.cpp; sourceTree = "<group>"; };
 		234BA1E814D4ADAE00784CAE /* Square_Tiled_4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_4.h; sourceTree = "<group>"; };
 		2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAudio_OpenAL.h; sourceTree = "<group>"; };
 		2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = CoreAudio_OpenAL.cpp; sourceTree = "<group>"; };
@@ -236,13 +238,11 @@
 		DDA6F4AB149C1A920035A1BF /* MathUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathUtil.cpp; sourceTree = "<group>"; };
 		DDA6F4AC149C1A920035A1BF /* MathUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathUtil.h; sourceTree = "<group>"; };
 		DDA6F4AD149C1A920035A1BF /* matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matrix.h; sourceTree = "<group>"; };
-		DDA6F4AE149C1A920035A1BF /* matrix.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = matrix.mm; sourceTree = "<group>"; };
 		DDA6F4B0149C1A920035A1BF /* fullscreen_model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fullscreen_model.h; sourceTree = "<group>"; };
 		DDA6F4B4149C1A920035A1BF /* square1x1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = square1x1.h; sourceTree = "<group>"; };
 		DDA6F4B9149C1A920035A1BF /* Square_Tiled_16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_16.h; sourceTree = "<group>"; };
 		DDA6F4BA149C1A920035A1BF /* Square_Tiled_8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_8.h; sourceTree = "<group>"; };
 		DDA6F4C0149C1A920035A1BF /* OpenGLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLRenderer.h; sourceTree = "<group>"; };
-		DDA6F4C1149C1A920035A1BF /* OpenGLRenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLRenderer.mm; sourceTree = "<group>"; };
 		DDA6F4C2149C1A920035A1BF /* Physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Physics.cpp; sourceTree = "<group>"; };
 		DDA6F4C3149C1A920035A1BF /* Physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Physics.h; sourceTree = "<group>"; };
 		DDA6F4C6149C1A920035A1BF /* PVRTArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRTArray.h; sourceTree = "<group>"; };
@@ -456,9 +456,9 @@
 				DDA6F4AB149C1A920035A1BF /* MathUtil.cpp */,
 				DDA6F4AC149C1A920035A1BF /* MathUtil.h */,
 				DDA6F4AD149C1A920035A1BF /* matrix.h */,
-				DDA6F4AE149C1A920035A1BF /* matrix.mm */,
+				233BBC7514F4D3EC00BB12FA /* matrix.cpp */,
 				DDA6F4C0149C1A920035A1BF /* OpenGLRenderer.h */,
-				DDA6F4C1149C1A920035A1BF /* OpenGLRenderer.mm */,
+				233BBC7614F4D3EC00BB12FA /* OpenGLRenderer.cpp */,
 				DDA6F4C2149C1A920035A1BF /* Physics.cpp */,
 				DDA6F4C3149C1A920035A1BF /* Physics.h */,
 				DDA6F4F5149C1A920035A1BF /* RenderFlags.cpp */,
@@ -791,8 +791,6 @@
 				DDA6F565149C1A930035A1BF /* MaterialDeclarations.cpp in Sources */,
 				DDA6F567149C1A930035A1BF /* MathTypes.cpp in Sources */,
 				DDA6F569149C1A930035A1BF /* MathUtil.cpp in Sources */,
-				DDA6F56C149C1A930035A1BF /* matrix.mm in Sources */,
-				DDA6F57E149C1A930035A1BF /* OpenGLRenderer.mm in Sources */,
 				DDA6F57F149C1A930035A1BF /* Physics.cpp in Sources */,
 				DDA6F584149C1A930035A1BF /* PVRTBoneBatch.cpp in Sources */,
 				DDA6F586149C1A930035A1BF /* PVRTDecompress.cpp in Sources */,
@@ -859,6 +857,8 @@
 				23D9D67314F36648002152D3 /* CoreInput_PCInputState.cpp in Sources */,
 				233BBC0F14F4AF3900BB12FA /* Box2DContactListener.cpp in Sources */,
 				233BBC7314F4C63600BB12FA /* CoreGameObject.cpp in Sources */,
+				233BBC7714F4D3EC00BB12FA /* matrix.cpp in Sources */,
+				233BBC7814F4D3EC00BB12FA /* OpenGLRenderer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
