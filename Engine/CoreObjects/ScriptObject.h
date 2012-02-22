@@ -42,7 +42,6 @@ public:
 		ScriptStatus_Num,
 	};
 
-	virtual void Uninit();
 	virtual void ProcessMessage(u32 message);	//Pass in a hash value
 
 	virtual const vec3* GetPosition();

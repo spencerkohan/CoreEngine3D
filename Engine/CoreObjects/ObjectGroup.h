@@ -21,7 +21,6 @@
 class ObjectGroup: public CoreGameObject
 {
 public:
-	virtual void Uninit();
 	virtual void ProcessMessage(u32 message);	//Pass in a hash value
 
 	virtual bool SpawnInit(void* pSpawnStruct);

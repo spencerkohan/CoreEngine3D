@@ -11,6 +11,15 @@
 
 #include "CoreObject.h"
 #include <Box2D/Box2D.h>
+#include "MathTypes.h"
+
+#define COREGAMEOBJECT_MAX_COLLISION_INFOS 16
+
+struct Box2D_CollisionInfo
+{
+	CoreObject* pCollider;
+	vec2 normal;
+};
 
 class CoreGameObject: public CoreObject
 {
@@ -18,11 +27,19 @@ public:
 	virtual void SetPosition(const vec3* pPosition){}
 	virtual void SetUp(const vec3* pUp){};
 	virtual const vec3* GetPosition(){return NULL;}
-	virtual const b2Body* Box2D_GetBody(){return NULL;}
+	virtual b2Body* Box2D_GetBody(){return NULL;}
+	virtual bool Box2D_GetAnchorOffset(vec2* pOut_OffsetVec){return false;}
 	
-	virtual void CollisionResponseCallback(CoreGameObject* pResponder, CoreGameObject* pCollider){};
+	virtual void CollisionResponseCallback(const Box2D_CollisionInfo& collInfo){};
 	
 	virtual CoreObjectType GetType(){return CoreObjectType_CoreGameObject;}
+	
+	void Box2D_Init();
+	void Box2D_AddCollisionInfo(const Box2D_CollisionInfo& collInfo);
+	void Box2D_ProcessCollisions();
+private:
+	u32 m_Box2D_NumCollisionInfos;
+	Box2D_CollisionInfo m_Box2D_CollisionInfo[COREGAMEOBJECT_MAX_COLLISION_INFOS];
 };
 
 #endif

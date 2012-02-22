@@ -420,8 +420,3 @@ bool ScriptObject::GetPositionIsInside(const vec2* pTouchPos)
 }
 
 
-void ScriptObject::Uninit()
-{
-	
-}
-

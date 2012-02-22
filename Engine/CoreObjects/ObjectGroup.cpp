@@ -97,8 +97,3 @@ void ObjectGroup::ProcessMessage(u32 message)	//Pass in a hash value
 }
 
 
-void ObjectGroup::Uninit()
-{
-	
-}
-
