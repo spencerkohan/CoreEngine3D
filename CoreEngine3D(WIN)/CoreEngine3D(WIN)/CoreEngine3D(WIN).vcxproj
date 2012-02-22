@@ -91,16 +91,10 @@
     <ClCompile Include="..\..\Engine\Box2DContactListener.cpp" />
     <ClCompile Include="..\..\Engine\Box2DDebugDraw.cpp" />
     <ClCompile Include="..\..\Engine\CoreAudio_OpenAL.cpp" />
-    <ClCompile Include="..\..\Engine\CoreAudio_OpenAL.mm">
-      <FileType>Document</FileType>
-    </ClCompile>
     <ClCompile Include="..\..\Engine\CoreDebug.cpp" />
     <ClCompile Include="..\..\Engine\CoreGameObject.cpp" />
     <ClCompile Include="..\..\Engine\CoreInput_PCInputState.cpp" />
     <ClCompile Include="..\..\Engine\Game.cpp" />
-    <ClCompile Include="..\..\Engine\Game.mm">
-      <FileType>Document</FileType>
-    </ClCompile>
     <ClCompile Include="..\..\Engine\GameWindow(WIN).cpp" />
     <ClCompile Include="..\..\Engine\GRPng\writepng.c" />
     <ClCompile Include="..\..\Engine\matrix.mm">

@@ -235,16 +235,10 @@
     <ClCompile Include="..\..\Engine\MathUtil.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine\Game.mm">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine\OpenGLRenderer.mm">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine\matrix.mm">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine\CoreAudio_OpenAL.mm">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine\zlib\compress.c">
