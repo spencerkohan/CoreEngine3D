@@ -65,6 +65,7 @@ bool Game::Init()
 	m_camLerpTimer = -1.0f;
 	
 	m_Box2D_pWorld = NULL;
+	m_Box2D_pContactListener = NULL;
 	m_Box2D_pDebugDraw = NULL;
 	
 	for(int i=0; i<NumLevelLayers; ++i)
@@ -147,6 +148,11 @@ void Game::CleanUp()
 	if(m_Box2D_pWorld != NULL)
 	{
 		delete m_Box2D_pWorld;
+	}
+	
+	if(m_Box2D_pContactListener != NULL)
+	{
+		delete m_Box2D_pContactListener;
 	}
 	
 	for(int i=0; i<NumLevelLayers; ++i)
@@ -1113,6 +1119,10 @@ void Game::Box2D_Init(bool continuousPhysicsEnabled, bool allowObjectToSleep)
 	m_Box2D_pWorld->SetAllowSleeping(false);
 	b2BodyDef bodyDef;
 	m_Box2D_pGroundBody = m_Box2D_pWorld->CreateBody(&bodyDef);
+	
+	m_Box2D_pContactListener = new Box2DContactListener;
+	
+	m_Box2D_pWorld->SetContactListener(m_Box2D_pContactListener);
 }
 
 

@@ -10,7 +10,7 @@
 #define InfiniSurv_OSX__Game_h
 
 #include <Box2D/Box2D.h>
-
+#include "Box2DContactListener.h"
 
 #include "MathTypes.h"
 #include "OpenGLRenderer.h"
@@ -271,6 +271,7 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	
 private:
 	Box2DDebugDraw* m_Box2D_pDebugDraw;
+	Box2DContactListener* m_Box2D_pContactListener;
 	
 	b2World* m_Box2D_pWorld;
 	b2Body* m_Box2D_pGroundBody;
