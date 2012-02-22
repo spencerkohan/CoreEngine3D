@@ -19,6 +19,7 @@
 		2335820F14D3A5C300F66DA0 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 2335820514D3A5C300F66DA0 /* Hash.h */; };
 		233BBC0F14F4AF3900BB12FA /* Box2DContactListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 233BBC0D14F4AF3900BB12FA /* Box2DContactListener.cpp */; };
 		233BBC1014F4AF3900BB12FA /* Box2DContactListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 233BBC0E14F4AF3900BB12FA /* Box2DContactListener.h */; };
+		233BBC7314F4C63600BB12FA /* CoreGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 233BBC7214F4C63600BB12FA /* CoreGameObject.cpp */; };
 		234BA1E914D4ADAE00784CAE /* Square_Tiled_4.h in Headers */ = {isa = PBXBuildFile; fileRef = 234BA1E814D4ADAE00784CAE /* Square_Tiled_4.h */; };
 		2355541B14B01EBA00BF618F /* CoreAudio_OpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2355541E14B01F0C00BF618F /* CoreAudio_OpenAL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.cpp */; };
@@ -186,6 +187,7 @@
 		2335820514D3A5C300F66DA0 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
 		233BBC0D14F4AF3900BB12FA /* Box2DContactListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DContactListener.cpp; sourceTree = "<group>"; };
 		233BBC0E14F4AF3900BB12FA /* Box2DContactListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DContactListener.h; sourceTree = "<group>"; };
+		233BBC7214F4C63600BB12FA /* CoreGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreGameObject.cpp; sourceTree = "<group>"; };
 		234BA1E814D4ADAE00784CAE /* Square_Tiled_4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_4.h; sourceTree = "<group>"; };
 		2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAudio_OpenAL.h; sourceTree = "<group>"; };
 		2355541D14B01F0C00BF618F /* CoreAudio_OpenAL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = CoreAudio_OpenAL.cpp; sourceTree = "<group>"; };
@@ -421,6 +423,7 @@
 				2335820214D3A5C300F66DA0 /* CoreObject.cpp */,
 				2335820314D3A5C300F66DA0 /* CoreObject.h */,
 				23EB371414F240BE00F36E7C /* CoreGameObject.h */,
+				233BBC7214F4C63600BB12FA /* CoreGameObject.cpp */,
 				2335820414D3A5C300F66DA0 /* Hash.cpp */,
 				2335820514D3A5C300F66DA0 /* Hash.h */,
 				2355541A14B01EBA00BF618F /* CoreAudio_OpenAL.h */,
@@ -855,6 +858,7 @@
 				23DEF8ED14F19D1500985385 /* Box2DDebugDraw.cpp in Sources */,
 				23D9D67314F36648002152D3 /* CoreInput_PCInputState.cpp in Sources */,
 				233BBC0F14F4AF3900BB12FA /* Box2DContactListener.cpp in Sources */,
+				233BBC7314F4C63600BB12FA /* CoreGameObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

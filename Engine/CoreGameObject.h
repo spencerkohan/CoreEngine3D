@@ -12,6 +12,7 @@
 #include "CoreObject.h"
 #include <Box2D/Box2D.h>
 #include "MathTypes.h"
+#include "MathUtil.h"
 
 #define COREGAMEOBJECT_MAX_COLLISION_INFOS 16
 
@@ -34,6 +35,8 @@ public:
 	
 	virtual CoreObjectType GetType(){return CoreObjectType_CoreGameObject;}
 
+	//void Box2D_SetVelocity(const vec2* pVelocity);
+	
 private:
 	u32 m_Box2D_NumCollisionInfos;
 	Box2D_CollisionInfo m_Box2D_CollisionInfo[COREGAMEOBJECT_MAX_COLLISION_INFOS];
