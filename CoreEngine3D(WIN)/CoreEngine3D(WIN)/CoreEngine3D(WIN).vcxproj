@@ -97,12 +97,8 @@
     <ClCompile Include="..\..\Engine\Game.cpp" />
     <ClCompile Include="..\..\Engine\GameWindow(WIN).cpp" />
     <ClCompile Include="..\..\Engine\GRPng\writepng.c" />
-    <ClCompile Include="..\..\Engine\matrix.mm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine\OpenGLRenderer.mm">
-      <FileType>Document</FileType>
-    </ClCompile>
+    <ClCompile Include="..\..\Engine\matrix.cpp" />
+    <ClCompile Include="..\..\Engine\OpenGLRenderer.cpp" />
     <ClCompile Include="..\..\Engine\zlib\adler32.c" />
     <ClCompile Include="..\..\Engine\zlib\compress.c" />
     <ClCompile Include="..\..\Engine\zlib\crc32.c" />

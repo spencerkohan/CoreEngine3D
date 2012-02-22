@@ -235,12 +235,6 @@
     <ClCompile Include="..\..\Engine\MathUtil.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine\OpenGLRenderer.mm">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine\matrix.mm">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine\zlib\compress.c">
       <Filter>Libs\zlib</Filter>
     </ClCompile>
@@ -311,6 +305,12 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine\Game.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\matrix.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\OpenGLRenderer.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
