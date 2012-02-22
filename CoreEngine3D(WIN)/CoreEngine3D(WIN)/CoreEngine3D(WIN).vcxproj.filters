@@ -298,6 +298,27 @@
     <ClCompile Include="..\..\Engine\GRPng\writepng.c">
       <Filter>Libs\GRPNG</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Engine\GameWindow(WIN).cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\Box2DContactListener.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\Box2DDebugDraw.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreAudio_OpenAL.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreGameObject.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreInput_PCInputState.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\Game.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine\libpng\png.h">
@@ -605,6 +626,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine\GRPng\writepng.h">
       <Filter>Libs\GRPNG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Box2DContactListener.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Box2DDebugDraw.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreGameObject.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreInput_PCInputState.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

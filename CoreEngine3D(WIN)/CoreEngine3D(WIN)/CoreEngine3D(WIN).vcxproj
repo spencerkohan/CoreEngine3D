@@ -88,13 +88,20 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Engine\Box2DContactListener.cpp" />
+    <ClCompile Include="..\..\Engine\Box2DDebugDraw.cpp" />
+    <ClCompile Include="..\..\Engine\CoreAudio_OpenAL.cpp" />
     <ClCompile Include="..\..\Engine\CoreAudio_OpenAL.mm">
       <FileType>Document</FileType>
     </ClCompile>
     <ClCompile Include="..\..\Engine\CoreDebug.cpp" />
+    <ClCompile Include="..\..\Engine\CoreGameObject.cpp" />
+    <ClCompile Include="..\..\Engine\CoreInput_PCInputState.cpp" />
+    <ClCompile Include="..\..\Engine\Game.cpp" />
     <ClCompile Include="..\..\Engine\Game.mm">
       <FileType>Document</FileType>
     </ClCompile>
+    <ClCompile Include="..\..\Engine\GameWindow(WIN).cpp" />
     <ClCompile Include="..\..\Engine\GRPng\writepng.c" />
     <ClCompile Include="..\..\Engine\matrix.mm">
       <FileType>Document</FileType>
@@ -188,11 +195,15 @@
     <ClInclude Include="..\..\Engine\AnimationController.h" />
     <ClInclude Include="..\..\Engine\ArrayUtil.h" />
     <ClInclude Include="..\..\Engine\base64.h" />
+    <ClInclude Include="..\..\Engine\Box2DContactListener.h" />
+    <ClInclude Include="..\..\Engine\Box2DDebugDraw.h" />
     <ClInclude Include="..\..\Engine\CoreAudio_OpenAL.h" />
     <ClInclude Include="..\..\Engine\CoreDebug.h" />
+    <ClInclude Include="..\..\Engine\CoreGameObject.h" />
     <ClInclude Include="..\..\Engine\CoreInput_DeviceInputState.h" />
     <ClInclude Include="..\..\Engine\CoreInput_GamePad.h" />
     <ClInclude Include="..\..\Engine\CoreInput_MouseState.h" />
+    <ClInclude Include="..\..\Engine\CoreInput_PCInputState.h" />
     <ClInclude Include="..\..\Engine\CoreObject.h" />
     <ClInclude Include="..\..\Engine\CoreObject_Manager.h" />
     <ClInclude Include="..\..\Engine\CoreUI_Button.h" />
