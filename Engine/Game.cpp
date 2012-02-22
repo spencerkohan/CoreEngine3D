@@ -44,14 +44,6 @@ ItemArtDescription g_Game_BlobShadowDesc =
 };
 
 
-#if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
-void Game::SetTouchIndexIsLinked(s32 index, bool isLinked)
-{
-	m_touchIsLinked[index] = false;
-}
-#endif
-
-
 void Game::ResetCamera()
 {
 	m_camLerpTimer = -1.0f;
