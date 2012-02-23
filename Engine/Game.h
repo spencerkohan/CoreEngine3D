@@ -71,6 +71,7 @@ enum CollisionFilter
 	CollisionFilter_Balloon, //sketchy balloon filter
 	CollisionFilter_MovingPlatform, //even sketchier?
 	CollisionFilter_Connector, //Reasonable?
+	CollisionFilter_Spikey, //Reasonable?
 };
 
 struct BreakableSettings

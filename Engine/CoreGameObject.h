@@ -19,6 +19,7 @@
 struct Box2D_CollisionInfo
 {
 	CoreObject* pCollider;
+	b2Fixture* pFixtureCollider;
 	vec2 normal;
 };
 
@@ -26,7 +27,6 @@ class CoreGameObject: public CoreObject
 {
 public:
 	virtual void SetPosition(const vec3* pPosition){}
-	virtual void SetUp(const vec3* pUp){};
 	virtual const vec3* GetPosition(){return NULL;}
 	virtual b2Body* Box2D_GetBody(){return NULL;}
 	virtual bool Box2D_GetAnchorOffset(vec2* pOut_OffsetVec){return false;}

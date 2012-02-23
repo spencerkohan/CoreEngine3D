@@ -1503,6 +1503,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						
 						b2FixtureDef fixtureDef;
 						fixtureDef.density = 1;
+						fixtureDef.friction = 0.4f;
 						b2PolygonShape polygonShape;
 						polygonShape.SetAsBox(halfTileSize,halfTileSize);
 						fixtureDef.shape = &polygonShape;
