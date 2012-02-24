@@ -38,6 +38,7 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 	
 	m_triggerMessage = 0;
 	m_untriggerMessage = 0;
+	m_offMessage = 0;
 	m_hTriggerObject = INVALID_COREOBJECT_HANDLE;
 	
 	m_collisionType = CollisionBoxType_Ghost;
@@ -63,6 +64,10 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 		else if(strcmp(propNameString,"UntriggerMessage") == 0)
 		{
 			m_untriggerMessage = Hash(valueString);
+		}
+		else if(strcmp(propNameString,"OffMessage") == 0)
+		{
+			m_offMessage = Hash(valueString);
 		}
 		else if(strcmp(propNameString,"TriggerObject") == 0)
 		{
@@ -338,6 +343,13 @@ void ScriptObject::ProcessMessage(u32 message)	//Pass in a hash value
 	{
 		COREDEBUG_PrintDebugMessage("ScriptObject: Off");
 		m_scriptStatus = ScriptStatus_Off;
+		
+		CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
+		
+		if(pObject != NULL)
+		{
+			pObject->ProcessMessage(m_offMessage);
+		}
 	}
 }
 

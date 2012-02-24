@@ -30,6 +30,7 @@ public:
 	virtual const vec3* GetPosition(){return NULL;}
 	virtual b2Body* Box2D_GetBody(){return NULL;}
 	virtual bool Box2D_GetAnchorOffset(vec2* pOut_OffsetVec){return false;}
+	virtual bool Box2D_GetLinkOffset(vec2* pOut_OffsetVec){return false;}
 	
 	virtual void CollisionResponseCallback(const Box2D_CollisionInfo& collInfo){};
 	

@@ -73,6 +73,7 @@ private:
 	
 	u32 m_triggerMessage;
 	u32 m_untriggerMessage;
+	u32 m_offMessage;
 	
 	CoreObjectHandle m_hTriggerObject;
 	CoreObjectHandle m_hObjectGroup;
