@@ -156,7 +156,7 @@ f32 DotVec2(const vec2* vec0, const vec2* vec1)
 //----------------------------------------------------------------------------
 //Projects vec0 onto normalized vec1
 //----------------------------------------------------------------------------
-void ProjectVec2_Norm(vec2* out_resultVec, vec2* vec0, vec2* vec1)
+void ProjectVec2_Norm(vec2* out_resultVec, const vec2* vec0, const vec2* vec1)
 {
     const f32 dotResult = DotVec2(vec0, vec1);
     ScaleVec2(out_resultVec, vec0, dotResult);   
@@ -511,7 +511,7 @@ void  ScaleVec2_Self(vec2* vec, f32 scale)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void  ScaleVec2(vec2* out_resultVec, vec2* vec, f32 scale)
+void  ScaleVec2(vec2* out_resultVec, const vec2* vec, f32 scale)
 {
 	out_resultVec->x = vec->x*scale;
 	out_resultVec->y = vec->y*scale;
@@ -649,6 +649,23 @@ void  CopyVec3IntoVec4(vec4* out_result, const vec3* point)
 	out_result->z = point->z;
 }
 
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+void  ReflectVec2_Self(vec2* vec, const vec2* normal)
+{
+	ReflectVec2(vec, vec, normal);
+}
+
+
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+void  ReflectVec2(vec2* out_resultVec, vec2* vec, const vec2* normal)
+{
+	f32 dot = -DotVec2(normal, vec);
+	vec2 reflect;
+	ScaleVec2(&reflect, normal, 2.0f * dot);
+	AddVec2(out_resultVec, vec, &reflect);
+}
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
