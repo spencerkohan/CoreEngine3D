@@ -845,9 +845,10 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					
 					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileSizeX;
 					
-					
 					if(-pCurrLayer->position.x > tileBasePosX+m_tiledLevelDescription.halfTileSizeX
-					   || -pCurrLayer->position.x+distCheckRightAdd < tileBasePosX)
+					   || -pCurrLayer->position.x+distCheckRightAdd < tileBasePosX
+					   || -pCurrLayer->position.y > tileBasePosY+m_tiledLevelDescription.halfTileSizeY
+					   || -pCurrLayer->position.y+distCheckRightAdd < tileBasePosY)
 					{
 						if(pTile->hRenderable != INVALID_COREOBJECT_HANDLE)
 						{
