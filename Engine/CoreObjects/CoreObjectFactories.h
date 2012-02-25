@@ -1,7 +1,7 @@
 #ifndef __COREOBJECTFACTORIES_H
 #define __COREOBJECTFACTORIES_H
 
-#include "CoreObject_Manager.h"
+#include "..\CoreObject_Manager.h"
 #include "CollisionBox.h"
 #include "ScriptObject.h"
 #include "ObjectGroup.h"

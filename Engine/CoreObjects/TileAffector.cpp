@@ -8,14 +8,14 @@
 
 #include "TileAffector.h"
 
-#include "Game.h"
+#include "../Game.h"
 
-#include "matrix.h"
-#include "OpenGLRenderer.h"
-#include "CoreObject_Manager.h"
+#include "../matrix.h"
+#include "../OpenGLRenderer.h"
+#include "../CoreObject_Manager.h"
 #include "CoreObjectFactories.h"
 
-#include "Hash.h"
+#include "../Hash.h"
 
 
 bool TileAffector::SpawnInit(void* pSpawnStruct)

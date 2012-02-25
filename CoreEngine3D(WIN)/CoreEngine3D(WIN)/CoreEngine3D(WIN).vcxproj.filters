@@ -44,6 +44,9 @@
     <Filter Include="Libs\GRPNG">
       <UniqueIdentifier>{0f59c308-3337-4cb0-9a74-46422afc0767}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\CoreObjects">
+      <UniqueIdentifier>{6fb3dbbc-379f-4fab-a2b4-2c0af1a55a42}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -202,9 +205,6 @@
     <ClCompile Include="..\..\Engine\CoreInput_GamePad.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine\CoreInput_MouseState.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine\CoreObject.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
@@ -286,9 +286,6 @@
     <ClCompile Include="..\..\Engine\GRPng\writepng.c">
       <Filter>Libs\GRPNG</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine\GameWindow(WIN).cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine\Box2DContactListener.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
@@ -312,6 +309,24 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine\OpenGLRenderer.cpp">
       <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreObjects\CollisionBox.cpp">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreObjects\CoreObjectFactories.cpp">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreObjects\ObjectGroup.cpp">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreObjects\ScriptObject.cpp">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreObjects\SoundPlayer.cpp">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreObjects\TileAffector.cpp">
+      <Filter>Engine\CoreObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -525,9 +540,6 @@
     <ClInclude Include="..\..\Engine\CoreInput_GamePad.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine\CoreInput_MouseState.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine\CoreObject.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -632,6 +644,24 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine\CoreInput_PCInputState.h">
       <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreObjects\CollisionBox.h">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreObjects\CoreObjectFactories.h">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreObjects\ObjectGroup.h">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreObjects\ScriptObject.h">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreObjects\SoundPlayer.h">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreObjects\TileAffector.h">
+      <Filter>Engine\CoreObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

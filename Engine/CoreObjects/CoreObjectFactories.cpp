@@ -1,5 +1,5 @@
 #include "CoreObjectFactories.h"
-#include "OpenGLRenderer.h"
+#include "../OpenGLRenderer.h"
 
 CoreObjectFactory<CollisionBox> g_Factory_CollisionBox;
 CoreObjectFactory<ScriptObject> g_Factory_ScriptObject;

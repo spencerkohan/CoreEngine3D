@@ -8,15 +8,15 @@
 
 #include "ScriptObject.h"
 
-#include "Game.h"
+#include "../Game.h"
 
-#include "matrix.h"
-#include "OpenGLRenderer.h"
-#include "CoreObject_Manager.h"
+#include "../matrix.h"
+#include "../OpenGLRenderer.h"
+#include "../CoreObject_Manager.h"
 #include "CoreObjectFactories.h"
 #include "CollisionBox.h"
 
-#include "Hash.h"
+#include "../Hash.h"
 
 const vec3* ScriptObject::GetPosition()
 {

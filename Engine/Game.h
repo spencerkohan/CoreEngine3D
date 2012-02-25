@@ -9,7 +9,7 @@
 #ifndef InfiniSurv_OSX__Game_h
 #define InfiniSurv_OSX__Game_h
 
-#include <Box2D/Box2D.h>
+#include <Box2D\Box2D.h>
 #include "Box2DContactListener.h"
 
 #include "MathTypes.h"

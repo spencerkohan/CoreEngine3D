@@ -752,6 +752,8 @@ void OpenGLRenderer::RenderEffects()
     {
 #ifdef PLATFORM_IOS
 		glBindVertexArrayOES(0);
+#elif defined PLATFORM_WIN
+		glBindVertexArray(0);
 #else
 		glBindVertexArrayAPPLE(0);	
 #endif
@@ -2035,6 +2037,8 @@ void OpenGLRenderer::RegisterModel(ModelData* pModelData)
             //Make sure nothing randomly writes to our new VAO
 #ifdef PLATFORM_IOS
 			glBindVertexArrayOES(0);
+#elif  PLATFORM_WIN
+			glBindVertexArray(0);
 #else
 			glBindVertexArrayAPPLE(0);
 #endif
@@ -4193,6 +4197,8 @@ void OpenGLRenderer::BindVertexArrayObject(const PrimitiveData* pPrimitive)
 {
 #ifdef PLATFORM_IOS
 	glBindVertexArrayOES(pPrimitive->vertexArrayObjectID);
+#elif defined PLATFORM_WIN
+	glBindVertexArray(pPrimitive->vertexArrayObjectID);
 #else
 	glBindVertexArrayAPPLE(pPrimitive->vertexArrayObjectID);
 #endif

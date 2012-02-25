@@ -39,6 +39,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(ProjectDir)/../$(Configuration)/</OutDir>
+    <IncludePath>$(ProjectDir)\..\..\..\Engine\Box2D\Box2D;C:\Program Files\OpenAL 1.1 SDK;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(ProjectDir)/../$(Configuration)/</OutDir>
@@ -51,7 +52,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:/Program Files/OpenAL 1.1 SDK/include/;$(projectDir)/../../Engine/zlib;$(projectDir)/../../Engine/libpng/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:/Program Files/OpenAL 1.1 SDK/include/;$(projectDir)/../../Engine/zlib;$(projectDir)/../../Engine/Box2D/Box2D;$(projectDir)/../../Engine/libpng/</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
@@ -59,8 +60,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew;$(projectDir)/../../Engine/alut;$(projectDir)/../../Engine/freetype/win32</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freetype248ST.lib;alut.lib;OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(projectDir)/../../Engine/alut;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew;$(projectDir)/../../Engine/freetype/win32</AdditionalLibraryDirectories>
+      <AdditionalDependencies>alut.lib;OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -84,7 +85,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew;$(projectDir)/../../Engine/alut;$(projectDir)/../../Engine/freetype/win32</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freetype248ST.lib;alut.lib;OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
+      <AdditionalDependencies>alut.lib;OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -94,8 +95,13 @@
     <ClCompile Include="..\..\Engine\CoreDebug.cpp" />
     <ClCompile Include="..\..\Engine\CoreGameObject.cpp" />
     <ClCompile Include="..\..\Engine\CoreInput_PCInputState.cpp" />
+    <ClCompile Include="..\..\Engine\CoreObjects\CollisionBox.cpp" />
+    <ClCompile Include="..\..\Engine\CoreObjects\CoreObjectFactories.cpp" />
+    <ClCompile Include="..\..\Engine\CoreObjects\ObjectGroup.cpp" />
+    <ClCompile Include="..\..\Engine\CoreObjects\ScriptObject.cpp" />
+    <ClCompile Include="..\..\Engine\CoreObjects\SoundPlayer.cpp" />
+    <ClCompile Include="..\..\Engine\CoreObjects\TileAffector.cpp" />
     <ClCompile Include="..\..\Engine\Game.cpp" />
-    <ClCompile Include="..\..\Engine\GameWindow(WIN).cpp" />
     <ClCompile Include="..\..\Engine\GRPng\writepng.c" />
     <ClCompile Include="..\..\Engine\matrix.cpp" />
     <ClCompile Include="..\..\Engine\OpenGLRenderer.cpp" />
@@ -122,7 +128,6 @@
     <ClCompile Include="..\..\Engine\base64.cpp" />
     <ClCompile Include="..\..\Engine\CoreInput_DeviceInputState.cpp" />
     <ClCompile Include="..\..\Engine\CoreInput_GamePad.cpp" />
-    <ClCompile Include="..\..\Engine\CoreInput_MouseState.cpp" />
     <ClCompile Include="..\..\Engine\CoreObject.cpp" />
     <ClCompile Include="..\..\Engine\CoreObject_Manager.cpp" />
     <ClCompile Include="..\..\Engine\CoreUI_Button.cpp" />
@@ -192,9 +197,14 @@
     <ClInclude Include="..\..\Engine\CoreGameObject.h" />
     <ClInclude Include="..\..\Engine\CoreInput_DeviceInputState.h" />
     <ClInclude Include="..\..\Engine\CoreInput_GamePad.h" />
-    <ClInclude Include="..\..\Engine\CoreInput_MouseState.h" />
     <ClInclude Include="..\..\Engine\CoreInput_PCInputState.h" />
     <ClInclude Include="..\..\Engine\CoreObject.h" />
+    <ClInclude Include="..\..\Engine\CoreObjects\CollisionBox.h" />
+    <ClInclude Include="..\..\Engine\CoreObjects\CoreObjectFactories.h" />
+    <ClInclude Include="..\..\Engine\CoreObjects\ObjectGroup.h" />
+    <ClInclude Include="..\..\Engine\CoreObjects\ScriptObject.h" />
+    <ClInclude Include="..\..\Engine\CoreObjects\SoundPlayer.h" />
+    <ClInclude Include="..\..\Engine\CoreObjects\TileAffector.h" />
     <ClInclude Include="..\..\Engine\CoreObject_Manager.h" />
     <ClInclude Include="..\..\Engine\CoreUI_Button.h" />
     <ClInclude Include="..\..\Engine\DEBUGMODEL_Circle.h" />

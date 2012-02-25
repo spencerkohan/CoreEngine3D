@@ -9,11 +9,11 @@
 #ifndef __SoundPlayer_h
 #define __SoundPlayer_h
 
-#include "MathTypes.h"
-#include "GraphicsTypes.h"
+#include "..\MathTypes.h"
+#include "..\GraphicsTypes.h"
 
-#include "CoreObject.h"
-#include "Game.h"
+#include "..\CoreObject.h"
+#include "..\Game.h"
 
 class SoundPlayer: public CoreObject
 {
