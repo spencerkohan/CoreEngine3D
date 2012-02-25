@@ -1096,8 +1096,23 @@ void Game::ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIn
 }
 
 
-void Game::Box2D_Init(bool continuousPhysicsEnabled, bool allowObjectToSleep)
+void Game::Box2D_ResetWorld()
 {
+	if(m_Box2D_pWorld != NULL)
+	{
+		delete m_Box2D_pWorld;
+		m_Box2D_pWorld = NULL;
+	}
+	
+	Box2D_Init(m_Box2D_ContinuousPhysicsEnabled,m_Box2D_allowObjectsToSleep);	
+}
+
+
+void Game::Box2D_Init(bool continuousPhysicsEnabled, bool allowObjectsToSleep)
+{
+	m_Box2D_ContinuousPhysicsEnabled = continuousPhysicsEnabled;
+	m_Box2D_allowObjectsToSleep = allowObjectsToSleep;
+	
 	m_Box2D_pDebugDraw = new Box2DDebugDraw;
 	m_Box2D_pDebugDraw->SetFlags(0xFFFFFFFF);
 	

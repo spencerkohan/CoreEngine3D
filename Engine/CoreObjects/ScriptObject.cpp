@@ -278,7 +278,11 @@ void ScriptObject::AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileI
 
 void ScriptObject::Trigger()
 {
-	if(m_triggerMessage == Hash("SetCamera"))
+	if(m_triggerMessage == Hash("YouWin"))
+	{
+		GAME->FinishedCurrentLevel();
+	}
+	else if(m_triggerMessage == Hash("SetCamera"))
 	{
 		CollisionBox* pBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hCollisionBox);
 		if(pBox == NULL)
