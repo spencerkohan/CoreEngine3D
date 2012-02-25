@@ -763,13 +763,15 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 	
 	for(s32 i=0; i<NumLevelLayers; ++i)
 	{
+		const LevelLayer currLayer = (LevelLayer)i;
+		
 #ifndef _DEBUG
-		if(i == (s32)LevelLayer_Collision)
+		if(currLayer == LevelLayer_Collision)
 		{
 			continue;
 		}
 #endif
-		if(i == (s32)LevelLayer_CameraExtents)
+		if(currLayer == LevelLayer_CameraExtents)
 		{
 			continue;
 		}
@@ -784,7 +786,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		const RenderMaterial renderMaterial = pCurrLayer->material;
 		
 		//If this is the collision layer, it should move at the same rate as the main layer
-		const s32 adjustedIndex = (i==(s32)LevelLayer_Main0 || i==(s32)LevelLayer_Collision || i==(s32)LevelLayer_TileObjectArt)?(s32)LevelLayer_Main1:i;
+		const s32 adjustedIndex = (currLayer==LevelLayer_Main0 || currLayer==LevelLayer_Collision || currLayer==LevelLayer_TileObjectArt)?(s32)LevelLayer_Main1:i;
 		const s32 scrollIndex = 1+(s32)LevelLayer_Main1-adjustedIndex;	//TODO: index into an array of values maybe
 
 		//pCurrLayer->position.x -= timeElapsed*(f32)(scrollIndex*scrollIndex*scrollIndex)*scrollSpeed;
