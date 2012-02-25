@@ -42,7 +42,7 @@ void  SubVec2_Self(vec2* out_resultVec, const vec2* p);
 void  ScaleVec2_Self(vec2* vec, f32 scale);
 void  RotateVec2(vec2* out_resultVec, const vec2* vec, f32 sinTheta, f32 cosTheta);
 void  RotateVec2_Self(vec2* vec, f32 sinTheta, f32 cosTheta);
-void  ScaleVec2(vec2* out_resultVec, vec2* vec, f32 scale);
+void  ScaleVec2(vec2* out_resultVec, const vec2* vec, f32 scale);
 void  AddVec2_Self(vec2* out_resultVec, const vec2* vec);
 void  AddVec2(vec2* out_resultVec, const vec2* vec0, const vec2* vec1);
 void  AddScaledVec2_Self(vec2* out_resultVec, const vec2* vec, f32 scale);
@@ -58,7 +58,7 @@ f32 AngleOfVec2(vec2* vec0);
 void  MakeRotatedVec2(vec2* out_resultVec, f32 angleRadians);
 void  MakeRotatedVec2_SinCos(vec2* out_resultVec, f32 sinTheta, f32 cosTheta);
 //Projects vec0 onto normalized vec1
-void ProjectVec2_Norm(vec2* out_resultVec, vec2* vec0, vec2* vec1);
+void ProjectVec2_Norm(vec2* out_resultVec, const vec2* vec0, const vec2* vec1);
 
 //3D
 bool ApproxEqualsZeroVec3(vec3* pTestvec);
@@ -98,6 +98,8 @@ void  ScaleVec4_Self(vec4* out_resultVec, f32 scale);
 void  CopyVec3(vec3* out_result, const vec3* point);
 void  CopyVec4(vec4* out_result, const vec4* point);
 void  CopyVec3IntoVec4(vec4* out_result, const vec3* point);
+void  ReflectVec2_Self(vec2* vec, const vec2* normal);
+void  ReflectVec2(vec2* out_resultVec, vec2* vec, const vec2* normal);
 void  MakeRandomVec3WithinBounds(vec3* pOut_resultVec, f32 x0, f32 x1, f32 y0, f32 y1, f32 z0, f32 z1);
 f32 AngleBetweenVec3(vec3* vec0, vec3* vec1);
 bool rand_Bool();

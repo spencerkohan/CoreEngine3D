@@ -66,6 +66,13 @@ enum CollisionFilter
 	CollisionFilter_Enemy,
 	CollisionFilter_PlayerProjectile,
 	CollisionFilter_EnemyProjectile,
+	CollisionFilter_Touch,
+	CollisionFilter_Rope,
+	CollisionFilter_Balloon, //sketchy balloon filter
+	CollisionFilter_MovingPlatform, //even sketchier?
+	CollisionFilter_Connector, //Reasonable?
+	CollisionFilter_Spikey, //Reasonable?
+	CollisionFilter_Bouncy,
 };
 
 struct BreakableSettings
@@ -194,6 +201,7 @@ public:
 	virtual CoreObject* CreateObject(u32 objectType){return NULL;};
 	virtual void LoadLevel(s32 levelNumber){};
 	virtual void ReloadLevel(){};
+	virtual void FinishedCurrentLevel(){};
 #if defined (PLATFORM_IOS)
 	TouchInputIOS* m_pTouchInput;
 #endif
@@ -203,15 +211,13 @@ public:
 	KeyboardInputState m_keyboardState;
 #endif
 	void ResetCamera();
-
-#if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
-	void SetTouchIndexIsLinked(s32 index, bool isLinked);
-#endif
-	void Box2D_Init(bool continuousPhysicsEnabled,bool allowObjectToSleep);
+	
+	void Box2D_Init(bool continuousPhysicsEnabled,bool allowObjectsToSleep);
 	b2World* Box2D_GetWorld();
 	b2Body* Box2D_GetGroundBody();
 	void Box2D_SetGravity(f32 x, f32 y);
 	void Box2D_SetContactListener(b2ContactListener* pContactListener);
+	void Box2D_ResetWorld();
 	SpawnableEntity* GetSpawnableEntityByTiledUniqueID(u32 tiledUniqueID);
 	CoreUI_Button* AddUIButton(u32 width, u32 height, CoreUI_AttachSide attachSide, s32 offsetX, s32 offsetY, u32* textureHandle, s32 value, void (*callback)(s32));
 	void UpdateButtons(TouchState touchState, vec2 *pTouchPosBegin, vec2* pTouchPosCurr);
@@ -238,6 +244,7 @@ public:
 	DeviceInputState* GetDeviceInputState();
 #endif
 protected:	//Only stuff that can be called from the game.cpp goes here
+	
 	void ConstrainCameraToTiledLevel();
 	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters);
 	void UpdateTiledLevelPosition(vec3* pPosition);
@@ -266,10 +273,13 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	f32 m_camLerpTimer;
 	f32 m_camLerpTotalTime;
 	
-	bool m_touchIsLinked[MAX_MULTITOUCH];
+	bool m_touchIsDisabled[MAX_MULTITOUCH];
 	bool m_paused;
 	
 private:
+	bool m_Box2D_ContinuousPhysicsEnabled;
+	bool m_Box2D_allowObjectsToSleep;
+	
 	Box2DDebugDraw* m_Box2D_pDebugDraw;
 	Box2DContactListener* m_Box2D_pContactListener;
 	

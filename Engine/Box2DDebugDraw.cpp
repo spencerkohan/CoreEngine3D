@@ -104,7 +104,8 @@ void Box2DDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Col
 {
 	const f32 pixelsPerMeter = GAME->GetPixelsPerMeter();
 	
-	const vec4 colorF = {color.r,color.g,color.b,1.0f};
+	//const vec4 colorF = {color.r,color.g,color.b,1.0f};
+	const vec4 colorF = {1.0f,1.0f,1.0f,1.0f};
 
 	const vec3 vecA = {p1.x*pixelsPerMeter,p1.y*pixelsPerMeter,0.0f};
 	const vec3 vecB = {p2.x*pixelsPerMeter,p2.y*pixelsPerMeter,0.0f};

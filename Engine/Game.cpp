@@ -44,14 +44,6 @@ ItemArtDescription g_Game_BlobShadowDesc =
 };
 
 
-#if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
-void Game::SetTouchIndexIsLinked(s32 index, bool isLinked)
-{
-	m_touchIsLinked[index] = false;
-}
-#endif
-
-
 void Game::ResetCamera()
 {
 	m_camLerpTimer = -1.0f;
@@ -771,13 +763,15 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 	
 	for(s32 i=0; i<NumLevelLayers; ++i)
 	{
+		const LevelLayer currLayer = (LevelLayer)i;
+		
 #ifndef _DEBUG
-		if(i == (s32)LevelLayer_Collision)
+		if(currLayer == LevelLayer_Collision)
 		{
 			continue;
 		}
 #endif
-		if(i == (s32)LevelLayer_CameraExtents)
+		if(currLayer == LevelLayer_CameraExtents)
 		{
 			continue;
 		}
@@ -792,7 +786,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		const RenderMaterial renderMaterial = pCurrLayer->material;
 		
 		//If this is the collision layer, it should move at the same rate as the main layer
-		const s32 adjustedIndex = (i==(s32)LevelLayer_Main0 || i==(s32)LevelLayer_Collision || i==(s32)LevelLayer_TileObjectArt)?(s32)LevelLayer_Main1:i;
+		const s32 adjustedIndex = (currLayer==LevelLayer_Main0 || currLayer==LevelLayer_Collision || currLayer==LevelLayer_TileObjectArt)?(s32)LevelLayer_Main1:i;
 		const s32 scrollIndex = 1+(s32)LevelLayer_Main1-adjustedIndex;	//TODO: index into an array of values maybe
 
 		//pCurrLayer->position.x -= timeElapsed*(f32)(scrollIndex*scrollIndex*scrollIndex)*scrollSpeed;
@@ -851,9 +845,10 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					
 					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileSizeX;
 					
-					
 					if(-pCurrLayer->position.x > tileBasePosX+m_tiledLevelDescription.halfTileSizeX
-					   || -pCurrLayer->position.x+distCheckRightAdd < tileBasePosX)
+					   || -pCurrLayer->position.x+distCheckRightAdd < tileBasePosX
+					   || -pCurrLayer->position.y > tileBasePosY+m_tiledLevelDescription.halfTileSizeY
+					   || -pCurrLayer->position.y+distCheckRightAdd < tileBasePosY)
 					{
 						if(pTile->hRenderable != INVALID_COREOBJECT_HANDLE)
 						{
@@ -1104,8 +1099,23 @@ void Game::ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIn
 }
 
 
-void Game::Box2D_Init(bool continuousPhysicsEnabled, bool allowObjectToSleep)
+void Game::Box2D_ResetWorld()
 {
+	if(m_Box2D_pWorld != NULL)
+	{
+		delete m_Box2D_pWorld;
+		m_Box2D_pWorld = NULL;
+	}
+	
+	Box2D_Init(m_Box2D_ContinuousPhysicsEnabled,m_Box2D_allowObjectsToSleep);	
+}
+
+
+void Game::Box2D_Init(bool continuousPhysicsEnabled, bool allowObjectsToSleep)
+{
+	m_Box2D_ContinuousPhysicsEnabled = continuousPhysicsEnabled;
+	m_Box2D_allowObjectsToSleep = allowObjectsToSleep;
+	
 	m_Box2D_pDebugDraw = new Box2DDebugDraw;
 	m_Box2D_pDebugDraw->SetFlags(0xFFFFFFFF);
 	
@@ -1511,6 +1521,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						
 						b2FixtureDef fixtureDef;
 						fixtureDef.density = 1;
+						fixtureDef.friction = 0.4f;
 						b2PolygonShape polygonShape;
 						polygonShape.SetAsBox(halfTileSize,halfTileSize);
 						fixtureDef.shape = &polygonShape;

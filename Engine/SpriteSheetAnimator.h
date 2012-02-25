@@ -25,13 +25,14 @@ struct SpriteSheet
 	u32 cellsPerRow;
 	u32* pTextureHandle;
 	u32 totalCells;
+	f32 textureSize;
 };
 
 class SpriteSheetAnimator
 {
 public:
 	SpriteSheetAnimator();
-	void SetSpriteSheet(u32 spriteSheetIndex, u32* pTextureHandle, u32 cellsPerRow);
+	void SetSpriteSheet(u32 spriteSheetIndex, u32* pTextureHandle, f32 textureSize, u32 cellsPerRow);
 	bool GetSpriteInfoForFrame(u32 frame, SpriteFrameInfo* pOut_SpriteFrameInfo);
 private:
 	SpriteSheet m_spriteSheets[SPRITESHEET_MAX_SHEETS];
