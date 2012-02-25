@@ -198,7 +198,7 @@ void OpenGLRenderer::Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 scre
 	screenWidth_pixels = screenWidthPixels;
 	screenHeight_pixels = screenHeightPixels;
 	
-	aspectRatio = screenWidthPoints/screenHeightPoints;
+	aspectRatio = static_cast<f32>(screenWidthPoints/screenHeightPoints);
 	
 	mat4f_LoadPerspective(m_projMats[ProjMatType_Perspective], 3.14f*0.25f,aspectRatio,1.0f,6000.0f);
 
@@ -209,7 +209,7 @@ void OpenGLRenderer::Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 scre
 	
 	//Set up projection matrices
 	mat4f_LoadOrtho(m_projMats[ProjMatType_Orthographic_NDC], -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f);
-	mat4f_LoadOrtho(m_projMats[ProjMatType_Orthographic_Points], 0.0f, screenWidth_points, screenHeight_points, 0.0f, 1.0f, -1.0f);
+	mat4f_LoadOrtho(m_projMats[ProjMatType_Orthographic_Points], 0.0f, (f32)screenWidth_points, (f32)screenHeight_points, 0.0f, 1.0f, -1.0f);
 	
 	COREDEBUG_PrintDebugMessage("%s %s", glGetString(GL_RENDERER), glGetString(GL_VERSION));
 
@@ -4416,7 +4416,7 @@ AnimatedPOD* OpenGLRenderer::AddAnimatedPOD(CPVRTModelPOD* pPod, RenderableScene
 	
 	AnimatedPOD* pAnimatedPod = &m_animatedPODs[m_numAnimatedPods];
 	pAnimatedPod->pPod = pPod;
-	pAnimatedPod->frameRate = pPod->nFPS;
+	pAnimatedPod->frameRate = static_cast<f32>(pPod->nFPS);
 	pAnimatedPod->currFrame = 0.0f;
 	pAnimatedPod->pScene = pScene;
 	

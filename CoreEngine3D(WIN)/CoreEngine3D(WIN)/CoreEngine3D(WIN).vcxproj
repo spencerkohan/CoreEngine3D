@@ -49,11 +49,11 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);PLATFORM_WIN;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:/Program Files/OpenAL 1.1 SDK/include/;$(projectDir)/../../Engine/zlib;$(projectDir)/../../Engine/Box2D/Box2D;$(projectDir)/../../Engine/libpng/</AdditionalIncludeDirectories>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -62,6 +62,7 @@
     <Lib>
       <AdditionalLibraryDirectories>$(projectDir)/../../Engine/alut;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;$(projectDir)/../../Engine/glew;$(projectDir)/../../Engine/freetype/win32</AdditionalLibraryDirectories>
       <AdditionalDependencies>alut.lib;OpenGL32.lib;GLu32.lib;glew32.lib;OpenAL32.lib</AdditionalDependencies>
+      <AdditionalOptions>/IGNORE:4006 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

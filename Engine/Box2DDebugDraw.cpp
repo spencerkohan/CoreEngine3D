@@ -16,7 +16,7 @@ void Box2DDebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, cons
 	const vec4 colorF = {color.r,color.g,color.b,1.0f};
 	const f32 pixelsPerMeter = GAME->GetPixelsPerMeter();
 	
-	for(u32 i=1; i<vertexCount; ++i)
+	for(int32 i=1; i<vertexCount; ++i)
 	{
 		const b2Vec2* pVertA = &vertices[i-1];
 		const b2Vec2* pVertB = &vertices[i];
@@ -48,7 +48,7 @@ void Box2DDebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount,
 	const vec4 colorF = {color.r,color.g,color.b,1.0f};
 	const f32 pixelsPerMeter = GAME->GetPixelsPerMeter();
 	
-	for(u32 i=1; i<vertexCount; ++i)
+	for(int32 i=1; i<vertexCount; ++i)
 	{
 		const b2Vec2* pVertA = &vertices[i-1];
 		const b2Vec2* pVertB = &vertices[i];

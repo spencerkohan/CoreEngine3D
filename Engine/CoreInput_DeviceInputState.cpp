@@ -19,7 +19,7 @@ void DeviceInputState::GetTouchVelocity(u32 touchIndex, vec2* out_velocity)
 		case TouchState_Ended:
 		{
 			SubVec2(out_velocity, &m_touchCurrentPoints[touchIndex],&m_touchPrevPoints[touchIndex]);
-			const f32 time = m_touchCurrTimes[touchIndex]-m_touchPrevTimes[touchIndex];
+			const f32 time = static_cast<f32>(m_touchCurrTimes[touchIndex]-m_touchPrevTimes[touchIndex]);
 			ScaleVec2_Self(out_velocity, 1.0f/time);
 			
 			break;

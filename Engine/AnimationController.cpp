@@ -71,7 +71,7 @@ void AnimationPlayer::PlayAnimation(u32 animID, u32 frameOffset, f32 playSpeed)
 	
 	const u32 numFrames = m_pCurrAnim->endFrame-m_pCurrAnim->startFrame;
 	
-	m_currFrame = m_pCurrAnim->startFrame+frameOffset%numFrames;
+	m_currFrame = static_cast<f32>(m_pCurrAnim->startFrame+frameOffset%numFrames);
 }
 
 void AnimationPlayer::SetSpeed(f32 speed)

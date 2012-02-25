@@ -941,21 +941,21 @@ DeviceInputState* Game::GetDeviceInputState()
 
 void Game::GetTileIndicesFromScreenPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y)
 {
-	*pOut_X = (pPosition->x+m_camPos.x)/m_tiledLevelDescription.tileDisplaySizeX;
-	*pOut_Y = (pPosition->y+m_camPos.y)/m_tiledLevelDescription.tileDisplaySizeY;
+	*pOut_X = static_cast<u32>((pPosition->x+m_camPos.x)/m_tiledLevelDescription.tileDisplaySizeX);
+	*pOut_Y = static_cast<u32>((pPosition->y+m_camPos.y)/m_tiledLevelDescription.tileDisplaySizeY);
 }
 
 void Game::GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y)
 {
-	*pOut_X = (pPosition->x)/m_tiledLevelDescription.tileDisplaySizeX;
-	*pOut_Y = (pPosition->y)/m_tiledLevelDescription.tileDisplaySizeY;
+	*pOut_X = static_cast<u32>((pPosition->x)/m_tiledLevelDescription.tileDisplaySizeX);
+	*pOut_Y = static_cast<u32>((pPosition->y)/m_tiledLevelDescription.tileDisplaySizeY);
 }
 
 
 void Game::GetPositionFromTileIndices(s32 index_X, s32 index_Y, vec3* pOut_position)
 {
-	pOut_position->x = index_X * m_tiledLevelDescription.tileDisplaySizeX + m_tiledLevelDescription.halfTileSizeX;
-	pOut_position->y = index_Y * m_tiledLevelDescription.tileDisplaySizeY + m_tiledLevelDescription.halfTileSizeY;
+	pOut_position->x = static_cast<f32>(index_X * m_tiledLevelDescription.tileDisplaySizeX + m_tiledLevelDescription.halfTileSizeX);
+	pOut_position->y = static_cast<f32>(index_Y * m_tiledLevelDescription.tileDisplaySizeY + m_tiledLevelDescription.halfTileSizeY);
 	pOut_position->z = 0.0f;
 }
 
@@ -963,9 +963,12 @@ void Game::GetPositionFromTileIndices(s32 index_X, s32 index_Y, vec3* pOut_posit
 s32 Game::GetCollisionFromTileIndices(s32 index_X, s32 index_Y)
 {
 	Layer* pLayer = &m_layers[LevelLayer_Collision];
-	
-	if(index_X < 0 || index_X > pLayer->numTilesX-1
-	   || index_Y < 0 || index_Y > pLayer->numTilesY-1)
+
+	assert(0 != pLayer->numTilesX);
+	assert(0 != pLayer->numTilesY);
+
+	if(index_X < 0 || index_X > static_cast<s32>(pLayer->numTilesX)-1
+	   || index_Y < 0 || index_Y > static_cast<s32>(pLayer->numTilesY)-1)
 	{
 		return -1;
 	}
@@ -978,19 +981,19 @@ s32 Game::GetCollisionFromTileIndices(s32 index_X, s32 index_Y)
 
 f32 Game::GetTileSize()
 {
-	return m_tiledLevelDescription.tileDisplaySizeX;
+	return static_cast<f32>(m_tiledLevelDescription.tileDisplaySizeX);
 }
 
 
 f32 Game::GetHalfTileSize()
 {
-	return m_tiledLevelDescription.halfTileSizeX;
+	return static_cast<f32>(m_tiledLevelDescription.halfTileSizeX);
 }
 
 
 f32 Game::GetPixelsPerMeter()
 {
-	return m_pixelsPerMeter;
+	return static_cast<f32>(m_pixelsPerMeter);
 }
 
 
@@ -1043,11 +1046,11 @@ void Game::ConvertTileID(s32* p_InOut_tileID, TileSetDescription** pOut_tileDesc
 	u32 maxTilesetIndex = 1;
 	TileSetDescription* pFoundDesc = &m_tileSetDescriptions[0];
 	
-	for(s32 tilesetIDX=0; tilesetIDX<m_numTileSetDescriptions; ++tilesetIDX)
+	for(u32 tilesetIDX=0; tilesetIDX<m_numTileSetDescriptions; ++tilesetIDX)
 	{
 		TileSetDescription* pDesc = &m_tileSetDescriptions[tilesetIDX];
 		
-		if(tileID >= pDesc->firstTileIndex)
+		if(static_cast<u32>(tileID) >= pDesc->firstTileIndex)
 		{
 			if(pDesc->firstTileIndex >= maxTilesetIndex)
 			{

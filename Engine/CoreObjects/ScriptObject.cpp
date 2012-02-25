@@ -121,11 +121,11 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 		}
 		else if(strcmp(propNameString,"ToggleTimeOn") == 0)
 		{
-			m_toggleTimeOn = atof(valueString);
+			m_toggleTimeOn = static_cast<f32>(atof(valueString));
 		}
 		else if(strcmp(propNameString,"ToggleTimeOff") == 0)
 		{
-			m_toggleTimeOff = atof(valueString);
+			m_toggleTimeOff = static_cast<f32>(atof(valueString));
 		}
 	}
 
