@@ -16,9 +16,11 @@
 
 #define COREGAMEOBJECT_MAX_COLLISION_INFOS 16
 
+class CoreGameObject;
+
 struct Box2D_CollisionInfo
 {
-	CoreObject* pCollider;
+	CoreGameObject* pCollider;
 	b2Fixture* pFixtureCollider;
 	vec2 normal;
 };
