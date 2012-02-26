@@ -24,7 +24,7 @@
 #endif
 
 #if defined (PLATFORM_OSX) || defined (PLATFORM_WIN)
-#include "Engine/CoreInput_PCInputState.h"
+#include "CoreInput_PCInputState.h"
 #endif
 
 #include "CoreUI_Button.h"
