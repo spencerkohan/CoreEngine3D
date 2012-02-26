@@ -9,11 +9,11 @@
 #ifndef __TileAffector_h
 #define __TileAffector_h
 
-#include "..\MathTypes.h"
-#include "..\GraphicsTypes.h"
+#include "../MathTypes.h"
+#include "../GraphicsTypes.h"
 
-#include "..\CoreObject.h"
-#include "..\Game.h"
+#include "../CoreObject.h"
+#include "../Game.h"
 
 class TileAffector: public CoreObject
 {

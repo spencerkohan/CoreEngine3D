@@ -6,8 +6,8 @@
 //  Copyright (c) 2011 Jody McAdams. All rights reserved.
 //
 
-#ifndef CoreEngine3D_TouchState_h
-#define CoreEngine3D_TouchState_h
+#ifndef CoreEngine3D_DeviceInputState_h
+#define CoreEngine3D_DeviceInputState_h
 
 #include "MathTypes.h"
 

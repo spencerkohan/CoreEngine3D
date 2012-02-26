@@ -9,10 +9,10 @@
 #ifndef __CollisionBox_h
 #define __CollisionBox_h
 
-#include "..\MathTypes.h"
-#include "..\GraphicsTypes.h"
+#include "../MathTypes.h"
+#include "../GraphicsTypes.h"
 
-#include "..\CoreObject.h"
+#include "../CoreObject.h"
 
 #define CollisionBox_MAX_COLLISION_RESULTS 16
 

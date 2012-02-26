@@ -894,7 +894,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "../CoreEngine3D/Engine/ ../CoreEngine3D/";
+				USER_HEADER_SEARCH_PATHS = "../CoreEngine3D/Engine/ ../CoreEngine3D/ ../CoreEngine3D/Engine/CoreObjects/";
 			};
 			name = Debug;
 		};
@@ -916,7 +916,7 @@
 				HEADER_SEARCH_PATHS = ../CoreEngine3D/Engine/Box2D/;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "../CoreEngine3D/Engine/ ../CoreEngine3D/";
+				USER_HEADER_SEARCH_PATHS = "../CoreEngine3D/Engine/ ../CoreEngine3D/ ../CoreEngine3D/Engine/CoreObjects/";
 			};
 			name = Release;
 		};

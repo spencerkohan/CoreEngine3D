@@ -9,8 +9,8 @@
 #ifndef InfiniSurv_OSX__Game_h
 #define InfiniSurv_OSX__Game_h
 
-#include <Box2D\Box2D.h>
-#include "Box2DContactListener.h"
+#include <Box2D/Box2D.h>
+#include "Engine/Box2DContactListener.h"
 
 #include "MathTypes.h"
 #include "OpenGLRenderer.h"
@@ -24,7 +24,7 @@
 #endif
 
 #if defined (PLATFORM_OSX) || defined (PLATFORM_WIN)
-#include "CoreInput_PCInputState.h"
+#include "Engine/CoreInput_PCInputState.h"
 #endif
 
 #include "CoreUI_Button.h"
