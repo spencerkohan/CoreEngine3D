@@ -10,7 +10,7 @@
 #define InfiniSurv_OSX__Game_h
 
 #include <Box2D/Box2D.h>
-#include "Engine/Box2DContactListener.h"
+#include "Box2DContactListener.h"
 
 #include "MathTypes.h"
 #include "OpenGLRenderer.h"
