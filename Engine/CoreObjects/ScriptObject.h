@@ -44,7 +44,7 @@ public:
 
 	virtual void ProcessMessage(u32 message);	//Pass in a hash value
 
-	virtual const vec3* GetPosition();
+	virtual const vec3* GetPosition() const;
 	
 	bool GetPositionIsInside(const vec2* pTouchPos);
 

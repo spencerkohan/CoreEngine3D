@@ -22,6 +22,7 @@ void Box2DContactListener::BeginContact(b2Contact* contact)
 	{
 		collInfo.pCollider = pObjectB;
 		collInfo.pFixtureCollider = contact->GetFixtureB();
+		collInfo.pFixtureReceiver = contact->GetFixtureA();
 		pObjectA->CollisionResponseCallback(collInfo);
 	}
 
@@ -30,6 +31,7 @@ void Box2DContactListener::BeginContact(b2Contact* contact)
 	{
 		collInfo.pCollider = pObjectA;
 		collInfo.pFixtureCollider = contact->GetFixtureA();
+		collInfo.pFixtureReceiver = contact->GetFixtureB();
 		pObjectB->CollisionResponseCallback(collInfo);
 	}
 

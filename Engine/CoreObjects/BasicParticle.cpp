@@ -31,6 +31,7 @@ void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosit
 	
 	vec3* pPos = mat4f_GetPos(pRenderable->worldMat);
 	CopyVec3(pPos, pPosition);
+	CopyVec3(&m_position,pPosition);
 	
 	const f32 speed = rand_FloatRange(pSettings->moveSpeedMin, pSettings->moveSpeedMax);
 	ScaleVec3(&m_velocity,pDirection,speed);
@@ -102,7 +103,9 @@ void BasicParticle::Update(f32 timeElapsed)
 	vec3* pPos = mat4f_GetPos(pGeom->worldMat);
 	
 	m_velocity.y -= m_pSettings->gravity*timeElapsed;
-	AddScaledVec3_Self(pPos,&m_velocity,timeElapsed);
+	AddScaledVec3_Self(&m_position,&m_velocity,timeElapsed);
+	
+	CopyVec3(pPos,&m_position);
 	
 	vec3 velNorm;
 	TryNormalizeVec3(&velNorm,&m_velocity);
@@ -123,6 +126,17 @@ void BasicParticle::Uninit()
 	{
 		pGeom->DeleteObject();
 	}
+}
+
+
+const vec3* BasicParticle::GetPosition() const
+{
+	return &m_position;
+}
+
+void BasicParticle::AddVelocity(const vec3* pVelAdd)
+{
+	AddVec3_Self(&m_velocity, pVelAdd);
 }
 
 

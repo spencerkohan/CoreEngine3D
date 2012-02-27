@@ -43,7 +43,8 @@ public:
 	u32 GetCategoryFlags();
 	virtual void Uninit();
 	virtual void Update(f32 timeElapsed);
-	
+	virtual const vec3* GetPosition() const;
+	void AddVelocity(const vec3* pVelAdd);
 	//virtual void ProcessMessage(u32 message){};	//Pass in a hash value
 private:
 	ParticleSettings* m_pSettings;
@@ -51,6 +52,7 @@ private:
 	f32 m_lifeTimer;
 	f32 m_radius;
 	vec3 m_velocity;
+	vec3 m_position;
 	vec4 m_diffuseColorStart;
 	vec4 m_diffuseColor;
 	vec2 m_texcoordOffset;
