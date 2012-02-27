@@ -1357,7 +1357,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						b2PolygonShape polygonShape;
 						polygonShape.SetAsBox(halfTileSize,halfTileSize);
 						fixtureDef.shape = &polygonShape;
-						fixtureDef.filter.categoryBits = 1 << CollisionFilter_Ground;
+						fixtureDef.filter.categoryBits = Box2D_GetCollisionFlagsForTileIndex(pTile->tileID);
 						fixtureDef.filter.maskBits = 0xFFFF;
 						
 						bodyDef.position.Set(pos.x/m_pixelsPerMeter, pos.y/m_pixelsPerMeter);

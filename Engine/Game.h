@@ -165,6 +165,7 @@ public:
 	virtual void LoadLevel(s32 levelNumber){};
 	virtual void ReloadLevel(){};
 	virtual void FinishedCurrentLevel(){};
+	virtual u32 Box2D_GetCollisionFlagsForTileIndex(s32 tileIndex){return 1<<CollisionFilter_Ground;}
 #if defined (PLATFORM_IOS)
 	TouchInputIOS* m_pTouchInput;
 #endif
