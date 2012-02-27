@@ -102,8 +102,7 @@ bool Game::Init()
 	m_numLoadedSoundDescriptions = 0;
 	m_numSoundDescriptionsToLoadWavsFor = 0;
 	m_ui_numButtons = 0;
-	m_numBreakables = 0;
-	
+
 	m_numSongsInPlaylist = 0;
 	m_currSongID = -1;
 	
@@ -220,8 +219,6 @@ void Game::Update(f32 timeElapsed)
 	{
 		return;
 	}
-	
-	UpdateBreakables(timeElapsed);
 
 	if(m_camLerpTimer > 0.0f)
 	{
@@ -559,174 +556,6 @@ void Game::DeleteAllItemSounds()
 	
 	m_numLoadedSoundDescriptions = 0;
 	m_numSoundDescriptionsToLoadWavsFor = 0;
-}
-
-
-void Game::UpdateBreakables(f32 timeElapsed)
-{
-	//TODO: this is probably BAD
-	
-	//Delete old breakables
-	for(u32 i=0; i<m_numBreakables; )
-    {
-        Breakable* pCurrBreakable = &m_updatingBreakables[i];
-        
-        //Kill off old breakables
-        if(pCurrBreakable->lifeTimer < 0.0f)
-        {
-			Breakable* pLastBreakable = &m_updatingBreakables[m_numBreakables-1];
-			
-			//Get handles to both renderables
-			RenderableGeometry3D* pCurrGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pCurrBreakable->handleRenderable);
-			//Delete the current geom because it's getting overwritten
-			pCurrGeom->Uninit();
-
-			if(m_numBreakables > 1)
-			{
-				//Overwrite the breakable
-				*pCurrBreakable = *pLastBreakable;
-			}
-			
-			--m_numBreakables;
-        }
-		else
-		{
-			++i;
-		}
-	}
-	
-	//Update breakables
-    for(u32 i=0; i<m_numBreakables; ++i)
-    {
-        Breakable* pCurrBreakable = &m_updatingBreakables[i];
-        
-		RenderableGeometry3D* pCurrGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pCurrBreakable->handleRenderable);
-		
-		pCurrBreakable->lifeTimer -= timeElapsed;
-		
-        const f32 breakableAlpha = ClampF(pCurrBreakable->lifeTimer/0.15f,0.0f,1.0f);
-        ScaleVec4(&pCurrBreakable->diffuseColor,&pCurrBreakable->diffuseColorStart,breakableAlpha);
-        
-        BreakableData* pData = pCurrBreakable->pBreakableData;
-        
-        pCurrBreakable->currSpinAngle += pCurrBreakable->spinSpeed*timeElapsed;
-        
-        
-        vec3* pBreakablePos = mat4f_GetPos(pCurrGeom->worldMat);
-        
-        pCurrBreakable->velocity.y -= pData->pSettings->gravity*timeElapsed;
-        AddScaledVec3_Self(pBreakablePos,&pCurrBreakable->velocity,timeElapsed);
-        
-        vec3 velNorm;
-        TryNormalizeVec3(&velNorm,&pCurrBreakable->velocity);
-        
-        const f32 maxZForScale = 40.0f;
-        const f32 maxZScale = 3.5f;
-        
-        f32 radius = pData->radius;
-        if(pData->scaleWithZ)
-        {
-            const f32 zScaleT = MinF(pBreakablePos->z/maxZForScale,1.0f);
-            radius = Lerp(pData->radius,maxZScale,zScaleT);
-        }
-        
-        mat4f_LoadScaledZRotation_IgnoreTranslation(pCurrGeom->worldMat, pCurrBreakable->currSpinAngle, radius);
-        
-										
-		//Have to relink up the uniform values because they're basicaly gone
-		//TODO: make this better
-		pCurrGeom->material.uniqueUniformValues[0] = (u8*)&pCurrBreakable->texcoordOffset;
-		pCurrGeom->material.uniqueUniformValues[1] = (u8*)&pCurrBreakable->diffuseColor;
-
-		//Bouncing disabled for now
-		
-        /*if(pData->pSettings->doesBounce && pBreakablePos->y <= 0.0f)
-        {
-            pBreakablePos->y = 0.0f;
-            
-            const f32 dotProd = -DotVec3(&g_GameBox_normal_Floor,&velNorm);
-            //printf("DotProd: %f\n",dotProd);
-            
-            const f32 finalDamp = Lerp(1.0f,pDesc->pSettings->bounceDamping,dotProd);
-            //printf("Damping mult: %f\n",finalDamp);
-            ScaleVec3_Self(&pCurrBreakable->velocity,finalDamp);
-            
-            pCurrBreakable->velocity.y *= -1.0f;
-        }*/
-    }
-}
-
-
-void Game::SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec3* pDirection, u32 breakableIndex, const vec4* diffuseColor, RenderLayer renderLayer)
-{
-	if(m_numBreakables == GAME_MAX_BREAKABLES)
-	{
-		return;
-	}
-	
-	//printf("Spawned breakable!\n");
-	
-	Breakable* pCurrBreakable = &m_updatingBreakables[m_numBreakables];
-	
-	pCurrBreakable->pBreakableData = pData;
-	ItemArtDescription* pArtDesc = &pData->itemArt;
-	const MaterialSettings* pMaterial = pArtDesc->materialSettings;
-	
-	//[self PlaySoundByFilename:pCurrBreakable->pBreakableDescription->breakSoundName:pPosition:0.0f:FALSE];
-	
-	RenderableGeometry3D* pRenderable = NULL;
-	pCurrBreakable->handleRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(&pRenderable);
-	
-	GLRENDERER->InitRenderableGeometry3D(pRenderable, pArtDesc->pModelData, pMaterial->renderMaterial, &pArtDesc->textureHandle, NULL, renderLayer, View_0, pMaterial->renderFlags|RenderFlag_Visible);
-	pRenderable->material.uniqueUniformValues[0] = (u8*)&pCurrBreakable->texcoordOffset;
-	pRenderable->material.uniqueUniformValues[1] = (u8*)&pCurrBreakable->diffuseColor;
-	
-	f32 radius = pData->radius;
-	
-	mat4f_LoadScale(pRenderable->worldMat, radius);
-	
-	vec3* pPos = mat4f_GetPos(pRenderable->worldMat);
-	CopyVec3(pPos, pPosition);
-	
-	const f32 speed = rand_FloatRange(pData->pSettings->moveSpeedMin, pData->pSettings->moveSpeedMax);
-	ScaleVec3(&pCurrBreakable->velocity,pDirection,speed);
-	const f32 spinSpeed = rand_FloatRange(pData->pSettings->spinSpeedMin, pData->pSettings->spinSpeedMax);
-	pCurrBreakable->spinSpeed = spinSpeed*((rand_FloatRange(0.0f, 1.0f) > 0.5f) ? -1.0f : 1.0f);
-	pCurrBreakable->currSpinAngle = 0.0f;
-	pCurrBreakable->lifeTimer = pData->pSettings->lifetime;
-	
-	CopyVec4(&pCurrBreakable->diffuseColor,diffuseColor);
-	CopyVec4(&pCurrBreakable->diffuseColorStart,diffuseColor);
-	
-	switch (breakableIndex)
-	{
-		case 0:
-		{
-			SetVec2(&pCurrBreakable->texcoordOffset, 0.0f, 0.0f);
-			break;
-		}
-		case 1:
-		{
-			SetVec2(&pCurrBreakable->texcoordOffset, 0.5f, 0.0f);
-			break;
-		}
-		case 2:
-		{
-			SetVec2(&pCurrBreakable->texcoordOffset, 0.0f, 0.5f);
-			break;
-		}
-		case 3:
-		{
-			SetVec2(&pCurrBreakable->texcoordOffset, 0.5f, 0.5f);
-			break;
-		}
-		default:
-		{
-			break;
-		}
-	}
-	
-	++m_numBreakables;
 }
 
 

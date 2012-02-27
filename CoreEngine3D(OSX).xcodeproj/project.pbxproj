@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		230341B214FAF4AB006EC856 /* BasicParticle.h in Headers */ = {isa = PBXBuildFile; fileRef = 230341B114FAF4AB006EC856 /* BasicParticle.h */; };
+		230341B514FAF4B8006EC856 /* BasicParticle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 230341B414FAF4B8006EC856 /* BasicParticle.cpp */; };
 		23310A3514AD91120001D4E3 /* CoreInput_PCInputState.h in Headers */ = {isa = PBXBuildFile; fileRef = 23310A3414AD91120001D4E3 /* CoreInput_PCInputState.h */; };
 		23310A3814AD91220001D4E3 /* CoreInput_PCInputState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23310A3714AD91220001D4E3 /* CoreInput_PCInputState.cpp */; };
 		233BBC1414F4B11B00BB12FA /* Box2DContactListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 233BBC1214F4B11B00BB12FA /* Box2DContactListener.cpp */; };
@@ -174,6 +176,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		230341B114FAF4AB006EC856 /* BasicParticle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicParticle.h; sourceTree = "<group>"; };
+		230341B414FAF4B8006EC856 /* BasicParticle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BasicParticle.cpp; sourceTree = "<group>"; };
 		23310A3414AD91120001D4E3 /* CoreInput_PCInputState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_PCInputState.h; sourceTree = "<group>"; };
 		23310A3714AD91220001D4E3 /* CoreInput_PCInputState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_PCInputState.cpp; sourceTree = "<group>"; };
 		233BBC1214F4B11B00BB12FA /* Box2DContactListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DContactListener.cpp; sourceTree = "<group>"; };
@@ -372,6 +376,8 @@
 				236904D114E0F41B0014F02D /* CoreObjectFactories.h */,
 				236904D214E0F41B0014F02D /* ScriptObject.cpp */,
 				236904D314E0F41B0014F02D /* ScriptObject.h */,
+				230341B114FAF4AB006EC856 /* BasicParticle.h */,
+				230341B414FAF4B8006EC856 /* BasicParticle.cpp */,
 			);
 			path = CoreObjects;
 			sourceTree = "<group>";
@@ -739,6 +745,7 @@
 				23DEF8F114F1A4CA00985385 /* Box2DDebugDraw.h in Headers */,
 				23EB370F14F2303700F36E7C /* CoreGameObject.h in Headers */,
 				233BBC1514F4B11B00BB12FA /* Box2DContactListener.h in Headers */,
+				230341B214FAF4AB006EC856 /* BasicParticle.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -867,6 +874,7 @@
 				23DEF8F014F1A4CA00985385 /* Box2DDebugDraw.cpp in Sources */,
 				233BBC1414F4B11B00BB12FA /* Box2DContactListener.cpp in Sources */,
 				233BBC7014F4C51800BB12FA /* CoreGameObject.cpp in Sources */,
+				230341B514FAF4B8006EC856 /* BasicParticle.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

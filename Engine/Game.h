@@ -51,8 +51,6 @@ class Box2DDebugDraw;
 #define GAME_MAX_SOUND_DESCRIPTIONS 32
 #define GAME_MAX_SONGS_IN_PLAYLIST 16
 
-#define GAME_MAX_BREAKABLES 256
-
 #define GAME_MAX_TILESET_DESCRIPTIONS 8
 #define GAME_MAX_SPAWNABLE_ENTITIES 256
 
@@ -74,41 +72,6 @@ enum CollisionFilter
 	CollisionFilter_Spikey, //Reasonable?
 	CollisionFilter_Bouncy,
 };
-
-struct BreakableSettings
-{
-    f32 lifetime;
-    f32 gravity;
-    f32 bounceDamping;
-    f32 moveSpeedMin;
-    f32 moveSpeedMax;
-    f32 spinSpeedMin;
-    f32 spinSpeedMax;
-    bool doesBounce;
-};
-
-struct BreakableData
-{
-    const BreakableSettings* pSettings;
-    ItemArtDescription itemArt;
-    const char* breakSoundName;
-    f32 radius;
-    u8 scaleWithZ;
-};
-
-struct Breakable
-{
-    BreakableData* pBreakableData;
-    f32 spinSpeed;
-    f32 lifeTimer;
-    vec3 velocity;
-    vec4 diffuseColorStart;
-    vec4 diffuseColor;
-    CoreObjectHandle handleRenderable;
-    vec2 texcoordOffset;
-    f32 currSpinAngle;
-};
-
 
 
 enum LevelLayer
@@ -224,8 +187,6 @@ public:
 	void ClearAllButtons();
 	void AddItemArt(ItemArtDescription* pArtDescription);
 	void AddItemSound(ItemSoundDescription* pSoundDescription);
-	void UpdateBreakables(f32 timeElapsed);
-	void SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec3* pDirection, u32 breakableIndex, const vec4* diffuseColor, RenderLayer renderLayer);
 	s32 AddSongToPlaylist(const char* songFilenameMP3);
 	void PlaySongByID(s32 songID, f32 volume, bool isLooping);
 	std::string GetPathToFile(const char* filename);
@@ -305,8 +266,6 @@ private:
 	CoreUI_Button m_ui_buttons[GAME_MAX_BUTTONS];
 	u32 m_ui_numButtons;
 	
-	Breakable m_updatingBreakables[GAME_MAX_BREAKABLES];
-	u32 m_numBreakables;
 	CoreAudioOpenAL* m_pCoreAudioOpenAL;
 
 	s32 m_currSongID;

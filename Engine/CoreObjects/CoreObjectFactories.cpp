@@ -9,6 +9,7 @@ CoreObjectFactory<TileAffector> g_Factory_TileAffector;
 CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_Normal;
 CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_UI;
 CoreObjectFactory<RenderableSceneObject3D> g_Factory_RenderableSceneObject;
+CoreObjectFactory<BasicParticle> g_Factory_BasicParticle;
 
 void CoreObjectFactories_Init()
 {
@@ -20,6 +21,7 @@ void CoreObjectFactories_Init()
 	g_Factory_Geometry_Normal.Init(2048);
 	g_Factory_Geometry_UI.Init(64);
 	g_Factory_RenderableSceneObject.Init(64);
+	g_Factory_BasicParticle.Init(512);
 }
 
 void CoreObjectFactories_Update(f32 timeElapsed)
@@ -29,6 +31,7 @@ void CoreObjectFactories_Update(f32 timeElapsed)
 	g_Factory_ObjectGroup.UpdateObjectList(timeElapsed);
 	g_Factory_TileAffector.UpdateObjectList(timeElapsed);
 	g_Factory_SoundPlayer.UpdateObjectList(timeElapsed);
+	g_Factory_BasicParticle.UpdateObjectList(timeElapsed);
 	
 	if(g_Factory_Geometry_Normal.UpdateObjectList(timeElapsed))
 	{
@@ -53,4 +56,5 @@ void CoreObjectFactories_Clear()
 	g_Factory_Geometry_Normal.Clear();
 	g_Factory_Geometry_UI.Clear();
 	g_Factory_RenderableSceneObject.Clear();
+	g_Factory_BasicParticle.Clear();
 }
