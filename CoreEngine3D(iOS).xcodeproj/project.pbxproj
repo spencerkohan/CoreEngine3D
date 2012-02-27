@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2328343114AD34BF00BEBBD0 /* CoreInput_GamePad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */; };
 		2328343214AD34BF00BEBBD0 /* CoreInput_GamePad.h in Headers */ = {isa = PBXBuildFile; fileRef = 2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */; };
+		2329C75114FB343000DBC1BE /* BasicParticle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2329C74F14FB343000DBC1BE /* BasicParticle.cpp */; };
+		2329C75214FB343000DBC1BE /* BasicParticle.h in Headers */ = {isa = PBXBuildFile; fileRef = 2329C75014FB343000DBC1BE /* BasicParticle.h */; };
 		2335820614D3A5C300F66DA0 /* CoreDebug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 233581FC14D3A5C300F66DA0 /* CoreDebug.cpp */; };
 		2335820714D3A5C300F66DA0 /* CoreDebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 233581FD14D3A5C300F66DA0 /* CoreDebug.h */; };
 		2335820A14D3A5C300F66DA0 /* CoreObject_Manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2335820014D3A5C300F66DA0 /* CoreObject_Manager.cpp */; };
@@ -179,6 +181,8 @@
 /* Begin PBXFileReference section */
 		2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_GamePad.cpp; sourceTree = "<group>"; };
 		2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_GamePad.h; sourceTree = "<group>"; };
+		2329C74F14FB343000DBC1BE /* BasicParticle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BasicParticle.cpp; path = CoreObjects/BasicParticle.cpp; sourceTree = "<group>"; };
+		2329C75014FB343000DBC1BE /* BasicParticle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BasicParticle.h; path = CoreObjects/BasicParticle.h; sourceTree = "<group>"; };
 		233581FC14D3A5C300F66DA0 /* CoreDebug.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreDebug.cpp; sourceTree = "<group>"; };
 		233581FD14D3A5C300F66DA0 /* CoreDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDebug.h; sourceTree = "<group>"; };
 		2335820014D3A5C300F66DA0 /* CoreObject_Manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreObject_Manager.cpp; sourceTree = "<group>"; };
@@ -414,6 +418,8 @@
 		DDA6F498149C1A920035A1BF /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				2329C74F14FB343000DBC1BE /* BasicParticle.cpp */,
+				2329C75014FB343000DBC1BE /* BasicParticle.h */,
 				23D9D67114F36648002152D3 /* CoreInput_PCInputState.cpp */,
 				23D9D67214F36648002152D3 /* CoreInput_PCInputState.h */,
 				DD0C294B14F80E8F002EE89F /* Box2DUtil.h */,
@@ -726,6 +732,7 @@
 				23D9D67414F36648002152D3 /* CoreInput_PCInputState.h in Headers */,
 				233BBC1014F4AF3900BB12FA /* Box2DContactListener.h in Headers */,
 				DD0C294C14F80E8F002EE89F /* Box2DUtil.h in Headers */,
+				2329C75214FB343000DBC1BE /* BasicParticle.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -867,6 +874,7 @@
 				233BBC7714F4D3EC00BB12FA /* matrix.cpp in Sources */,
 				233BBC7814F4D3EC00BB12FA /* OpenGLRenderer.cpp in Sources */,
 				DD0C294F14F80E9E002EE89F /* Box2DUtil.cpp in Sources */,
+				2329C75114FB343000DBC1BE /* BasicParticle.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
