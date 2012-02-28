@@ -155,6 +155,12 @@ struct Layer
 	Tile* tiles;
 };
 
+enum CameraMode
+{
+	CameraMode_FollowCam,
+	CameraMode_Anchor,
+};
+
 class Game
 {
 public:
@@ -175,7 +181,7 @@ public:
 	KeyboardInputState m_keyboardState;
 #endif
 	void ResetCamera();
-	
+	void SetCameraMode(CameraMode mode);
 	void Box2D_Init(bool continuousPhysicsEnabled,bool allowObjectsToSleep);
 	b2World* Box2D_GetWorld();
 	b2Body* Box2D_GetGroundBody();
@@ -200,6 +206,7 @@ public:
 	f32 GetPixelsPerMeter();
 	const vec3* GetCameraPosition();
 	void SetCameraPosition(const vec3* pCamPos, f32 lerpTime);	//use with caution
+	void SetFollowCamTarget(const vec3* pFollowCamPos);
 	void ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIndex_Y,bool isVisible);
 	Layer* GetLayer(LevelLayer layer);
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
@@ -232,13 +239,22 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	vec3 m_camPos;
 	vec3 m_startCamPos;
 	vec3 m_desiredCamPos;
+	vec3 m_followCamPos;
 	f32 m_camLerpTimer;
 	f32 m_camLerpTotalTime;
+	s32 m_camExtentTL_X;
+	s32 m_camExtentTL_Y;
+	s32 m_camExtentBR_X;
+	s32 m_camExtentBR_Y;
 	
 	bool m_touchIsDisabled[MAX_MULTITOUCH];
 	bool m_paused;
 	
+	
+	
 private:
+	CameraMode m_cameraMode;
+	
 	bool m_Box2D_ContinuousPhysicsEnabled;
 	bool m_Box2D_allowObjectsToSleep;
 	

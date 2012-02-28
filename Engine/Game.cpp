@@ -53,8 +53,15 @@ void Game::ResetCamera()
 bool Game::Init()
 {
 	m_paused = false;
+
+	m_cameraMode = CameraMode_Anchor;
+	CopyVec3(&m_camPos,&vec3_zero);
+	
+
 	
 	m_camLerpTimer = -1.0f;
+
+	CopyVec3(&m_followCamPos,&vec3_zero);
 	
 	m_Box2D_pWorld = NULL;
 	m_Box2D_pContactListener = NULL;
@@ -219,9 +226,16 @@ void Game::Update(f32 timeElapsed)
 	{
 		return;
 	}
+	
 
 	if(m_camLerpTimer > 0.0f)
 	{
+		//If this is follow cam, slowly lerp to the follow cam pos
+		if(m_cameraMode == CameraMode_FollowCam)
+		{
+			CopyVec3(&m_desiredCamPos,&m_followCamPos);
+		}
+		
 		m_camLerpTimer -= timeElapsed;
 		if(m_camLerpTimer < 0.0f)
 		{
@@ -230,6 +244,13 @@ void Game::Update(f32 timeElapsed)
 		
 		LerpVec3(&m_camPos,&m_desiredCamPos,&m_startCamPos,m_camLerpTimer/m_camLerpTotalTime);
 	}
+	//If we're not lerping and it's follow cam, straight up copy the position
+	else if(m_cameraMode == CameraMode_FollowCam)
+	{
+		CopyVec3(&m_camPos,&m_followCamPos);
+	}
+	
+	ConstrainCameraToTiledLevel();
 	
 	if(m_Box2D_pWorld != NULL)
 	{
@@ -239,6 +260,8 @@ void Game::Update(f32 timeElapsed)
 		m_Box2D_pWorld->DrawDebugData();
 #endif
 	}
+	
+	
 
 	//Lazy so constantly load new resources
 	//It can't be THAT bad
@@ -370,7 +393,11 @@ bool Game::WillArtDescriptionBeLoaded(ItemArtDescription* pArtDesc)
     for(u32 i=0; i<m_numArtDescriptionsToLoadTexturesFor; ++i)
     {
         ItemArtDescription* pCurrArtDesc = m_pArtDescriptionsToLoadTexturesFor[i];
-        if(pArtDesc == pCurrArtDesc)
+		if(pCurrArtDesc == NULL)
+		{
+			return false;
+		}
+        else if(pArtDesc == pCurrArtDesc)
         {
             return true;
         }
@@ -406,6 +433,12 @@ void Game::LoadItemArt()
     for(u32 i=0; i<m_numLoadedArtDescriptions; ++i)
     {
         ItemArtDescription* pCurrArtDesc = m_pLoadedArtDescriptions[i];
+		if(pCurrArtDesc == NULL)
+		{
+			//This seems evil
+			continue;
+		}
+		
         if(m_numArtDescriptionsToLoadTexturesFor == 0
 		   || WillArtDescriptionBeLoaded(pCurrArtDesc) == false)
         {
@@ -421,6 +454,12 @@ void Game::LoadItemArt()
     for(u32 i=0; i<m_numArtDescriptionsToLoadTexturesFor; ++i)
     {
 		ItemArtDescription* pCurrArtDesc = m_pArtDescriptionsToLoadTexturesFor[i];
+		if(pCurrArtDesc == NULL)
+		{
+			//Why is someone added NULL art descriptions?
+			continue;
+		}
+		
 		const MaterialSettings* pMaterialSettings = pCurrArtDesc->materialSettings;
 
 		
@@ -561,10 +600,14 @@ void Game::DeleteAllItemSounds()
 
 CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix)
 {
+	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
+	if(hRenderable == INVALID_COREOBJECT_HANDLE)
+	{
+		return INVALID_COREOBJECT_HANDLE;
+	}
+	
 	f32 tileMat[16];
 	mat4f_LoadScale(tileMat, (f32)m_tiledLevelDescription.tileDisplaySizeX);
-	
-	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
 
 	u32 baseFlag = usesViewMatrix ? RenderFlagDefaults_2DTexture_AlphaBlended_UseView:RenderFlagDefaults_2DTexture_AlphaBlended;
 	
@@ -674,21 +717,22 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					
 					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileSizeX;
 					
-					if(-pCurrLayer->position.x > tileBasePosX+m_tiledLevelDescription.halfTileSizeX
-					   || -pCurrLayer->position.x+distCheckRightAdd < tileBasePosX
-					   || -pCurrLayer->position.y > tileBasePosY+m_tiledLevelDescription.halfTileSizeY
-					   || -pCurrLayer->position.y+distCheckRightAdd < tileBasePosY)
+					
+					if(tileBasePosX < m_camPos.x-m_tiledLevelDescription.halfTileSizeX
+					   || tileBasePosX > m_camPos.x+GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileSizeX
+					   || tileBasePosY < m_camPos.y-m_tiledLevelDescription.halfTileSizeY
+					   || tileBasePosY > m_camPos.y+GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileSizeY)
 					{
 						if(pTile->hRenderable != INVALID_COREOBJECT_HANDLE)
 						{
 							RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
-							pCurrRenderable->Uninit();
+							pCurrRenderable->DeleteObject();
 							pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
 						}
 					}
 					else
 					{
-						RenderableGeometry3D* pCurrRenderable;
+						RenderableGeometry3D* pCurrRenderable = NULL;
 						
 						if(pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
 						{
@@ -828,40 +872,50 @@ f32 Game::GetPixelsPerMeter()
 
 void Game::ConstrainCameraToTiledLevel()
 {
-	Layer* pMainLayer = &m_layers[LevelLayer_CameraExtents];
-	
-	if(pMainLayer->pLevelData == NULL)
+	Layer* pCamExtents = &m_layers[LevelLayer_CameraExtents];
+	if(pCamExtents->pLevelData == NULL)
 	{
-		pMainLayer = &m_layers[LevelLayer_Main1];
+		return;
 	}
+
+	const f32 minCameraX = m_camExtentTL_X;
+	const f32 maxCameraX = m_camExtentBR_X-GLRENDERER->screenWidth_points;
+	const f32 minCameraY = m_camExtentTL_Y;
+	const f32 maxCameraY = m_camExtentBR_Y-GLRENDERER->screenHeight_points;
+
 	
-	const f32 tileSize = GetTileSize();
+	//const f32 tileSize = GetTileSize();
 	
-	const f32 maxCameraY = tileSize*0.5f*pMainLayer->numTilesY-GLRENDERER->screenHeight_points;
+	/*const f32 maxCameraY = tileSize*0.5f*pMainLayer->numTilesY-GLRENDERER->screenHeight_points;
 	if(m_camPos.y > maxCameraY)
 	{
 		m_camPos.y = maxCameraY;
-	}
+	}*/
 
-	const f32 maxCameraX = tileSize*pMainLayer->numTilesX-GLRENDERER->screenWidth_points;
+	/*const f32 maxCameraX = tileSize*pMainLayer->numTilesX-GLRENDERER->screenWidth_points;
 	if(m_camPos.x > maxCameraX)
 	{
 		m_camPos.x = maxCameraX;
-	}
+	}*/
 	 
-	const f32 minCameraX = 0.0f;
+	
 	if(m_camPos.x < minCameraX)
 	{
 		m_camPos.x = minCameraX;
 	}
-	
-	const f32 minCameraY = 0.0f;
+	else if(m_camPos.x > maxCameraX)
+	{
+		m_camPos.x = maxCameraX;
+	}
+
 	if(m_camPos.y < minCameraY)
 	{
 		m_camPos.y = minCameraY;
 	}
-	
-	
+	else if(m_camPos.y > maxCameraY)
+	{
+		m_camPos.y = maxCameraY;
+	}
 }
 
 
@@ -927,6 +981,25 @@ void Game::ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIn
 	if(pTile != NULL && pTile->tileID != -1)
 	{
 		pTile->isVisible = isVisible;
+	}
+}
+
+void Game::SetFollowCamTarget(const vec3* pFollowCamPos)
+{
+	CopyVec3(&m_followCamPos,pFollowCamPos);
+}
+
+void Game::SetCameraMode(CameraMode mode)
+{
+	m_cameraMode = mode;
+	
+	if(mode == CameraMode_FollowCam)
+	{
+		m_camLerpTimer = 1.0f;
+		m_camLerpTotalTime = 1.0f;
+		
+		CopyVec3(&m_desiredCamPos,&m_followCamPos);
+		CopyVec3(&m_startCamPos,&m_camPos);
 	}
 }
 
@@ -1156,7 +1229,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			
 			const u32 numTiles = width*height;
 			
-			const vec3* pClearColor = GLRENDERER->GetClearColor();
+			//const vec3* pClearColor = GLRENDERER->GetClearColor();
 			
 			switch(currLayer)
 			{
@@ -1385,6 +1458,56 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pGeom,RenderLayer_AlphaBlended2,MT_TextureOnlyWithTexcoordOffset,&pTile->texCoordOffset,true);
 					}
 				}
+			}
+			
+			if(currLayer == LevelLayer_CameraExtents)
+			{
+				m_camExtentBR_X = 0;
+				
+				m_camExtentTL_X = 999999;
+				
+				m_camExtentBR_Y = 0;
+				
+				m_camExtentTL_Y = 999999;
+				
+				for(u32 y=0; y<height; ++y)
+				{
+					for(u32 x=0; x<width; ++x)
+					{
+						Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+						if(pTile->tileID == -1)
+						{
+							continue;
+						}
+						
+						vec3 extentPos;
+						GetPositionFromTileIndices(x, y, &extentPos);
+						
+						if(extentPos.x < m_camExtentTL_X)
+						{
+							m_camExtentTL_X = extentPos.x;
+						}
+						if(extentPos.x > m_camExtentBR_X)
+						{
+							m_camExtentBR_X = extentPos.x;
+						}
+						
+						if(extentPos.y < m_camExtentTL_Y)
+						{
+							m_camExtentTL_Y = extentPos.y;
+						}
+						if(extentPos.y > m_camExtentBR_Y)
+						{
+							m_camExtentBR_Y = extentPos.y;
+						}
+					}
+				}
+				
+				const f32 halfTileSizePixels = tileWidthPixels*0.5f;
+				m_camExtentTL_X -= halfTileSizePixels;
+				m_camExtentBR_X += halfTileSizePixels;
+				m_camExtentTL_Y -= halfTileSizePixels;
+				m_camExtentBR_Y += halfTileSizePixels;
 			}
 		}
 		
