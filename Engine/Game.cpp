@@ -46,15 +46,32 @@ ItemArtDescription g_Game_BlobShadowDesc =
 
 void Game::ResetCamera()
 {
+	m_cameraMode = CameraMode_Anchor;
+	
+	CopyVec3(&m_startCamPos,&vec3_zero);
+	CopyVec3(&m_camPos,&vec3_zero);
+	CopyVec3(&m_desiredCamPos,&vec3_zero);
+	CopyVec3(&m_followCamPos,&vec3_zero);
+	
 	m_camLerpTimer = -1.0f;
+	m_camLerpTotalTime = 0.0f;
+	
+	
 }
 
 
 bool Game::Init()
 {
 	m_paused = false;
+
+	m_levelHasCamRestraints = false;
 	
+	m_cameraMode = CameraMode_Anchor;
+	CopyVec3(&m_camPos,&vec3_zero);
+
 	m_camLerpTimer = -1.0f;
+
+	CopyVec3(&m_followCamPos,&vec3_zero);
 	
 	m_Box2D_pWorld = NULL;
 	m_Box2D_pContactListener = NULL;
@@ -64,6 +81,7 @@ bool Game::Init()
 	{
 		m_layers[i].tiles = NULL;
 		CopyVec3(&m_layers[i].position,&vec3_zero);
+		m_layers[i].pLevelData = NULL;
 	}
 	
 	//Register the common models people will use
@@ -102,8 +120,7 @@ bool Game::Init()
 	m_numLoadedSoundDescriptions = 0;
 	m_numSoundDescriptionsToLoadWavsFor = 0;
 	m_ui_numButtons = 0;
-	m_numBreakables = 0;
-	
+
 	m_numSongsInPlaylist = 0;
 	m_currSongID = -1;
 	
@@ -221,10 +238,15 @@ void Game::Update(f32 timeElapsed)
 		return;
 	}
 	
-	UpdateBreakables(timeElapsed);
 
 	if(m_camLerpTimer > 0.0f)
 	{
+		//If this is follow cam, slowly lerp to the follow cam pos
+		if(m_cameraMode == CameraMode_FollowCam)
+		{
+			CopyVec3(&m_desiredCamPos,&m_followCamPos);
+		}
+		
 		m_camLerpTimer -= timeElapsed;
 		if(m_camLerpTimer < 0.0f)
 		{
@@ -232,6 +254,16 @@ void Game::Update(f32 timeElapsed)
 		}
 		
 		LerpVec3(&m_camPos,&m_desiredCamPos,&m_startCamPos,m_camLerpTimer/m_camLerpTotalTime);
+	}
+	//If we're not lerping and it's follow cam, straight up copy the position
+	else if(m_cameraMode == CameraMode_FollowCam)
+	{
+		CopyVec3(&m_camPos,&m_followCamPos);
+	}
+	
+	if(m_levelHasCamRestraints == true)
+	{
+		ConstrainCameraToTiledLevel();
 	}
 	
 	if(m_Box2D_pWorld != NULL)
@@ -242,6 +274,8 @@ void Game::Update(f32 timeElapsed)
 		m_Box2D_pWorld->DrawDebugData();
 #endif
 	}
+	
+	
 
 	//Lazy so constantly load new resources
 	//It can't be THAT bad
@@ -373,7 +407,11 @@ bool Game::WillArtDescriptionBeLoaded(ItemArtDescription* pArtDesc)
     for(u32 i=0; i<m_numArtDescriptionsToLoadTexturesFor; ++i)
     {
         ItemArtDescription* pCurrArtDesc = m_pArtDescriptionsToLoadTexturesFor[i];
-        if(pArtDesc == pCurrArtDesc)
+		if(pCurrArtDesc == NULL)
+		{
+			return false;
+		}
+        else if(pArtDesc == pCurrArtDesc)
         {
             return true;
         }
@@ -409,6 +447,12 @@ void Game::LoadItemArt()
     for(u32 i=0; i<m_numLoadedArtDescriptions; ++i)
     {
         ItemArtDescription* pCurrArtDesc = m_pLoadedArtDescriptions[i];
+		if(pCurrArtDesc == NULL)
+		{
+			//This seems evil
+			continue;
+		}
+		
         if(m_numArtDescriptionsToLoadTexturesFor == 0
 		   || WillArtDescriptionBeLoaded(pCurrArtDesc) == false)
         {
@@ -424,6 +468,12 @@ void Game::LoadItemArt()
     for(u32 i=0; i<m_numArtDescriptionsToLoadTexturesFor; ++i)
     {
 		ItemArtDescription* pCurrArtDesc = m_pArtDescriptionsToLoadTexturesFor[i];
+		if(pCurrArtDesc == NULL)
+		{
+			//Why is someone added NULL art descriptions?
+			continue;
+		}
+		
 		const MaterialSettings* pMaterialSettings = pCurrArtDesc->materialSettings;
 
 		
@@ -562,180 +612,16 @@ void Game::DeleteAllItemSounds()
 }
 
 
-void Game::UpdateBreakables(f32 timeElapsed)
-{
-	//TODO: this is probably BAD
-	
-	//Delete old breakables
-	for(u32 i=0; i<m_numBreakables; )
-    {
-        Breakable* pCurrBreakable = &m_updatingBreakables[i];
-        
-        //Kill off old breakables
-        if(pCurrBreakable->lifeTimer < 0.0f)
-        {
-			Breakable* pLastBreakable = &m_updatingBreakables[m_numBreakables-1];
-			
-			//Get handles to both renderables
-			RenderableGeometry3D* pCurrGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pCurrBreakable->handleRenderable);
-			//Delete the current geom because it's getting overwritten
-			pCurrGeom->Uninit();
-
-			if(m_numBreakables > 1)
-			{
-				//Overwrite the breakable
-				*pCurrBreakable = *pLastBreakable;
-			}
-			
-			--m_numBreakables;
-        }
-		else
-		{
-			++i;
-		}
-	}
-	
-	//Update breakables
-    for(u32 i=0; i<m_numBreakables; ++i)
-    {
-        Breakable* pCurrBreakable = &m_updatingBreakables[i];
-        
-		RenderableGeometry3D* pCurrGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pCurrBreakable->handleRenderable);
-		
-		pCurrBreakable->lifeTimer -= timeElapsed;
-		
-        const f32 breakableAlpha = ClampF(pCurrBreakable->lifeTimer/0.15f,0.0f,1.0f);
-        ScaleVec4(&pCurrBreakable->diffuseColor,&pCurrBreakable->diffuseColorStart,breakableAlpha);
-        
-        BreakableData* pData = pCurrBreakable->pBreakableData;
-        
-        pCurrBreakable->currSpinAngle += pCurrBreakable->spinSpeed*timeElapsed;
-        
-        
-        vec3* pBreakablePos = mat4f_GetPos(pCurrGeom->worldMat);
-        
-        pCurrBreakable->velocity.y -= pData->pSettings->gravity*timeElapsed;
-        AddScaledVec3_Self(pBreakablePos,&pCurrBreakable->velocity,timeElapsed);
-        
-        vec3 velNorm;
-        TryNormalizeVec3(&velNorm,&pCurrBreakable->velocity);
-        
-        const f32 maxZForScale = 40.0f;
-        const f32 maxZScale = 3.5f;
-        
-        f32 radius = pData->radius;
-        if(pData->scaleWithZ)
-        {
-            const f32 zScaleT = MinF(pBreakablePos->z/maxZForScale,1.0f);
-            radius = Lerp(pData->radius,maxZScale,zScaleT);
-        }
-        
-        mat4f_LoadScaledZRotation_IgnoreTranslation(pCurrGeom->worldMat, pCurrBreakable->currSpinAngle, radius);
-        
-										
-		//Have to relink up the uniform values because they're basicaly gone
-		//TODO: make this better
-		pCurrGeom->material.uniqueUniformValues[0] = (u8*)&pCurrBreakable->texcoordOffset;
-		pCurrGeom->material.uniqueUniformValues[1] = (u8*)&pCurrBreakable->diffuseColor;
-
-		//Bouncing disabled for now
-		
-        /*if(pData->pSettings->doesBounce && pBreakablePos->y <= 0.0f)
-        {
-            pBreakablePos->y = 0.0f;
-            
-            const f32 dotProd = -DotVec3(&g_GameBox_normal_Floor,&velNorm);
-            //printf("DotProd: %f\n",dotProd);
-            
-            const f32 finalDamp = Lerp(1.0f,pDesc->pSettings->bounceDamping,dotProd);
-            //printf("Damping mult: %f\n",finalDamp);
-            ScaleVec3_Self(&pCurrBreakable->velocity,finalDamp);
-            
-            pCurrBreakable->velocity.y *= -1.0f;
-        }*/
-    }
-}
-
-
-void Game::SpawnBreakable(BreakableData* pData, const vec3* pPosition, const vec3* pDirection, u32 breakableIndex, const vec4* diffuseColor, RenderLayer renderLayer)
-{
-	if(m_numBreakables == GAME_MAX_BREAKABLES)
-	{
-		return;
-	}
-	
-	//printf("Spawned breakable!\n");
-	
-	Breakable* pCurrBreakable = &m_updatingBreakables[m_numBreakables];
-	
-	pCurrBreakable->pBreakableData = pData;
-	ItemArtDescription* pArtDesc = &pData->itemArt;
-	const MaterialSettings* pMaterial = pArtDesc->materialSettings;
-	
-	//[self PlaySoundByFilename:pCurrBreakable->pBreakableDescription->breakSoundName:pPosition:0.0f:FALSE];
-	
-	RenderableGeometry3D* pRenderable = NULL;
-	pCurrBreakable->handleRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(&pRenderable);
-	
-	GLRENDERER->InitRenderableGeometry3D(pRenderable, pArtDesc->pModelData, pMaterial->renderMaterial, &pArtDesc->textureHandle, NULL, renderLayer, View_0, pMaterial->renderFlags|RenderFlag_Visible);
-	pRenderable->material.uniqueUniformValues[0] = (u8*)&pCurrBreakable->texcoordOffset;
-	pRenderable->material.uniqueUniformValues[1] = (u8*)&pCurrBreakable->diffuseColor;
-	
-	f32 radius = pData->radius;
-	
-	mat4f_LoadScale(pRenderable->worldMat, radius);
-	
-	vec3* pPos = mat4f_GetPos(pRenderable->worldMat);
-	CopyVec3(pPos, pPosition);
-	
-	const f32 speed = rand_FloatRange(pData->pSettings->moveSpeedMin, pData->pSettings->moveSpeedMax);
-	ScaleVec3(&pCurrBreakable->velocity,pDirection,speed);
-	const f32 spinSpeed = rand_FloatRange(pData->pSettings->spinSpeedMin, pData->pSettings->spinSpeedMax);
-	pCurrBreakable->spinSpeed = spinSpeed*((rand_FloatRange(0.0f, 1.0f) > 0.5f) ? -1.0f : 1.0f);
-	pCurrBreakable->currSpinAngle = 0.0f;
-	pCurrBreakable->lifeTimer = pData->pSettings->lifetime;
-	
-	CopyVec4(&pCurrBreakable->diffuseColor,diffuseColor);
-	CopyVec4(&pCurrBreakable->diffuseColorStart,diffuseColor);
-	
-	switch (breakableIndex)
-	{
-		case 0:
-		{
-			SetVec2(&pCurrBreakable->texcoordOffset, 0.0f, 0.0f);
-			break;
-		}
-		case 1:
-		{
-			SetVec2(&pCurrBreakable->texcoordOffset, 0.5f, 0.0f);
-			break;
-		}
-		case 2:
-		{
-			SetVec2(&pCurrBreakable->texcoordOffset, 0.0f, 0.5f);
-			break;
-		}
-		case 3:
-		{
-			SetVec2(&pCurrBreakable->texcoordOffset, 0.5f, 0.5f);
-			break;
-		}
-		default:
-		{
-			break;
-		}
-	}
-	
-	++m_numBreakables;
-}
-
-
 CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix)
 {
+	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
+	if(hRenderable == INVALID_COREOBJECT_HANDLE)
+	{
+		return INVALID_COREOBJECT_HANDLE;
+	}
+	
 	f32 tileMat[16];
 	mat4f_LoadScale(tileMat, (f32)m_tiledLevelDescription.tileDisplaySizeX);
-	
-	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
 
 	u32 baseFlag = usesViewMatrix ? RenderFlagDefaults_2DTexture_AlphaBlended_UseView:RenderFlagDefaults_2DTexture_AlphaBlended;
 	
@@ -758,9 +644,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 {
 	vec3 position;
 	ScaleVec3(&position,pPosition,-1.0f);
-	
-	const s32 distCheckRightAdd = GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileSizeX;
-	
+
 	for(s32 i=0; i<NumLevelLayers; ++i)
 	{
 		const LevelLayer currLayer = (LevelLayer)i;
@@ -845,21 +729,22 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					
 					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileSizeX;
 					
-					if(-pCurrLayer->position.x > tileBasePosX+m_tiledLevelDescription.halfTileSizeX
-					   || -pCurrLayer->position.x+distCheckRightAdd < tileBasePosX
-					   || -pCurrLayer->position.y > tileBasePosY+m_tiledLevelDescription.halfTileSizeY
-					   || -pCurrLayer->position.y+distCheckRightAdd < tileBasePosY)
+					
+					if(tileBasePosX < m_camPos.x-m_tiledLevelDescription.halfTileSizeX
+					   || tileBasePosX > m_camPos.x+GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileSizeX
+					   || tileBasePosY < m_camPos.y-m_tiledLevelDescription.halfTileSizeY
+					   || tileBasePosY > m_camPos.y+GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileSizeY)
 					{
 						if(pTile->hRenderable != INVALID_COREOBJECT_HANDLE)
 						{
 							RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
-							pCurrRenderable->Uninit();
+							pCurrRenderable->DeleteObject();
 							pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
 						}
 					}
 					else
 					{
-						RenderableGeometry3D* pCurrRenderable;
+						RenderableGeometry3D* pCurrRenderable = NULL;
 						
 						if(pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
 						{
@@ -920,6 +805,7 @@ void Game::SetCameraPosition(const vec3* pCamPos, f32 lerpTime)
 {
 	if(lerpTime == 0.0f)
 	{
+		CopyVec3(&m_startCamPos,pCamPos);
 		CopyVec3(&m_camPos,pCamPos);
 	}
 	else
@@ -999,40 +885,50 @@ f32 Game::GetPixelsPerMeter()
 
 void Game::ConstrainCameraToTiledLevel()
 {
-	Layer* pMainLayer = &m_layers[LevelLayer_CameraExtents];
-	
-	if(pMainLayer->pLevelData == NULL)
+	Layer* pCamExtents = &m_layers[LevelLayer_CameraExtents];
+	if(pCamExtents->pLevelData == NULL)
 	{
-		pMainLayer = &m_layers[LevelLayer_Main1];
+		return;
 	}
+
+	const f32 minCameraX = m_camExtentTL_X;
+	const f32 maxCameraX = m_camExtentBR_X-GLRENDERER->screenWidth_points;
+	const f32 minCameraY = m_camExtentTL_Y;
+	const f32 maxCameraY = m_camExtentBR_Y-GLRENDERER->screenHeight_points;
+
 	
-	const f32 tileSize = GetTileSize();
+	//const f32 tileSize = GetTileSize();
 	
-	const f32 maxCameraY = tileSize*0.5f*pMainLayer->numTilesY-GLRENDERER->screenHeight_points;
+	/*const f32 maxCameraY = tileSize*0.5f*pMainLayer->numTilesY-GLRENDERER->screenHeight_points;
 	if(m_camPos.y > maxCameraY)
 	{
 		m_camPos.y = maxCameraY;
-	}
+	}*/
 
-	const f32 maxCameraX = tileSize*pMainLayer->numTilesX-GLRENDERER->screenWidth_points;
+	/*const f32 maxCameraX = tileSize*pMainLayer->numTilesX-GLRENDERER->screenWidth_points;
 	if(m_camPos.x > maxCameraX)
 	{
 		m_camPos.x = maxCameraX;
-	}
+	}*/
 	 
-	const f32 minCameraX = 0.0f;
+	
 	if(m_camPos.x < minCameraX)
 	{
 		m_camPos.x = minCameraX;
 	}
-	
-	const f32 minCameraY = 0.0f;
+	else if(m_camPos.x > maxCameraX)
+	{
+		m_camPos.x = maxCameraX;
+	}
+
 	if(m_camPos.y < minCameraY)
 	{
 		m_camPos.y = minCameraY;
 	}
-	
-	
+	else if(m_camPos.y > maxCameraY)
+	{
+		m_camPos.y = maxCameraY;
+	}
 }
 
 
@@ -1101,6 +997,25 @@ void Game::ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIn
 	}
 }
 
+void Game::SetFollowCamTarget(const vec3* pFollowCamPos)
+{
+	CopyVec3(&m_followCamPos,pFollowCamPos);
+}
+
+void Game::SetCameraMode(CameraMode mode)
+{
+	m_cameraMode = mode;
+	
+	if(mode == CameraMode_FollowCam)
+	{
+		m_camLerpTimer = 1.0f;
+		m_camLerpTotalTime = 1.0f;
+		
+		CopyVec3(&m_desiredCamPos,&m_followCamPos);
+		CopyVec3(&m_startCamPos,&m_camPos);
+	}
+}
+
 
 void Game::Box2D_ResetWorld()
 {
@@ -1161,6 +1076,8 @@ void Game::Box2D_SetGravity(f32 x, f32 y)
 
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
 {
+	m_levelHasCamRestraints = false;
+	
 	m_pixelsPerMeter = (f32)tileWidthPixels/tileSizeMeters;
 	
 	const f32 halfTileSize = tileSizeMeters*0.5f;
@@ -1324,10 +1241,15 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			}
 			
 			Layer* pCurrLayer = &m_layers[currLayer];
+			if(pCurrLayer->pLevelData != NULL)
+			{
+				delete[] pCurrLayer->pLevelData;
+			}
+			pCurrLayer->pLevelData = NULL;
 			
 			const u32 numTiles = width*height;
 			
-			const vec3* pClearColor = GLRENDERER->GetClearColor();
+			//const vec3* pClearColor = GLRENDERER->GetClearColor();
 			
 			switch(currLayer)
 			{
@@ -1528,7 +1450,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						b2PolygonShape polygonShape;
 						polygonShape.SetAsBox(halfTileSize,halfTileSize);
 						fixtureDef.shape = &polygonShape;
-						fixtureDef.filter.categoryBits = 1 << CollisionFilter_Ground;
+						fixtureDef.filter.categoryBits = Box2D_GetCollisionFlagsForTileIndex(pTile->tileID);
 						fixtureDef.filter.maskBits = 0xFFFF;
 						
 						bodyDef.position.Set(pos.x/m_pixelsPerMeter, pos.y/m_pixelsPerMeter);
@@ -1556,6 +1478,58 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pGeom,RenderLayer_AlphaBlended2,MT_TextureOnlyWithTexcoordOffset,&pTile->texCoordOffset,true);
 					}
 				}
+			}
+			
+			if(currLayer == LevelLayer_CameraExtents)
+			{
+				m_levelHasCamRestraints = true;
+				
+				m_camExtentBR_X = 0;
+				
+				m_camExtentTL_X = 999999;
+				
+				m_camExtentBR_Y = 0;
+				
+				m_camExtentTL_Y = 999999;
+				
+				for(u32 y=0; y<height; ++y)
+				{
+					for(u32 x=0; x<width; ++x)
+					{
+						Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+						if(pTile->tileID == -1)
+						{
+							continue;
+						}
+						
+						vec3 extentPos;
+						GetPositionFromTileIndices(x, y, &extentPos);
+						
+						if(extentPos.x < m_camExtentTL_X)
+						{
+							m_camExtentTL_X = extentPos.x;
+						}
+						if(extentPos.x > m_camExtentBR_X)
+						{
+							m_camExtentBR_X = extentPos.x;
+						}
+						
+						if(extentPos.y < m_camExtentTL_Y)
+						{
+							m_camExtentTL_Y = extentPos.y;
+						}
+						if(extentPos.y > m_camExtentBR_Y)
+						{
+							m_camExtentBR_Y = extentPos.y;
+						}
+					}
+				}
+				
+				const f32 halfTileSizePixels = tileWidthPixels*0.5f;
+				m_camExtentTL_X -= halfTileSizePixels;
+				m_camExtentBR_X += halfTileSizePixels;
+				m_camExtentTL_Y -= halfTileSizePixels;
+				m_camExtentBR_Y += halfTileSizePixels;
 			}
 		}
 		

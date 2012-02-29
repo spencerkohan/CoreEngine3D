@@ -7,12 +7,14 @@
 #include "ObjectGroup.h"
 #include "SoundPlayer.h"
 #include "TileAffector.h"
+#include "BasicParticle.h"
 
 extern CoreObjectFactory<CollisionBox> g_Factory_CollisionBox;
 extern CoreObjectFactory<ScriptObject> g_Factory_ScriptObject;
 extern CoreObjectFactory<ObjectGroup> g_Factory_ObjectGroup;
 extern CoreObjectFactory<SoundPlayer> g_Factory_SoundPlayer;
 extern CoreObjectFactory<TileAffector> g_Factory_TileAffector;
+extern CoreObjectFactory<BasicParticle> g_Factory_BasicParticle;
 extern CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_Normal;
 extern CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_UI;
 extern CoreObjectFactory<RenderableSceneObject3D> g_Factory_RenderableSceneObject;

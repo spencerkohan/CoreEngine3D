@@ -18,7 +18,7 @@
 
 #include "../Hash.h"
 
-const vec3* ScriptObject::GetPosition()
+const vec3* ScriptObject::GetPosition() const
 {
 	return &m_position;
 }
@@ -282,6 +282,10 @@ void ScriptObject::Trigger()
 	{
 		GAME->FinishedCurrentLevel();
 	}
+	else if(m_triggerMessage == Hash("SetFollowCamera"))
+	{
+		GAME->SetCameraMode(CameraMode_FollowCam);
+	}
 	else if(m_triggerMessage == Hash("SetCamera"))
 	{
 		CollisionBox* pBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hCollisionBox);
@@ -293,6 +297,8 @@ void ScriptObject::Trigger()
 		vec3 camPos;
 		CopyVec3(&camPos,pBox->GetBottomLeft());
 		GAME->SetCameraPosition(&camPos,0.0f);
+		
+		GAME->SetCameraMode(CameraMode_Anchor);
 	}
 	else if(m_triggerMessage == Hash("MoveCamera"))
 	{
@@ -316,6 +322,8 @@ void ScriptObject::Trigger()
 			CopyVec3(&camPos,pBox->GetBottomLeft());
 			GAME->SetCameraPosition(&camPos,1.5f);
 		}
+		
+		GAME->SetCameraMode(CameraMode_Anchor);
 	}
 	else
 	{
