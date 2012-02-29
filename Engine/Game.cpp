@@ -642,6 +642,8 @@ CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDes
 
 void Game::UpdateTiledLevelPosition(vec3* pPosition)
 {
+	const f32 halfTileSize = GAME->GetHalfTileSize();
+	
 	vec3 position;
 	ScaleVec3(&position,pPosition,-1.0f);
 
@@ -717,7 +719,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		{
 			for(int y=0; y<height; ++y)
 			{
-				const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileSizeY;
+				const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileSizeY+((s32)pCurrLayer->position.y);
 				
 				for(int x=0; x<width; ++x)
 				{
@@ -727,7 +729,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 						continue;
 					}
 					
-					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileSizeX;
+					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileSizeX+((s32)pCurrLayer->position.x);
 					
 					
 					if(tileBasePosX < m_camPos.x-m_tiledLevelDescription.halfTileSizeX
@@ -735,9 +737,9 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					   || tileBasePosY < m_camPos.y-m_tiledLevelDescription.halfTileSizeY
 					   || tileBasePosY > m_camPos.y+GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileSizeY)
 					{
-						if(pTile->hRenderable != INVALID_COREOBJECT_HANDLE)
+						RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+						if(pCurrRenderable != NULL)
 						{
-							RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
 							pCurrRenderable->DeleteObject();
 							pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
 						}
@@ -761,8 +763,8 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 						}
 						
 						vec3* pCurrPos = mat4f_GetPos(pCurrRenderable->worldMat);
-						pCurrPos->x = 0.5f+tileBasePosX+((s32)pCurrLayer->position.x);
-						pCurrPos->y = 0.5f+tileBasePosY+((s32)pCurrLayer->position.y);
+						pCurrPos->x = 0.5f+tileBasePosX;
+						pCurrPos->y = 0.5f+tileBasePosY;
 
 						if(pTile->isVisible)
 						{
