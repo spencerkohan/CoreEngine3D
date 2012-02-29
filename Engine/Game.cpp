@@ -642,8 +642,6 @@ CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDes
 
 void Game::UpdateTiledLevelPosition(vec3* pPosition)
 {
-	const f32 halfTileSize = GAME->GetHalfTileSize();
-	
 	vec3 position;
 	ScaleVec3(&position,pPosition,-1.0f);
 
@@ -719,7 +717,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		{
 			for(int y=0; y<height; ++y)
 			{
-				const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileSizeY+((s32)pCurrLayer->position.y);
+				const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileDisplaySizeX+((s32)pCurrLayer->position.y);
 				
 				for(int x=0; x<width; ++x)
 				{
@@ -729,13 +727,13 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 						continue;
 					}
 					
-					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileSizeX+((s32)pCurrLayer->position.x);
+					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileDisplaySizeX+((s32)pCurrLayer->position.x);
 					
 					
-					if(tileBasePosX < m_camPos.x-m_tiledLevelDescription.halfTileSizeX
-					   || tileBasePosX > m_camPos.x+GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileSizeX
-					   || tileBasePosY < m_camPos.y-m_tiledLevelDescription.halfTileSizeY
-					   || tileBasePosY > m_camPos.y+GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileSizeY)
+					if(tileBasePosX < -m_tiledLevelDescription.halfTileDisplaySizeX
+					   || tileBasePosX > GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileDisplaySizeX
+					   || tileBasePosY < -m_tiledLevelDescription.halfTileDisplaySizeY
+					   || tileBasePosY > GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileDisplaySizeY)
 					{
 						RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
 						if(pCurrRenderable != NULL)
@@ -842,8 +840,8 @@ void Game::GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* p
 
 void Game::GetPositionFromTileIndices(s32 index_X, s32 index_Y, vec3* pOut_position)
 {
-	pOut_position->x = static_cast<f32>(index_X * m_tiledLevelDescription.tileDisplaySizeX + m_tiledLevelDescription.halfTileSizeX);
-	pOut_position->y = static_cast<f32>(index_Y * m_tiledLevelDescription.tileDisplaySizeY + m_tiledLevelDescription.halfTileSizeY);
+	pOut_position->x = static_cast<f32>(index_X * m_tiledLevelDescription.tileDisplaySizeX + m_tiledLevelDescription.halfTileDisplaySizeX);
+	pOut_position->y = static_cast<f32>(index_Y * m_tiledLevelDescription.tileDisplaySizeY + m_tiledLevelDescription.halfTileDisplaySizeY);
 	pOut_position->z = 0.0f;
 }
 
@@ -875,7 +873,7 @@ f32 Game::GetTileSize()
 
 f32 Game::GetHalfTileSize()
 {
-	return static_cast<f32>(m_tiledLevelDescription.halfTileSizeX);
+	return static_cast<f32>(m_tiledLevelDescription.halfTileDisplaySizeX);
 }
 
 
@@ -1103,8 +1101,8 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 		
 		m_tiledLevelDescription.tileDisplaySizeX = tileWidthPixels;
 		m_tiledLevelDescription.tileDisplaySizeY = tileWidthPixels;
-		m_tiledLevelDescription.halfTileSizeX = m_tiledLevelDescription.tileDisplaySizeX/2;
-		m_tiledLevelDescription.halfTileSizeY = m_tiledLevelDescription.tileDisplaySizeY/2;
+		m_tiledLevelDescription.halfTileDisplaySizeX = m_tiledLevelDescription.tileDisplaySizeX/2;
+		m_tiledLevelDescription.halfTileDisplaySizeY = m_tiledLevelDescription.tileDisplaySizeY/2;
 		
 		const f32 unitConversionScale = (f32)tileWidthPixels/(f32)mapTileSizeX;
 		

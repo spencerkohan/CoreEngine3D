@@ -95,8 +95,8 @@ struct TiledLevelDescription
 {
 	s32 tileDisplaySizeX;
 	s32 tileDisplaySizeY;
-	s32 halfTileSizeX;
-	s32 halfTileSizeY;
+	s32 halfTileDisplaySizeX;
+	s32 halfTileDisplaySizeY;
 };
 
 struct TileSetDescription
