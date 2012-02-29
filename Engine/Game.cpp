@@ -746,7 +746,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					{
 						RenderableGeometry3D* pCurrRenderable = NULL;
 						
-						if(pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
+						if(pTile->isVisible && pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
 						{
 							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
 						}
@@ -757,6 +757,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 						
 						if(pCurrRenderable == NULL)
 						{
+							//assert(0);
 							continue;
 						}
 						

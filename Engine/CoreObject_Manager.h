@@ -30,6 +30,7 @@ public:
 		m_pObjectList = NULL;
 		m_numObjects = 0;
 		m_maxObjects = 0;
+		m_objectsCanUpdate = true;
 	}
 	
 	void Sort(bool (*compareFunc)(const T& lhs, const T& rhs))
@@ -119,11 +120,14 @@ public:
 			}
 		}
 
-		//Update remaining objects
-		for(u32 i=0; i<m_numObjects; ++i)
+		if(m_objectsCanUpdate)
 		{
-			T* pCurrObject = &m_pObjectList[i];
-			pCurrObject->Update(timeElapsed);
+			//Update remaining objects
+			for(u32 i=0; i<m_numObjects; ++i)
+			{
+				T* pCurrObject = &m_pObjectList[i];
+				pCurrObject->Update(timeElapsed);
+			}
 		}
 		
 		return deletedSomething;
@@ -136,11 +140,17 @@ public:
 
 		T::InitClass();
 	}
+	
+	void SetObjectsCanUpdate(bool objectsCanUpdate)
+	{
+		m_objectsCanUpdate = objectsCanUpdate;
+	}
 	//private:
 
 	T* m_pObjectList;
 	u32 m_numObjects;
 	u32 m_maxObjects;
+	bool m_objectsCanUpdate;
 };
 
 class CoreObjectManager

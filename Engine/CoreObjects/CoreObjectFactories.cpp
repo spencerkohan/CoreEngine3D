@@ -22,6 +22,10 @@ void CoreObjectFactories_Init()
 	g_Factory_Geometry_UI.Init(64);
 	g_Factory_RenderableSceneObject.Init(64);
 	g_Factory_BasicParticle.Init(512);
+	
+	g_Factory_Geometry_Normal.SetObjectsCanUpdate(false);
+	g_Factory_Geometry_UI.SetObjectsCanUpdate(false);
+	g_Factory_RenderableSceneObject.SetObjectsCanUpdate(false);
 }
 
 void CoreObjectFactories_Update(f32 timeElapsed)

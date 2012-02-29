@@ -126,6 +126,8 @@ void BasicParticle::Uninit()
 	{
 		pGeom->DeleteObject();
 	}
+	
+	CoreObject::Uninit();
 }
 
 

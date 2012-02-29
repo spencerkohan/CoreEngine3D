@@ -51,6 +51,6 @@ void SoundPlayer::ProcessMessage(u32 message)	//Pass in a hash value
 
 void SoundPlayer::Uninit()
 {
-	
+	CoreObject::Uninit();
 }
 
