@@ -71,6 +71,7 @@ enum CollisionFilter
 	CollisionFilter_Connector, //Reasonable?
 	CollisionFilter_Spikey, //Reasonable?
 	CollisionFilter_Bouncy,
+	CollisionFilter_Ghost,
 };
 
 
@@ -240,8 +241,11 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	vec3 m_startCamPos;
 	vec3 m_desiredCamPos;
 	vec3 m_followCamPos;
+	
 	f32 m_camLerpTimer;
 	f32 m_camLerpTotalTime;
+	
+	bool m_levelHasCamRestraints;
 	s32 m_camExtentTL_X;
 	s32 m_camExtentTL_Y;
 	s32 m_camExtentBR_X;

@@ -32,6 +32,7 @@ public:
 	virtual void SetPosition(const vec3* pPosition){}
 	virtual const vec3* GetPosition() const{return NULL;}
 	virtual b2Body* Box2D_GetBody(){return NULL;}
+	virtual b2Body* Box2D_GetBodyInRadius(const vec2* pCenterMeters, f32 radiusMeters){return NULL;}
 	virtual bool Box2D_GetAnchorOffset(vec2* pOut_OffsetVec){return false;}
 	virtual bool Box2D_GetLinkOffset(vec2* pOut_OffsetVec){return false;}
 	

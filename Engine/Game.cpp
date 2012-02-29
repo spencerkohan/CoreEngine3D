@@ -46,7 +46,17 @@ ItemArtDescription g_Game_BlobShadowDesc =
 
 void Game::ResetCamera()
 {
+	m_cameraMode = CameraMode_Anchor;
+	
+	CopyVec3(&m_startCamPos,&vec3_zero);
+	CopyVec3(&m_camPos,&vec3_zero);
+	CopyVec3(&m_desiredCamPos,&vec3_zero);
+	CopyVec3(&m_followCamPos,&vec3_zero);
+	
 	m_camLerpTimer = -1.0f;
+	m_camLerpTotalTime = 0.0f;
+	
+	
 }
 
 
@@ -54,11 +64,11 @@ bool Game::Init()
 {
 	m_paused = false;
 
+	m_levelHasCamRestraints = false;
+	
 	m_cameraMode = CameraMode_Anchor;
 	CopyVec3(&m_camPos,&vec3_zero);
-	
 
-	
 	m_camLerpTimer = -1.0f;
 
 	CopyVec3(&m_followCamPos,&vec3_zero);
@@ -71,6 +81,7 @@ bool Game::Init()
 	{
 		m_layers[i].tiles = NULL;
 		CopyVec3(&m_layers[i].position,&vec3_zero);
+		m_layers[i].pLevelData = NULL;
 	}
 	
 	//Register the common models people will use
@@ -250,7 +261,10 @@ void Game::Update(f32 timeElapsed)
 		CopyVec3(&m_camPos,&m_followCamPos);
 	}
 	
-	ConstrainCameraToTiledLevel();
+	if(m_levelHasCamRestraints == true)
+	{
+		ConstrainCameraToTiledLevel();
+	}
 	
 	if(m_Box2D_pWorld != NULL)
 	{
@@ -630,9 +644,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 {
 	vec3 position;
 	ScaleVec3(&position,pPosition,-1.0f);
-	
-	const s32 distCheckRightAdd = GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileSizeX;
-	
+
 	for(s32 i=0; i<NumLevelLayers; ++i)
 	{
 		const LevelLayer currLayer = (LevelLayer)i;
@@ -793,6 +805,7 @@ void Game::SetCameraPosition(const vec3* pCamPos, f32 lerpTime)
 {
 	if(lerpTime == 0.0f)
 	{
+		CopyVec3(&m_startCamPos,pCamPos);
 		CopyVec3(&m_camPos,pCamPos);
 	}
 	else
@@ -1063,6 +1076,8 @@ void Game::Box2D_SetGravity(f32 x, f32 y)
 
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
 {
+	m_levelHasCamRestraints = false;
+	
 	m_pixelsPerMeter = (f32)tileWidthPixels/tileSizeMeters;
 	
 	const f32 halfTileSize = tileSizeMeters*0.5f;
@@ -1226,6 +1241,11 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			}
 			
 			Layer* pCurrLayer = &m_layers[currLayer];
+			if(pCurrLayer->pLevelData != NULL)
+			{
+				delete[] pCurrLayer->pLevelData;
+			}
+			pCurrLayer->pLevelData = NULL;
 			
 			const u32 numTiles = width*height;
 			
@@ -1462,6 +1482,8 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			
 			if(currLayer == LevelLayer_CameraExtents)
 			{
+				m_levelHasCamRestraints = true;
+				
 				m_camExtentBR_X = 0;
 				
 				m_camExtentTL_X = 999999;
