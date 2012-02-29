@@ -328,6 +328,9 @@
     <ClCompile Include="..\..\Engine\CoreObjects\TileAffector.cpp">
       <Filter>Engine\CoreObjects</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Engine\CoreObjects\BasicParticle.cpp">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine\libpng\png.h">
@@ -661,6 +664,9 @@
       <Filter>Engine\CoreObjects</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine\CoreObjects\TileAffector.h">
+      <Filter>Engine\CoreObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CoreObjects\BasicParticle.h">
       <Filter>Engine\CoreObjects</Filter>
     </ClInclude>
   </ItemGroup>

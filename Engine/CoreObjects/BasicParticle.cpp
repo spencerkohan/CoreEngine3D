@@ -7,9 +7,9 @@
 //
 
 #include "BasicParticle.h"
-#include "OpenGLRenderer.h"
-#include "matrix.h"
-#include "MathUtil.h"
+#include "../OpenGLRenderer.h"
+#include "../matrix.h"
+#include "../MathUtil.h"
 
 void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosition, const vec3* pDirection, u32 texIndex)
 {

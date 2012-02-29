@@ -96,6 +96,7 @@
     <ClCompile Include="..\..\Engine\CoreDebug.cpp" />
     <ClCompile Include="..\..\Engine\CoreGameObject.cpp" />
     <ClCompile Include="..\..\Engine\CoreInput_PCInputState.cpp" />
+    <ClCompile Include="..\..\Engine\CoreObjects\BasicParticle.cpp" />
     <ClCompile Include="..\..\Engine\CoreObjects\CollisionBox.cpp" />
     <ClCompile Include="..\..\Engine\CoreObjects\CoreObjectFactories.cpp" />
     <ClCompile Include="..\..\Engine\CoreObjects\ObjectGroup.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="..\..\Engine\CoreInput_GamePad.h" />
     <ClInclude Include="..\..\Engine\CoreInput_PCInputState.h" />
     <ClInclude Include="..\..\Engine\CoreObject.h" />
+    <ClInclude Include="..\..\Engine\CoreObjects\BasicParticle.h" />
     <ClInclude Include="..\..\Engine\CoreObjects\CollisionBox.h" />
     <ClInclude Include="..\..\Engine\CoreObjects\CoreObjectFactories.h" />
     <ClInclude Include="..\..\Engine\CoreObjects\ObjectGroup.h" />

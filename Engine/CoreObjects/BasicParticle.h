@@ -10,8 +10,8 @@
 #define CoreEngine3D_OSX__BasicParticle_h
 
 #include "../CoreObject.h"
-#include "RenderLayer.h"
-#include "GraphicsTypes.h"
+#include "../RenderLayer.h"
+#include "../GraphicsTypes.h"
 
 class BasicParticle: public CoreObject
 {
