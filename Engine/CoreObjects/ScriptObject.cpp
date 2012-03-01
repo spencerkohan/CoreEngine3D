@@ -39,7 +39,7 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 	m_triggerMessage = 0;
 	m_untriggerMessage = 0;
 	m_offMessage = 0;
-	m_hTriggerObject = INVALID_COREOBJECT_HANDLE;
+	m_hTriggerObject = CoreObjectHandle::Invalid();
 	
 	m_collisionType = CollisionBoxType_Ghost;
 	m_scriptStatus = ScriptObject::ScriptStatus_On;
@@ -130,7 +130,7 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 	}
 
 
-	m_hCollisionBox = INVALID_COREOBJECT_HANDLE;
+	m_hCollisionBox = CoreObjectHandle::Invalid();
 	
 	//Will init the box using our own self!
 	if(pSpawnableEnt->tileID == -1)

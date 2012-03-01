@@ -615,9 +615,9 @@ void Game::DeleteAllItemSounds()
 CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix)
 {
 	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
-	if(hRenderable == INVALID_COREOBJECT_HANDLE)
+	if(hRenderable == CoreObjectHandle::Invalid())
 	{
-		return INVALID_COREOBJECT_HANDLE;
+		return CoreObjectHandle::Invalid();
 	}
 	
 	f32 tileMat[16];
@@ -737,7 +737,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					   || tileBasePosY < -m_tiledLevelDescription.halfTileDisplaySizeY
 					   || tileBasePosY > GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileDisplaySizeY)
 					{
-						if(pTile->hRenderable != INVALID_COREOBJECT_HANDLE)
+						if(pTile->hRenderable != CoreObjectHandle::Invalid())
 						{
 							RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
 							if(pCurrRenderable != NULL)
@@ -745,7 +745,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 								//printf("goodbye: %4i %4i\n", tileBasePosX, tileBasePosY );
 								objectsChanged = true;
 								pCurrRenderable->DeleteObject();
-								pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
+								pTile->hRenderable = CoreObjectHandle::Invalid();
 							}
 						}
 					}
@@ -753,12 +753,12 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					{
 						RenderableGeometry3D* pCurrRenderable = NULL;
 						
-						if(/*pTile->isVisible &&*/ pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
+						if(/*pTile->isVisible &&*/ pTile->hRenderable == CoreObjectHandle::Invalid())
 						{
 							//printf("hello: %4i %4i\n", tileBasePosX, tileBasePosY );
 							objectsChanged = true;
 							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
-							//assert(pTile->hRenderable != INVALID_COREOBJECT_HANDLE);
+							//assert(pTile->hRenderable != CoreObjectHandle::Invalid());
 						}
 						else
 						{
@@ -1438,7 +1438,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				for(u32 x=0; x<width; ++x)
 				{
 					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
-					pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
+					pTile->hRenderable = CoreObjectHandle::Invalid();
 
 					pTile->tileID = ARRAY2D(pData, x, y, width);
 					pTile->isVisible = true;

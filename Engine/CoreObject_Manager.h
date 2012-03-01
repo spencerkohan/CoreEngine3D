@@ -20,6 +20,7 @@ extern CoreObjectManager* COREOBJECTMANAGER;
 
 #define COREOBJECT_MAX_OBJECTS 4096
 
+
 class CoreObjectManager
 {
 	friend class CoreObject;
@@ -32,19 +33,23 @@ public:
 private:
 	void RemoveObjectByHandle(CoreObjectHandle handle);
 	void UpdateHandle(CoreObject* pCoreObject);
-	u32 GetUnusedHandle();
-	void FreeHandle(CoreObjectHandle handle);
 	
-	CoreObjectHandleObject m_objectArray[COREOBJECT_MAX_OBJECTS];
-	u32 m_numObjects;
+	struct CoreObjectHandleEntry
+	{
+		CoreObjectHandleEntry();
+		explicit CoreObjectHandleEntry(u32 nextFreeIndex);
+		
+		u32 m_nextFreeIndex : 12;
+		u32 m_counter : 15;
+		u32 m_active : 1;
+		u32 m_endOfList : 1;
+		CoreObject* m_entry;
+	};
 	
-	//Handles that are currently being used
-	CoreObjectHandle m_usedHandles[COREOBJECT_MAX_OBJECTS];
-	u32 m_numUsedHandles;
+	CoreObjectHandleEntry m_entries[COREOBJECT_MAX_OBJECTS];
 	
-	//Handles available for use
-	CoreObjectHandle m_freeHandles[COREOBJECT_MAX_OBJECTS];
-	u32 m_numFreeHandles;
+	int m_activeEntryCount;
+	u32 m_firstFreeEntry;
 };
 
 template <class T>
@@ -137,8 +142,6 @@ public:
 
 				T* pLastObject = &m_pObjectList[m_numObjects-1];
 
-				const u32 lastObjectHandle = pLastObject->GetHandle();
-				
 				if(m_numObjects > 1)
 				{
 					//overwrite current enemy with last enemy
@@ -147,8 +150,6 @@ public:
 					//Memory location of the object has moved so update the handle
 					//to point to the new memory location
 					pCurrObject->UpdateHandle();
-					
-					assert(pCurrObject->GetHandle() == lastObjectHandle);
 				}
 
 				--m_numObjects;

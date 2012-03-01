@@ -2090,16 +2090,16 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType
 	if(pGeom == NULL)
 	{
 		COREDEBUG_PrintDebugMessage("INSANE ERROR: You're out of RenderableObject3Ds!");
-		return INVALID_COREOBJECT_HANDLE;
+		return CoreObjectHandle::Invalid();
 	}
 	
 	pGeom->Init(0);
 	
 	const CoreObjectHandle handle = pGeom->GetHandle();
 	
-	if(handle == INVALID_COREOBJECT_HANDLE)
+	if(handle == CoreObjectHandle::Invalid())
 	{
-		return INVALID_COREOBJECT_HANDLE;
+		return CoreObjectHandle::Invalid();
 	}
 	
 	pGeom->material.flags = 0;
@@ -2124,7 +2124,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType
 		*pOut_Geom = pGeom;
 	}
 	
-	//assert(pGeom->GetHandle() != INVALID_COREOBJECT_HANDLE);
+	//assert(pGeom->GetHandle() != CoreObjectHandle::Invalid());
 	
 	return handle;
 }
@@ -4381,16 +4381,16 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableSceneObject3D(RenderableSceneOb
 	if(pScene == NULL)
 	{
 		COREDEBUG_PrintDebugMessage("INSANE ERROR: You're out of RenderableSceneObject3Ds!");
-		return INVALID_COREOBJECT_HANDLE;
+		return CoreObjectHandle::Invalid();
 	}
 	
 	pScene->Init(0);
 	
 	const CoreObjectHandle handle = pScene->GetHandle();
 	
-	if(handle == INVALID_COREOBJECT_HANDLE)
+	if(handle == CoreObjectHandle::Invalid())
 	{
-		return INVALID_COREOBJECT_HANDLE;
+		return CoreObjectHandle::Invalid();
 	}
 	
 	pScene->material.flags = 0;

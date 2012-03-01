@@ -44,5 +44,5 @@ bool CoreObject::Init(u32 type)
 void CoreObject::Uninit()
 {
 	COREOBJECTMANAGER->RemoveObjectByHandle(handle);
-	//assert(handle == INVALID_COREOBJECT_HANDLE);
+	//assert(handle == CoreObjectHandle::Invalid());
 }

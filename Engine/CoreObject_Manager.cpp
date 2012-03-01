@@ -20,6 +20,23 @@
 
 CoreObjectManager* COREOBJECTMANAGER = NULL;
 
+CoreObjectManager::CoreObjectHandleEntry::CoreObjectHandleEntry() 
+: m_nextFreeIndex(0)
+, m_counter(1)
+, m_active(0)
+, m_endOfList(0)
+, m_entry(NULL)
+{}
+
+CoreObjectManager::CoreObjectHandleEntry::CoreObjectHandleEntry(u32 nextFreeIndex)
+: m_nextFreeIndex(nextFreeIndex)
+, m_counter(1)
+, m_active(0)
+, m_endOfList(0)
+, m_entry(NULL)
+{}
+
+
 CoreObjectManager::CoreObjectManager()
 {
 	COREOBJECTMANAGER = this;
@@ -30,116 +47,50 @@ CoreObjectManager::CoreObjectManager()
 
 void CoreObjectManager::Clear()
 {
-	m_numObjects = 0;
-	m_numUsedHandles = 0;
+	m_activeEntryCount = 0;
+	m_firstFreeEntry = 0;
 	
-	//Handles start at 1
-	for(u32 i=0; i<COREOBJECT_MAX_OBJECTS; ++i)
-	{
-		m_freeHandles[i] = i+1;
-	}
-	
-	m_numFreeHandles = COREOBJECT_MAX_OBJECTS;
+	for (int i = 0; i < COREOBJECT_MAX_OBJECTS - 1; ++i)
+		m_entries[i] = CoreObjectHandleEntry(i + 1);
+	m_entries[COREOBJECT_MAX_OBJECTS - 1] = CoreObjectHandleEntry();
+	m_entries[COREOBJECT_MAX_OBJECTS - 1].m_endOfList = true;
 }
 
 
 bool CoreObjectManager::AddObject(CoreObject *pCoreObject)
 {
-	//If the object is NULL, don't add it
-	if(pCoreObject == NULL)
-	{
-		return false;
-	}
+	assert(m_activeEntryCount < COREOBJECT_MAX_OBJECTS - 1);
+	//assert(type >= 0 && type <= 31);
 	
-	if(m_numObjects >= COREOBJECT_MAX_OBJECTS)
-	{
-#if COREOBJECTMANAGER_DEBUG
-		COREDEBUG_PrintDebugMessage("ERROR: Out of core objects!\n");
-#endif
-		return false;
-	}
+	const int newIndex = m_firstFreeEntry;
+	assert(newIndex < COREOBJECT_MAX_OBJECTS);
+	assert(m_entries[newIndex].m_active == false);
+	assert(!m_entries[newIndex].m_endOfList);
 	
-	const u32 handle = GetUnusedHandle();
+	m_firstFreeEntry = m_entries[newIndex].m_nextFreeIndex;
+	m_entries[newIndex].m_nextFreeIndex = 0;
+	m_entries[newIndex].m_counter = m_entries[newIndex].m_counter + 1;
+	if (m_entries[newIndex].m_counter == 0)
+		m_entries[newIndex].m_counter = 1;
+	m_entries[newIndex].m_active = true;
+	m_entries[newIndex].m_entry = pCoreObject;
+	
+	++m_activeEntryCount;
+	
+	pCoreObject->handle = CoreObjectHandle(newIndex, m_entries[newIndex].m_counter, 0);
 
-	if(handle == INVALID_COREOBJECT_HANDLE)
-	{
-#if COREOBJECTMANAGER_DEBUG
-		COREDEBUG_PrintDebugMessage("ERROR: Failed to get handle!\n");
-#endif
-		return false;
-	}
-	
-	CoreObjectHandleObject* pHandleObject = &m_objectArray[m_numObjects];
-	pHandleObject->pObject = pCoreObject;
-	pHandleObject->handle = handle;
-	
-	pCoreObject->handle = handle;
-	
-#if COREOBJECTMANAGER_DEBUG	
-	assert(pCoreObject->handle == pHandleObject->handle);
-#endif
-	
-	++m_numObjects;
-	
 	return true;
-}
-
-
-u32 CoreObjectManager::GetUnusedHandle()
-{
-	if(m_numFreeHandles == 0)
-	{
-#if COREOBJECTMANAGER_DEBUG
-		COREDEBUG_PrintDebugMessage("ERROR: Out of object handles!\n");
-#endif
-		return 0;
-	}
-	
-	if(m_numUsedHandles == COREOBJECT_MAX_OBJECTS)
-	{
-#if COREOBJECTMANAGER_DEBUG
-		COREDEBUG_PrintDebugMessage("ERROR: Out of coreobjects!\n");
-#endif
-		return 0;
-	}
-	
-	const u32 handle = m_freeHandles[m_numFreeHandles-1];
-	--m_numFreeHandles;
-
-	m_usedHandles[m_numUsedHandles] = handle;
-	++m_numUsedHandles;
-
-#if COREOBJECTMANAGER_DEBUG
-	//COREDEBUG_PrintDebugMessage("Created handle: %d\n",handle);
-#endif
-	
-	return handle;
 }
 
 
 CoreObject* CoreObjectManager::GetObjectByHandle(CoreObjectHandle handle)
 {
-	if(handle == INVALID_COREOBJECT_HANDLE)
-	{
+	const int index = handle.m_index;
+	if (m_entries[index].m_counter != handle.m_counter ||
+	    m_entries[index].m_active == false)
 		return NULL;
-	}
 	
-	for(u32 i=0; i<m_numObjects; ++i)
-	{
-		CoreObjectHandleObject* pHandleObject = &m_objectArray[i];
-		if(pHandleObject->handle == handle)
-		{
-			return pHandleObject->pObject;
-		}
-	}
-	
-#if COREOBJECTMANAGER_DEBUG	
-	COREDEBUG_PrintDebugMessage("ERROR: Tried to get object for handle %d but it could not be found!\n", handle);
-#endif
-	
-	assert(0);
-	
-	return NULL;
+	return m_entries[index].m_entry;
 }
 
 
@@ -147,131 +98,31 @@ CoreObject* CoreObjectManager::GetObjectByHandle(CoreObjectHandle handle)
 //like when you compact an array
 void CoreObjectManager::UpdateHandle(CoreObject* pCoreObject)
 {
-	//If the object is NULL, do nothing
-	if(pCoreObject == NULL)
-	{
-		assert(0);
-		return;
-	}
+	const CoreObjectHandle handle = pCoreObject->GetHandle();
 	
-	const u32 handle = pCoreObject->GetHandle();
-	if(handle == INVALID_COREOBJECT_HANDLE)
-	{
-#if COREOBJECTMANAGER_DEBUG	
-		COREDEBUG_PrintDebugMessage("Warning: UpdateHandle->Tried to update invalid object handle.");
-#endif
-		return;
-	}
+	const int index = handle.m_index;
+	assert(m_entries[index].m_counter == handle.m_counter);
+	assert(m_entries[index].m_active == true);
 	
-	for(u32 i=0; i<m_numObjects; ++i)
-	{
-		CoreObjectHandleObject* pHandleObject = &m_objectArray[i];
-		if(pHandleObject->handle == handle)
-		{
-			pHandleObject->pObject = pCoreObject;
-						
-#if COREOBJECTMANAGER_DEBUG	
-			assert(pCoreObject->GetHandle() == pHandleObject->handle);
-#endif
-			return;
-		}
-	}
-	
-	assert(0);
-	
-#if COREOBJECTMANAGER_DEBUG	
-	COREDEBUG_PrintDebugMessage("ERROR: Tried to update handle %d but it could not be found!\n", handle);
-#endif
-}
-
-
-void CoreObjectManager::FreeHandle(CoreObjectHandle handle)
-{	
-	for(u32 i=0; i<m_numUsedHandles; ++i)
-	{
-		if(m_usedHandles[i] == handle)
-		{
-			assert(m_numUsedHandles != 0);
-			m_usedHandles[i] = m_usedHandles[m_numUsedHandles-1];
-			m_usedHandles[m_numUsedHandles-1] = INVALID_COREOBJECT_HANDLE;
-			--m_numUsedHandles;
-#if COREOBJECTMANAGER_DEBUG			
-			assert(m_numFreeHandles < COREOBJECT_MAX_OBJECTS);
-#endif
-			
-			m_freeHandles[m_numFreeHandles] = handle;
-			++m_numFreeHandles;
-			
-			return;
-		}
-	}
-	
-	assert(0);
-	
-#if COREOBJECTMANAGER_DEBUG	
-	COREDEBUG_PrintDebugMessage("ERROR: Tried to free handle %d but it could not be found!\n",handle);
-#endif
+	m_entries[index].m_entry = pCoreObject;
 }
 
 
 void CoreObjectManager::RemoveObjectByHandle(CoreObjectHandle handle)
 {
-	if(handle == INVALID_COREOBJECT_HANDLE)
-	{
-		
-#if COREOBJECTMANAGER_DEBUG
-		COREDEBUG_PrintDebugMessage("ERROR: Tried to remove invalid handle!\n");
-#endif
-		
-		return;
-	}
+	const u32 index = handle.m_index;
+	assert(m_entries[index].m_counter == handle.m_counter);
+	assert(m_entries[index].m_active == true);
 	
-	s32 freeHandles = m_numFreeHandles;
+	m_entries[index].m_nextFreeIndex = m_firstFreeEntry;
+	m_entries[index].m_active = false;
+	m_firstFreeEntry = index;
 	
-	for(u32 i=0; i<m_numObjects; ++i)
-	{
-		CoreObjectHandleObject* pHandleObject = &m_objectArray[i];
-		if(pHandleObject->handle == handle)
-		{
-			
-			
-			FreeHandle(handle);
-			
-			assert(freeHandles != m_numFreeHandles);
-			
-			pHandleObject->pObject->handle = INVALID_COREOBJECT_HANDLE;
-			
-			pHandleObject->handle = INVALID_COREOBJECT_HANDLE;
-			pHandleObject->pObject = NULL;	//TODO: might be able to just remove this line
-			
-			
-			m_objectArray[i] = m_objectArray[m_numObjects-1];
-			
-			assert(m_numObjects != 0);
-			--m_numObjects;
-			
-			
-			
-#if COREOBJECTMANAGER_DEBUG
-			//COREDEBUG_PrintDebugMessage("Removed handle: %d\n",handle);
-#endif
-			return;
-		}
-	}
-	
-	assert(freeHandles != m_numFreeHandles);
-	
-	//Should not get here
-	assert(0);
-
-#if COREOBJECTMANAGER_DEBUG	
-	COREDEBUG_PrintDebugMessage("ERROR: Tried to remove handle %d but it could not be found!\n", handle);
-#endif
-	
+	--m_activeEntryCount;
 }
 
 void CoreObjectManager::PrintStatus()
 {
-	COREDEBUG_PrintDebugMessage("Handles: Num Used: %d, Num Free %d",m_numUsedHandles,m_numFreeHandles);
+	//COREDEBUG_PrintDebugMessage("Handles: Num Used: %d, Num Free %d",m_numUsedHandles,m_numFreeHandles);
 }
 
