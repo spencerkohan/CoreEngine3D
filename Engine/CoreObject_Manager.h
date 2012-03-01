@@ -65,6 +65,7 @@ public:
 		m_objectsCanUpdate = true;
 	}
 	
+	
 	void Sort(bool (*compareFunc)(const T& lhs, const T& rhs))
 	{
 		Array_InsertionSort(m_pObjectList, m_numObjects, compareFunc);
@@ -74,6 +75,7 @@ public:
 			m_pObjectList[i].UpdateHandle();
 		}
 	}
+	
 	
 	void Sort(u32 startIndex, u32 count, bool (*compareFunc)(const T& lhs, const T& rhs))
 	{
@@ -85,8 +87,10 @@ public:
 		}
 	}
 	
+	
 	void Clear(){m_numObjects = 0;};
 
+	
 	T* CreateObject(u32 type)
 	{
 		if(m_numObjects == m_maxObjects)
@@ -97,6 +101,9 @@ public:
 		}
 
 		T* pObject = &m_pObjectList[m_numObjects];
+		
+		assert(pObject->GetHandle().IsValid() == false);
+		
 		if(pObject->Init(type))
 		{
 			++m_numObjects;
@@ -110,6 +117,7 @@ public:
 		
 		return NULL;
 	}
+	
 
 	//Returns true if an object was deleted in case you need
 	//to respond to that sort of thing
@@ -167,13 +175,19 @@ public:
 		return deletedSomething;
 	}
 
+	
 	void Init(u32 maxObjects)
 	{
 		m_pObjectList = new T[maxObjects];
+		for(u32 i=0; i<maxObjects; ++i)
+		{
+			m_pObjectList[i].m_markedForDeletion = false;
+		}
 		m_maxObjects = maxObjects;
 
 		T::InitClass();
 	}
+	
 	
 	void SetObjectsCanUpdate(bool objectsCanUpdate)
 	{
