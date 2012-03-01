@@ -21,9 +21,6 @@ enum CoreObjectType
 	CoreObjectType_CoreGameObject,
 };
 
-//typedef u32 CoreObjectHandle;
-//#define INVALID_COREOBJECT_HANDLE (u32)0
-
 struct CoreObjectHandle
 {
     CoreObjectHandle() : m_index(0), m_counter(0), m_type(0)
@@ -66,7 +63,7 @@ public:
 	
 	virtual void ProcessMessage(u32 message){};	//Pass in a hash value
 	
-	bool m_markedForDeletion;//sigh
+	bool m_markedForDeletion;
 	
 protected:
 

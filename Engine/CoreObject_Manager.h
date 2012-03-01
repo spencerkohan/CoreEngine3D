@@ -31,7 +31,7 @@ public:
 	void PrintStatus();
 	CoreObject* GetObjectByHandle(CoreObjectHandle handle);
 private:
-	void RemoveObjectByHandle(CoreObjectHandle handle);
+	void RemoveObject(CoreObject* pCoreObject);
 	void UpdateHandle(CoreObject* pCoreObject);
 	
 	struct CoreObjectHandleEntry
@@ -43,7 +43,7 @@ private:
 		u32 m_counter : 15;
 		u32 m_active : 1;
 		u32 m_endOfList : 1;
-		CoreObject* m_entry;
+		CoreObject* m_pObject;
 	};
 	
 	CoreObjectHandleEntry m_entries[COREOBJECT_MAX_OBJECTS];
@@ -95,19 +95,13 @@ public:
 
 			return NULL;
 		}
-		
-		//COREDEBUG_PrintDebugMessage("(O_O) Create, Status before:");
-		//COREOBJECTMANAGER->PrintStatus();
-		
+
 		T* pObject = &m_pObjectList[m_numObjects];
 		if(pObject->Init(type))
 		{
 			++m_numObjects;
-			//COREDEBUG_PrintDebugMessage("CoreObjectFactory: Created an object!\n");
-
-			//COREDEBUG_PrintDebugMessage("(O_O) Create, Status after:");
-			//COREOBJECTMANAGER->PrintStatus();
-			//COREDEBUG_PrintDebugMessage("");
+			
+			assert(pObject->m_markedForDeletion == false);
 			
 			return pObject;
 		}
@@ -133,9 +127,6 @@ public:
 			T* pCurrObject = &m_pObjectList[i];
 			if(pCurrObject->m_markedForDeletion)
 			{
-				//COREDEBUG_PrintDebugMessage("(X_X) Delete, Status before:");
-				//COREOBJECTMANAGER->PrintStatus();
-				
 				deletedSomething = true;
 				
 				pCurrObject->Uninit();
@@ -147,18 +138,15 @@ public:
 					//overwrite current enemy with last enemy
 					*pCurrObject = *pLastObject;
 
-					//Memory location of the object has moved so update the handle
-					//to point to the new memory location
-					pCurrObject->UpdateHandle();
+					if(pCurrObject->m_markedForDeletion == false)
+					{
+						//Memory location of the object has moved so update the handle
+						//to point to the new memory location
+						pCurrObject->UpdateHandle();
+					}
 				}
 
 				--m_numObjects;
-				
-				/*COREDEBUG_PrintDebugMessage("(X_X) Delete, Status after:");
-				COREOBJECTMANAGER->PrintStatus();
-				COREDEBUG_PrintDebugMessage("");*/
-
-				//COREDEBUG_PrintDebugMessage("CoreObjectFactory: Deleted an object!\n");
 			}
 			else
 			{

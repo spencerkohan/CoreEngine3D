@@ -29,20 +29,23 @@ u32 CoreObject::GetEntityType()
 //Call when the memory location changes
 void CoreObject::UpdateHandle()
 {
+	assert(m_markedForDeletion == false);
+	
 	COREOBJECTMANAGER->UpdateHandle(this);
 }
 
 bool CoreObject::Init(u32 type)
 {
 	m_entityTypeHash = type;
-
 	m_markedForDeletion = false;
+	
 	return COREOBJECTMANAGER->AddObject(this);
 }
 
 
 void CoreObject::Uninit()
 {
-	COREOBJECTMANAGER->RemoveObjectByHandle(handle);
-	//assert(handle == CoreObjectHandle::Invalid());
+	assert(m_markedForDeletion == true);
+	
+	COREOBJECTMANAGER->RemoveObject(this);
 }
