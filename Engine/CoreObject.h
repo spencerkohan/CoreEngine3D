@@ -65,6 +65,7 @@ public:
 	
 	virtual void ProcessMessage(u32 message){};	//Pass in a hash value
 	
+	void InvalidateHandle();
 	bool m_markedForDeletion;
 	
 protected:

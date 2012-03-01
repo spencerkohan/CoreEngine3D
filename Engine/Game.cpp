@@ -732,40 +732,49 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileDisplaySizeX+((s32)pCurrLayer->position.x);
 					
 					
+					//If the tile is off screen, delete it
 					if(tileBasePosX < -m_tiledLevelDescription.halfTileDisplaySizeX
 					   || tileBasePosX > GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileDisplaySizeX
 					   || tileBasePosY < -m_tiledLevelDescription.halfTileDisplaySizeY
 					   || tileBasePosY > GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileDisplaySizeY)
 					{
-						if(pTile->hRenderable != CoreObjectHandle::Invalid())
+						//If there is a valid renderable, delete it
+						if(pTile->hRenderable.IsValid() == true)
 						{
 							RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+	
+							assert(pCurrRenderable != NULL);
+							
 							if(pCurrRenderable != NULL)
 							{
-								//printf("goodbye: %4i %4i\n", tileBasePosX, tileBasePosY );
 								objectsChanged = true;
-								pCurrRenderable->DeleteObject();
-								pTile->hRenderable = CoreObjectHandle::Invalid();
+								pCurrRenderable->DeleteObject();	
 							}
+							
+							pTile->hRenderable = CoreObjectHandle::Invalid();
 						}
 					}
+					//If the tile is on screen, create it if it doesn't exist and update it
 					else
 					{
 						RenderableGeometry3D* pCurrRenderable = NULL;
 						
-						if(/*pTile->isVisible &&*/ pTile->hRenderable == CoreObjectHandle::Invalid())
+						//Update existing renderable
+						if(pTile->hRenderable.IsValid() == true)
 						{
-							//printf("hello: %4i %4i\n", tileBasePosX, tileBasePosY );
-							objectsChanged = true;
-							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
-							//assert(pTile->hRenderable != CoreObjectHandle::Invalid());
-						}
-						else
-						{
-							//printf("visible: %4i %4i\n", tileBasePosX, tileBasePosY );
+							assert(pTile->hRenderable.IsValid());
+							
 							pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
 							
-							assert(pCurrRenderable);
+							assert(pCurrRenderable != NULL);
+						}
+						//Create new renderable
+						else
+						{
+							objectsChanged = true;
+							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
+							
+							assert(pTile->hRenderable.IsValid());
 						}
 						
 						if(pCurrRenderable == NULL)
@@ -807,14 +816,8 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		
 		if( objectsChanged )
 		{
-			//Layer* pMainLayer = &m_layers[LevelLayer_Main1];
-			//printf("Layer Y: %f\n",pMainLayer->position.y);
 			m_coreObjectManager->PrintStatus();
 		}
-		/*else
-		{
-			printf("------------------------------\n");
-		}*/
 	}
 }
 

@@ -14,6 +14,7 @@
 #include "CoreDebug.h"
 #include "stddef.h" //for NULL -_-
 #include "ArrayUtil.h"
+#include <cassert>
 
 class CoreObjectManager;
 extern CoreObjectManager* COREOBJECTMANAGER;
@@ -30,6 +31,7 @@ public:
 	bool AddObject(CoreObject* pCoreObject);	//use outside this class is deprecated
 	void PrintStatus();
 	CoreObject* GetObjectByHandle(CoreObjectHandle handle);
+	s32 GetNumEntries(){return m_activeEntryCount;}
 private:
 	void RemoveObject(CoreObject* pCoreObject);
 	void UpdateHandle(CoreObject* pCoreObject);
@@ -48,7 +50,7 @@ private:
 	
 	CoreObjectHandleEntry m_entries[COREOBJECT_MAX_OBJECTS];
 	
-	int m_activeEntryCount;
+	s32 m_activeEntryCount;
 	u32 m_firstFreeEntry;
 };
 
@@ -88,7 +90,16 @@ public:
 	}
 	
 	
-	void Clear(){m_numObjects = 0;};
+	void Clear()
+	{
+		for(u32 i=0; i<m_maxObjects; ++i)
+		{
+			m_pObjectList[i].m_markedForDeletion = false;
+			m_pObjectList[i].InvalidateHandle();
+		}
+		
+		m_numObjects = 0;
+	};
 
 	
 	T* CreateObject(u32 type)
@@ -135,26 +146,41 @@ public:
 			T* pCurrObject = &m_pObjectList[i];
 			if(pCurrObject->m_markedForDeletion)
 			{
+				const s32 numEntriesBefore = COREOBJECTMANAGER->GetNumEntries();
+				
 				deletedSomething = true;
 				
+				assert(pCurrObject->GetHandle().IsValid() == true);
+				
 				pCurrObject->Uninit();
+				
+				assert(pCurrObject->GetHandle().IsValid() == false);
 
 				T* pLastObject = &m_pObjectList[m_numObjects-1];
 
-				if(m_numObjects > 1)
+				if(pCurrObject != pLastObject)
 				{
+					assert(pLastObject->GetHandle().IsValid() == true);
+					
 					//overwrite current enemy with last enemy
-					*pCurrObject = *pLastObject;
+					*pCurrObject = *pLastObject;	
 
-					if(pCurrObject->m_markedForDeletion == false)
-					{
-						//Memory location of the object has moved so update the handle
-						//to point to the new memory location
-						pCurrObject->UpdateHandle();
-					}
+					//Memory location of the object has moved so update the handle
+					//to point to the new memory location
+					pCurrObject->UpdateHandle();
+					
+					assert(pCurrObject->GetHandle().IsValid() == true);
 				}
+				
+				//Last object should now be an invalid object
+				pLastObject->m_markedForDeletion = false;
+				pLastObject->InvalidateHandle();
 
 				--m_numObjects;
+				
+				const s32 numEntriesAfter = COREOBJECTMANAGER->GetNumEntries();
+				
+				assert(numEntriesAfter < numEntriesBefore);
 			}
 			else
 			{
@@ -179,11 +205,9 @@ public:
 	void Init(u32 maxObjects)
 	{
 		m_pObjectList = new T[maxObjects];
-		for(u32 i=0; i<maxObjects; ++i)
-		{
-			m_pObjectList[i].m_markedForDeletion = false;
-		}
 		m_maxObjects = maxObjects;
+		
+		Clear();
 
 		T::InitClass();
 	}

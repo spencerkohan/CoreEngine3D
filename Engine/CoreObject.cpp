@@ -22,6 +22,11 @@ void CoreObject::DeleteObject()
 	m_markedForDeletion = true;
 }
 
+void CoreObject::InvalidateHandle()
+{
+	handle = CoreObjectHandle::Invalid();
+}
+
 
 u32 CoreObject::GetEntityType()
 {
@@ -32,7 +37,7 @@ u32 CoreObject::GetEntityType()
 //Call when the memory location changes
 void CoreObject::UpdateHandle()
 {
-	assert(m_markedForDeletion == false);
+	//assert(m_markedForDeletion == false);
 	
 	COREOBJECTMANAGER->UpdateHandle(this);
 }
@@ -52,6 +57,4 @@ void CoreObject::Uninit()
 	assert(m_markedForDeletion == true);
 	
 	COREOBJECTMANAGER->RemoveObject(this);
-	
-	m_markedForDeletion = false;
 }
