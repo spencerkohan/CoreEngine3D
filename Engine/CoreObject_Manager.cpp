@@ -69,7 +69,9 @@ bool CoreObjectManager::AddObject(CoreObject *pCoreObject)
 	
 	m_firstFreeEntry = m_entries[newIndex].m_nextFreeIndex;
 	m_entries[newIndex].m_nextFreeIndex = 0;
-	m_entries[newIndex].m_counter = m_entries[newIndex].m_counter + 1;
+	++m_entries[newIndex].m_counter;
+	//assert(m_entries[newIndex].m_counter < 3);
+	//Handle unlikely event of wrapping
 	if (m_entries[newIndex].m_counter == 0)
 		m_entries[newIndex].m_counter = 1;
 	m_entries[newIndex].m_active = true;
