@@ -676,17 +676,19 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		//pCurrLayer->position.x -= timeElapsed*(f32)(scrollIndex*scrollIndex*scrollIndex)*scrollSpeed;
 		ScaleVec3(&pCurrLayer->position,&position,1.0f/(f32)scrollIndex);
 
-		const s32 width = pCurrLayer->numTilesX;
-		const s32 height = pCurrLayer->numTilesY;
+		const s32 numTilesX = pCurrLayer->numTilesX;
+		const s32 numTilesY = pCurrLayer->numTilesY;
+		
+		bool objectsChanged = false;
 		
 		//If it's the TileObjectArt layer, just update the uniforms
 		if(i == (s32)LevelLayer_TileObjectArt)
 		{
-			for(int y=0; y<height; ++y)
+			for(int y=0; y<numTilesY; ++y)
 			{
-				for(int x=0; x<width; ++x)
+				for(int x=0; x<numTilesX; ++x)
 				{
-					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, numTilesX);
 					if(pTile->tileID == -1)
 					{
 						continue;
@@ -715,13 +717,13 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		//If it's any other layer, do the whole delete/create tiles thing
 		else
 		{
-			for(int y=0; y<height; ++y)
+			for(int y=0; y<numTilesY; ++y)
 			{
-				const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileDisplaySizeX+((s32)pCurrLayer->position.y);
+				const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileDisplaySizeY+((s32)pCurrLayer->position.y);
 				
-				for(int x=0; x<width; ++x)
+				for(int x=0; x<numTilesX; ++x)
 				{
-					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, numTilesX);
 					if(pTile->tileID == -1)
 					{
 						continue;
@@ -735,29 +737,40 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					   || tileBasePosY < -m_tiledLevelDescription.halfTileDisplaySizeY
 					   || tileBasePosY > GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileDisplaySizeY)
 					{
-						RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
-						if(pCurrRenderable != NULL)
+						if(pTile->hRenderable != INVALID_COREOBJECT_HANDLE)
 						{
-							pCurrRenderable->DeleteObject();
-							pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
+							RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+							if(pCurrRenderable != NULL)
+							{
+								//printf("goodbye: %4i %4i\n", tileBasePosX, tileBasePosY );
+								objectsChanged = true;
+								pCurrRenderable->DeleteObject();
+								pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
+							}
 						}
 					}
 					else
 					{
 						RenderableGeometry3D* pCurrRenderable = NULL;
 						
-						if(pTile->isVisible && pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
+						if(/*pTile->isVisible &&*/ pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
 						{
+							//printf("hello: %4i %4i\n", tileBasePosX, tileBasePosY );
+							objectsChanged = true;
 							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
+							//assert(pTile->hRenderable != INVALID_COREOBJECT_HANDLE);
 						}
 						else
 						{
+							//printf("visible: %4i %4i\n", tileBasePosX, tileBasePosY );
 							pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+							
+							assert(pCurrRenderable);
 						}
 						
 						if(pCurrRenderable == NULL)
 						{
-							//assert(0);
+							assert(0);
 							continue;
 						}
 						
@@ -792,7 +805,16 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 			}
 		}
 		
-		
+		if( objectsChanged )
+		{
+			//Layer* pMainLayer = &m_layers[LevelLayer_Main1];
+			//printf("Layer Y: %f\n",pMainLayer->position.y);
+			m_coreObjectManager->PrintStatus();
+		}
+		/*else
+		{
+			printf("------------------------------\n");
+		}*/
 	}
 }
 

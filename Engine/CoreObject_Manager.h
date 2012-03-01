@@ -20,6 +20,33 @@ extern CoreObjectManager* COREOBJECTMANAGER;
 
 #define COREOBJECT_MAX_OBJECTS 4096
 
+class CoreObjectManager
+{
+	friend class CoreObject;
+public:
+	CoreObjectManager();
+	void Clear();
+	bool AddObject(CoreObject* pCoreObject);	//use outside this class is deprecated
+	void PrintStatus();
+	CoreObject* GetObjectByHandle(CoreObjectHandle handle);
+private:
+	void RemoveObjectByHandle(CoreObjectHandle handle);
+	void UpdateHandle(CoreObject* pCoreObject);
+	u32 GetUnusedHandle();
+	void FreeHandle(CoreObjectHandle handle);
+	
+	CoreObjectHandleObject m_objectArray[COREOBJECT_MAX_OBJECTS];
+	u32 m_numObjects;
+	
+	//Handles that are currently being used
+	CoreObjectHandle m_usedHandles[COREOBJECT_MAX_OBJECTS];
+	u32 m_numUsedHandles;
+	
+	//Handles available for use
+	CoreObjectHandle m_freeHandles[COREOBJECT_MAX_OBJECTS];
+	u32 m_numFreeHandles;
+};
+
 template <class T>
 class CoreObjectFactory
 {
@@ -64,12 +91,19 @@ public:
 			return NULL;
 		}
 		
+		//COREDEBUG_PrintDebugMessage("(O_O) Create, Status before:");
+		//COREOBJECTMANAGER->PrintStatus();
+		
 		T* pObject = &m_pObjectList[m_numObjects];
 		if(pObject->Init(type))
 		{
 			++m_numObjects;
 			//COREDEBUG_PrintDebugMessage("CoreObjectFactory: Created an object!\n");
 
+			//COREDEBUG_PrintDebugMessage("(O_O) Create, Status after:");
+			//COREOBJECTMANAGER->PrintStatus();
+			//COREDEBUG_PrintDebugMessage("");
+			
 			return pObject;
 		}
 		
@@ -94,12 +128,17 @@ public:
 			T* pCurrObject = &m_pObjectList[i];
 			if(pCurrObject->m_markedForDeletion)
 			{
+				//COREDEBUG_PrintDebugMessage("(X_X) Delete, Status before:");
+				//COREOBJECTMANAGER->PrintStatus();
+				
 				deletedSomething = true;
 				
 				pCurrObject->Uninit();
 
 				T* pLastObject = &m_pObjectList[m_numObjects-1];
 
+				const u32 lastObjectHandle = pLastObject->GetHandle();
+				
 				if(m_numObjects > 1)
 				{
 					//overwrite current enemy with last enemy
@@ -108,9 +147,15 @@ public:
 					//Memory location of the object has moved so update the handle
 					//to point to the new memory location
 					pCurrObject->UpdateHandle();
+					
+					assert(pCurrObject->GetHandle() == lastObjectHandle);
 				}
 
 				--m_numObjects;
+				
+				/*COREDEBUG_PrintDebugMessage("(X_X) Delete, Status after:");
+				COREOBJECTMANAGER->PrintStatus();
+				COREDEBUG_PrintDebugMessage("");*/
 
 				//COREDEBUG_PrintDebugMessage("CoreObjectFactory: Deleted an object!\n");
 			}
@@ -153,30 +198,5 @@ public:
 	bool m_objectsCanUpdate;
 };
 
-class CoreObjectManager
-{
-	friend class CoreObject;
-public:
-	CoreObjectManager();
-	void Clear();
-	bool AddObject(CoreObject* pCoreObject);	//use outside this class is deprecated
-	
-	CoreObject* GetObjectByHandle(CoreObjectHandle handle);
-private:
-	void RemoveObjectByHandle(CoreObjectHandle handle);
-	void UpdateHandle(CoreObject* pCoreObject);
-	u32 GetUnusedHandle();
-	void FreeHandle(CoreObjectHandle handle);
-	CoreObjectHandleObject m_objectArray[COREOBJECT_MAX_OBJECTS];
-	u32 m_numObjects;
-	
-	//Handles available for use
-	CoreObjectHandle m_freeHandles[COREOBJECT_MAX_OBJECTS];
-	u32 m_numFreeHandles;
-	
-	//Handles that are currently being used
-	CoreObjectHandle m_usedHandles[COREOBJECT_MAX_OBJECTS];
-	u32 m_numUsedHandles;
-};
 
 #endif

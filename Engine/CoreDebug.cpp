@@ -9,7 +9,7 @@
 
 void COREDEBUG_PrintDebugMessage(const char* debugMessage, ...)
 {
-#if defined (_DEBUG) || defined(DEBUG)
+//#if defined (_DEBUG) || defined(DEBUG)
 
 
 #if defined(PLATFORM_IOS) || defined(PLATFORM_OSX)
@@ -34,5 +34,5 @@ void COREDEBUG_PrintDebugMessage(const char* debugMessage, ...)
 	OutputDebugString(coreDebugMessageBuffer);
 #endif
 
-#endif
+//#endif
 }
