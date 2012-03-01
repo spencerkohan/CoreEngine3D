@@ -39,9 +39,7 @@ struct CoreObjectHandle
     u32 m_counter : 15;
     u32 m_type : 5;
 	
-	bool IsValid(){return (*this) != 0;}
-	
-	static CoreObjectHandle Invalid(){return CoreObjectHandle();}
+	bool IsValid() const {return (*this) != 0;}
 };
 
 class CoreObject

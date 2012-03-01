@@ -615,9 +615,9 @@ void Game::DeleteAllItemSounds()
 CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix)
 {
 	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
-	if(hRenderable == CoreObjectHandle::Invalid())
+	if(hRenderable.IsValid() == false)
 	{
-		return CoreObjectHandle::Invalid();
+		return CoreObjectHandle();
 	}
 	
 	f32 tileMat[16];
@@ -751,7 +751,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 								pCurrRenderable->DeleteObject();	
 							}
 							
-							pTile->hRenderable = CoreObjectHandle::Invalid();
+							pTile->hRenderable = CoreObjectHandle();
 						}
 					}
 					//If the tile is on screen, create it if it doesn't exist and update it
@@ -1441,7 +1441,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				for(u32 x=0; x<width; ++x)
 				{
 					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
-					pTile->hRenderable = CoreObjectHandle::Invalid();
+					pTile->hRenderable = CoreObjectHandle();
 
 					pTile->tileID = ARRAY2D(pData, x, y, width);
 					pTile->isVisible = true;

@@ -148,7 +148,7 @@ void CoreObjectManager::RemoveObject(CoreObject* pCoreObject)
 	const CoreObjectHandle handle = pCoreObject->GetHandle();
 	
 	//Invalidate the object's handle
-	pCoreObject->handle = CoreObjectHandle::Invalid();
+	pCoreObject->handle = CoreObjectHandle();
 	
 	const s32 index = handle.m_index;
 	

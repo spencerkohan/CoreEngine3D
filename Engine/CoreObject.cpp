@@ -24,7 +24,7 @@ void CoreObject::DeleteObject()
 
 void CoreObject::InvalidateHandle()
 {
-	handle = CoreObjectHandle::Invalid();
+	handle = CoreObjectHandle();
 }
 
 
