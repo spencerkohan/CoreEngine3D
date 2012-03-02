@@ -736,7 +736,8 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					if(tileBasePosX < -m_tiledLevelDescription.halfTileDisplaySizeX
 					   || tileBasePosX > GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileDisplaySizeX
 					   || tileBasePosY < -m_tiledLevelDescription.halfTileDisplaySizeY
-					   || tileBasePosY > GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileDisplaySizeY)
+					   || tileBasePosY > GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileDisplaySizeY
+					   )
 					{
 						//If there is a valid renderable, delete it
 						if(pTile->hRenderable.IsValid() == true)

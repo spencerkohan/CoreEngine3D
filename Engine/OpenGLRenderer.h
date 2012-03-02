@@ -225,10 +225,10 @@ public:
 	void DEBUGDRAW_DrawCylinder(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color);
 	
 	//public member variables
-	u32 screenWidth_points;
-	u32 screenHeight_points;
-	u32 screenWidth_pixels;
-	u32 screenHeight_pixels;
+	s32 screenWidth_points;
+	s32 screenHeight_points;
+	s32 screenWidth_pixels;
+	s32 screenHeight_pixels;
 	f32 aspectRatio;
 	bool paused;
 	
