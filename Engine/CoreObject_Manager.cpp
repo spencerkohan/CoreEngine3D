@@ -101,6 +101,8 @@ bool CoreObjectManager::AddObject(CoreObject *pCoreObject)
 	
 	//Copy the handle to the CoreObject
 	pCoreObject->handle = newHandle;
+	
+	//COREDEBUG_PrintDebugMessage("Created Handle: %u, for type: %u", (u32)newHandle, pCoreObject->GetEntityType());
 
 	return true;
 }
@@ -163,6 +165,8 @@ void CoreObjectManager::RemoveObject(CoreObject* pCoreObject)
 	m_firstFreeEntry = index;
 	
 	--m_activeEntryCount;
+	
+	//COREDEBUG_PrintDebugMessage("Removed Handle: %u, for type: %u", (u32)handle, pCoreObject->GetEntityType());
 }
 
 void CoreObjectManager::PrintStatus()

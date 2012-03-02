@@ -2092,9 +2092,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType
 		COREDEBUG_PrintDebugMessage("INSANE ERROR: You're out of RenderableObject3Ds!");
 		return CoreObjectHandle();
 	}
-	
-	pGeom->Init(0);
-	
+
 	const CoreObjectHandle handle = pGeom->GetHandle();
 	
 	if(handle.IsValid() == false)
@@ -4383,9 +4381,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableSceneObject3D(RenderableSceneOb
 		COREDEBUG_PrintDebugMessage("INSANE ERROR: You're out of RenderableSceneObject3Ds!");
 		return CoreObjectHandle();
 	}
-	
-	pScene->Init(0);
-	
+
 	const CoreObjectHandle handle = pScene->GetHandle();
 	
 	if(handle.IsValid() == false)
