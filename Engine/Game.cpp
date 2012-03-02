@@ -674,14 +674,18 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		
 		//If this is the collision layer, it should move at the same rate as the main layer
 		const s32 adjustedIndex = (currLayer==LevelLayer_Main0 || currLayer==LevelLayer_Collision || currLayer==LevelLayer_TileObjectArt)?(s32)LevelLayer_Main1:i;
-		const s32 scrollIndex = (s32)LevelLayer_Main1-adjustedIndex;	//TODO: index into an array of values maybe
+		//const s32 scrollIndex = (s32)LevelLayer_Main1-adjustedIndex;	//TODO: index into an array of values maybe
 
 		//ScaleVec3(&pCurrLayer->position,&position,1.0f/(f32)scrollIndex);
 
 		CopyVec3(&pCurrLayer->position,&position);
-		vec3 parallaxDiffVec;
-		SubVec3(&parallaxDiffVec,&m_parallaxBasePos,&m_camPos);
-		SubScaledVec3_Self(&pCurrLayer->position,&parallaxDiffVec,(f32)scrollIndex*m_parallaxScale);
+		
+		if(m_parallaxScale != 0.0f)
+		{
+			vec3 parallaxDiffVec;
+			SubVec3(&parallaxDiffVec,&m_parallaxBasePos,&position);
+			SubScaledVec3_Self(&pCurrLayer->position,&parallaxDiffVec,(f32)(adjustedIndex-LevelLayer_Main1)*m_parallaxScale);
+		}
 		
 		const s32 numTilesX = pCurrLayer->numTilesX;
 		const s32 numTilesY = pCurrLayer->numTilesY;
