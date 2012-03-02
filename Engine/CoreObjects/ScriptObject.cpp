@@ -300,6 +300,22 @@ void ScriptObject::Trigger()
 		
 		GAME->SetCameraMode(CameraMode_Anchor);
 	}
+	else if(m_triggerMessage == Hash("SetCameraAndParallax"))
+	{
+		CollisionBox* pBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hCollisionBox);
+		if(pBox == NULL)
+		{
+			return;
+		}
+		
+		vec3 camPos;
+		CopyVec3(&camPos,pBox->GetBottomLeft());
+		GAME->SetCameraPosition(&camPos,0.0f);
+		
+		GAME->SetCameraMode(CameraMode_Anchor);
+		
+		GAME->SetParallaxPosition(&camPos);
+	}
 	else if(m_triggerMessage == Hash("MoveCamera"))
 	{
 		CollisionBox* pCameraBox = (CollisionBox*)COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
@@ -368,6 +384,8 @@ void ScriptObject::ProcessMessage(u32 message)	//Pass in a hash value
 
 void ScriptObject::Update(f32 timeElapsed)
 {
+	//GLRENDERER->DEBUGDRAW_DrawCircleXY(DebugDrawMode_2D, &m_position, 64.0f, &color4f_red);
+	
 	if(m_scriptStatus == ScriptStatus_Off)
 	{
 		return;

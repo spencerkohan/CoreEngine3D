@@ -207,6 +207,8 @@ public:
 	f32 GetPixelsPerMeter();
 	const vec3* GetCameraPosition();
 	void SetCameraPosition(const vec3* pCamPos, f32 lerpTime);	//use with caution
+	void SetParallaxPosition(const vec3* pParallaxPos);
+	void SetParallaxScale(f32 parallaxScale);
 	void SetFollowCamTarget(const vec3* pFollowCamPos);
 	void ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIndex_Y,bool isVisible);
 	Layer* GetLayer(LevelLayer layer);
@@ -241,6 +243,10 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	vec3 m_startCamPos;
 	vec3 m_desiredCamPos;
 	vec3 m_followCamPos;
+	
+	f32 m_parallaxScale;
+	
+	vec3 m_parallaxBasePos;
 	
 	f32 m_camLerpTimer;
 	f32 m_camLerpTotalTime;

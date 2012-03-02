@@ -63,11 +63,14 @@ void Game::ResetCamera()
 bool Game::Init()
 {
 	m_paused = false;
+	
+	m_parallaxScale = 0.0f;
 
 	m_levelHasCamRestraints = false;
 	
 	m_cameraMode = CameraMode_Anchor;
 	CopyVec3(&m_camPos,&vec3_zero);
+	CopyVec3(&m_parallaxBasePos,&vec3_zero);
 
 	m_camLerpTimer = -1.0f;
 
@@ -671,11 +674,15 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		
 		//If this is the collision layer, it should move at the same rate as the main layer
 		const s32 adjustedIndex = (currLayer==LevelLayer_Main0 || currLayer==LevelLayer_Collision || currLayer==LevelLayer_TileObjectArt)?(s32)LevelLayer_Main1:i;
-		const s32 scrollIndex = 1+(s32)LevelLayer_Main1-adjustedIndex;	//TODO: index into an array of values maybe
+		const s32 scrollIndex = (s32)LevelLayer_Main1-adjustedIndex;	//TODO: index into an array of values maybe
 
-		//pCurrLayer->position.x -= timeElapsed*(f32)(scrollIndex*scrollIndex*scrollIndex)*scrollSpeed;
-		ScaleVec3(&pCurrLayer->position,&position,1.0f/(f32)scrollIndex);
+		//ScaleVec3(&pCurrLayer->position,&position,1.0f/(f32)scrollIndex);
 
+		CopyVec3(&pCurrLayer->position,&position);
+		vec3 parallaxDiffVec;
+		SubVec3(&parallaxDiffVec,&m_parallaxBasePos,&m_camPos);
+		SubScaledVec3_Self(&pCurrLayer->position,&parallaxDiffVec,(f32)scrollIndex*m_parallaxScale);
+		
 		const s32 numTilesX = pCurrLayer->numTilesX;
 		const s32 numTilesY = pCurrLayer->numTilesY;
 		
@@ -817,6 +824,18 @@ const vec3* Game::GetCameraPosition()
 {
 	return &m_camPos;
 }
+
+
+void Game::SetParallaxPosition(const vec3* pParallaxPos)
+{
+	CopyVec3(&m_parallaxBasePos,pParallaxPos);
+}
+
+void Game::SetParallaxScale(f32 parallaxScale)
+{
+	m_parallaxScale = parallaxScale;
+}
+
 
 //use with caution
 void Game::SetCameraPosition(const vec3* pCamPos, f32 lerpTime)
