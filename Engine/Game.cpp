@@ -742,9 +742,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 						if(pTile->hRenderable.IsValid() == true)
 						{
 							RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
-	
-							assert(pCurrRenderable != NULL);
-							
+
 							if(pCurrRenderable != NULL)
 							{
 								objectsChanged = true;
@@ -762,24 +760,17 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 						//Update existing renderable
 						if(pTile->hRenderable.IsValid() == true)
 						{
-							assert(pTile->hRenderable.IsValid());
-							
 							pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
-							
-							assert(pCurrRenderable != NULL);
 						}
 						//Create new renderable
 						else
 						{
 							objectsChanged = true;
 							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
-							
-							assert(pTile->hRenderable.IsValid());
 						}
 						
 						if(pCurrRenderable == NULL)
 						{
-							assert(0);
 							continue;
 						}
 						
@@ -875,9 +866,6 @@ void Game::GetPositionFromTileIndices(s32 index_X, s32 index_Y, vec3* pOut_posit
 s32 Game::GetCollisionFromTileIndices(s32 index_X, s32 index_Y)
 {
 	Layer* pLayer = &m_layers[LevelLayer_Collision];
-
-	assert(0 != pLayer->numTilesX);
-	assert(0 != pLayer->numTilesY);
 
 	if(index_X < 0 || index_X > static_cast<s32>(pLayer->numTilesX)-1
 	   || index_Y < 0 || index_Y > static_cast<s32>(pLayer->numTilesY)-1)

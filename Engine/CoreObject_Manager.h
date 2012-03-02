@@ -112,15 +112,11 @@ public:
 		}
 
 		T* pObject = &m_pObjectList[m_numObjects];
-		
-		assert(pObject->GetHandle().IsValid() == false);
-		
+
 		if(pObject->Init(type))
 		{
 			++m_numObjects;
-			
-			assert(pObject->m_markedForDeletion == false);
-			
+
 			return pObject;
 		}
 		
@@ -146,30 +142,20 @@ public:
 			T* pCurrObject = &m_pObjectList[i];
 			if(pCurrObject->m_markedForDeletion)
 			{
-				const s32 numEntriesBefore = COREOBJECTMANAGER->GetNumEntries();
-				
 				deletedSomething = true;
-				
-				assert(pCurrObject->GetHandle().IsValid() == true);
-				
+
 				pCurrObject->Uninit();
-				
-				assert(pCurrObject->GetHandle().IsValid() == false);
 
 				T* pLastObject = &m_pObjectList[m_numObjects-1];
 
 				if(pCurrObject != pLastObject)
 				{
-					assert(pLastObject->GetHandle().IsValid() == true);
-					
 					//overwrite current enemy with last enemy
 					*pCurrObject = *pLastObject;	
 
 					//Memory location of the object has moved so update the handle
 					//to point to the new memory location
 					pCurrObject->UpdateHandle();
-					
-					assert(pCurrObject->GetHandle().IsValid() == true);
 				}
 				
 				//Last object should now be an invalid object
@@ -177,10 +163,6 @@ public:
 				pLastObject->InvalidateHandle();
 
 				--m_numObjects;
-				
-				const s32 numEntriesAfter = COREOBJECTMANAGER->GetNumEntries();
-				
-				assert(numEntriesAfter < numEntriesBefore);
 			}
 			else
 			{

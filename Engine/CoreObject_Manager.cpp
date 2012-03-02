@@ -3,8 +3,10 @@
 //  CoreEngine3D(iOS)
 //
 //  Created by JodyMcAdams on 1/3/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012 Jody McAdams. All rights reserved.
 //
+
+// Thanks to http://gamesfromwithin.com/managing-data-relationships for the original code
 
 #include "CoreObject_Manager.h"
 #include "stddef.h" //for NULL -_-
@@ -14,9 +16,9 @@
 
 #define COREOBJECTMANAGER_DEBUG 0
 
-//#if COREOBJECTMANAGER_DEBUG
+#if COREOBJECTMANAGER_DEBUG
 #include <cassert>
-//#endif
+#endif
 
 CoreObjectManager* COREOBJECTMANAGER = NULL;
 
@@ -63,14 +65,22 @@ void CoreObjectManager::Clear()
 
 bool CoreObjectManager::AddObject(CoreObject *pCoreObject)
 {
+#if COREOBJECTMANAGER_DEBUG
 	assert(pCoreObject->m_markedForDeletion == false);
 	assert(m_activeEntryCount < COREOBJECT_MAX_OBJECTS - 1);
-	
+#endif
 	const s32 newIndex = m_firstFreeEntry;
 	
+	if(newIndex >= COREOBJECT_MAX_OBJECTS)
+	{
+		return false;
+	}
+
+#if COREOBJECTMANAGER_DEBUG
 	assert(newIndex < COREOBJECT_MAX_OBJECTS);
 	assert(m_entries[newIndex].m_active == false);
 	assert(!m_entries[newIndex].m_endOfList);
+#endif
 	
 	m_firstFreeEntry = m_entries[newIndex].m_nextFreeIndex;
 	
@@ -136,9 +146,10 @@ void CoreObjectManager::UpdateHandle(CoreObject* pCoreObject)
 	
 	//Make sure that the handle is valid.
 	//If it's not, we could be leaking.
+#if COREOBJECTMANAGER_DEBUG
 	assert(m_entries[index].m_counter == handle.m_counter);
 	assert(m_entries[index].m_active == true);
-	
+#endif
 	//Save the new object pointer to the handle entry
 	m_entries[index].m_pObject = pCoreObject;
 }
@@ -146,7 +157,9 @@ void CoreObjectManager::UpdateHandle(CoreObject* pCoreObject)
 
 void CoreObjectManager::RemoveObject(CoreObject* pCoreObject)
 {
+#if COREOBJECTMANAGER_DEBUG
 	assert(pCoreObject->m_markedForDeletion == true);
+#endif
 	const CoreObjectHandle handle = pCoreObject->GetHandle();
 	
 	//Invalidate the object's handle
@@ -156,9 +169,10 @@ void CoreObjectManager::RemoveObject(CoreObject* pCoreObject)
 	
 	//Make sure that the handle is valid.
 	//If it's not, we could be leaking.
+#if COREOBJECTMANAGER_DEBUG
 	assert(m_entries[index].m_counter == handle.m_counter);
 	assert(m_entries[index].m_active == true);
-	
+#endif	
 	m_entries[index].m_nextFreeIndex = m_firstFreeEntry;
 	m_entries[index].m_active = false;
 	
