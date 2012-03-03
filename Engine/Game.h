@@ -129,6 +129,7 @@ struct SpawnableEntity
 	TileSetDescription* pDesc;
 	u32 tileIndexX;
 	u32 tileIndexY;
+	bool autospawn;
 	
 	CoreObject* pObject;
 };

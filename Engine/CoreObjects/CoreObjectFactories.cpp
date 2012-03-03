@@ -10,9 +10,11 @@ CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_Normal;
 CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_UI;
 CoreObjectFactory<RenderableSceneObject3D> g_Factory_RenderableSceneObject;
 CoreObjectFactory<BasicParticle> g_Factory_BasicParticle;
+CoreObjectFactory<Spawner> g_Factory_Spawner;
 
 void CoreObjectFactories_Init()
 {
+	g_Factory_Spawner.Init(16);
 	g_Factory_CollisionBox.Init(64);
 	g_Factory_ScriptObject.Init(128);
 	g_Factory_ObjectGroup.Init(32);
@@ -22,7 +24,7 @@ void CoreObjectFactories_Init()
 	g_Factory_Geometry_UI.Init(64);
 	g_Factory_RenderableSceneObject.Init(64);
 	g_Factory_BasicParticle.Init(512);
-	
+
 	g_Factory_Geometry_Normal.SetObjectsCanUpdate(false);
 	g_Factory_Geometry_UI.SetObjectsCanUpdate(false);
 	g_Factory_RenderableSceneObject.SetObjectsCanUpdate(false);
@@ -36,6 +38,7 @@ void CoreObjectFactories_Update(f32 timeElapsed)
 	g_Factory_TileAffector.UpdateObjectList(timeElapsed);
 	g_Factory_SoundPlayer.UpdateObjectList(timeElapsed);
 	g_Factory_BasicParticle.UpdateObjectList(timeElapsed);
+	g_Factory_Spawner.UpdateObjectList(timeElapsed);
 	
 	if(g_Factory_Geometry_Normal.UpdateObjectList(timeElapsed))
 	{
@@ -61,4 +64,5 @@ void CoreObjectFactories_Clear()
 	g_Factory_Geometry_UI.Clear();
 	g_Factory_RenderableSceneObject.Clear();
 	g_Factory_BasicParticle.Clear();
+	g_Factory_Spawner.Clear();
 }

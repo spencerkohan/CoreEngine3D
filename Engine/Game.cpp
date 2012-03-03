@@ -1580,8 +1580,10 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
 			{
 				SpawnableEntity* pCurrEnt = &m_spawnableEntities[m_numSpawnableEntities];
-				pCurrEnt->pObject = NULL;
+				++m_numSpawnableEntities;
 				
+				pCurrEnt->pObject = NULL;
+
 				pCurrEnt->tiledUniqueID = atoi(object.attribute("uniqueID").value());
 				
 				const f32 x = (f32)atoi(object.attribute("x").value())*unitConversionScale;
@@ -1635,11 +1637,30 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				//TODO: not do this horrible thing
 				pCurrEnt->pProperties = object.child("properties");
 				
+				const char* propNameString = pCurrEnt->pProperties.attribute("name").value();
+				const char* valueString = pCurrEnt->pProperties.attribute("value").value();
+
+				pCurrEnt->autospawn = true;
+				
+				if(strcmp(propNameString, "AutoSpawn") == 0)
+				{
+					if(strcmp(valueString, "false") == 0)
+					{
+						pCurrEnt->autospawn = false;
+					}
+				}
+				
+				if(pCurrEnt->autospawn == false)
+				{
+					continue;
+				}
+				
 				const u32 scriptObjectType = Hash("ScriptObject");
 				const u32 collisionBoxType = Hash("CollisionBox");
 				const u32 objectGroupType = Hash("ObjectGroup");
 				const u32 soundPlayerType = Hash("SoundPlayerType");
 				const u32 tileAffectorType = Hash("TileAffector");
+				const u32 spawnerType = Hash("Spawner");
 				
 				if(pCurrEnt->type == scriptObjectType)
 				{
@@ -1661,14 +1682,14 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				{
 					pCurrEnt->pObject = g_Factory_SoundPlayer.CreateObject(pCurrEnt->type);
 				}
+				else if(pCurrEnt->type == spawnerType)
+				{
+					pCurrEnt->pObject = g_Factory_Spawner.CreateObject(pCurrEnt->type);
+				}
 				else
 				{
 					pCurrEnt->pObject = this->CreateObject(pCurrEnt->type);
 				}
-				
-				
-				
-				++m_numSpawnableEntities;
 			}
 		}
 		
