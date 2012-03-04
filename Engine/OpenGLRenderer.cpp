@@ -2642,7 +2642,8 @@ void OpenGLRenderer::CreateMaterials()
     const s32 VSH_VertWithColorInputWithTexcoordOffset = AddVertexShaderToList("ArtResources/Shaders/VertWithColorInputWithTexcoordOffset.vsh");
 	const s32 VSH_TextureOnly = AddVertexShaderToList("ArtResources/Shaders/TextureOnly.vsh");
     const s32 VSH_TextureWithColor = AddVertexShaderToList("ArtResources/Shaders/TextureWithColor.vsh");
-	const s32 VSH_ScreenspaceWithTexcoordOffset = AddVertexShaderToList("ArtResources/Shaders/ScreenspaceWithTexcoordOffset.vsh");
+	const s32 VSH_VertWithTexcoordOffset = AddVertexShaderToList("ArtResources/Shaders/VertWithTexcoordOffset.vsh");
+	const s32 VSH_VertWithTexcoordAndOffsetTexcoord = AddVertexShaderToList("ArtResources/Shaders/VertWithTexcoordAndOffsetTexcoord.vsh");
 	const s32 VSH_TextureOnlyWithTexcoordAndWorldOffset = AddVertexShaderToList("ArtResources/Shaders/TextureOnlyWithTexcoordAndWorldOffset.vsh");
 	const s32 VSH_PointSprite_Basic = AddVertexShaderToList("ArtResources/Shaders/PointSprite_Default.vsh");
 	//const s32 VSH_SkinnedVertShader = AddVertexShaderToList("ArtResources/Shaders/SkinnedVertShader.vsh");
@@ -2659,6 +2660,8 @@ void OpenGLRenderer::CreateMaterials()
 	const s32 PS_Colors = AddPixelShaderToList("ArtResources/Shaders/Colors.fsh");
 	const s32 PS_PointSprite_ColorShine = AddPixelShaderToList("ArtResources/Shaders/PointSprite_ColorShine.fsh");
     const s32 PS_TextureWithColor = AddPixelShaderToList("ArtResources/Shaders/TextureWithColor.fsh");
+	const s32 PS_MultiplyTwoSamples = AddPixelShaderToList("ArtResources/Shaders/MultiplyTwoSamples.fsh");
+	
 	//const s32 PS_SkinnedFragShader = AddPixelShaderToList("ArtResources/Shaders/SkinnedFragShader.fsh");
 	
 	//const s32 PS_TextureAndFogColorWithMipMapBlur = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColorWithMipmapBlur.fsh");
@@ -2841,14 +2844,20 @@ void OpenGLRenderer::CreateMaterials()
 	}
 
 	//MT_TextureOnlyWithTexcoordOffset
-	if(CreateShaderProgram(VSH_ScreenspaceWithTexcoordOffset,PS_TextureOnlySimple,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffset].shaderProgram))
+	if(CreateShaderProgram(VSH_VertWithTexcoordOffset,PS_TextureOnlySimple,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffset].shaderProgram))
 	{
 		AddUniform_Unique(MT_TextureOnlyWithTexcoordOffset,"texCoordOffset",Uniform_Vec2,1);
 	}
 
     
     //MT_TextureOnlyWithTexcoordOffsetDiscard
-	if(CreateShaderProgram(VSH_ScreenspaceWithTexcoordOffset,PS_TextureOnlyDiscard,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffsetDiscard].shaderProgram))
+	if(CreateShaderProgram(VSH_VertWithTexcoordOffset,PS_TextureOnlyDiscard,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffsetDiscard].shaderProgram))
+	{
+		AddUniform_Unique(MT_TextureOnlyWithTexcoordOffsetDiscard,"texCoordOffset",Uniform_Vec2,1);
+	}
+	
+	//MT_TextureWithScrollingMult
+	if(CreateShaderProgram(VSH_VertWithTexcoordAndOffsetTexcoord,PS_MultiplyTwoSamples,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffsetDiscard].shaderProgram))
 	{
 		AddUniform_Unique(MT_TextureOnlyWithTexcoordOffsetDiscard,"texCoordOffset",Uniform_Vec2,1);
 	}
