@@ -689,9 +689,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		
 		const s32 numTilesX = pCurrLayer->numTilesX;
 		const s32 numTilesY = pCurrLayer->numTilesY;
-		
-		bool objectsChanged = false;
-		
+
 		//If it's the TileObjectArt layer, just update the uniforms
 		if(i == (s32)LevelLayer_TileObjectArt)
 		{
@@ -757,7 +755,6 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 
 							if(pCurrRenderable != NULL)
 							{
-								objectsChanged = true;
 								pCurrRenderable->DeleteObject();	
 							}
 							
@@ -777,7 +774,6 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 						//Create new renderable
 						else
 						{
-							objectsChanged = true;
 							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
 						}
 						
@@ -815,11 +811,6 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 					}
 				}
 			}
-		}
-		
-		if( objectsChanged )
-		{
-			m_coreObjectManager->PrintStatus();
 		}
 	}
 }

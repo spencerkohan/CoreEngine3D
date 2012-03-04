@@ -701,7 +701,7 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 				//Override material texture0 if needed
 				//Will do nothing if the texture is set to 0 or the texture is already set
 				SetTexture(pCurrRenderable->material.customTexture0, 0);
-				//SetTexture(pCurrRenderableObject3D->customTexture1, 1);
+				SetTexture(pCurrRenderable->material.customTexture1, 1);
 
 				//Upload uniforms that have unique values per object
 				UploadUniqueUniforms(pCurrRenderable->material.uniqueUniformValues);
@@ -2857,9 +2857,9 @@ void OpenGLRenderer::CreateMaterials()
 	}
 	
 	//MT_TextureWithScrollingMult
-	if(CreateShaderProgram(VSH_VertWithTexcoordAndOffsetTexcoord,PS_MultiplyTwoSamples,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffsetDiscard].shaderProgram))
+	if(CreateShaderProgram(VSH_VertWithTexcoordAndOffsetTexcoord,PS_MultiplyTwoSamples,attribs_VT,&g_Materials[MT_TextureWithScrollingMult].shaderProgram))
 	{
-		AddUniform_Unique(MT_TextureOnlyWithTexcoordOffsetDiscard,"texCoordOffset",Uniform_Vec2,1);
+		AddUniform_Unique(MT_TextureWithScrollingMult,"texCoordOffset",Uniform_Vec2,1);
 	}
 
 	//Setup common to all materials
