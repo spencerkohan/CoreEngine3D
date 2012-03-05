@@ -53,7 +53,6 @@ bool Spawner::SpawnInit(void* pSpawnStruct)
 		{
 			const u32 uniqueID = atoi(valueString);
 			m_pEntityToSpawn = GAME->GetSpawnableEntityByTiledUniqueID(uniqueID);
-			CopyVec3(&m_pEntityToSpawn->position,&m_position);
 		}
 		else if(strcmp(propNameString, "SpawnTimeMin") == 0)
 		{
