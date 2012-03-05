@@ -505,18 +505,18 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 {
 	u8* vertexData = NULL;
 	
-#if RENDERLOOP_MODE
+
 	for (u32 renderIDX = 0; renderIDX<numRenderableObjects; ++renderIDX)
 	{
-		const RenderableObject3D* pCurrRenderableObject3D = renderableObjectArray[renderIDX];
+		const RenderableGeometry3D* pGeom = &renderableObjectArray[renderIDX];
 		
 		//Don't mess with or draw stuff not in this view
-		if (!(pCurrRenderableObject3D->viewFlags & (1<<camViewIDX)))
+		if (!(pGeom->viewFlags & (1<<camViewIDX)))
 		{
 			continue;
 		}
 		
-		const u32 renderFlags = pCurrRenderableObject3D->flags;
+		const u32 renderFlags = pGeom->material.flags;
 		
 		//Don't mess with or draw invisible stuff
 		if (!(renderFlags & RenderFlag_Visible))
@@ -539,7 +539,7 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 		
 		//Set material whenever it has changed
 		
-		RenderMaterial nextMaterial = pCurrRenderableObject3D->materialID;
+		RenderMaterial nextMaterial = pGeom->material.materialID;
 		if(nextMaterial != m_lastUsedMaterial)
 		{
 			SetMaterial(nextMaterial);
@@ -555,166 +555,58 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 		
 		//Override material texture0 if needed
 		//Will do nothing if the texture is set to 0 or the texture is already set
-		SetTexture(pCurrRenderableObject3D->customTexture0, 0);
-		SetTexture(pCurrRenderableObject3D->customTexture1, 1);
+		SetTexture(pGeom->material.customTexture0, 0);
+		SetTexture(pGeom->material.customTexture1, 1);
 		
 		//Upload uniforms that have unique values per object
-		UploadUniqueUniforms(pCurrRenderableObject3D->uniqueUniformValues);
+		UploadUniqueUniforms(pGeom->material.uniqueUniformValues);
 		
 		//Draw the current object
 		
 		if (renderFlags & RenderFlag_IgnoreViewMatrix)
 		{
-			UploadWorldProjMatrix(pCurrRenderableObject3D->worldMat);
+			UploadWorldProjMatrix(pGeom->worldMat);
 		}
 		else
 		{
-			UploadWorldViewProjMatrix(pCurrRenderableObject3D->worldMat);
+			UploadWorldViewProjMatrix(pGeom->worldMat);
 		}
 		
 		SetRenderState(renderFlags);
 		
-		const ModelData* pModelData = renderableObjectArray[renderIDX]->pModel;
-		
-		for(unsigned int primIDX=0; primIDX<pModelData->numPrimitives; ++primIDX)
+		if(pGeom->drawObject != NULL)
 		{
+			//Going to assume most people will want this called for them
+			//which will prepare to draw all old-school like
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			
-			const PrimitiveData* currPrim = &pModelData->primitiveArray[primIDX];
-			if (currPrim->vertexData != vertexData)
+			//Object is expected to make the glDrawElements call
+			if(pGeom->drawFunc != NULL)
 			{
-				vertexData = currPrim->vertexData;
-				if (m_supportsFeaturesFromiOS4)
-				{
-					BindVertexArrayObject(currPrim);
-				}
-				else
-				{
-					glBindBuffer(GL_ARRAY_BUFFER, currPrim->vertexArrayObjectID);
-					EnableAttributes(pModelData->format);
-				}
+				pGeom->drawFunc(pGeom->drawObject);
 			}
-
-			//Draw the primitive!
-			if(currPrim->vertexArrayObjectID)
-			{
-				//NULL means non-indexed triangles
-				if (currPrim->indexData == NULL)
-				{
-					glDrawArrays(currPrim->drawMethod, 0, currPrim->numVerts);
-				}
-				//Render using indices
-				else
-				{
-					//VAOs don't save this I guess?
-					BindIndexData(currPrim);
-					
-					glDrawElements(currPrim->drawMethod, currPrim->numVerts, GL_UNSIGNED_SHORT, 0);
-				}
-			}
-			/*else
-			 {
-			 COREDEBUG_PrintDebugMessage("INSANE ERROR: You're trying to draw model '%s' but it hasn't been registered! WTF!?",pModelData->modelName);
-			 }*/
 		}
-	}
-#else
-	u32 renderIndex = 0;
-	
-	while(renderIndex < numRenderableObjects)
-	{				
-		const ModelData* pModelData = renderableObjectArray[renderIndex].pModel;
-		
-		u32 renderIndexStart=renderIndex;
-		//COREDEBUG_PrintDebugMessage(" *** STARTING MODEL RUN ***");
-		//COREDEBUG_PrintDebugMessage("Start Index %d Model Name: %s",renderIndexStart,pModelData->modelName);
-		
-		for (; renderIndex < numRenderableObjects && renderableObjectArray[renderIndex].pModel == pModelData; ++renderIndex);
-		
-		//unsigned int renderIndexEnd = renderIndex-1;
-		
-		//COREDEBUG_PrintDebugMessage("End Index %d Model Name: %s",renderIndex,m_renderableObject3DList[renderIndexEnd]->pModel->modelName);
-		//COREDEBUG_PrintDebugMessage(" *** ENDING MODEL RUN ***");
-		
-		//Now we can loop through the things that were using the same model
-		//FIRST: Loop through all primitives of the model, binding them as we go
-		for(unsigned int primIDX=0; primIDX<pModelData->numPrimitives; ++primIDX)
+		else
 		{
-			const PrimitiveData* currPrim = &pModelData->primitiveArray[primIDX];
-			if (currPrim->vertexData != vertexData)
-			{
-				vertexData = currPrim->vertexData;
-				
-				if (m_supportsFeaturesFromiOS4)
-				{
-					BindVertexArrayObject(currPrim);
-				}
-				else
-				{
-					glBindBuffer(GL_ARRAY_BUFFER, currPrim->vertexArrayObjectID);
-					EnableAttributes(pModelData);
-				}
-			}
+			const ModelData* pModelData = pGeom->pModel;
 			
-			if (currPrim->indexData != NULL)
+			for(unsigned int primIDX=0; primIDX<pModelData->numPrimitives; ++primIDX)
 			{
-				//VAOs don't save this I guess?
-				BindIndexData(currPrim);
-			}
-			
-			//SECOND: for each bound, render all the stuff
-			for (unsigned int jRenderIDX=renderIndexStart; jRenderIDX<renderIndex; ++jRenderIDX)
-			{
-				const RenderableGeometry3D* pCurrRenderable = &renderableObjectArray[jRenderIDX];
 				
-				const u32 renderFlags = pCurrRenderable->material.flags;
-				
-				//Don't mess with or draw stuff not in this view
-				if (!(pCurrRenderable->viewFlags & (1<<camViewIDX)))
+				const PrimitiveData* currPrim = &pModelData->primitiveArray[primIDX];
+				if (currPrim->vertexData != vertexData)
 				{
-					continue;
-				}
-				
-				//Don't mess with or draw invisible stuff
-				if (!(renderFlags & RenderFlag_Visible))
-				{
-					continue;
-				}
-				
-				SetRenderState(renderFlags);
-				
-				//Set material whenever it has changed
-				
-				RenderMaterial nextMaterial = pCurrRenderable->material.materialID;
-				if(nextMaterial != m_lastUsedMaterial)
-				{
-					SetMaterial(nextMaterial);
-				}
-				
-				//At this point, either the texture was set by a material or its still set to
-				//the last override texture
-				
-				//The material groups are sub-sorted by override texture, so all
-				//the non-overridden things draw first.  Therefore, there is
-				//never any need to reset back to the original texture from the
-				//material.
-				
-				//Override material texture0 if needed
-				//Will do nothing if the texture is set to 0 or the texture is already set
-				SetTexture(pCurrRenderable->material.customTexture0, 0);
-				SetTexture(pCurrRenderable->material.customTexture1, 1);
-
-				//Upload uniforms that have unique values per object
-				UploadUniqueUniforms(pCurrRenderable->material.uniqueUniformValues);
-				
-				//Draw the current object
-				
-				if (renderFlags & RenderFlag_IgnoreViewMatrix)
-				{
-					UploadWorldProjMatrix(pCurrRenderable->worldMat);
-				}
-				else
-				{
-					UploadWorldViewProjMatrix(pCurrRenderable->worldMat);
+					vertexData = currPrim->vertexData;
+					if (m_supportsFeaturesFromiOS4)
+					{
+						BindVertexArrayObject(currPrim);
+					}
+					else
+					{
+						glBindBuffer(GL_ARRAY_BUFFER, currPrim->vertexArrayObjectID);
+						EnableAttributes(pModelData);
+					}
 				}
 				
 				//Draw the primitive!
@@ -728,14 +620,15 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 					//Render using indices
 					else
 					{
-						//PrintOpenGLError("/*** Tried to render something ***/");
+						//VAOs don't save this I guess?
+						BindIndexData(currPrim);
+						
 						glDrawElements(currPrim->drawMethod, currPrim->numVerts, GL_UNSIGNED_SHORT, 0);
 					}
 				}
 			}
 		}	
 	}
-#endif
 }
 
 
@@ -2488,25 +2381,16 @@ void OpenGLRenderer::InitRenderableSceneObject3D(RenderableSceneObject3D* render
 	}
 }
 
-
-void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, ModelData* pModel, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+void OpenGLRenderer::InitRenderableGeometry3D_Shared(RenderableGeometry3D* renderableObject, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
 {
-	if(pModel->modelID == -1)
-	{
-		COREDEBUG_PrintDebugMessage("INSANE ERROR: You are tried to initialize a renderable with an unregistered model '%s'!  Skipping...",pModel->modelName);
-		return;
-	}
-
-	renderableObject->pModel = pModel;
 	renderableObject->material.materialID = materialID;
 	renderableObject->material.flags = renderFlags|RenderFlag_Initialized;
 	renderableObject->renderLayer = renderLayer;
 	renderableObject->material.customTexture0 = customTexture;
 	renderableObject->material.customTexture1 = NULL;
 	renderableObject->viewFlags = viewFlags;
-	renderableObject->debugName = NULL;
 	renderableObject->postRenderLayerSortValue = 0;
-
+	
 	for (s32 i=0; i<MAX_UNIQUE_UNIFORM_VALUES; ++i)
 	{
 		renderableObject->material.uniqueUniformValues[i] = NULL;
@@ -2520,6 +2404,29 @@ void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableOb
 	{
 		mat4f_Copy(renderableObject->worldMat,matrix4x4);
 	}
+}
+
+void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, void (*drawFunc)(void*), void* drawObject, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+{
+	renderableObject->drawFunc = drawFunc;
+	renderableObject->drawObject = drawObject;
+	
+	InitRenderableGeometry3D_Shared(renderableObject,materialID,customTexture,matrix4x4,renderLayer,viewFlags,renderFlags);
+}
+
+
+void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, ModelData* pModel, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+{
+	if(pModel->modelID == -1)
+	{
+		COREDEBUG_PrintDebugMessage("INSANE ERROR: You are tried to initialize a renderable with an unregistered model '%s'!  Skipping...",pModel->modelName);
+		return;
+	}
+
+	renderableObject->drawObject = NULL;
+	renderableObject->pModel = pModel;
+	
+	InitRenderableGeometry3D_Shared(renderableObject,materialID,customTexture,matrix4x4,renderLayer,viewFlags,renderFlags);
 }
 
 
