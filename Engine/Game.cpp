@@ -97,7 +97,6 @@ bool Game::Init()
 
 #if defined (PLATFORM_WIN)
 	char currentPath[_MAX_PATH];
-	//GetCurrentDirectory(_MAX_PATH,currentPath);
 	GetModuleFileName(0,currentPath,_MAX_PATH);
 	std::string pathString(currentPath);
 
