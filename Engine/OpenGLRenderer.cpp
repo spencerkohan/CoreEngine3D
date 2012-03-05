@@ -2539,39 +2539,39 @@ void OpenGLRenderer::LoadParticleAtlas(const char* filename)
 void OpenGLRenderer::CreateMaterials()
 {
 	//Vertex Shaders
-	const s32 VSH_TextureAndVertColor = AddVertexShaderToList("ArtResources/Shaders/TextureAndVertColor.vsh");
-	const s32 VSH_WiggleUsingTexcoordV = AddVertexShaderToList("ArtResources/Shaders/WiggleUsingTexcoordV.vsh");
-	const s32 VSH_FullScreenQuad = AddVertexShaderToList("ArtResources/Shaders/pp_default.vsh");
-    const s32 VSH_FullScreenQuadNoTexcoord = AddVertexShaderToList("ArtResources/Shaders/pp_noTexcoord.vsh");
-	const s32 VSH_VertColors = AddVertexShaderToList("ArtResources/Shaders/VertColors.vsh");
-    const s32 VSH_VertWithColorInput = AddVertexShaderToList("ArtResources/Shaders/VertWithColorInput.vsh");
-    const s32 VSH_VertWithColorInputAndTexture = AddVertexShaderToList("ArtResources/Shaders/VertWithColorInputAndTexture.vsh");
-    const s32 VSH_VertWithColorInputWithTexcoordOffset = AddVertexShaderToList("ArtResources/Shaders/VertWithColorInputWithTexcoordOffset.vsh");
-	const s32 VSH_TextureOnly = AddVertexShaderToList("ArtResources/Shaders/TextureOnly.vsh");
-    const s32 VSH_TextureWithColor = AddVertexShaderToList("ArtResources/Shaders/TextureWithColor.vsh");
-	const s32 VSH_VertWithTexcoordOffset = AddVertexShaderToList("ArtResources/Shaders/VertWithTexcoordOffset.vsh");
-	const s32 VSH_VertWithTexcoordAndOffsetTexcoord = AddVertexShaderToList("ArtResources/Shaders/VertWithTexcoordAndOffsetTexcoord.vsh");
-	const s32 VSH_TextureOnlyWithTexcoordAndWorldOffset = AddVertexShaderToList("ArtResources/Shaders/TextureOnlyWithTexcoordAndWorldOffset.vsh");
-	const s32 VSH_PointSprite_Basic = AddVertexShaderToList("ArtResources/Shaders/PointSprite_Default.vsh");
-	//const s32 VSH_SkinnedVertShader = AddVertexShaderToList("ArtResources/Shaders/SkinnedVertShader.vsh");
+	const s32 VSH_TextureAndVertColor = AddVertexShaderToList("Shaders/TextureAndVertColor.vsh");
+	const s32 VSH_WiggleUsingTexcoordV = AddVertexShaderToList("Shaders/WiggleUsingTexcoordV.vsh");
+	const s32 VSH_FullScreenQuad = AddVertexShaderToList("Shaders/pp_default.vsh");
+    const s32 VSH_FullScreenQuadNoTexcoord = AddVertexShaderToList("Shaders/pp_noTexcoord.vsh");
+	const s32 VSH_VertColors = AddVertexShaderToList("Shaders/VertColors.vsh");
+    const s32 VSH_VertWithColorInput = AddVertexShaderToList("Shaders/VertWithColorInput.vsh");
+    const s32 VSH_VertWithColorInputAndTexture = AddVertexShaderToList("Shaders/VertWithColorInputAndTexture.vsh");
+    const s32 VSH_VertWithColorInputWithTexcoordOffset = AddVertexShaderToList("Shaders/VertWithColorInputWithTexcoordOffset.vsh");
+	const s32 VSH_TextureOnly = AddVertexShaderToList("Shaders/TextureOnly.vsh");
+    const s32 VSH_TextureWithColor = AddVertexShaderToList("Shaders/TextureWithColor.vsh");
+	const s32 VSH_VertWithTexcoordOffset = AddVertexShaderToList("Shaders/VertWithTexcoordOffset.vsh");
+	const s32 VSH_VertWithTexcoordAndOffsetTexcoord = AddVertexShaderToList("Shaders/VertWithTexcoordAndOffsetTexcoord.vsh");
+	const s32 VSH_TextureOnlyWithTexcoordAndWorldOffset = AddVertexShaderToList("Shaders/TextureOnlyWithTexcoordAndWorldOffset.vsh");
+	const s32 VSH_PointSprite_Basic = AddVertexShaderToList("Shaders/PointSprite_Default.vsh");
+	//const s32 VSH_SkinnedVertShader = AddVertexShaderToList("Shaders/SkinnedVertShader.vsh");
 	
 	//Pixel Shaders
-	const s32 PP_BlendUsingTexture = AddPixelShaderToList("ArtResources/Shaders/BlendUsingTexture.fsh");
-	const s32 PP_PureColor = AddPixelShaderToList("ArtResources/Shaders/PureColor.fsh");
-    const s32 PS_TextureOnlySimple = AddPixelShaderToList("ArtResources/Shaders/TextureOnlySimple.fsh");
-    const s32 PS_TextureOnlyDiscard = AddPixelShaderToList("ArtResources/Shaders/TextureOnlyDiscard.fsh");
-    const s32 PS_TextureAndDiffuseColor = AddPixelShaderToList("ArtResources/Shaders/TextureAndDiffuseColor.fsh");
-    const s32 PS_TextureAndDiffuseColorDiscard = AddPixelShaderToList("ArtResources/Shaders/TextureAndDiffuseColorDiscard.fsh");
-	const s32 PS_TextureAndFogColorDiscard = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColorDiscard.fsh");
-	//const s32 PS_TextureAndFogColor = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColor.fsh");
-	const s32 PS_Colors = AddPixelShaderToList("ArtResources/Shaders/Colors.fsh");
-	const s32 PS_PointSprite_ColorShine = AddPixelShaderToList("ArtResources/Shaders/PointSprite_ColorShine.fsh");
-    const s32 PS_TextureWithColor = AddPixelShaderToList("ArtResources/Shaders/TextureWithColor.fsh");
-	const s32 PS_MultiplyTwoSamples = AddPixelShaderToList("ArtResources/Shaders/MultiplyTwoSamples.fsh");
+	const s32 PP_BlendUsingTexture = AddPixelShaderToList("Shaders/BlendUsingTexture.fsh");
+	const s32 PP_PureColor = AddPixelShaderToList("Shaders/PureColor.fsh");
+    const s32 PS_TextureOnlySimple = AddPixelShaderToList("Shaders/TextureOnlySimple.fsh");
+    const s32 PS_TextureOnlyDiscard = AddPixelShaderToList("Shaders/TextureOnlyDiscard.fsh");
+    const s32 PS_TextureAndDiffuseColor = AddPixelShaderToList("Shaders/TextureAndDiffuseColor.fsh");
+    const s32 PS_TextureAndDiffuseColorDiscard = AddPixelShaderToList("Shaders/TextureAndDiffuseColorDiscard.fsh");
+	const s32 PS_TextureAndFogColorDiscard = AddPixelShaderToList("Shaders/TextureAndFogColorDiscard.fsh");
+	//const s32 PS_TextureAndFogColor = AddPixelShaderToList("Shaders/TextureAndFogColor.fsh");
+	const s32 PS_Colors = AddPixelShaderToList("Shaders/Colors.fsh");
+	const s32 PS_PointSprite_ColorShine = AddPixelShaderToList("Shaders/PointSprite_ColorShine.fsh");
+    const s32 PS_TextureWithColor = AddPixelShaderToList("Shaders/TextureWithColor.fsh");
+	const s32 PS_MultiplyTwoSamples = AddPixelShaderToList("Shaders/MultiplyTwoSamples.fsh");
 	
-	//const s32 PS_SkinnedFragShader = AddPixelShaderToList("ArtResources/Shaders/SkinnedFragShader.fsh");
+	//const s32 PS_SkinnedFragShader = AddPixelShaderToList("Shaders/SkinnedFragShader.fsh");
 	
-	//const s32 PS_TextureAndFogColorWithMipMapBlur = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColorWithMipmapBlur.fsh");
+	//const s32 PS_TextureAndFogColorWithMipMapBlur = AddPixelShaderToList("Shaders/TextureAndFogColorWithMipmapBlur.fsh");
 	
 	//Vertex Shaders
 	

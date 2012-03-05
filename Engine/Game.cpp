@@ -308,8 +308,12 @@ std::string Game::GetPathToFile(const char* filename)
 	NSString* fileString = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
 	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
 	
-	std::string pathString([fullPath UTF8String]);
-	
+	std::string pathString;
+	if(fullPath)
+	{
+		pathString = [fullPath UTF8String];
+	}
+
 	[pool drain];
 	
 	return pathString;
