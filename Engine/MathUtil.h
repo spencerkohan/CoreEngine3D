@@ -84,7 +84,7 @@ void ProjectVec3_Norm(vec3* out_resultVec, vec3* vec0, vec3* vec1);
 void  AddVec3ThenScale_Self(vec3* out_resultVec, vec3* vec, f32 scale);
 void  AddVec3ThenScale(vec3* out_resultVec, vec3* vec0, vec3* vec1, f32 scale);
 void  AddVec3_Self(vec3* out_resultVec, const vec3* vec);
-void  AddVec3(vec3* out_resultVec, vec3* vec0, vec3* vec1);
+void  AddVec3(vec3* out_resultVec, const vec3* vec0, const vec3* vec1);
 void  AddScaledVec3_Self(vec3* out_resultVec, const vec3* vec, f32 scale);
 void  AddScaledVec3(vec3* out_resultVec, const vec3* vec0, const vec3* vec1, f32 scale);
 void  SubScaledVec3_Self(vec3* out_resultVec, vec3* vec, f32 scale);

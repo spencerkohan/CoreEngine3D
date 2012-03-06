@@ -766,7 +766,7 @@ void  AddVec3_Self(vec3* out_resultVec, const vec3* vec)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void  AddVec3(vec3* out_resultVec, vec3* vec0, vec3* vec1)
+void  AddVec3(vec3* out_resultVec, const vec3* vec0, const vec3* vec1)
 {
 	out_resultVec->x = vec0->x+vec1->x;
 	out_resultVec->y = vec0->y+vec1->y;
