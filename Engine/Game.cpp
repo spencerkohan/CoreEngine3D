@@ -716,15 +716,9 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 						//TODO: do something better than this if possible
 						pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
 						
-						if(renderMaterial == MT_TextureAndFogColorWithTexcoordOffset
-						   || renderMaterial == MT_TextureAndFogColorWithMipMapBlurWithTexcoordOffset)
+						if(renderMaterial == MT_TextureAndFogColorWithTexcoordOffset)
 						{
 							pCurrRenderable->material.uniqueUniformValues[1] = (u8*)&pCurrLayer->fogColor;
-						}
-						
-						if(renderMaterial == MT_TextureAndFogColorWithMipMapBlurWithTexcoordOffset)
-						{
-							pCurrRenderable->material.uniqueUniformValues[2] = (u8*)&pCurrLayer->blurAmount;
 						}
 					}
 				}
@@ -800,15 +794,9 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 							//TODO: do something better than this if possible
 							pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
 							
-							if(renderMaterial == MT_TextureAndFogColorWithTexcoordOffset
-							   || renderMaterial == MT_TextureAndFogColorWithMipMapBlurWithTexcoordOffset)
+							if(renderMaterial == MT_TextureAndFogColorWithTexcoordOffset)
 							{
 								pCurrRenderable->material.uniqueUniformValues[1] = (u8*)&pCurrLayer->fogColor;
-							}
-							
-							if(renderMaterial == MT_TextureAndFogColorWithMipMapBlurWithTexcoordOffset)
-							{
-								pCurrRenderable->material.uniqueUniformValues[2] = (u8*)&pCurrLayer->blurAmount;
 							}
 						}
 						else
