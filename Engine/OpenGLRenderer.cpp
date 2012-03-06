@@ -585,27 +585,24 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 				//Make sure nothing randomly writes to our new VAO
 #ifdef PLATFORM_IOS
 				glBindVertexArrayOES(0);
-				PrintOpenGLError("error happening");
+				
 #elif  PLATFORM_WIN
 				glBindVertexArray(0);
-				PrintOpenGLError("error happening");
+				
 #else
 				glBindVertexArrayAPPLE(0);
-				PrintOpenGLError("error happening");
+				
 #endif
 			}
-			else
-			{
-				glBindBuffer(GL_ARRAY_BUFFER, 0);	
-				PrintOpenGLError("error happening");
-			}
 			
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-			PrintOpenGLError("error happening");
+			
 			
 			//Draw!
 			pGeom->drawFunc(pGeom->drawObject);
-			PrintOpenGLError("error happening");
+			
 		}
 		else
 		{
@@ -621,13 +618,13 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 					if (m_supportsFeaturesFromiOS4)
 					{
 						BindVertexArrayObject(currPrim);
-						PrintOpenGLError("error happening");
+						
 					}
 					else
 					{
 						glBindBuffer(GL_ARRAY_BUFFER, currPrim->vertexArrayObjectID);
 						EnableAttributes(pModelData);
-						PrintOpenGLError("error happening");
+						
 					}
 				}
 				
@@ -638,17 +635,17 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 					if (currPrim->indexData == NULL)
 					{
 						glDrawArrays(currPrim->drawMethod, 0, currPrim->numVerts);
-						PrintOpenGLError("error happening");
+						
 					}
 					//Render using indices
 					else
 					{
 						//VAOs don't save this I guess?
 						BindIndexData(currPrim);
-						PrintOpenGLError("error happening");
+						
 						
 						glDrawElements(currPrim->drawMethod, currPrim->numVerts, GL_UNSIGNED_SHORT, 0);
-						PrintOpenGLError("error happening");
+						
 					}
 				}
 			}
@@ -665,29 +662,25 @@ void OpenGLRenderer::RenderEffects()
 	//COREDEBUG_PrintDebugMessage("**Render End.  Rendered %d objects.",m_numRenderableObject3Ds);
 #endif
 	
-	PrintOpenGLError("error happening");
+	
 	
     //Do this to disable vertex array objects
     if(m_supportsFeaturesFromiOS4)
     {
 #ifdef PLATFORM_IOS
 		glBindVertexArrayOES(0);
-		PrintOpenGLError("error happening");
+		
 #elif defined PLATFORM_WIN
 		glBindVertexArray(0);
-		PrintOpenGLError("error happening");
+		
 #else
 		glBindVertexArrayAPPLE(0);	
-		PrintOpenGLError("error happening");
+		
 #endif
     }
-	else
-	{
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		PrintOpenGLError("error happening");
-	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
-	PrintOpenGLError("error happening");
     
 	//Do this to use normal non-VBO memory before starting post processing
 	
@@ -710,11 +703,11 @@ void OpenGLRenderer::RenderEffects()
 	/*** RENDER TEXTURED LINES ***/
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	PrintOpenGLError("error happening");
+	
 	
 	//Set line material
     SetMaterial(MT_TextureAndDiffuseColor);
-	PrintOpenGLError("error happening");
+	
 	
 	u32 currLineTexture = 0;
 	
@@ -722,6 +715,8 @@ void OpenGLRenderer::RenderEffects()
 	
 	for(s32 renderLineIDX=0; renderLineIDX<m_numTexturedLines_saved; ++renderLineIDX)
 	{
+		assert(renderLineIDX < MAX_TEXTURED_LINES);
+		
 		TexturedLineObject* pCurrLine = &m_texturedLineObjects[renderLineIDX];
 		
 		if(drawMode != pCurrLine->drawMode)
@@ -735,7 +730,7 @@ void OpenGLRenderer::RenderEffects()
 					//Draw 2D lines
 					m_currProjMatType = ProjMatType_Orthographic_Points;
 					UploadWorldViewProjMatrix(m_identityMat);
-					PrintOpenGLError("error happening");
+					
 					
 					break;
 				}
@@ -744,7 +739,7 @@ void OpenGLRenderer::RenderEffects()
 					//Draw 3D lines
 					m_currProjMatType = ProjMatType_Perspective;
 					UploadWorldViewProjMatrix(m_identityMat);
-					PrintOpenGLError("error happening");
+					
 					break;
 				}
 				case DebugDrawMode_Screen2D:
@@ -752,7 +747,7 @@ void OpenGLRenderer::RenderEffects()
 					//Draw to the screen with no view matrix in 2D
 					m_currProjMatType = ProjMatType_Orthographic_Points;
 					UploadWorldProjMatrix(m_identityMat);
-					PrintOpenGLError("error happening");
+					
 					break;
 				}
 				default:
@@ -767,7 +762,7 @@ void OpenGLRenderer::RenderEffects()
 		if(nextLineTexture != currLineTexture)
 		{
 			SetTexture(&nextLineTexture,0);
-			PrintOpenGLError("error happening");
+			
 			
 			currLineTexture = nextLineTexture;
 		}
@@ -815,22 +810,22 @@ void OpenGLRenderer::RenderEffects()
 		//Set diffuse color
 		vec4 color = { pCurrLine->diffuseColor.x, pCurrLine->diffuseColor.y, pCurrLine->diffuseColor.z, 1.0f };
 		glUniform4fv(g_Materials[MT_TextureAndDiffuseColor].uniforms_unique[0],1,(f32*)&color);
-		PrintOpenGLError("error happening");
+		
 		
 		//Draw verts
 		//Draw particles
 		glEnableVertexAttribArray(ATTRIB_VERTEX);
-		PrintOpenGLError("error happening");
+		
 		glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, sizeof(TexturedLineVert), &m_texturedLineVerts[0].position);
-		PrintOpenGLError("error happening");
+		
 		
 		glEnableVertexAttribArray(ATTRIB_TEXCOORD);
-		PrintOpenGLError("error happening");
+		
 		glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, 0, sizeof(TexturedLineVert), &m_texturedLineVerts[0].texcoord);
-		PrintOpenGLError("error happening");
+		
 		
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		PrintOpenGLError("error happening");
+		
 	}
 	
 	
@@ -838,10 +833,10 @@ void OpenGLRenderer::RenderEffects()
     
     //Set trail material
     SetMaterial(MT_TextureWithColor);
-	PrintOpenGLError("error happening");
+	
     m_currProjMatType = ProjMatType_Perspective;
     UploadWorldViewProjMatrix(m_identityMat);
-    PrintOpenGLError("error happening");
+    
     
 	u32 currTrailTexture = 0;
 	
@@ -859,9 +854,9 @@ void OpenGLRenderer::RenderEffects()
         const GFX_TrailSettings* pTrailSettings = &currTrail->trailSettings;
         
         glUniform1fv(trailShaderUniform_scrollAmountU,1,&pTrailSettings->scrollAmountU);
-		PrintOpenGLError("error happening");
+		
         glUniform1fv(trailShaderUniform_scrollAmountV,1,&pTrailSettings->scrollAmountV);
-		PrintOpenGLError("error happening");
+		
 		
         //Enable or disable alpha blended based on the RenderFlag
         if (renderFlags & RenderFlag_AlphaBlended)
@@ -991,22 +986,22 @@ void OpenGLRenderer::RenderEffects()
             //Draw verts
             //Draw particles
             glEnableVertexAttribArray(ATTRIB_VERTEX);
-			PrintOpenGLError("error happening");
+			
             glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, sizeof(GFX_TrailParticleData), &m_trailParticleRenderablePoints[0].position);
-			PrintOpenGLError("error happening");
+			
             
             glEnableVertexAttribArray(ATTRIB_TEXCOORD);
-			PrintOpenGLError("error happening");
+			
             glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, 0, sizeof(GFX_TrailParticleData), &m_trailParticleRenderablePoints[0].texcoord);
-			PrintOpenGLError("error happening");
+			
             
             glEnableVertexAttribArray(ATTRIB_COLOR);
-			PrintOpenGLError("error happening");
+			
             glVertexAttribPointer(ATTRIB_COLOR, 4, GL_FLOAT, 0, sizeof(GFX_TrailParticleData), &m_trailParticleRenderablePoints[0].color);
-			PrintOpenGLError("error happening");
+			
             
             glDrawArrays(GL_TRIANGLE_STRIP, 0, numToRender*VERTS_PER_TRAILPARTICLE);
-			PrintOpenGLError("error happening");
+			
         }
     }
     
@@ -1077,22 +1072,22 @@ void OpenGLRenderer::RenderEffects()
 			
 			//Draw particles
 			glEnableVertexAttribArray(ATTRIB_VERTEX);
-			PrintOpenGLError("error happening");
+			
 			glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, sizeof(ParticleData), pBucket->m_spriteData);
-			PrintOpenGLError("error happening");
+			
 			
 			glEnableVertexAttribArray(ATTRIB_TEXCOORD);
-			PrintOpenGLError("error happening");
+			
 			glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, 0, sizeof(ParticleData), &pBucket->m_spriteData[0].texcoord);
-			PrintOpenGLError("error happening");
+			
 			
 			glEnableVertexAttribArray(ATTRIB_COLOR);
-			PrintOpenGLError("error happening");
+			
 			glVertexAttribPointer(ATTRIB_COLOR, 4, GL_FLOAT, 0, sizeof(ParticleData), &pBucket->m_spriteData[0].color);
-			PrintOpenGLError("error happening");
+			
 			
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, pBucket->m_numParticlesToDraw*VERTS_PER_PARTICLE);
-			PrintOpenGLError("error happening");
+			
 		}
 	}	
 #endif
@@ -1482,7 +1477,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 		for(u32 i=0; i<m_numAnimatedPods; ++i)
 		{
 			DrawAnimatedPOD(&m_animatedPODs[i]);
-			PrintOpenGLError("error happening");
+			
 		}
 		
 		for(u32 i=0; i<g_Factory_RenderableSceneObject.m_numObjects; ++i)
@@ -1491,18 +1486,18 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			if(pSceneObj->visible)
 			{
 				DrawSceneObject(pSceneObj);
-				PrintOpenGLError("error happening");
+				
 			}
 		}
 		
 		RenderLoop(0,g_Factory_Geometry_UI.m_pObjectList,g_Factory_Geometry_UI.m_numObjects);
-		PrintOpenGLError("error happening");
+		
 #endif        
 	}
 	
-	PrintOpenGLError("error happening");
+	
 	RenderEffects();
-	PrintOpenGLError("error happening");
+	
     
     glEnable(GL_BLEND);
     
@@ -1527,7 +1522,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
             const f32 finalFade = Lerp(0.0f,m_pauseFinalFade,fadeT);
 			SetVec4(&m_fadeColor,0.0f,0.0f,0.0f,finalFade);
 			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
-			PrintOpenGLError("error happening");
+			
             
 			break;
 		}
@@ -1535,7 +1530,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
         {
             SetVec4(&m_fadeColor,0.0f,0.0f,0.0f,m_pauseFinalFade);
 			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
-			PrintOpenGLError("error happening");
+			
             
             if (m_pauseRequestedFadeIn == true)
             {
@@ -1559,7 +1554,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
             const f32 finalFade = Lerp(0.0f,m_pauseFinalFade,fadeT);
 			SetVec4(&m_fadeColor,0.0f,0.0f,0.0f,finalFade);
 			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
-			PrintOpenGLError("error happening");
+			
 			
 			break;
 		}
@@ -1590,7 +1585,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
             
 			SetVec4(&m_fadeColor,m_flashColor.x,m_flashColor.y,m_flashColor.z,fadeT);
 			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
-			PrintOpenGLError("error happening");
+			
             
 			break;
 		}
@@ -1606,7 +1601,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
             
 			SetVec4(&m_fadeColor,m_flashColor.x,m_flashColor.y,m_flashColor.z,fadeT);
 			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
-			PrintOpenGLError("error happening");
+			
 			
 			break;
 		}
@@ -1636,7 +1631,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			m_fadeColor.w = fadeT;
 			
 			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
-			PrintOpenGLError("error happening");
+			
 			
 			break;
 		}
@@ -1646,7 +1641,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			m_fadeColor.w = 1.0f;
 			
 			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
-			PrintOpenGLError("error happening");
+			
             
             if (m_requestedFadeIn == true)
             {
@@ -1673,7 +1668,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			m_fadeColor.w = fadeT;
 			
 			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
-			PrintOpenGLError("error happening");
+			
 			
 			break;
 		}
@@ -1705,7 +1700,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 	
 	//Render debug stuff
 	SetMaterial(MT_VertColors);
-	PrintOpenGLError("error happening");
+	
 	
 	for(u32 debugIDX=0; debugIDX<DebugDrawMode_Num; ++debugIDX)
 	{
@@ -1718,7 +1713,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 				//Draw 2D lines
 				m_currProjMatType = ProjMatType_Orthographic_Points;
 				UploadWorldViewProjMatrix(m_identityMat);
-				PrintOpenGLError("error happening");
+				
 				
 				break;
 			}
@@ -1727,7 +1722,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 				//Draw 3D lines
 				m_currProjMatType = ProjMatType_Perspective;
 				UploadWorldViewProjMatrix(m_identityMat);
-				PrintOpenGLError("error happening");
+				
 				
 				break;
 			}
@@ -1736,7 +1731,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 				//Draw to the screen with no view matrix in 2D
 				m_currProjMatType = ProjMatType_Orthographic_Points;
 				UploadWorldProjMatrix(m_identityMat);
-				PrintOpenGLError("error happening");
+				
 				
 				break;
 			}
@@ -1747,14 +1742,14 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 		}
 		
 		glEnableVertexAttribArray(ATTRIB_VERTEX);
-		PrintOpenGLError("error happening");
+		
 		glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, sizeof(PointData), &m_debugLinePoints[debugIDX][0].position);
-		PrintOpenGLError("error happening");
+		
 		
 		glEnableVertexAttribArray(ATTRIB_COLOR);
-		PrintOpenGLError("error happening");
+		
 		glVertexAttribPointer(ATTRIB_COLOR, 4, GL_FLOAT, 0, sizeof(PointData), &m_debugLinePoints[debugIDX][0].color);
-		PrintOpenGLError("error happening");
+		
 		
 		const u32 numToDraw = m_numDebugLinePoints_saved[debugIDX];
 		glDrawArrays(GL_LINES, 0, numToDraw);
@@ -2687,14 +2682,14 @@ void OpenGLRenderer::CreateMaterials()
 	{
 		
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	//PPMT_PureColor
 	if(CreateShaderProgram(VSH_FullScreenQuadNoTexcoord,PP_PureColor,ppAttribs,&g_Materials[PPMT_PureColor].shaderProgram))
 	{
 		AddUniform_Shared(PPMT_PureColor,"color",Uniform_Vec4,(u8*)&m_fadeColor.x,1);
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	/*attribute highp   vec3 inVertex;
 	 attribute mediump vec3 inNormal;
@@ -2718,7 +2713,7 @@ void OpenGLRenderer::CreateMaterials()
 	{
 		
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	//MT_SkinnedWithNormalMapping
     /*if(CreateShaderProgram(VSH_SkinnedVertShader,PS_SkinnedFragShader,attribs_skinned_simple,&g_Materials[MT_SkinnedWithNormalMapping].shaderProgram))
@@ -2736,21 +2731,21 @@ void OpenGLRenderer::CreateMaterials()
     {
         AddUniform_Unique(MT_VertWithColorInput,"inputColor",Uniform_Vec4,1);
     }
-	PrintOpenGLError("error time");
+	 
 	
 	//MT_BasicPointSprite
 	if(CreateShaderProgram(VSH_PointSprite_Basic,PS_TextureWithColor,attribs_VTC,&g_Materials[MT_BasicPointSprite].shaderProgram))
 	{
 		g_Materials[MT_BasicPointSprite].texture0 = &texture_pointSpriteAtlas;
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	//MT_PointSpriteColorShine
 	if(CreateShaderProgram(VSH_PointSprite_Basic,PS_PointSprite_ColorShine,attribs_VTC,&g_Materials[MT_PointSpriteColorShine].shaderProgram))
 	{
 		g_Materials[MT_PointSpriteColorShine].texture0 = &texture_pointSpriteAtlas;
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	//MT_WiggleUsingTexcoordV
 	if(CreateShaderProgram(VSH_WiggleUsingTexcoordV,PS_TextureAndFogColorDiscard,attribs_VT,&g_Materials[MT_WiggleUsingTexcoordV].shaderProgram))
@@ -2758,42 +2753,42 @@ void OpenGLRenderer::CreateMaterials()
 		AddUniform_Unique(MT_WiggleUsingTexcoordV,"inputColor",Uniform_Vec4,1);
 		AddUniform_Unique(MT_WiggleUsingTexcoordV,"wiggleAmount",Uniform_Vec4,1);
 	}
-	PrintOpenGLError("error time");
+	 
 
 	//MT_TextureAndVertColor
 	if(CreateShaderProgram(VSH_TextureAndVertColor,PS_TextureAndDiffuseColor,attribs_VTC,&g_Materials[MT_TextureAndVertColor].shaderProgram))
 	{
 		
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	//MT_TextureOnlySimple
 	if(CreateShaderProgram(VSH_TextureOnly,PS_TextureOnlySimple,attribs_VT,&g_Materials[MT_TextureOnlySimple].shaderProgram))
 	{
 		
 	}
-	PrintOpenGLError("error time");
+	 
     
     //MT_TextureOnlyDiscard
 	if(CreateShaderProgram(VSH_TextureOnly,PS_TextureOnlyDiscard,attribs_VT,&g_Materials[MT_TextureOnlyDiscard].shaderProgram))
 	{
 		
 	}
-	PrintOpenGLError("error time");
+	 
 
     //MT_TextureAndDiffuseColorDiscard
 	if(CreateShaderProgram(VSH_VertWithColorInputAndTexture,PS_TextureAndDiffuseColorDiscard,attribs_VT,&g_Materials[MT_TextureAndDiffuseColorDiscard].shaderProgram))
 	{
 		AddUniform_Unique(MT_TextureAndDiffuseColorDiscard,"inputColor",Uniform_Vec4,1);
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	//MT_TextureAndFogColorDiscard
 	if(CreateShaderProgram(VSH_VertWithColorInputAndTexture,PS_TextureAndFogColorDiscard,attribs_VT,&g_Materials[MT_TextureAndFogColorDiscard].shaderProgram))
 	{
 		AddUniform_Unique(MT_TextureAndFogColorDiscard,"inputColor",Uniform_Vec4,1);
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	//MT_TextureAndFogColor
 	if(CreateShaderProgram(VSH_VertWithColorInputAndTexture,PS_TextureAndFogColor,attribs_VT,&g_Materials[MT_TextureAndFogColor].shaderProgram))
@@ -2813,7 +2808,7 @@ void OpenGLRenderer::CreateMaterials()
 	{
 		AddUniform_Unique(MT_TextureAndDiffuseColor,"inputColor",Uniform_Vec4,1);
 	}
-    PrintOpenGLError("error time");
+     
 	
     //MT_TextureAndDiffuseColorWithTexcoordOffsetDiscard
 	if(CreateShaderProgram(VSH_VertWithColorInputWithTexcoordOffset,PS_TextureAndDiffuseColorDiscard,attribs_VT,&g_Materials[MT_TextureAndDiffuseColorWithTexcoordOffsetDiscard].shaderProgram))
@@ -2821,7 +2816,7 @@ void OpenGLRenderer::CreateMaterials()
 		AddUniform_Unique(MT_TextureAndDiffuseColorWithTexcoordOffsetDiscard,"texCoordOffset",Uniform_Vec2,1);
 		AddUniform_Unique(MT_TextureAndDiffuseColorWithTexcoordOffsetDiscard,"inputColor",Uniform_Vec4,1);
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	//MT_TextureAndDiffuseColorWithTexcoordOffset
 	if(CreateShaderProgram(VSH_VertWithColorInputWithTexcoordOffset,PS_TextureAndDiffuseColor,attribs_VT,&g_Materials[MT_TextureAndDiffuseColorWithTexcoordOffset].shaderProgram))
@@ -2829,42 +2824,42 @@ void OpenGLRenderer::CreateMaterials()
 		AddUniform_Unique(MT_TextureAndDiffuseColorWithTexcoordOffset,"texCoordOffset",Uniform_Vec2,1);
 		AddUniform_Unique(MT_TextureAndDiffuseColorWithTexcoordOffset,"inputColor",Uniform_Vec4,1);
 	}
-    PrintOpenGLError("error time");
+     
 	
     //MT_TextureWithColor
 	if(CreateShaderProgram(VSH_TextureWithColor,PS_TextureWithColor,attribs_VTC,&g_Materials[MT_TextureWithColor].shaderProgram))
 	{
 		
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	//MT_Animation_NewMethod3D
 	if(CreateShaderProgram(VSH_TextureOnlyWithTexcoordAndWorldOffset,PS_TextureOnlySimple,attribs_VT,&g_Materials[MT_Animation_NewMethod3D].shaderProgram))
 	{
 		AddUniform_Unique(MT_Animation_NewMethod3D,"texCoordOffset",Uniform_Vec2,1);
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	//MT_TextureOnlyWithTexcoordOffset
 	if(CreateShaderProgram(VSH_VertWithTexcoordOffset,PS_TextureOnlySimple,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffset].shaderProgram))
 	{
 		AddUniform_Unique(MT_TextureOnlyWithTexcoordOffset,"texCoordOffset",Uniform_Vec2,1);
 	}
-	PrintOpenGLError("error time");
+	 
     
     //MT_TextureOnlyWithTexcoordOffsetDiscard
 	if(CreateShaderProgram(VSH_VertWithTexcoordOffset,PS_TextureOnlyDiscard,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffsetDiscard].shaderProgram))
 	{
 		AddUniform_Unique(MT_TextureOnlyWithTexcoordOffsetDiscard,"texCoordOffset",Uniform_Vec2,1);
 	}
-	PrintOpenGLError("error time");
+	 
 	
 	//MT_TextureWithScrollingMult
 	if(CreateShaderProgram(VSH_VertWithTexcoordAndOffsetTexcoord,PS_MultiplyTwoSamples,attribs_VT,&g_Materials[MT_TextureWithScrollingMult].shaderProgram))
 	{
 		AddUniform_Unique(MT_TextureWithScrollingMult,"texCoordOffset",Uniform_Vec2,1);
 	}
-	PrintOpenGLError("error time");
+	 
 
 	for(int i=0; i<NumRenderMaterials; ++i)
 	{
@@ -3439,11 +3434,11 @@ void OpenGLRenderer::SetMaterial(RenderMaterial material)
 	}
 	
 	glUseProgram(program);
-	PrintOpenGLError("error happening");
+	
 	
 	//Upload camPos (TODO: don't put this here)
 	glUniform3f(currMaterial->uniform_camPos, m_camPos[m_currViewIndex].x,m_camPos[m_currViewIndex].y,m_camPos[m_currViewIndex].z);
-	PrintOpenGLError("error happening");
+	
 	
 	//Set the textures
 	SetTexture(currMaterial->texture0,0);
@@ -4032,7 +4027,7 @@ void OpenGLRenderer::UploadSharedUniforms()
 			}
 		}
 		
-		PrintOpenGLError("error happening");
+		
 	}
 }
 
@@ -4118,13 +4113,13 @@ void OpenGLRenderer::SetTexture(const u32* pTexture,u32 textureUnit)
         {
             m_currTextureUnit = textureUnit;
             glActiveTexture(GL_TEXTURE0+textureUnit);
-			PrintOpenGLError("error happening");
+			
         }
         
 		//COREDEBUG_PrintDebugMessage("Using Texture: %d",textureToUse);
 		
         glBindTexture(GL_TEXTURE_2D, textureToUse);
-		PrintOpenGLError("error happening");
+		
     }
 }
 
