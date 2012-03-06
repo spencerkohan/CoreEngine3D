@@ -102,6 +102,7 @@
     <ClCompile Include="..\..\Engine\CoreObjects\ObjectGroup.cpp" />
     <ClCompile Include="..\..\Engine\CoreObjects\ScriptObject.cpp" />
     <ClCompile Include="..\..\Engine\CoreObjects\SoundPlayer.cpp" />
+    <ClCompile Include="..\..\Engine\CoreObjects\Spawner.cpp" />
     <ClCompile Include="..\..\Engine\CoreObjects\TileAffector.cpp" />
     <ClCompile Include="..\..\Engine\Game.cpp" />
     <ClCompile Include="..\..\Engine\GRPng\writepng.c" />
@@ -207,6 +208,7 @@
     <ClInclude Include="..\..\Engine\CoreObjects\ObjectGroup.h" />
     <ClInclude Include="..\..\Engine\CoreObjects\ScriptObject.h" />
     <ClInclude Include="..\..\Engine\CoreObjects\SoundPlayer.h" />
+    <ClInclude Include="..\..\Engine\CoreObjects\Spawner.h" />
     <ClInclude Include="..\..\Engine\CoreObjects\TileAffector.h" />
     <ClInclude Include="..\..\Engine\CoreObject_Manager.h" />
     <ClInclude Include="..\..\Engine\CoreUI_Button.h" />
