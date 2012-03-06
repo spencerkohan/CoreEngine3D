@@ -51,13 +51,13 @@ public:
 	//TODO: make SpawnInit take a struct or something.  This is getting bad
 	virtual bool SpawnInit(void* pSpawnStruct);
 	virtual bool PostSpawnInit(void* pSpawnStruct);
-	void AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileIndex_Y);
-	void AttemptBoxTrigger(u32 objectType, const vec3* pPosition);
+	void AttemptTileTrigger(CoreGameObject* pObject, u32 tileIndex_X, u32 tileIndex_Y);
+	void AttemptBoxTrigger(CoreGameObject* pObject, const vec3* pPosition);
 	void Reset();
 	virtual void SetPosition(const vec3* pPosition);
 	virtual void Update(f32 timeElapsed);
 private:	
-	void Trigger();
+	void Trigger(CoreGameObject* pObject);
 	
 	bool m_isFirstUpdate;
 

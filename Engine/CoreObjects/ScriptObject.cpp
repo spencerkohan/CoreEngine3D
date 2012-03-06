@@ -41,7 +41,7 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 	m_offMessage = 0;
 	m_hTriggerObject = CoreObjectHandle();
 	
-	m_collisionType = CollisionBoxType_Ghost;
+	m_collisionType = 0;
 	m_scriptStatus = ScriptObject::ScriptStatus_On;
 	m_collMode = CollisionMode_Tile;
 	
@@ -52,6 +52,8 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 	
 	m_collMode = pSpawnableEnt->tileID == -1 ? ScriptObject::CollisionMode_Box:ScriptObject::CollisionMode_Tile;
 
+	m_numAllowedTriggers = 1;
+	
 	for (pugi::xml_node property = pSpawnableEnt->pProperties.child("property"); property; property = property.next_sibling("property"))
 	{
 		const char* propNameString = property.attribute("name").value();
@@ -78,6 +80,10 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 			{
 				m_hTriggerObject = pEnt->pObject->GetHandle();
 			}
+		}
+		else if(strcmp(propNameString,"NumAllowedTriggers") == 0)
+		{
+			m_numAllowedTriggers = atoi(valueString);
 		}
 		else if(strcmp(propNameString,"ObjectGroup") == 0)
 		{
@@ -148,7 +154,6 @@ bool ScriptObject::SpawnInit(void* pSpawnStruct)
 	m_tileIndex_Y = pSpawnableEnt->tileIndexY;
 
 	m_numTriggers = 0;
-	m_numAllowedTriggers = 1;	//TODO: load this
 
 	m_initialScriptStatus = m_scriptStatus;
 	
@@ -172,7 +177,7 @@ bool ScriptObject::PostSpawnInit(void* pSpawnStruct)
 {
 	if(m_action == Action_TriggerOnInit)
 	{
-		Trigger();
+		Trigger(NULL);
 	}
 	
 	return true;
@@ -190,7 +195,7 @@ void ScriptObject::SetPosition(const vec3* pPosition)
 }
 
 
-void ScriptObject::AttemptBoxTrigger(u32 objectType, const vec3* pPosition)
+void ScriptObject::AttemptBoxTrigger(CoreGameObject* pObject, const vec3* pPosition)
 {
 	if(m_action != Action_WaitForCollision)
 	{
@@ -212,7 +217,7 @@ void ScriptObject::AttemptBoxTrigger(u32 objectType, const vec3* pPosition)
 		return;
 	}
 
-	if(m_collisionType != 0 && m_collisionType != objectType)
+	if(m_collisionType != 0 && m_collisionType != pObject->GetEntityType())
 	{
 		return;
 	}
@@ -228,7 +233,7 @@ void ScriptObject::AttemptBoxTrigger(u32 objectType, const vec3* pPosition)
 		return;
 	}
 	
-	Trigger();
+	Trigger(pObject);
 }
 
 
@@ -236,11 +241,10 @@ void ScriptObject::Reset()
 {
 	m_scriptStatus = m_initialScriptStatus;
 	m_numTriggers = 0;
-	m_numAllowedTriggers = 1;	//TODO: save initial
 }
 
 
-void ScriptObject::AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileIndex_Y)
+void ScriptObject::AttemptTileTrigger(CoreGameObject* pObject, u32 tileIndex_X, u32 tileIndex_Y)
 {
 	if(m_action != Action_WaitForCollision)
 	{
@@ -268,15 +272,15 @@ void ScriptObject::AttemptTileTrigger(u32 objectType, u32 tileIndex_X, u32 tileI
 		return;
 	}
 
-	if(m_collisionType != 0 && m_collisionType != objectType)
+	if(m_collisionType != 0 && m_collisionType != pObject->GetEntityType())
 	{
 		return;
 	}
 	
-	Trigger();
+	Trigger(pObject);
 }
 
-void ScriptObject::Trigger()
+void ScriptObject::Trigger(CoreGameObject* pObject)
 {
 	if(m_triggerMessage == Hash("YouWin"))
 	{
@@ -343,20 +347,26 @@ void ScriptObject::Trigger()
 	}
 	else
 	{
-		CoreObject* pObject = COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject);
+		//If there's no specified object, this trigger will happen on the
+		//object that is calling it
+		CoreObject* pTriggerObject = m_hTriggerObject.IsValid() ?
+			COREOBJECTMANAGER->GetObjectByHandle(m_hTriggerObject) : pObject;
 		
-		if(pObject != NULL)
+		if(pTriggerObject != NULL)
 		{
-			pObject->ProcessMessage(m_triggerMessage);
+			pTriggerObject->ProcessMessage(m_triggerMessage);
 		}
 	}
 	
-	++m_numTriggers;
-	
-	if(m_numTriggers == m_numAllowedTriggers)
+	if(m_numAllowedTriggers != -1)
 	{
-		//TODO: not sure if I should leave this
-		m_scriptStatus = ScriptStatus_Off;
+		++m_numTriggers;
+		
+		if(m_numTriggers == m_numAllowedTriggers)
+		{
+			//TODO: not sure if I should leave this
+			m_scriptStatus = ScriptStatus_Off;
+		}
 	}
 }
 
