@@ -24,6 +24,7 @@ struct Box2D_CollisionInfo
 	b2Fixture* pFixtureCollider;
 	b2Fixture* pFixtureReceiver;
 	vec2 normal;
+	vec2 point;
 };
 
 class CoreGameObject: public CoreObject

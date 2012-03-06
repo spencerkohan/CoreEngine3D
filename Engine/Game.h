@@ -264,6 +264,8 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	
 	
 private:
+	pugi::xml_document m_TMXDoc;
+	
 	CameraMode m_cameraMode;
 	
 	bool m_Box2D_ContinuousPhysicsEnabled;

@@ -1110,15 +1110,15 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 
 	std::string filenameWithPath(path+filename);
 	
-    pugi::xml_document doc;
+	m_TMXDoc.reset();
 	
-	pugi::xml_parse_result result = doc.load_file(GetPathToFile(filenameWithPath.c_str()).c_str());
+	pugi::xml_parse_result result = m_TMXDoc.load_file(GetPathToFile(filenameWithPath.c_str()).c_str());
 	
 	if(result)
 	{
 		COREDEBUG_PrintDebugMessage("Parsing map file was successful!\n");
 
-		pugi::xml_node map = doc.child("map");
+		pugi::xml_node map = m_TMXDoc.child("map");
 		
 		const u32 mapTileSizeX = atoi(map.attribute("tilewidth").value());
 		//const u32 mapTileSizeY = atoi(map.attribute("tileheight").value());

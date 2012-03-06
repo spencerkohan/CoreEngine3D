@@ -18,6 +18,14 @@ void Box2DContactListener::BeginContact(b2Contact* contact)
 
 	Box2D_CollisionInfo collInfo;
 	
+	const b2Vec2& normal = contact->GetManifold()->localNormal;
+	collInfo.normal.x = normal.x;
+	collInfo.normal.y = normal.y;
+	
+	const b2Vec2& point = contact->GetManifold()->localPoint;
+	collInfo.point.x = point.x;
+	collInfo.point.y = point.y;
+	
 	if(pObjectA != NULL)
 	{
 		collInfo.pCollider = pObjectB;
