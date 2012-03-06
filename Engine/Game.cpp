@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #endif
 
+#define ENGINE_PATH "Engine/" 
+
 Game* GAME = NULL;
 
 const MaterialSettings g_Game_BlobShadowSettings =
@@ -110,6 +112,8 @@ bool Game::Init()
 	}
 
 	m_path = pathString.substr(0,lastSlashIndex+1);
+	//m_path = "../Crow-Regime/";
+	m_enginePath = "../CoreEngine3D/";
 
 	OutputDebugString(m_path.c_str());
 #endif
@@ -299,7 +303,7 @@ s32 Game::AddSongToPlaylist(const char* songFilenameMP3)
 }
 
 
-std::string Game::GetPathToFile(const char* filename)
+std::string Game::GetPathToFile(const char* filename, bool fromEngine)
 {
 #if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
@@ -319,7 +323,7 @@ std::string Game::GetPathToFile(const char* filename)
 #endif
 
 #if defined (PLATFORM_WIN)
-	return m_path + std::string(filename);
+	return (fromEngine) ? m_enginePath + ENGINE_PATH + std::string(filename) : m_path + std::string(filename);
 #endif
 }
 

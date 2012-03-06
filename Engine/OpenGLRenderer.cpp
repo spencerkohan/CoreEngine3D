@@ -4032,7 +4032,7 @@ bool OpenGLRenderer::CreatePixelShader(s32 pixelShaderIndex)
 		return true;
 	}
 	
-	std::string filePath = GAME->GetPathToFile(pStatus->filename);
+	std::string filePath =  GAME->GetPathToFile(pStatus->filename, true);
 
 	if (!CompileShader(&pStatus->openGLID, GL_FRAGMENT_SHADER, 1, filePath.c_str()))
 	{
@@ -4055,7 +4055,7 @@ bool OpenGLRenderer::CreateVertexShader(s32 vertexShaderIndex)
 		return true;
 	}
 
-	std::string filePath = GAME->GetPathToFile(pStatus->filename);
+	std::string filePath = GAME->GetPathToFile(pStatus->filename, true);
 	
 	if (!CompileShader(&pStatus->openGLID, GL_VERTEX_SHADER, 1, filePath.c_str()))
 	{

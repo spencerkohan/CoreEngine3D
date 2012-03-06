@@ -198,7 +198,7 @@ public:
 	void AddItemSound(ItemSoundDescription* pSoundDescription);
 	s32 AddSongToPlaylist(const char* songFilenameMP3);
 	void PlaySongByID(s32 songID, f32 volume, bool isLooping);
-	std::string GetPathToFile(const char* filename);
+	std::string GetPathToFile(const char* filename, bool fromEngine=false);
 	void GetTileIndicesFromScreenPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
 	void GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
 	void GetPositionFromTileIndices(s32 index_X, s32 index_Y, vec3* pOut_position);
@@ -310,6 +310,7 @@ private:
 
 #if defined (PLATFORM_WIN)
 	std::string m_path;
+	std::string m_enginePath;
 #endif
 
 };
