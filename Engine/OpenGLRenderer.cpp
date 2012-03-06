@@ -574,18 +574,32 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 		
 		SetRenderState(renderFlags);
 		
-		if(pGeom->drawObject != NULL)
+		if(pGeom->drawObject != NULL
+		   && pGeom->drawFunc != NULL)
 		{
 			//Going to assume most people will want this called for them
 			//which will prepare to draw all old-school like
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+			if (m_supportsFeaturesFromiOS4)
+			{
+				//Make sure nothing randomly writes to our new VAO
+#ifdef PLATFORM_IOS
+				glBindVertexArrayOES(0);
+#elif  PLATFORM_WIN
+				glBindVertexArray(0);
+#else
+				glBindVertexArrayAPPLE(0);
+#endif
+			}
+			else
+			{
+				glBindBuffer(GL_ARRAY_BUFFER, 0);	
+			}
+			
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			
-			//Object is expected to make the glDrawElements call
-			if(pGeom->drawFunc != NULL)
-			{
-				pGeom->drawFunc(pGeom->drawObject);
-			}
+			//Draw!
+			pGeom->drawFunc(pGeom->drawObject);
 		}
 		else
 		{
@@ -651,10 +665,13 @@ void OpenGLRenderer::RenderEffects()
 		glBindVertexArrayAPPLE(0);	
 #endif
     }
-	
+	else
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
     
 	//Do this to use normal non-VBO memory before starting post processing
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	
 	glEnable(GL_DEPTH_TEST);
@@ -4088,10 +4105,6 @@ void OpenGLRenderer::ComputeGaussianWeights(f32* out_pWeights, s32 numWeights, f
 
 void OpenGLRenderer::EnableAttributes(const ModelData* pModelData)
 {
-	for(u32 i=0; i<pModelData->numAttributes; ++i)
-	{
-	}
-	
 	const u32 stride = pModelData->stride;
 	
 	for(u32 i=0; i<pModelData->numAttributes; ++i)
