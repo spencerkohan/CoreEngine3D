@@ -16,33 +16,45 @@ CoreObjectHandle CoreObject::GetHandle() const
 	return handle;
 }
 
+
 void CoreObject::DeleteObject()
 {
 	m_markedForDeletion = true;
 }
+
+void CoreObject::InvalidateHandle()
+{
+	handle = CoreObjectHandle();
+}
+
 
 u32 CoreObject::GetEntityType()
 {
 	return m_entityTypeHash;
 }
 
+
 //Call when the memory location changes
 void CoreObject::UpdateHandle()
 {
+	//assert(m_markedForDeletion == false);
+	
 	COREOBJECTMANAGER->UpdateHandle(this);
 }
 
+
 bool CoreObject::Init(u32 type)
 {
+	m_markedForDeletion = false;
 	m_entityTypeHash = type;
 
-	m_markedForDeletion = false;
 	return COREOBJECTMANAGER->AddObject(this);
 }
 
 
 void CoreObject::Uninit()
 {
-	COREOBJECTMANAGER->RemoveObjectByHandle(handle);
-	//assert(handle == INVALID_COREOBJECT_HANDLE);
+	assert(m_markedForDeletion == true);
+	
+	COREOBJECTMANAGER->RemoveObject(this);
 }

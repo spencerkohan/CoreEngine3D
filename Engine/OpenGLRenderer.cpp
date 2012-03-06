@@ -505,18 +505,18 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 {
 	u8* vertexData = NULL;
 	
-#if RENDERLOOP_MODE
+
 	for (u32 renderIDX = 0; renderIDX<numRenderableObjects; ++renderIDX)
 	{
-		const RenderableObject3D* pCurrRenderableObject3D = renderableObjectArray[renderIDX];
+		const RenderableGeometry3D* pGeom = &renderableObjectArray[renderIDX];
 		
 		//Don't mess with or draw stuff not in this view
-		if (!(pCurrRenderableObject3D->viewFlags & (1<<camViewIDX)))
+		if (!(pGeom->viewFlags & (1<<camViewIDX)))
 		{
 			continue;
 		}
 		
-		const u32 renderFlags = pCurrRenderableObject3D->flags;
+		const u32 renderFlags = pGeom->material.flags;
 		
 		//Don't mess with or draw invisible stuff
 		if (!(renderFlags & RenderFlag_Visible))
@@ -539,7 +539,7 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 		
 		//Set material whenever it has changed
 		
-		RenderMaterial nextMaterial = pCurrRenderableObject3D->materialID;
+		RenderMaterial nextMaterial = pGeom->material.materialID;
 		if(nextMaterial != m_lastUsedMaterial)
 		{
 			SetMaterial(nextMaterial);
@@ -555,166 +555,72 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 		
 		//Override material texture0 if needed
 		//Will do nothing if the texture is set to 0 or the texture is already set
-		SetTexture(pCurrRenderableObject3D->customTexture0, 0);
-		SetTexture(pCurrRenderableObject3D->customTexture1, 1);
+		SetTexture(pGeom->material.customTexture0, 0);
+		SetTexture(pGeom->material.customTexture1, 1);
 		
 		//Upload uniforms that have unique values per object
-		UploadUniqueUniforms(pCurrRenderableObject3D->uniqueUniformValues);
+		UploadUniqueUniforms(pGeom->material.uniqueUniformValues);
 		
 		//Draw the current object
 		
 		if (renderFlags & RenderFlag_IgnoreViewMatrix)
 		{
-			UploadWorldProjMatrix(pCurrRenderableObject3D->worldMat);
+			UploadWorldProjMatrix(pGeom->worldMat);
 		}
 		else
 		{
-			UploadWorldViewProjMatrix(pCurrRenderableObject3D->worldMat);
+			UploadWorldViewProjMatrix(pGeom->worldMat);
 		}
 		
 		SetRenderState(renderFlags);
 		
-		const ModelData* pModelData = renderableObjectArray[renderIDX]->pModel;
-		
-		for(unsigned int primIDX=0; primIDX<pModelData->numPrimitives; ++primIDX)
+		if(pGeom->drawObject != NULL
+		   && pGeom->drawFunc != NULL)
 		{
-			
-			const PrimitiveData* currPrim = &pModelData->primitiveArray[primIDX];
-			if (currPrim->vertexData != vertexData)
-			{
-				vertexData = currPrim->vertexData;
-				if (m_supportsFeaturesFromiOS4)
-				{
-					BindVertexArrayObject(currPrim);
-				}
-				else
-				{
-					glBindBuffer(GL_ARRAY_BUFFER, currPrim->vertexArrayObjectID);
-					EnableAttributes(pModelData->format);
-				}
-			}
+			//Going to assume most people will want this called for them
+			//which will prepare to draw all old-school like
 
-			//Draw the primitive!
-			if(currPrim->vertexArrayObjectID)
+			if (m_supportsFeaturesFromiOS4)
 			{
-				//NULL means non-indexed triangles
-				if (currPrim->indexData == NULL)
-				{
-					glDrawArrays(currPrim->drawMethod, 0, currPrim->numVerts);
-				}
-				//Render using indices
-				else
-				{
-					//VAOs don't save this I guess?
-					BindIndexData(currPrim);
-					
-					glDrawElements(currPrim->drawMethod, currPrim->numVerts, GL_UNSIGNED_SHORT, 0);
-				}
-			}
-			/*else
-			 {
-			 COREDEBUG_PrintDebugMessage("INSANE ERROR: You're trying to draw model '%s' but it hasn't been registered! WTF!?",pModelData->modelName);
-			 }*/
-		}
-	}
+				//Make sure nothing randomly writes to our new VAO
+#ifdef PLATFORM_IOS
+				glBindVertexArrayOES(0);
+#elif  PLATFORM_WIN
+				glBindVertexArray(0);
 #else
-	u32 renderIndex = 0;
-	
-	while(renderIndex < numRenderableObjects)
-	{				
-		const ModelData* pModelData = renderableObjectArray[renderIndex].pModel;
-		
-		u32 renderIndexStart=renderIndex;
-		//COREDEBUG_PrintDebugMessage(" *** STARTING MODEL RUN ***");
-		//COREDEBUG_PrintDebugMessage("Start Index %d Model Name: %s",renderIndexStart,pModelData->modelName);
-		
-		for (; renderIndex < numRenderableObjects && renderableObjectArray[renderIndex].pModel == pModelData; ++renderIndex);
-		
-		//unsigned int renderIndexEnd = renderIndex-1;
-		
-		//COREDEBUG_PrintDebugMessage("End Index %d Model Name: %s",renderIndex,m_renderableObject3DList[renderIndexEnd]->pModel->modelName);
-		//COREDEBUG_PrintDebugMessage(" *** ENDING MODEL RUN ***");
-		
-		//Now we can loop through the things that were using the same model
-		//FIRST: Loop through all primitives of the model, binding them as we go
-		for(unsigned int primIDX=0; primIDX<pModelData->numPrimitives; ++primIDX)
+				glBindVertexArrayAPPLE(0);
+#endif
+			}
+			else
+			{
+				glBindBuffer(GL_ARRAY_BUFFER, 0);	
+			}
+			
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			
+			//Draw!
+			pGeom->drawFunc(pGeom->drawObject);
+		}
+		else
 		{
-			const PrimitiveData* currPrim = &pModelData->primitiveArray[primIDX];
-			if (currPrim->vertexData != vertexData)
-			{
-				vertexData = currPrim->vertexData;
-				
-				if (m_supportsFeaturesFromiOS4)
-				{
-					BindVertexArrayObject(currPrim);
-				}
-				else
-				{
-					glBindBuffer(GL_ARRAY_BUFFER, currPrim->vertexArrayObjectID);
-					EnableAttributes(pModelData);
-				}
-			}
+			const ModelData* pModelData = pGeom->pModel;
 			
-			if (currPrim->indexData != NULL)
+			for(unsigned int primIDX=0; primIDX<pModelData->numPrimitives; ++primIDX)
 			{
-				//VAOs don't save this I guess?
-				BindIndexData(currPrim);
-			}
-			
-			//SECOND: for each bound, render all the stuff
-			for (unsigned int jRenderIDX=renderIndexStart; jRenderIDX<renderIndex; ++jRenderIDX)
-			{
-				const RenderableGeometry3D* pCurrRenderable = &renderableObjectArray[jRenderIDX];
 				
-				const u32 renderFlags = pCurrRenderable->material.flags;
-				
-				//Don't mess with or draw stuff not in this view
-				if (!(pCurrRenderable->viewFlags & (1<<camViewIDX)))
+				const PrimitiveData* currPrim = &pModelData->primitiveArray[primIDX];
+				if (currPrim->vertexData != vertexData)
 				{
-					continue;
-				}
-				
-				//Don't mess with or draw invisible stuff
-				if (!(renderFlags & RenderFlag_Visible))
-				{
-					continue;
-				}
-				
-				SetRenderState(renderFlags);
-				
-				//Set material whenever it has changed
-				
-				RenderMaterial nextMaterial = pCurrRenderable->material.materialID;
-				if(nextMaterial != m_lastUsedMaterial)
-				{
-					SetMaterial(nextMaterial);
-				}
-				
-				//At this point, either the texture was set by a material or its still set to
-				//the last override texture
-				
-				//The material groups are sub-sorted by override texture, so all
-				//the non-overridden things draw first.  Therefore, there is
-				//never any need to reset back to the original texture from the
-				//material.
-				
-				//Override material texture0 if needed
-				//Will do nothing if the texture is set to 0 or the texture is already set
-				SetTexture(pCurrRenderable->material.customTexture0, 0);
-				//SetTexture(pCurrRenderableObject3D->customTexture1, 1);
-
-				//Upload uniforms that have unique values per object
-				UploadUniqueUniforms(pCurrRenderable->material.uniqueUniformValues);
-				
-				//Draw the current object
-				
-				if (renderFlags & RenderFlag_IgnoreViewMatrix)
-				{
-					UploadWorldProjMatrix(pCurrRenderable->worldMat);
-				}
-				else
-				{
-					UploadWorldViewProjMatrix(pCurrRenderable->worldMat);
+					vertexData = currPrim->vertexData;
+					if (m_supportsFeaturesFromiOS4)
+					{
+						BindVertexArrayObject(currPrim);
+					}
+					else
+					{
+						glBindBuffer(GL_ARRAY_BUFFER, currPrim->vertexArrayObjectID);
+						EnableAttributes(pModelData);
+					}
 				}
 				
 				//Draw the primitive!
@@ -728,14 +634,15 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 					//Render using indices
 					else
 					{
-						//PrintOpenGLError("/*** Tried to render something ***/");
+						//VAOs don't save this I guess?
+						BindIndexData(currPrim);
+						
 						glDrawElements(currPrim->drawMethod, currPrim->numVerts, GL_UNSIGNED_SHORT, 0);
 					}
 				}
 			}
 		}	
 	}
-#endif
 }
 
 
@@ -758,10 +665,13 @@ void OpenGLRenderer::RenderEffects()
 		glBindVertexArrayAPPLE(0);	
 #endif
     }
-	
+	else
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
     
 	//Do this to use normal non-VBO memory before starting post processing
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	
 	glEnable(GL_DEPTH_TEST);
@@ -2090,16 +2000,14 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType
 	if(pGeom == NULL)
 	{
 		COREDEBUG_PrintDebugMessage("INSANE ERROR: You're out of RenderableObject3Ds!");
-		return INVALID_COREOBJECT_HANDLE;
+		return CoreObjectHandle();
 	}
-	
-	pGeom->Init(0);
-	
+
 	const CoreObjectHandle handle = pGeom->GetHandle();
 	
-	if(handle == INVALID_COREOBJECT_HANDLE)
+	if(handle.IsValid() == false)
 	{
-		return INVALID_COREOBJECT_HANDLE;
+		return CoreObjectHandle();
 	}
 	
 	pGeom->material.flags = 0;
@@ -2124,7 +2032,7 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType
 		*pOut_Geom = pGeom;
 	}
 	
-	//assert(pGeom->GetHandle() != INVALID_COREOBJECT_HANDLE);
+	//assert(pGeom->GetHandle() != CoreObjectHandle::Invalid());
 	
 	return handle;
 }
@@ -2490,25 +2398,16 @@ void OpenGLRenderer::InitRenderableSceneObject3D(RenderableSceneObject3D* render
 	}
 }
 
-
-void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, ModelData* pModel, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+void OpenGLRenderer::InitRenderableGeometry3D_Shared(RenderableGeometry3D* renderableObject, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
 {
-	if(pModel->modelID == -1)
-	{
-		COREDEBUG_PrintDebugMessage("INSANE ERROR: You are tried to initialize a renderable with an unregistered model '%s'!  Skipping...",pModel->modelName);
-		return;
-	}
-
-	renderableObject->pModel = pModel;
 	renderableObject->material.materialID = materialID;
 	renderableObject->material.flags = renderFlags|RenderFlag_Initialized;
 	renderableObject->renderLayer = renderLayer;
 	renderableObject->material.customTexture0 = customTexture;
 	renderableObject->material.customTexture1 = NULL;
 	renderableObject->viewFlags = viewFlags;
-	renderableObject->debugName = NULL;
 	renderableObject->postRenderLayerSortValue = 0;
-
+	
 	for (s32 i=0; i<MAX_UNIQUE_UNIFORM_VALUES; ++i)
 	{
 		renderableObject->material.uniqueUniformValues[i] = NULL;
@@ -2522,6 +2421,29 @@ void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableOb
 	{
 		mat4f_Copy(renderableObject->worldMat,matrix4x4);
 	}
+}
+
+void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, void (*drawFunc)(void*), void* drawObject, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+{
+	renderableObject->drawFunc = drawFunc;
+	renderableObject->drawObject = drawObject;
+	
+	InitRenderableGeometry3D_Shared(renderableObject,materialID,customTexture,matrix4x4,renderLayer,viewFlags,renderFlags);
+}
+
+
+void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, ModelData* pModel, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+{
+	if(pModel->modelID == -1)
+	{
+		COREDEBUG_PrintDebugMessage("INSANE ERROR: You are tried to initialize a renderable with an unregistered model '%s'!  Skipping...",pModel->modelName);
+		return;
+	}
+
+	renderableObject->drawObject = NULL;
+	renderableObject->pModel = pModel;
+	
+	InitRenderableGeometry3D_Shared(renderableObject,materialID,customTexture,matrix4x4,renderLayer,viewFlags,renderFlags);
 }
 
 
@@ -2634,36 +2556,39 @@ void OpenGLRenderer::LoadParticleAtlas(const char* filename)
 void OpenGLRenderer::CreateMaterials()
 {
 	//Vertex Shaders
-	const s32 VSH_TextureAndVertColor = AddVertexShaderToList("ArtResources/Shaders/TextureAndVertColor.vsh");
-	const s32 VSH_WiggleUsingTexcoordV = AddVertexShaderToList("ArtResources/Shaders/WiggleUsingTexcoordV.vsh");
-	const s32 VSH_FullScreenQuad = AddVertexShaderToList("ArtResources/Shaders/pp_default.vsh");
-    const s32 VSH_FullScreenQuadNoTexcoord = AddVertexShaderToList("ArtResources/Shaders/pp_noTexcoord.vsh");
-	const s32 VSH_VertColors = AddVertexShaderToList("ArtResources/Shaders/VertColors.vsh");
-    const s32 VSH_VertWithColorInput = AddVertexShaderToList("ArtResources/Shaders/VertWithColorInput.vsh");
-    const s32 VSH_VertWithColorInputAndTexture = AddVertexShaderToList("ArtResources/Shaders/VertWithColorInputAndTexture.vsh");
-    const s32 VSH_VertWithColorInputWithTexcoordOffset = AddVertexShaderToList("ArtResources/Shaders/VertWithColorInputWithTexcoordOffset.vsh");
-	const s32 VSH_TextureOnly = AddVertexShaderToList("ArtResources/Shaders/TextureOnly.vsh");
-    const s32 VSH_TextureWithColor = AddVertexShaderToList("ArtResources/Shaders/TextureWithColor.vsh");
-	const s32 VSH_ScreenspaceWithTexcoordOffset = AddVertexShaderToList("ArtResources/Shaders/ScreenspaceWithTexcoordOffset.vsh");
-	const s32 VSH_TextureOnlyWithTexcoordAndWorldOffset = AddVertexShaderToList("ArtResources/Shaders/TextureOnlyWithTexcoordAndWorldOffset.vsh");
-	const s32 VSH_PointSprite_Basic = AddVertexShaderToList("ArtResources/Shaders/PointSprite_Default.vsh");
-	//const s32 VSH_SkinnedVertShader = AddVertexShaderToList("ArtResources/Shaders/SkinnedVertShader.vsh");
+	const s32 VSH_TextureAndVertColor = AddVertexShaderToList("Shaders/TextureAndVertColor.vsh");
+	const s32 VSH_WiggleUsingTexcoordV = AddVertexShaderToList("Shaders/WiggleUsingTexcoordV.vsh");
+	const s32 VSH_FullScreenQuad = AddVertexShaderToList("Shaders/pp_default.vsh");
+    const s32 VSH_FullScreenQuadNoTexcoord = AddVertexShaderToList("Shaders/pp_noTexcoord.vsh");
+	const s32 VSH_VertColors = AddVertexShaderToList("Shaders/VertColors.vsh");
+    const s32 VSH_VertWithColorInput = AddVertexShaderToList("Shaders/VertWithColorInput.vsh");
+    const s32 VSH_VertWithColorInputAndTexture = AddVertexShaderToList("Shaders/VertWithColorInputAndTexture.vsh");
+    const s32 VSH_VertWithColorInputWithTexcoordOffset = AddVertexShaderToList("Shaders/VertWithColorInputWithTexcoordOffset.vsh");
+	const s32 VSH_TextureOnly = AddVertexShaderToList("Shaders/TextureOnly.vsh");
+    const s32 VSH_TextureWithColor = AddVertexShaderToList("Shaders/TextureWithColor.vsh");
+	const s32 VSH_VertWithTexcoordOffset = AddVertexShaderToList("Shaders/VertWithTexcoordOffset.vsh");
+	const s32 VSH_VertWithTexcoordAndOffsetTexcoord = AddVertexShaderToList("Shaders/VertWithTexcoordAndOffsetTexcoord.vsh");
+	const s32 VSH_TextureOnlyWithTexcoordAndWorldOffset = AddVertexShaderToList("Shaders/TextureOnlyWithTexcoordAndWorldOffset.vsh");
+	const s32 VSH_PointSprite_Basic = AddVertexShaderToList("Shaders/PointSprite_Default.vsh");
+	//const s32 VSH_SkinnedVertShader = AddVertexShaderToList("Shaders/SkinnedVertShader.vsh");
 	
 	//Pixel Shaders
-	const s32 PP_BlendUsingTexture = AddPixelShaderToList("ArtResources/Shaders/BlendUsingTexture.fsh");
-	const s32 PP_PureColor = AddPixelShaderToList("ArtResources/Shaders/PureColor.fsh");
-    const s32 PS_TextureOnlySimple = AddPixelShaderToList("ArtResources/Shaders/TextureOnlySimple.fsh");
-    const s32 PS_TextureOnlyDiscard = AddPixelShaderToList("ArtResources/Shaders/TextureOnlyDiscard.fsh");
-    const s32 PS_TextureAndDiffuseColor = AddPixelShaderToList("ArtResources/Shaders/TextureAndDiffuseColor.fsh");
-    const s32 PS_TextureAndDiffuseColorDiscard = AddPixelShaderToList("ArtResources/Shaders/TextureAndDiffuseColorDiscard.fsh");
-	const s32 PS_TextureAndFogColorDiscard = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColorDiscard.fsh");
-	//const s32 PS_TextureAndFogColor = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColor.fsh");
-	const s32 PS_Colors = AddPixelShaderToList("ArtResources/Shaders/Colors.fsh");
-	const s32 PS_PointSprite_ColorShine = AddPixelShaderToList("ArtResources/Shaders/PointSprite_ColorShine.fsh");
-    const s32 PS_TextureWithColor = AddPixelShaderToList("ArtResources/Shaders/TextureWithColor.fsh");
-	//const s32 PS_SkinnedFragShader = AddPixelShaderToList("ArtResources/Shaders/SkinnedFragShader.fsh");
+	const s32 PP_BlendUsingTexture = AddPixelShaderToList("Shaders/BlendUsingTexture.fsh");
+	const s32 PP_PureColor = AddPixelShaderToList("Shaders/PureColor.fsh");
+    const s32 PS_TextureOnlySimple = AddPixelShaderToList("Shaders/TextureOnlySimple.fsh");
+    const s32 PS_TextureOnlyDiscard = AddPixelShaderToList("Shaders/TextureOnlyDiscard.fsh");
+    const s32 PS_TextureAndDiffuseColor = AddPixelShaderToList("Shaders/TextureAndDiffuseColor.fsh");
+    const s32 PS_TextureAndDiffuseColorDiscard = AddPixelShaderToList("Shaders/TextureAndDiffuseColorDiscard.fsh");
+	const s32 PS_TextureAndFogColorDiscard = AddPixelShaderToList("Shaders/TextureAndFogColorDiscard.fsh");
+	//const s32 PS_TextureAndFogColor = AddPixelShaderToList("Shaders/TextureAndFogColor.fsh");
+	const s32 PS_Colors = AddPixelShaderToList("Shaders/Colors.fsh");
+	const s32 PS_PointSprite_ColorShine = AddPixelShaderToList("Shaders/PointSprite_ColorShine.fsh");
+    const s32 PS_TextureWithColor = AddPixelShaderToList("Shaders/TextureWithColor.fsh");
+	const s32 PS_MultiplyTwoSamples = AddPixelShaderToList("Shaders/MultiplyTwoSamples.fsh");
 	
-	//const s32 PS_TextureAndFogColorWithMipMapBlur = AddPixelShaderToList("ArtResources/Shaders/TextureAndFogColorWithMipmapBlur.fsh");
+	//const s32 PS_SkinnedFragShader = AddPixelShaderToList("Shaders/SkinnedFragShader.fsh");
+	
+	//const s32 PS_TextureAndFogColorWithMipMapBlur = AddPixelShaderToList("Shaders/TextureAndFogColorWithMipmapBlur.fsh");
 	
 	//Vertex Shaders
 	
@@ -2843,16 +2768,22 @@ void OpenGLRenderer::CreateMaterials()
 	}
 
 	//MT_TextureOnlyWithTexcoordOffset
-	if(CreateShaderProgram(VSH_ScreenspaceWithTexcoordOffset,PS_TextureOnlySimple,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffset].shaderProgram))
+	if(CreateShaderProgram(VSH_VertWithTexcoordOffset,PS_TextureOnlySimple,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffset].shaderProgram))
 	{
 		AddUniform_Unique(MT_TextureOnlyWithTexcoordOffset,"texCoordOffset",Uniform_Vec2,1);
 	}
 
     
     //MT_TextureOnlyWithTexcoordOffsetDiscard
-	if(CreateShaderProgram(VSH_ScreenspaceWithTexcoordOffset,PS_TextureOnlyDiscard,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffsetDiscard].shaderProgram))
+	if(CreateShaderProgram(VSH_VertWithTexcoordOffset,PS_TextureOnlyDiscard,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffsetDiscard].shaderProgram))
 	{
 		AddUniform_Unique(MT_TextureOnlyWithTexcoordOffsetDiscard,"texCoordOffset",Uniform_Vec2,1);
+	}
+	
+	//MT_TextureWithScrollingMult
+	if(CreateShaderProgram(VSH_VertWithTexcoordAndOffsetTexcoord,PS_MultiplyTwoSamples,attribs_VT,&g_Materials[MT_TextureWithScrollingMult].shaderProgram))
+	{
+		AddUniform_Unique(MT_TextureWithScrollingMult,"texCoordOffset",Uniform_Vec2,1);
 	}
 
 	//Setup common to all materials
@@ -4174,10 +4105,6 @@ void OpenGLRenderer::ComputeGaussianWeights(f32* out_pWeights, s32 numWeights, f
 
 void OpenGLRenderer::EnableAttributes(const ModelData* pModelData)
 {
-	for(u32 i=0; i<pModelData->numAttributes; ++i)
-	{
-	}
-	
 	const u32 stride = pModelData->stride;
 	
 	for(u32 i=0; i<pModelData->numAttributes; ++i)
@@ -4381,16 +4308,14 @@ CoreObjectHandle OpenGLRenderer::CreateRenderableSceneObject3D(RenderableSceneOb
 	if(pScene == NULL)
 	{
 		COREDEBUG_PrintDebugMessage("INSANE ERROR: You're out of RenderableSceneObject3Ds!");
-		return INVALID_COREOBJECT_HANDLE;
+		return CoreObjectHandle();
 	}
-	
-	pScene->Init(0);
-	
+
 	const CoreObjectHandle handle = pScene->GetHandle();
 	
-	if(handle == INVALID_COREOBJECT_HANDLE)
+	if(handle.IsValid() == false)
 	{
-		return INVALID_COREOBJECT_HANDLE;
+		return CoreObjectHandle();
 	}
 	
 	pScene->material.flags = 0;

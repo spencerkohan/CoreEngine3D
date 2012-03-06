@@ -21,13 +21,25 @@ enum CoreObjectType
 	CoreObjectType_CoreGameObject,
 };
 
-typedef u32 CoreObjectHandle;
-#define INVALID_COREOBJECT_HANDLE 0
-
-struct CoreObjectHandleObject
+struct CoreObjectHandle
 {
-	CoreObject* pObject;
-	u32 handle;
+    CoreObjectHandle() : m_index(0), m_counter(0), m_type(0)
+    {}
+	
+    CoreObjectHandle(u32 index, u32 counter, u32 type)
+	: m_index(index), m_counter(counter), m_type(type)
+    {}
+	
+    inline operator u32() const
+	{
+		return m_type << 27 | m_counter << 12 | m_index;
+	}
+	
+    u32 m_index : 12;
+    u32 m_counter : 15;
+    u32 m_type : 5;
+	
+	bool IsValid() const {return (*this) != 0;}
 };
 
 class CoreObject
@@ -51,7 +63,8 @@ public:
 	
 	virtual void ProcessMessage(u32 message){};	//Pass in a hash value
 	
-	bool m_markedForDeletion;//sigh
+	void InvalidateHandle();
+	bool m_markedForDeletion;
 	
 protected:
 

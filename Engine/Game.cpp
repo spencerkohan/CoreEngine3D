@@ -63,11 +63,14 @@ void Game::ResetCamera()
 bool Game::Init()
 {
 	m_paused = false;
+	
+	m_parallaxScale = 0.0f;
 
 	m_levelHasCamRestraints = false;
 	
 	m_cameraMode = CameraMode_Anchor;
 	CopyVec3(&m_camPos,&vec3_zero);
+	CopyVec3(&m_parallaxBasePos,&vec3_zero);
 
 	m_camLerpTimer = -1.0f;
 
@@ -94,7 +97,6 @@ bool Game::Init()
 
 #if defined (PLATFORM_WIN)
 	char currentPath[_MAX_PATH];
-	//GetCurrentDirectory(_MAX_PATH,currentPath);
 	GetModuleFileName(0,currentPath,_MAX_PATH);
 	std::string pathString(currentPath);
 
@@ -305,8 +307,12 @@ std::string Game::GetPathToFile(const char* filename)
 	NSString* fileString = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
 	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
 	
-	std::string pathString([fullPath UTF8String]);
-	
+	std::string pathString;
+	if(fullPath)
+	{
+		pathString = [fullPath UTF8String];
+	}
+
 	[pool drain];
 	
 	return pathString;
@@ -615,9 +621,9 @@ void Game::DeleteAllItemSounds()
 CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix)
 {
 	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
-	if(hRenderable == INVALID_COREOBJECT_HANDLE)
+	if(hRenderable.IsValid() == false)
 	{
-		return INVALID_COREOBJECT_HANDLE;
+		return CoreObjectHandle();
 	}
 	
 	f32 tileMat[16];
@@ -642,8 +648,6 @@ CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDes
 
 void Game::UpdateTiledLevelPosition(vec3* pPosition)
 {
-	const f32 halfTileSize = GAME->GetHalfTileSize();
-	
 	vec3 position;
 	ScaleVec3(&position,pPosition,-1.0f);
 
@@ -673,22 +677,30 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		
 		//If this is the collision layer, it should move at the same rate as the main layer
 		const s32 adjustedIndex = (currLayer==LevelLayer_Main0 || currLayer==LevelLayer_Collision || currLayer==LevelLayer_TileObjectArt)?(s32)LevelLayer_Main1:i;
-		const s32 scrollIndex = 1+(s32)LevelLayer_Main1-adjustedIndex;	//TODO: index into an array of values maybe
+		//const s32 scrollIndex = (s32)LevelLayer_Main1-adjustedIndex;	//TODO: index into an array of values maybe
 
-		//pCurrLayer->position.x -= timeElapsed*(f32)(scrollIndex*scrollIndex*scrollIndex)*scrollSpeed;
-		ScaleVec3(&pCurrLayer->position,&position,1.0f/(f32)scrollIndex);
+		//ScaleVec3(&pCurrLayer->position,&position,1.0f/(f32)scrollIndex);
 
-		const s32 width = pCurrLayer->numTilesX;
-		const s32 height = pCurrLayer->numTilesY;
+		CopyVec3(&pCurrLayer->position,&position);
 		
+		if(m_parallaxScale != 0.0f)
+		{
+			vec3 parallaxDiffVec;
+			SubVec3(&parallaxDiffVec,&m_parallaxBasePos,&position);
+			SubScaledVec3_Self(&pCurrLayer->position,&parallaxDiffVec,(f32)(adjustedIndex-LevelLayer_Main1)*m_parallaxScale);
+		}
+		
+		const s32 numTilesX = pCurrLayer->numTilesX;
+		const s32 numTilesY = pCurrLayer->numTilesY;
+
 		//If it's the TileObjectArt layer, just update the uniforms
 		if(i == (s32)LevelLayer_TileObjectArt)
 		{
-			for(int y=0; y<height; ++y)
+			for(int y=0; y<numTilesY; ++y)
 			{
-				for(int x=0; x<width; ++x)
+				for(int x=0; x<numTilesX; ++x)
 				{
-					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, numTilesX);
 					if(pTile->tileID == -1)
 					{
 						continue;
@@ -717,44 +729,55 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		//If it's any other layer, do the whole delete/create tiles thing
 		else
 		{
-			for(int y=0; y<height; ++y)
+			for(int y=0; y<numTilesY; ++y)
 			{
-				const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileSizeY+((s32)pCurrLayer->position.y);
+				const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileDisplaySizeY+((s32)pCurrLayer->position.y);
 				
-				for(int x=0; x<width; ++x)
+				for(int x=0; x<numTilesX; ++x)
 				{
-					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
+					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, numTilesX);
 					if(pTile->tileID == -1)
 					{
 						continue;
 					}
 					
-					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileSizeX+((s32)pCurrLayer->position.x);
+					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileDisplaySizeX+((s32)pCurrLayer->position.x);
 					
 					
-					if(tileBasePosX < m_camPos.x-m_tiledLevelDescription.halfTileSizeX
-					   || tileBasePosX > m_camPos.x+GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileSizeX
-					   || tileBasePosY < m_camPos.y-m_tiledLevelDescription.halfTileSizeY
-					   || tileBasePosY > m_camPos.y+GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileSizeY)
+					//If the tile is off screen, delete it
+					if(tileBasePosX < -m_tiledLevelDescription.halfTileDisplaySizeX
+					   || tileBasePosX > GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileDisplaySizeX
+					   || tileBasePosY < -m_tiledLevelDescription.halfTileDisplaySizeY
+					   || tileBasePosY > GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileDisplaySizeY
+					   )
 					{
-						RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
-						if(pCurrRenderable != NULL)
+						//If there is a valid renderable, delete it
+						if(pTile->hRenderable.IsValid() == true)
 						{
-							pCurrRenderable->DeleteObject();
-							pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
+							RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+
+							if(pCurrRenderable != NULL)
+							{
+								pCurrRenderable->DeleteObject();	
+							}
+							
+							pTile->hRenderable = CoreObjectHandle();
 						}
 					}
+					//If the tile is on screen, create it if it doesn't exist and update it
 					else
 					{
 						RenderableGeometry3D* pCurrRenderable = NULL;
 						
-						if(pTile->hRenderable == INVALID_COREOBJECT_HANDLE)
-						{
-							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
-						}
-						else
+						//Update existing renderable
+						if(pTile->hRenderable.IsValid() == true)
 						{
 							pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+						}
+						//Create new renderable
+						else
+						{
+							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
 						}
 						
 						if(pCurrRenderable == NULL)
@@ -792,8 +815,6 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 				}
 			}
 		}
-		
-		
 	}
 }
 
@@ -801,6 +822,18 @@ const vec3* Game::GetCameraPosition()
 {
 	return &m_camPos;
 }
+
+
+void Game::SetParallaxPosition(const vec3* pParallaxPos)
+{
+	CopyVec3(&m_parallaxBasePos,pParallaxPos);
+}
+
+void Game::SetParallaxScale(f32 parallaxScale)
+{
+	m_parallaxScale = parallaxScale;
+}
+
 
 //use with caution
 void Game::SetCameraPosition(const vec3* pCamPos, f32 lerpTime)
@@ -842,8 +875,8 @@ void Game::GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* p
 
 void Game::GetPositionFromTileIndices(s32 index_X, s32 index_Y, vec3* pOut_position)
 {
-	pOut_position->x = static_cast<f32>(index_X * m_tiledLevelDescription.tileDisplaySizeX + m_tiledLevelDescription.halfTileSizeX);
-	pOut_position->y = static_cast<f32>(index_Y * m_tiledLevelDescription.tileDisplaySizeY + m_tiledLevelDescription.halfTileSizeY);
+	pOut_position->x = static_cast<f32>(index_X * m_tiledLevelDescription.tileDisplaySizeX + m_tiledLevelDescription.halfTileDisplaySizeX);
+	pOut_position->y = static_cast<f32>(index_Y * m_tiledLevelDescription.tileDisplaySizeY + m_tiledLevelDescription.halfTileDisplaySizeY);
 	pOut_position->z = 0.0f;
 }
 
@@ -851,9 +884,6 @@ void Game::GetPositionFromTileIndices(s32 index_X, s32 index_Y, vec3* pOut_posit
 s32 Game::GetCollisionFromTileIndices(s32 index_X, s32 index_Y)
 {
 	Layer* pLayer = &m_layers[LevelLayer_Collision];
-
-	assert(0 != pLayer->numTilesX);
-	assert(0 != pLayer->numTilesY);
 
 	if(index_X < 0 || index_X > static_cast<s32>(pLayer->numTilesX)-1
 	   || index_Y < 0 || index_Y > static_cast<s32>(pLayer->numTilesY)-1)
@@ -875,7 +905,7 @@ f32 Game::GetTileSize()
 
 f32 Game::GetHalfTileSize()
 {
-	return static_cast<f32>(m_tiledLevelDescription.halfTileSizeX);
+	return static_cast<f32>(m_tiledLevelDescription.halfTileDisplaySizeX);
 }
 
 
@@ -1103,8 +1133,8 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 		
 		m_tiledLevelDescription.tileDisplaySizeX = tileWidthPixels;
 		m_tiledLevelDescription.tileDisplaySizeY = tileWidthPixels;
-		m_tiledLevelDescription.halfTileSizeX = m_tiledLevelDescription.tileDisplaySizeX/2;
-		m_tiledLevelDescription.halfTileSizeY = m_tiledLevelDescription.tileDisplaySizeY/2;
+		m_tiledLevelDescription.halfTileDisplaySizeX = m_tiledLevelDescription.tileDisplaySizeX/2;
+		m_tiledLevelDescription.halfTileDisplaySizeY = m_tiledLevelDescription.tileDisplaySizeY/2;
 		
 		const f32 unitConversionScale = (f32)tileWidthPixels/(f32)mapTileSizeX;
 		
@@ -1417,7 +1447,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				for(u32 x=0; x<width; ++x)
 				{
 					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, width);
-					pTile->hRenderable = INVALID_COREOBJECT_HANDLE;
+					pTile->hRenderable = CoreObjectHandle();
 
 					pTile->tileID = ARRAY2D(pData, x, y, width);
 					pTile->isVisible = true;
@@ -1544,8 +1574,10 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
 			{
 				SpawnableEntity* pCurrEnt = &m_spawnableEntities[m_numSpawnableEntities];
-				pCurrEnt->pObject = NULL;
+				++m_numSpawnableEntities;
 				
+				pCurrEnt->pObject = NULL;
+
 				pCurrEnt->tiledUniqueID = atoi(object.attribute("uniqueID").value());
 				
 				const f32 x = (f32)atoi(object.attribute("x").value())*unitConversionScale;
@@ -1599,11 +1631,30 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				//TODO: not do this horrible thing
 				pCurrEnt->pProperties = object.child("properties");
 				
+				const char* propNameString = pCurrEnt->pProperties.attribute("name").value();
+				const char* valueString = pCurrEnt->pProperties.attribute("value").value();
+
+				pCurrEnt->autospawn = true;
+				
+				if(strcmp(propNameString, "AutoSpawn") == 0)
+				{
+					if(strcmp(valueString, "false") == 0)
+					{
+						pCurrEnt->autospawn = false;
+					}
+				}
+				
+				if(pCurrEnt->autospawn == false)
+				{
+					continue;
+				}
+				
 				const u32 scriptObjectType = Hash("ScriptObject");
 				const u32 collisionBoxType = Hash("CollisionBox");
 				const u32 objectGroupType = Hash("ObjectGroup");
 				const u32 soundPlayerType = Hash("SoundPlayerType");
 				const u32 tileAffectorType = Hash("TileAffector");
+				const u32 spawnerType = Hash("Spawner");
 				
 				if(pCurrEnt->type == scriptObjectType)
 				{
@@ -1625,14 +1676,14 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				{
 					pCurrEnt->pObject = g_Factory_SoundPlayer.CreateObject(pCurrEnt->type);
 				}
+				else if(pCurrEnt->type == spawnerType)
+				{
+					pCurrEnt->pObject = g_Factory_Spawner.CreateObject(pCurrEnt->type);
+				}
 				else
 				{
 					pCurrEnt->pObject = this->CreateObject(pCurrEnt->type);
 				}
-				
-				
-				
-				++m_numSpawnableEntities;
 			}
 		}
 		

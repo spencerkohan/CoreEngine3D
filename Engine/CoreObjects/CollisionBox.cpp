@@ -248,6 +248,6 @@ void CollisionBox::Update(f32 timeElapsed)
 
 void CollisionBox::Uninit()
 {
-	
+	CoreObject::Uninit();
 }
 

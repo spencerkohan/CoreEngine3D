@@ -562,11 +562,15 @@ class RenderableGeometry3D: public CoreObject
 {
 public:
 	mat4f worldMat;   //16 bytes
-	ModelData* pModel;  //4 bytes
+	union
+	{
+		ModelData* pModel;  //4 bytes
+		void (*drawFunc)(void*);
+	};
+	void* drawObject;  //4 bytes
 	RenderableMaterial material;
 	RenderLayer renderLayer;    //4 bytes
 	u32 viewFlags;  //4 bytes
-	const char* debugName;  //4 bytes
 	u32 sortValue;  //4 bytes
     u32 postRenderLayerSortValue; //4 bytes (optional)
 

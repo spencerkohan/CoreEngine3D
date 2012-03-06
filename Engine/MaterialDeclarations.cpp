@@ -44,6 +44,8 @@ const char* g_MaterialNames[NumRenderMaterials] =
     "MT_TextureWithColor",
 	"MT_WiggleUsingTexcoordV",
 	"MT_SkinnedWithNormalMapping",
+	"MT_TextureWithScrollingMult",
+	"MT_ScrollingTextureWithScrollingMult",
 	"PPMT_Add",
 	"PPMT_BlendUsingTexture",
 	"PPMT_Copy",

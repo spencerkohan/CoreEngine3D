@@ -53,6 +53,6 @@ void TileAffector::ProcessMessage(u32 message)	//Pass in a hash value
 
 void TileAffector::Uninit()
 {
-	
+	CoreObject::Uninit();
 }
 

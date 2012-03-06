@@ -126,6 +126,8 @@ void BasicParticle::Uninit()
 	{
 		pGeom->DeleteObject();
 	}
+	
+	CoreObject::Uninit();
 }
 
 
@@ -150,4 +152,6 @@ void BasicParticle::UpdateHandle()	//Call when the memory location changes
 	
 	pGeom->material.uniqueUniformValues[0] = (u8*)&m_texcoordOffset;
 	pGeom->material.uniqueUniformValues[1] = (u8*)&m_diffuseColor;
+	
+	CoreObject::UpdateHandle();
 }

@@ -14,11 +14,45 @@
 #include "CoreDebug.h"
 #include "stddef.h" //for NULL -_-
 #include "ArrayUtil.h"
+#include <cassert>
 
 class CoreObjectManager;
 extern CoreObjectManager* COREOBJECTMANAGER;
 
 #define COREOBJECT_MAX_OBJECTS 4096
+
+
+class CoreObjectManager
+{
+	friend class CoreObject;
+public:
+	CoreObjectManager();
+	void Clear();
+	bool AddObject(CoreObject* pCoreObject);	//use outside this class is deprecated
+	void PrintStatus();
+	CoreObject* GetObjectByHandle(CoreObjectHandle handle);
+	s32 GetNumEntries(){return m_activeEntryCount;}
+private:
+	void RemoveObject(CoreObject* pCoreObject);
+	void UpdateHandle(CoreObject* pCoreObject);
+	
+	struct CoreObjectHandleEntry
+	{
+		CoreObjectHandleEntry();
+		explicit CoreObjectHandleEntry(u32 nextFreeIndex);
+		
+		u32 m_nextFreeIndex : 12;
+		u32 m_counter : 15;
+		u32 m_active : 1;
+		u32 m_endOfList : 1;
+		CoreObject* m_pObject;
+	};
+	
+	CoreObjectHandleEntry m_entries[COREOBJECT_MAX_OBJECTS];
+	
+	s32 m_activeEntryCount;
+	u32 m_firstFreeEntry;
+};
 
 template <class T>
 class CoreObjectFactory
@@ -30,7 +64,9 @@ public:
 		m_pObjectList = NULL;
 		m_numObjects = 0;
 		m_maxObjects = 0;
+		m_objectsCanUpdate = true;
 	}
+	
 	
 	void Sort(bool (*compareFunc)(const T& lhs, const T& rhs))
 	{
@@ -42,6 +78,7 @@ public:
 		}
 	}
 	
+	
 	void Sort(u32 startIndex, u32 count, bool (*compareFunc)(const T& lhs, const T& rhs))
 	{
 		Array_InsertionSort(&m_pObjectList[startIndex], count, compareFunc);
@@ -52,8 +89,19 @@ public:
 		}
 	}
 	
-	void Clear(){m_numObjects = 0;};
+	
+	void Clear()
+	{
+		for(u32 i=0; i<m_maxObjects; ++i)
+		{
+			m_pObjectList[i].m_markedForDeletion = false;
+			m_pObjectList[i].InvalidateHandle();
+		}
+		
+		m_numObjects = 0;
+	};
 
+	
 	T* CreateObject(u32 type)
 	{
 		if(m_numObjects == m_maxObjects)
@@ -62,12 +110,12 @@ public:
 
 			return NULL;
 		}
-		
+
 		T* pObject = &m_pObjectList[m_numObjects];
+
 		if(pObject->Init(type))
 		{
 			++m_numObjects;
-			//COREDEBUG_PrintDebugMessage("CoreObjectFactory: Created an object!\n");
 
 			return pObject;
 		}
@@ -76,6 +124,7 @@ public:
 		
 		return NULL;
 	}
+	
 
 	//Returns true if an object was deleted in case you need
 	//to respond to that sort of thing
@@ -94,24 +143,26 @@ public:
 			if(pCurrObject->m_markedForDeletion)
 			{
 				deletedSomething = true;
-				
+
 				pCurrObject->Uninit();
 
 				T* pLastObject = &m_pObjectList[m_numObjects-1];
 
-				if(m_numObjects > 1)
+				if(pCurrObject != pLastObject)
 				{
 					//overwrite current enemy with last enemy
-					*pCurrObject = *pLastObject;
+					*pCurrObject = *pLastObject;	
 
 					//Memory location of the object has moved so update the handle
 					//to point to the new memory location
 					pCurrObject->UpdateHandle();
 				}
+				
+				//Last object should now be an invalid object
+				pLastObject->m_markedForDeletion = false;
+				pLastObject->InvalidateHandle();
 
 				--m_numObjects;
-
-				//COREDEBUG_PrintDebugMessage("CoreObjectFactory: Deleted an object!\n");
 			}
 			else
 			{
@@ -119,54 +170,42 @@ public:
 			}
 		}
 
-		//Update remaining objects
-		for(u32 i=0; i<m_numObjects; ++i)
+		if(m_objectsCanUpdate)
 		{
-			T* pCurrObject = &m_pObjectList[i];
-			pCurrObject->Update(timeElapsed);
+			//Update remaining objects
+			for(u32 i=0; i<m_numObjects; ++i)
+			{
+				T* pCurrObject = &m_pObjectList[i];
+				pCurrObject->Update(timeElapsed);
+			}
 		}
 		
 		return deletedSomething;
 	}
 
+	
 	void Init(u32 maxObjects)
 	{
 		m_pObjectList = new T[maxObjects];
 		m_maxObjects = maxObjects;
+		
+		Clear();
 
 		T::InitClass();
+	}
+	
+	
+	void SetObjectsCanUpdate(bool objectsCanUpdate)
+	{
+		m_objectsCanUpdate = objectsCanUpdate;
 	}
 	//private:
 
 	T* m_pObjectList;
 	u32 m_numObjects;
 	u32 m_maxObjects;
+	bool m_objectsCanUpdate;
 };
 
-class CoreObjectManager
-{
-	friend class CoreObject;
-public:
-	CoreObjectManager();
-	void Clear();
-	bool AddObject(CoreObject* pCoreObject);	//use outside this class is deprecated
-	
-	CoreObject* GetObjectByHandle(CoreObjectHandle handle);
-private:
-	void RemoveObjectByHandle(CoreObjectHandle handle);
-	void UpdateHandle(CoreObject* pCoreObject);
-	u32 GetUnusedHandle();
-	void FreeHandle(CoreObjectHandle handle);
-	CoreObjectHandleObject m_objectArray[COREOBJECT_MAX_OBJECTS];
-	u32 m_numObjects;
-	
-	//Handles available for use
-	CoreObjectHandle m_freeHandles[COREOBJECT_MAX_OBJECTS];
-	u32 m_numFreeHandles;
-	
-	//Handles that are currently being used
-	CoreObjectHandle m_usedHandles[COREOBJECT_MAX_OBJECTS];
-	u32 m_numUsedHandles;
-};
 
 #endif
