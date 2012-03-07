@@ -2642,6 +2642,7 @@ void OpenGLRenderer::CreateMaterials()
     const s32 VSH_TextureWithColor = AddVertexShaderToList("Shaders/TextureWithColor.vsh");
 	const s32 VSH_VertWithTexcoordOffset = AddVertexShaderToList("Shaders/VertWithTexcoordOffset.vsh");
 	const s32 VSH_VertWithTexcoordAndOffsetTexcoord = AddVertexShaderToList("Shaders/VertWithTexcoordAndOffsetTexcoord.vsh");
+	const s32 VSH_VertWithOffsetTexcoordAndOffsetTexcoord = AddVertexShaderToList("Shaders/VertWithOffsetTexcoordAndOffsetTexcoord.vsh");
 	const s32 VSH_TextureOnlyWithTexcoordAndWorldOffset = AddVertexShaderToList("Shaders/TextureOnlyWithTexcoordAndWorldOffset.vsh");
 	const s32 VSH_PointSprite_Basic = AddVertexShaderToList("Shaders/PointSprite_Default.vsh");
 	//const s32 VSH_SkinnedVertShader = AddVertexShaderToList("Shaders/SkinnedVertShader.vsh");
@@ -2869,7 +2870,13 @@ void OpenGLRenderer::CreateMaterials()
 	{
 		AddUniform_Unique(MT_TextureWithScrollingMult,"texCoordOffset",Uniform_Vec2,1);
 	}
-	 
+	
+	//MT_ScrollingTextureWithScrollingMult
+	if(CreateShaderProgram(VSH_VertWithOffsetTexcoordAndOffsetTexcoord,PS_MultiplyTwoSamples,attribs_VT,&g_Materials[MT_ScrollingTextureWithScrollingMult].shaderProgram))
+	{
+		AddUniform_Unique(MT_ScrollingTextureWithScrollingMult,"texCoordOffset",Uniform_Vec2,1);
+		AddUniform_Unique(MT_ScrollingTextureWithScrollingMult,"texCoordOffset2",Uniform_Vec2,1);
+	}
 
 	for(int i=0; i<NumRenderMaterials; ++i)
 	{
