@@ -159,6 +159,7 @@ public:
 	MouseInputState m_mouseState;
 	KeyboardInputState m_keyboardState;
 #endif
+	void Box2D_TogglePhysicsDebug(bool allowPhysicsDebugDraw);
 	void ResetCamera();
 	void SetCameraMode(CameraMode mode);
 	void Box2D_Init(bool continuousPhysicsEnabled,bool allowObjectsToSleep);

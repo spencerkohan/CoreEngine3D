@@ -1073,6 +1073,20 @@ void Game::DestroyTile(s32 index_x, s32 index_Y)
 }
 
 
+void Game::Box2D_TogglePhysicsDebug(bool allowPhysicsDebugDraw)
+{
+#if defined(DEBUG) || defined(_DEBUG)
+	if(allowPhysicsDebugDraw == true)
+	{
+		m_Box2D_pWorld->SetDebugDraw(m_Box2D_pDebugDraw);
+	}
+	else
+	{
+		m_Box2D_pWorld->SetDebugDraw(NULL);
+	}
+#endif
+}
+
 void Game::Box2D_ResetWorld()
 {
 	if(m_Box2D_pWorld != NULL)
@@ -1090,14 +1104,16 @@ void Game::Box2D_Init(bool continuousPhysicsEnabled, bool allowObjectsToSleep)
 	m_Box2D_ContinuousPhysicsEnabled = continuousPhysicsEnabled;
 	m_Box2D_allowObjectsToSleep = allowObjectsToSleep;
 	
-	m_Box2D_pDebugDraw = new Box2DDebugDraw;
-	m_Box2D_pDebugDraw->SetFlags(0xFFFFFFFF);
-	
 	b2Vec2 gravity;
 	gravity.Set(0.0f, 10.0f);
-
+	
 	m_Box2D_pWorld = new b2World(gravity);
+	
+#if defined(DEBUG) || defined(_DEBUG)
+	m_Box2D_pDebugDraw = new Box2DDebugDraw;
+	m_Box2D_pDebugDraw->SetFlags(0xFFFFFFFF);
 	m_Box2D_pWorld->SetDebugDraw(m_Box2D_pDebugDraw);
+#endif
 	
 	m_Box2D_pWorld->SetContinuousPhysics(continuousPhysicsEnabled);
 	m_Box2D_pWorld->SetAllowSleeping(false);
