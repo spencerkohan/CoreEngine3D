@@ -294,8 +294,11 @@ void Game::Update(f32 timeElapsed)
 		Tile* pCollTile = &ARRAY2D(pCollLayer->tiles, pCurrTile->x, pCurrTile->y, pCollLayer->numTilesX);
 		
 		pMainTile->isVisible = false;
-		m_Box2D_pWorld->DestroyBody(pCollTile->pBody);
-		pCollTile->pBody = NULL;
+		if(pCollTile->pBody != NULL)
+		{
+			m_Box2D_pWorld->DestroyBody(pCollTile->pBody);
+			pCollTile->pBody = NULL;
+		}
 	}
 	
 	m_numTilesToDelete = 0;
@@ -1665,18 +1668,22 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				//TODO: not do this horrible thing
 				pCurrEnt->pProperties = object.child("properties");
 				
-				const char* propNameString = pCurrEnt->pProperties.attribute("name").value();
-				const char* valueString = pCurrEnt->pProperties.attribute("value").value();
-
 				pCurrEnt->autospawn = true;
 				
-				if(strcmp(propNameString, "AutoSpawn") == 0)
+				for (pugi::xml_node property = pCurrEnt->pProperties.child("property"); property; property = property.next_sibling("property"))
 				{
-					if(strcmp(valueString, "false") == 0)
+					const char* propNameString = property.attribute("name").value();
+					const char* valueString = property.attribute("value").value();
+					
+					if(strcmp(propNameString, "AutoSpawn") == 0)
 					{
-						pCurrEnt->autospawn = false;
+						if(strcmp(valueString, "false") == 0)
+						{
+							pCurrEnt->autospawn = false;
+						}
 					}
 				}
+		
 				
 				if(pCurrEnt->autospawn == false)
 				{

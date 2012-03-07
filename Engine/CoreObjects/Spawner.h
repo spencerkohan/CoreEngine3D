@@ -44,6 +44,7 @@ private:
 	f32 m_spawnTimeMin;
 	f32 m_spawnTimeMax;
 	bool m_requiresTrigger;
+	f32 m_launchSpeed;
 	
 	//b2Body* m_pBody;
 };

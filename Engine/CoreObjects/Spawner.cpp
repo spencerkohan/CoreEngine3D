@@ -35,6 +35,8 @@ bool Spawner::SpawnInit(void* pSpawnStruct)
 	m_spawnTimeMin = 5.0f;
 	m_spawnTimeMax = 5.0f;
 	m_requiresTrigger = false;
+	
+	m_launchSpeed = 0.0f;
 
 	SpawnableEntity* pSpawnableEnt = (SpawnableEntity*)pSpawnStruct;
 	if(pSpawnableEnt == NULL)
@@ -61,6 +63,10 @@ bool Spawner::SpawnInit(void* pSpawnStruct)
 		else if(strcmp(propNameString, "SpawnTimeMax") == 0)
 		{
 			m_spawnTimeMax = atof(valueString);
+		}
+		else if(strcmp(propNameString, "LaunchSpeed") == 0)
+		{
+			m_launchSpeed = atof(valueString);
 		}
 		else if(strcmp(propNameString, "RequiresTrigger") == 0)
 		{
@@ -102,15 +108,35 @@ void Spawner::Update(f32 timeElapsed)
 		return;
 	}
 	
+	vec2 posMeters;
+	posMeters.x = m_position.x/GAME->GetPixelsPerMeter();
+	posMeters.y = m_position.y/GAME->GetPixelsPerMeter();
+	
 	m_spawnTimer -= timeElapsed;
 	if(m_spawnTimer < 0.0f)
 	{
 		m_spawnTimer = rand_FloatRange(m_spawnTimeMin, m_spawnTimeMax);
 		
-		CoreObject* pObject = GAME->CreateObject(m_pEntityToSpawn->type);
+		CoreGameObject* pObject = (CoreGameObject*)GAME->CreateObject(m_pEntityToSpawn->type);
 		if(pObject != NULL)
 		{
 			pObject->SpawnInit(m_pEntityToSpawn);
+			
+			if(m_launchSpeed > 0.0f)
+			{
+				b2Body* pBody = pObject->Box2D_GetBody();
+				if(pBody != NULL)
+				{
+					vec2 launchDir;
+					const b2Vec2& bodyPos = pBody->GetWorldCenter();
+					const vec2 bodyPosVec = {bodyPos.x,bodyPos.y};
+					SubVec2(&launchDir,&bodyPosVec,&posMeters);
+					TryNormalizeVec2_Self(&launchDir);
+					ScaleVec2_Self(&launchDir, m_launchSpeed);
+					
+					pBody->SetLinearVelocity(b2Vec2(launchDir.x,launchDir.y));
+				}
+			}
 		}
 	}
 }
