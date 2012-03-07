@@ -49,6 +49,8 @@
 		DD25DC7214E1E308000ACF15 /* SoundPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = DD25DC6E14E1E307000ACF15 /* SoundPlayer.h */; };
 		DD25DC7314E1E308000ACF15 /* TileAffector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD25DC6F14E1E307000ACF15 /* TileAffector.cpp */; };
 		DD25DC7414E1E308000ACF15 /* TileAffector.h in Headers */ = {isa = PBXBuildFile; fileRef = DD25DC7014E1E307000ACF15 /* TileAffector.h */; };
+		DD2A300C1506EAF3007812E4 /* Tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD2A300A1506EAF3007812E4 /* Tile.cpp */; };
+		DD2A300D1506EAF3007812E4 /* Tile.h in Headers */ = {isa = PBXBuildFile; fileRef = DD2A300B1506EAF3007812E4 /* Tile.h */; };
 		DD408FBA14DB5BD00016BA1A /* CollisionBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD408FB614DB5BD00016BA1A /* CollisionBox.cpp */; };
 		DD408FBB14DB5BD00016BA1A /* CollisionBox.h in Headers */ = {isa = PBXBuildFile; fileRef = DD408FB714DB5BD00016BA1A /* CollisionBox.h */; };
 		DD408FBC14DB5BD00016BA1A /* ScriptObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD408FB814DB5BD00016BA1A /* ScriptObject.cpp */; };
@@ -223,6 +225,8 @@
 		DD25DC6E14E1E307000ACF15 /* SoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = SoundPlayer.h; path = CoreObjects/SoundPlayer.h; sourceTree = "<group>"; };
 		DD25DC6F14E1E307000ACF15 /* TileAffector.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = TileAffector.cpp; path = CoreObjects/TileAffector.cpp; sourceTree = "<group>"; };
 		DD25DC7014E1E307000ACF15 /* TileAffector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TileAffector.h; path = CoreObjects/TileAffector.h; sourceTree = "<group>"; };
+		DD2A300A1506EAF3007812E4 /* Tile.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Tile.cpp; path = CoreObjects/Tile.cpp; sourceTree = "<group>"; };
+		DD2A300B1506EAF3007812E4 /* Tile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tile.h; path = CoreObjects/Tile.h; sourceTree = "<group>"; };
 		DD408FB614DB5BD00016BA1A /* CollisionBox.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = CollisionBox.cpp; path = CoreObjects/CollisionBox.cpp; sourceTree = "<group>"; };
 		DD408FB714DB5BD00016BA1A /* CollisionBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = CollisionBox.h; path = CoreObjects/CollisionBox.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		DD408FB814DB5BD00016BA1A /* ScriptObject.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = ScriptObject.cpp; path = CoreObjects/ScriptObject.cpp; sourceTree = "<group>"; };
@@ -369,6 +373,8 @@
 		DD408FB414DB5B730016BA1A /* CoreObjects */ = {
 			isa = PBXGroup;
 			children = (
+				DD2A300A1506EAF3007812E4 /* Tile.cpp */,
+				DD2A300B1506EAF3007812E4 /* Tile.h */,
 				DD15B2FC1501B39900B065B0 /* Spawner.cpp */,
 				DD15B2FD1501B39900B065B0 /* Spawner.h */,
 				DD25DC6D14E1E307000ACF15 /* SoundPlayer.cpp */,
@@ -740,6 +746,7 @@
 				DD0C294C14F80E8F002EE89F /* Box2DUtil.h in Headers */,
 				2329C75214FB343000DBC1BE /* BasicParticle.h in Headers */,
 				DD15B2FF1501B39900B065B0 /* Spawner.h in Headers */,
+				DD2A300D1506EAF3007812E4 /* Tile.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -883,6 +890,7 @@
 				DD0C294F14F80E9E002EE89F /* Box2DUtil.cpp in Sources */,
 				2329C75114FB343000DBC1BE /* BasicParticle.cpp in Sources */,
 				DD15B2FE1501B39900B065B0 /* Spawner.cpp in Sources */,
+				DD2A300C1506EAF3007812E4 /* Tile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

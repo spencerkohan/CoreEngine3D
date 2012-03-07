@@ -38,6 +38,12 @@ typedef struct
 
 typedef struct
 {
+	s32 x;
+	s32 y;
+}  intVec2;
+
+typedef struct
+{
 	f32 x;
 	f32 y;
 	f32 z;

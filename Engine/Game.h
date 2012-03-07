@@ -15,6 +15,8 @@
 #include "MathTypes.h"
 #include "OpenGLRenderer.h"
 
+#include "CoreObjects/Tile.h"
+
 #if defined (PLATFORM_IOS)
 #include "TouchInputIOS.h"
 #endif
@@ -54,12 +56,15 @@ class Box2DDebugDraw;
 #define GAME_MAX_TILESET_DESCRIPTIONS 8
 #define GAME_MAX_SPAWNABLE_ENTITIES 256
 
+#define GAME_MAX_STORED_DELETABLE_TILES 64
+
 extern const MaterialSettings g_Game_BlobShadowSettings;
 extern ItemArtDescription g_Game_BlobShadowDesc;
 
 enum CollisionFilter
 {
 	CollisionFilter_Ground,
+	CollisionFilter_Breakable,
 	CollisionFilter_Player,
 	CollisionFilter_Enemy,
 	CollisionFilter_PlayerProjectile,
@@ -99,25 +104,6 @@ struct TiledLevelDescription
 	s32 halfTileDisplaySizeY;
 };
 
-struct TileSetDescription
-{
-	//Data
-	char* name;
-	char* textureFileName;
-	u32 loadedTextureID;
-	u32 firstTileIndex;
-	u32 textureSizeX;
-	u32 textureSizeY;
-	u32 tileSizeX;
-	u32 tileSizeY;
-	
-	//Useful calculations
-	u32 numTextureTilesX;
-	u32 numTextureTilesY;
-	f32 halfTexelOffset;
-	ModelData* pModelData;
-};
-
 struct SpawnableEntity
 {
 	u32 type;
@@ -132,15 +118,6 @@ struct SpawnableEntity
 	bool autospawn;
 	
 	CoreObject* pObject;
-};
-
-struct Tile
-{
-	s32 tileID;
-	TileSetDescription* pDesc;
-	CoreObjectHandle hRenderable;
-	bool isVisible;
-	vec2 texCoordOffset;
 };
 
 struct Layer
@@ -203,6 +180,7 @@ public:
 	void GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
 	void GetPositionFromTileIndices(s32 index_X, s32 index_Y, vec3* pOut_position);
 	s32 GetCollisionFromTileIndices(s32 index_X, s32 index_Y);
+	void DestroyTile(s32 index_x, s32 index_Y);
 	f32 GetTileSize();
 	f32 GetHalfTileSize();
 	f32 GetPixelsPerMeter();
@@ -315,6 +293,8 @@ private:
 	std::string m_enginePath;
 #endif
 
+	intVec2 m_tilesToDelete[GAME_MAX_STORED_DELETABLE_TILES];
+	s32 m_numTilesToDelete;
 };
 
 #endif

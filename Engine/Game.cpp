@@ -66,6 +66,8 @@ bool Game::Init()
 {
 	m_paused = false;
 	
+	m_numTilesToDelete = 0;
+	
 	m_parallaxScale = 0.0f;
 
 	m_levelHasCamRestraints = false;
@@ -281,7 +283,22 @@ void Game::Update(f32 timeElapsed)
 #endif
 	}
 	
+	Layer* pMainLayer = &m_layers[LevelLayer_Main1];
+	Layer* pCollLayer = &m_layers[LevelLayer_Collision];
 	
+	for(u32 i=0; i<m_numTilesToDelete; ++i)
+	{
+		intVec2* pCurrTile = &m_tilesToDelete[i];
+
+		Tile* pMainTile = &ARRAY2D(pMainLayer->tiles, pCurrTile->x, pCurrTile->y, pMainLayer->numTilesX);
+		Tile* pCollTile = &ARRAY2D(pCollLayer->tiles, pCurrTile->x, pCurrTile->y, pCollLayer->numTilesX);
+		
+		pMainTile->isVisible = false;
+		m_Box2D_pWorld->DestroyBody(pCollTile->pBody);
+		pCollTile->pBody = NULL;
+	}
+	
+	m_numTilesToDelete = 0;
 
 	//Lazy so constantly load new resources
 	//It can't be THAT bad
@@ -1041,6 +1058,18 @@ void Game::SetCameraMode(CameraMode mode)
 }
 
 
+void Game::DestroyTile(s32 index_x, s32 index_Y)
+{
+	if(m_numTilesToDelete != GAME_MAX_STORED_DELETABLE_TILES)
+	{
+		m_tilesToDelete[m_numTilesToDelete].x = index_x;
+		m_tilesToDelete[m_numTilesToDelete].y = index_Y;
+	}
+	
+	++m_numTilesToDelete;
+}
+
+
 void Game::Box2D_ResetWorld()
 {
 	if(m_Box2D_pWorld != NULL)
@@ -1100,6 +1129,10 @@ void Game::Box2D_SetGravity(f32 x, f32 y)
 
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
 {
+	m_numTilesToDelete = 0;
+	
+	const u32 tileType = Hash("Tile");
+	
 	m_levelHasCamRestraints = false;
 	
 	m_pixelsPerMeter = (f32)tileWidthPixels/tileSizeMeters;
@@ -1444,6 +1477,11 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 					pTile->tileID = ARRAY2D(pData, x, y, width);
 					pTile->isVisible = true;
 					ConvertTileID(&pTile->tileID, &pTile->pDesc);
+					
+					pTile->indexX = x;
+					pTile->indexY = y;
+					
+					pTile->pBody = NULL;
 				}
 			}
 			
@@ -1462,6 +1500,8 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 							continue;
 						}
 						
+						pTile->SetEntityType(tileType);
+						
 						vec3 pos;
 						GetPositionFromTileIndices(x, y, &pos);
 						
@@ -1479,8 +1519,10 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						
 						bodyDef.position.Set(pos.x/m_pixelsPerMeter, pos.y/m_pixelsPerMeter);
 						
-						b2Body* pBody = m_Box2D_pWorld->CreateBody(&bodyDef);
-						pBody->CreateFixture(&fixtureDef);
+						pTile->pBody = m_Box2D_pWorld->CreateBody(&bodyDef);
+						pTile->pBody->CreateFixture(&fixtureDef);
+						
+						pTile->pBody->SetUserData(pTile);
 					}
 				}
 			}

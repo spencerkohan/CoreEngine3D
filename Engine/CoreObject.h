@@ -50,6 +50,7 @@ public:
 	virtual CoreObjectType GetType(){return CoreObjectType_CoreObject;}
 	static void InitClass(){};
 	u32 GetEntityType();
+	void SetEntityType(u32 type){m_entityTypeHash = type;}	//WARNING: never call this EVER... unless you really know why
 	CoreObjectHandle GetHandle() const;
 	
 	virtual void UpdateHandle();	//Call when the memory location changes
