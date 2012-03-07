@@ -290,14 +290,27 @@ void Game::Update(f32 timeElapsed)
 	{
 		intVec2* pCurrTile = &m_tilesToDelete[i];
 
-		Tile* pMainTile = &ARRAY2D(pMainLayer->tiles, pCurrTile->x, pCurrTile->y, pMainLayer->numTilesX);
-		Tile* pCollTile = &ARRAY2D(pCollLayer->tiles, pCurrTile->x, pCurrTile->y, pCollLayer->numTilesX);
+		const s32 indexX = pCurrTile->x;
+		const s32 indexY = pCurrTile->y;
 		
-		pMainTile->isVisible = false;
-		if(pCollTile->pBody != NULL)
+		Tile* pMainTile = &ARRAY2D(pMainLayer->tiles, indexX, indexY, pMainLayer->numTilesX);
+		
+		//Only destroy visible tiles
+		//This will also help with possible repeated tiles showing
+		//up in this list
+		if(pMainTile->isVisible)
 		{
-			m_Box2D_pWorld->DestroyBody(pCollTile->pBody);
-			pCollTile->pBody = NULL;
+			Tile* pCollTile = &ARRAY2D(pCollLayer->tiles, pCurrTile->x, pCurrTile->y, pCollLayer->numTilesX);
+			
+			pMainTile->isVisible = false;
+			if(pCollTile->pBody != NULL)
+			{
+				m_Box2D_pWorld->DestroyBody(pCollTile->pBody);
+				pCollTile->pBody = NULL;
+			}
+			
+			//Do special stuff according to your specific game
+			TileDestructionCallback(indexX, indexY);
 		}
 	}
 	
