@@ -577,26 +577,24 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 		if(pGeom->drawObject != NULL
 		   && pGeom->drawFunc != NULL)
 		{
-			//Going to assume most people will want this called for them
-			//which will prepare to draw all old-school like
-
-			if (m_supportsFeaturesFromiOS4)
+			//Do this to disable vertex array objects
+			if(m_supportsFeaturesFromiOS4)
 			{
-				//Make sure nothing randomly writes to our new VAO
 #ifdef PLATFORM_IOS
 				glBindVertexArrayOES(0);
 				
-#elif  PLATFORM_WIN
+#elif defined PLATFORM_WIN
 				glBindVertexArray(0);
 				
 #else
-				glBindVertexArrayAPPLE(0);
-				
+				glBindVertexArrayAPPLE(0);	
 #endif
 			}
 			
+			//Disable Vertex Buffer
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+			
+			//Disable Index Buffer
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			
 			
@@ -661,9 +659,7 @@ void OpenGLRenderer::RenderEffects()
 	
 	//COREDEBUG_PrintDebugMessage("**Render End.  Rendered %d objects.",m_numRenderableObject3Ds);
 #endif
-	
-	
-	
+
     //Do this to disable vertex array objects
     if(m_supportsFeaturesFromiOS4)
     {
@@ -675,15 +671,13 @@ void OpenGLRenderer::RenderEffects()
 		
 #else
 		glBindVertexArrayAPPLE(0);	
-		
 #endif
     }
 
+	//Disable Vertex Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
-    
-	//Do this to use normal non-VBO memory before starting post processing
-	
+	//Disable Index Buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	
 	glEnable(GL_DEPTH_TEST);
@@ -2511,6 +2505,8 @@ void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableOb
 
 void OpenGLRenderer::SortRenderableGeometry3DList(RenderableObjectType type)
 {
+	const u32 allOnes = 0xFFFFFFFF;
+	
 	//Array_ObjectInsertionSort
 
 	if(type == RenderableObjectType_UI)
@@ -2531,7 +2527,14 @@ void OpenGLRenderer::SortRenderableGeometry3DList(RenderableObjectType type)
 			
 			GU_InsertPositiveValueAsBits(&sortValue,pGeom->postRenderLayerSortValue,4,5);
 			
-			GU_InsertPositiveValueAsBits(&sortValue,pGeom->pModel->modelID,9,5);
+			if(pGeom->drawObject != NULL)
+			{
+				GU_InsertPositiveValueAsBits(&sortValue,allOnes,9,5);
+			}
+			else
+			{
+				GU_InsertPositiveValueAsBits(&sortValue,pGeom->pModel->modelID,9,5);
+			}
 			
 			GU_InsertPositiveValueAsBits(&sortValue,pGeom->material.materialID,14,5);
 			
@@ -2559,7 +2562,14 @@ void OpenGLRenderer::SortRenderableGeometry3DList(RenderableObjectType type)
 			
 			GU_InsertPositiveValueAsBits(&sortValue,pGeom->postRenderLayerSortValue,4,5);
 			
-			GU_InsertPositiveValueAsBits(&sortValue,pGeom->pModel->modelID,9,5);
+			if(pGeom->drawObject != NULL)
+			{
+				GU_InsertPositiveValueAsBits(&sortValue,allOnes,9,5);
+			}
+			else
+			{
+				GU_InsertPositiveValueAsBits(&sortValue,pGeom->pModel->modelID,9,5);
+			}
 			
 			GU_InsertPositiveValueAsBits(&sortValue,pGeom->material.materialID,14,5);
 			
