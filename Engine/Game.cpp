@@ -288,10 +288,10 @@ void Game::Update(f32 timeElapsed)
 	
 	for(u32 i=0; i<m_numTilesToDelete; ++i)
 	{
-		intVec2* pCurrTile = &m_tilesToDelete[i];
+		TileDestructionData* pCurrTile = &m_tilesToDelete[i];
 
-		const s32 indexX = pCurrTile->x;
-		const s32 indexY = pCurrTile->y;
+		const s32 indexX = pCurrTile->tilePos.x;
+		const s32 indexY = pCurrTile->tilePos.y;
 		
 		Tile* pMainTile = &ARRAY2D(pMainLayer->tiles, indexX, indexY, pMainLayer->numTilesX);
 		
@@ -300,7 +300,7 @@ void Game::Update(f32 timeElapsed)
 		//up in this list
 		if(pMainTile->isVisible)
 		{
-			Tile* pCollTile = &ARRAY2D(pCollLayer->tiles, pCurrTile->x, pCurrTile->y, pCollLayer->numTilesX);
+			Tile* pCollTile = &ARRAY2D(pCollLayer->tiles, indexX, indexY, pCollLayer->numTilesX);
 			
 			pMainTile->isVisible = false;
 			if(pCollTile->pBody != NULL)
@@ -310,7 +310,7 @@ void Game::Update(f32 timeElapsed)
 			}
 			
 			//Do special stuff according to your specific game
-			TileDestructionCallback(indexX, indexY);
+			TileDestructionCallback(indexX, indexY, &pCurrTile->hitVel);
 		}
 	}
 	
@@ -1074,12 +1074,15 @@ void Game::SetCameraMode(CameraMode mode)
 }
 
 
-void Game::DestroyTile(s32 index_x, s32 index_Y)
+void Game::DestroyTile(s32 index_x, s32 index_Y, const vec2* pVel)
 {
 	if(m_numTilesToDelete != GAME_MAX_STORED_DELETABLE_TILES)
 	{
-		m_tilesToDelete[m_numTilesToDelete].x = index_x;
-		m_tilesToDelete[m_numTilesToDelete].y = index_Y;
+		TileDestructionData* pData = &m_tilesToDelete[m_numTilesToDelete];
+		
+		pData->tilePos.x = index_x;
+		pData->tilePos.y = index_Y;
+		CopyVec2(&pData->hitVel,pVel);
 	}
 	
 	++m_numTilesToDelete;

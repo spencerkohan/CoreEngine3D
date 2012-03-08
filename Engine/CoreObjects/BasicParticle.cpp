@@ -104,7 +104,7 @@ void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosit
 		m_pBody->CreateFixture(&fixtureDef);
 		
 		m_pBody->SetAngularVelocity(m_spinSpeed);
-		m_pBody->SetLinearVelocity(b2Vec2(m_velocity.x,m_velocity.y));
+		m_pBody->SetLinearVelocity(b2Vec2(pDirection->x,pDirection->y));
 	}
 }
 

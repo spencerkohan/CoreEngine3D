@@ -141,6 +141,14 @@ enum CameraMode
 	CameraMode_Anchor,
 };
 
+
+struct TileDestructionData
+{
+	intVec2 tilePos;
+	vec2 hitVel;
+};
+
+
 class Game
 {
 public:
@@ -152,7 +160,7 @@ public:
 	virtual void ReloadLevel(){};
 	virtual void FinishedCurrentLevel(){};
 	virtual u32 Box2D_GetCollisionFlagsForTileIndex(s32 tileIndex){return 1<<CollisionFilter_Ground;}
-	virtual void TileDestructionCallback(s32 tileIndexX, s32 tileIndexY){};
+	virtual void TileDestructionCallback(s32 tileIndexX, s32 tileIndexY, const vec2* pHitVel){};
 #if defined (PLATFORM_IOS)
 	TouchInputIOS* m_pTouchInput;
 #endif
@@ -183,7 +191,7 @@ public:
 	void GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
 	void GetPositionFromTileIndices(s32 index_X, s32 index_Y, vec3* pOut_position);
 	s32 GetCollisionFromTileIndices(s32 index_X, s32 index_Y);
-	void DestroyTile(s32 index_x, s32 index_Y);
+	void DestroyTile(s32 index_x, s32 index_Y, const vec2* pVel);
 	f32 GetTileSize();
 	f32 GetHalfTileSize();
 	f32 GetPixelsPerMeter();
@@ -296,7 +304,7 @@ private:
 	std::string m_enginePath;
 #endif
 
-	intVec2 m_tilesToDelete[GAME_MAX_STORED_DELETABLE_TILES];
+	TileDestructionData m_tilesToDelete[GAME_MAX_STORED_DELETABLE_TILES];
 	s32 m_numTilesToDelete;
 };
 
