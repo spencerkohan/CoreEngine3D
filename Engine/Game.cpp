@@ -683,6 +683,7 @@ CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDes
 }
 
 
+//TODO: OPTIMIZE! This is the slowest function in the whole game
 void Game::UpdateTiledLevelPosition(vec3* pPosition)
 {
 	vec3 position;
