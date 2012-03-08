@@ -28,7 +28,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "23EAA01B14DF6AB800F0B167"
-               BuildableName = "HashStringString"
+               BuildableName = "HashString"
                BlueprintName = "HashString"
                ReferencedContainer = "container:HashString.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "23EAA01B14DF6AB800F0B167"
-            BuildableName = "HashStringString"
+            BuildableName = "HashString"
             BlueprintName = "HashString"
             ReferencedContainer = "container:HashString.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "23EAA01B14DF6AB800F0B167"
-            BuildableName = "HashStringString"
+            BuildableName = "HashString"
             BlueprintName = "HashString"
             ReferencedContainer = "container:HashString.xcodeproj">
          </BuildableReference>
@@ -82,7 +82,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "23EAA01B14DF6AB800F0B167"
-            BuildableName = "HashStringString"
+            BuildableName = "HashString"
             BlueprintName = "HashString"
             ReferencedContainer = "container:HashString.xcodeproj">
          </BuildableReference>

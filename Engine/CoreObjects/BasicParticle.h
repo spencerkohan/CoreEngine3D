@@ -12,13 +12,44 @@
 #include "../CoreObject.h"
 #include "../RenderLayer.h"
 #include "../GraphicsTypes.h"
+#include <Box2D/Box2D.h>
 
 class BasicParticle: public CoreObject
 {
 public:
+	struct Box2D_ParticleSettings
+	{
+		//Pointer to an array of scales in pixels
+		//Must be the same size as the number of panels in
+		//your object
+		f32 collisionRadiusPixels;
+		
+		/// The friction coefficient, usually in the range [0,1].
+		float32 friction;
+		
+		/// The restitution (elasticity) usually in the range [0,1].
+		float32 restitution;
+		
+		/// The density, usually in kg/m^2.
+		float32 density;
+
+		/// The collision category bits. Normally you would just set one bit.
+		uint16 categoryBits;
+		
+		/// The collision mask bits. This states the categories that this
+		/// shape would accept for collision.
+		uint16 maskBits;
+		
+		/// Collision groups allow a certain group of objects to never collide (negative)
+		/// or always collide (positive). Zero means no collision group. Non-zero group
+		/// filtering always wins against the mask bits.
+		int16 groupIndex;
+	};
+	
 	struct ParticleSettings
 	{
-		f32 lifetime;
+		f32 lifetimeMin;
+		f32 lifetimeMax;
 		f32 gravity;
 		f32 moveSpeedMin;
 		f32 moveSpeedMax;
@@ -30,6 +61,7 @@ public:
 		ItemArtDescription* pItemArt;
 		RenderLayer renderLayer;
 		u32 categoryFlags;
+		Box2D_ParticleSettings* pBox2D_ParticleSettings;	//Array of settings for each particle index
 	};
 	
 	//static void InitClass(){};
@@ -58,6 +90,7 @@ private:
 	vec2 m_texcoordOffset;
 	f32 m_currSpinAngle;
 	CoreObjectHandle m_hRenderable;
+	b2Body* m_pBody;
 };
 
 #endif

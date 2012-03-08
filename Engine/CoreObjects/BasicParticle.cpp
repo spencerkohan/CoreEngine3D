@@ -10,6 +10,7 @@
 #include "../OpenGLRenderer.h"
 #include "../matrix.h"
 #include "../MathUtil.h"
+#include "../Game.h"
 
 void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosition, const vec3* pDirection, u32 texIndex)
 {
@@ -40,9 +41,9 @@ void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosit
 	{
 		spinSpeed *= -1.0f;
 	}
-	m_spinSpeed = spinSpeed*((rand_FloatRange(0.0f, 1.0f) > 0.5f) ? -1.0f : 1.0f);
+	m_spinSpeed = spinSpeed*(rand_Bool() ? -1.0f : 1.0f);
 	m_currSpinAngle = 0.0f;
-	m_lifeTimer = pSettings->lifetime;
+	m_lifeTimer = rand_FloatRange(pSettings->lifetimeMin,pSettings->lifetimeMax);
 	
 	SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,0.0f);
 	CopyVec4(&m_diffuseColorStart,&vec4_one);
@@ -74,6 +75,37 @@ void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosit
 			break;
 		}
 	}
+	
+	if(pSettings->pBox2D_ParticleSettings != NULL)
+	{
+		Box2D_ParticleSettings* pCurrSettings = &pSettings->pBox2D_ParticleSettings[texIndex];
+		
+		b2BodyDef bodyDef;
+		bodyDef.type = b2_dynamicBody;
+		bodyDef.position.Set(m_position.x/GAME->GetPixelsPerMeter(), m_position.y/GAME->GetPixelsPerMeter());
+		
+		b2FixtureDef fixtureDef;
+		fixtureDef.filter.maskBits = pCurrSettings->maskBits;
+		fixtureDef.filter.categoryBits = pCurrSettings->categoryBits;
+		fixtureDef.filter.groupIndex = pCurrSettings->groupIndex;
+		fixtureDef.restitution = pCurrSettings->restitution;
+		fixtureDef.density = pCurrSettings->density;
+		fixtureDef.friction = pCurrSettings->friction;
+		
+		
+		b2CircleShape circleShape;
+
+
+		circleShape.m_radius = pCurrSettings->collisionRadiusPixels/GAME->GetPixelsPerMeter();
+
+		fixtureDef.shape = &circleShape;
+		
+		m_pBody = GAME->Box2D_GetWorld()->CreateBody(&bodyDef);
+		m_pBody->CreateFixture(&fixtureDef);
+		
+		m_pBody->SetAngularVelocity(m_spinSpeed);
+		m_pBody->SetLinearVelocity(b2Vec2(m_velocity.x,m_velocity.y));
+	}
 }
 
 
@@ -96,21 +128,32 @@ void BasicParticle::Update(f32 timeElapsed)
 	const f32 breakableAlpha = ClampF(m_lifeTimer/0.15f,0.0f,1.0f);
 	ScaleVec4(&m_diffuseColor,&m_diffuseColorStart,breakableAlpha);
 	
-	
-	m_currSpinAngle += m_spinSpeed*timeElapsed;
-	
-	
 	vec3* pPos = mat4f_GetPos(pGeom->worldMat);
 	
-	m_velocity.y -= m_pSettings->gravity*timeElapsed;
-	AddScaledVec3_Self(&m_position,&m_velocity,timeElapsed);
-	
-	CopyVec3(pPos,&m_position);
-	
-	vec3 velNorm;
-	TryNormalizeVec3(&velNorm,&m_velocity);
+	if(m_pBody != NULL)
+	{
+		const b2Vec2& posVec = m_pBody->GetPosition();
+		pPos->x = posVec.x*GAME->GetPixelsPerMeter();
+		pPos->y = posVec.y*GAME->GetPixelsPerMeter();
+		pPos->z = 0.0f;
+		
+		mat4f_LoadScaledZRotation_IgnoreTranslation(pGeom->worldMat, m_pBody->GetAngle(), m_radius);
+	}
+	else
+	{
+		m_currSpinAngle += m_spinSpeed*timeElapsed;
 
-	mat4f_LoadScaledZRotation_IgnoreTranslation(pGeom->worldMat, m_currSpinAngle, m_radius);
+		m_velocity.y -= m_pSettings->gravity*timeElapsed;
+		AddScaledVec3_Self(&m_position,&m_velocity,timeElapsed);
+		
+		CopyVec3(pPos,&m_position);
+		
+		vec3 velNorm;
+		TryNormalizeVec3(&velNorm,&m_velocity);
+		
+		mat4f_LoadScaledZRotation_IgnoreTranslation(pGeom->worldMat, m_currSpinAngle, m_radius);
+	}
+	
 	
 	if(m_lifeTimer <= 0.0f)
 	{
@@ -125,6 +168,11 @@ void BasicParticle::Uninit()
 	if(pGeom != NULL)
 	{
 		pGeom->DeleteObject();
+	}
+	
+	if(m_pBody != NULL)
+	{
+		GAME->Box2D_GetWorld()->DestroyBody(m_pBody);
 	}
 	
 	CoreObject::Uninit();

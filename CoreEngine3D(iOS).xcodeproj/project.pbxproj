@@ -185,7 +185,7 @@
 /* Begin PBXFileReference section */
 		2328342F14AD34BF00BEBBD0 /* CoreInput_GamePad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_GamePad.cpp; sourceTree = "<group>"; };
 		2328343014AD34BF00BEBBD0 /* CoreInput_GamePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_GamePad.h; sourceTree = "<group>"; };
-		2329C74F14FB343000DBC1BE /* BasicParticle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BasicParticle.cpp; path = CoreObjects/BasicParticle.cpp; sourceTree = "<group>"; };
+		2329C74F14FB343000DBC1BE /* BasicParticle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = BasicParticle.cpp; path = CoreObjects/BasicParticle.cpp; sourceTree = "<group>"; };
 		2329C75014FB343000DBC1BE /* BasicParticle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BasicParticle.h; path = CoreObjects/BasicParticle.h; sourceTree = "<group>"; };
 		233581FC14D3A5C300F66DA0 /* CoreDebug.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreDebug.cpp; sourceTree = "<group>"; };
 		233581FD14D3A5C300F66DA0 /* CoreDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDebug.h; sourceTree = "<group>"; };
@@ -373,6 +373,8 @@
 		DD408FB414DB5B730016BA1A /* CoreObjects */ = {
 			isa = PBXGroup;
 			children = (
+				2329C74F14FB343000DBC1BE /* BasicParticle.cpp */,
+				2329C75014FB343000DBC1BE /* BasicParticle.h */,
 				DD2A300A1506EAF3007812E4 /* Tile.cpp */,
 				DD2A300B1506EAF3007812E4 /* Tile.h */,
 				DD15B2FC1501B39900B065B0 /* Spawner.cpp */,
@@ -430,8 +432,6 @@
 		DDA6F498149C1A920035A1BF /* Engine */ = {
 			isa = PBXGroup;
 			children = (
-				2329C74F14FB343000DBC1BE /* BasicParticle.cpp */,
-				2329C75014FB343000DBC1BE /* BasicParticle.h */,
 				23D9D67114F36648002152D3 /* CoreInput_PCInputState.cpp */,
 				23D9D67214F36648002152D3 /* CoreInput_PCInputState.h */,
 				DD0C294B14F80E8F002EE89F /* Box2DUtil.h */,

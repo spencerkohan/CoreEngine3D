@@ -63,6 +63,7 @@ extern ItemArtDescription g_Game_BlobShadowDesc;
 
 enum CollisionFilter
 {
+	CollisionFilter_Particle,
 	CollisionFilter_Ground,
 	CollisionFilter_Breakable,
 	CollisionFilter_Player,
