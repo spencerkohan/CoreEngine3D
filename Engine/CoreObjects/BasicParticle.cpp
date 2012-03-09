@@ -14,6 +14,8 @@
 
 void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosition, const vec3* pDirection, u32 texIndex)
 {
+	m_pBody = NULL;
+	
 	m_pSettings = pSettings;
 	
 	ItemArtDescription* pArtDesc = pSettings->pItemArt;
