@@ -14,8 +14,6 @@
 
 void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosition, const vec3* pDirection, u32 texIndex)
 {
-	m_pBody = NULL;
-	
 	m_pSettings = pSettings;
 	
 	ItemArtDescription* pArtDesc = pSettings->pItemArt;
@@ -78,6 +76,7 @@ void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosit
 		}
 	}
 	
+	m_pBody = NULL;
 	if(pSettings->pBox2D_ParticleSettings != NULL)
 	{
 		Box2D_ParticleSettings* pCurrSettings = &pSettings->pBox2D_ParticleSettings[texIndex];
