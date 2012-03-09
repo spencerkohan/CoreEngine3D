@@ -601,6 +601,7 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 			//Draw!
 			pGeom->drawFunc(pGeom->drawObject);
 			
+			vertexData = NULL;
 		}
 		else
 		{
