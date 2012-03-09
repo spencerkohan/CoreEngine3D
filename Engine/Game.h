@@ -169,6 +169,7 @@ public:
 	MouseInputState m_mouseState;
 	KeyboardInputState m_keyboardState;
 #endif
+	void Box2D_SetPhysicsIsLocked(bool isLocked);
 	void Box2D_TogglePhysicsDebug(bool allowPhysicsDebugDraw);
 	void ResetCamera();
 	void SetCameraMode(CameraMode mode);
@@ -242,6 +243,7 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	f32 m_camLerpTotalTime;
 	
 	bool m_levelHasCamRestraints;
+	
 	s32 m_camExtentTL_X;
 	s32 m_camExtentTL_Y;
 	s32 m_camExtentBR_X;
@@ -257,6 +259,7 @@ private:
 	
 	CameraMode m_cameraMode;
 	
+	bool m_Box2D_PhysicsIsLocked;
 	bool m_Box2D_ContinuousPhysicsEnabled;
 	bool m_Box2D_allowObjectsToSleep;
 	

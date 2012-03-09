@@ -66,6 +66,8 @@ bool Game::Init()
 {
 	m_paused = false;
 	
+	m_Box2D_PhysicsIsLocked = false;
+	
 	m_numTilesToDelete = 0;
 	
 	m_parallaxScale = 0.0f;
@@ -276,7 +278,14 @@ void Game::Update(f32 timeElapsed)
 	
 	if(m_Box2D_pWorld != NULL)
 	{
-		m_Box2D_pWorld->Step(timeElapsed, 5, 5);
+		if(m_Box2D_PhysicsIsLocked)
+		{
+			m_Box2D_pWorld->Step(1.0f/60.0f, 5, 5);
+		}
+		else
+		{
+			m_Box2D_pWorld->Step(timeElapsed, 5, 5);
+		}
 		
 #ifdef _DEBUG
 		m_Box2D_pWorld->DrawDebugData();
@@ -689,6 +698,10 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 	vec3 position;
 	ScaleVec3(&position,pPosition,-1.0f);
 
+	vec3 negPosition;
+	CopyVec3(&negPosition,&position);
+	negPosition.y = -position.y;
+	
 	for(s32 i=0; i<NumLevelLayers; ++i)
 	{
 		const LevelLayer currLayer = (LevelLayer)i;
@@ -724,7 +737,8 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		if(m_parallaxScale != 0.0f)
 		{
 			vec3 parallaxDiffVec;
-			SubVec3(&parallaxDiffVec,&m_parallaxBasePos,&position);
+			
+			SubVec3(&parallaxDiffVec,&m_parallaxBasePos,&negPosition);
 			SubScaledVec3_Self(&pCurrLayer->position,&parallaxDiffVec,(f32)(adjustedIndex-LevelLayer_Main1)*m_parallaxScale);
 		}
 		
@@ -1087,6 +1101,11 @@ void Game::DestroyTile(s32 index_x, s32 index_Y, const vec2* pVel)
 	}
 	
 	++m_numTilesToDelete;
+}
+
+void Game::Box2D_SetPhysicsIsLocked(bool isLocked)
+{
+	m_Box2D_PhysicsIsLocked = isLocked;
 }
 
 
