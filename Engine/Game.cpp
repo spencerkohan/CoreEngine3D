@@ -744,7 +744,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		}
 
 		Layer* pCurrLayer = &m_layers[i];
-		if(pCurrLayer->tiles == NULL)
+		if(pCurrLayer->pLevelData == NULL)
 		{
 			continue;
 		}
@@ -1225,8 +1225,15 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 		if(pCurrLayer->pLevelData != NULL)
 		{
 			delete[] pCurrLayer->pLevelData;
+			pCurrLayer->pLevelData = NULL;
 		}
-		pCurrLayer->pLevelData = NULL;
+		
+		
+		if(pCurrLayer->tiles != NULL)
+		{
+			delete[] pCurrLayer->tiles;
+			pCurrLayer->tiles = NULL;
+		}
 	}
 	
 	m_numTilesToDelete = 0;
