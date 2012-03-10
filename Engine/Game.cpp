@@ -777,7 +777,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		const s32 numScreenTilesX = (f32)GLRENDERER->screenWidth_points/GAME->GetTileSize();
 		
 		int xStart = ClampS32(tilePosX, 0, numTilesX);
-		int xEnd = ClampS32(tilePosX+numScreenTilesX+1, 0, numTilesX);
+		int xEnd = ClampS32(tilePosX+numScreenTilesX+2, 0, numTilesX);
 		
 		assert(xEnd < numTilesX+1);
 		

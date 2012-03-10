@@ -179,7 +179,7 @@
 
 /* Begin PBXFileReference section */
 		230341B114FAF4AB006EC856 /* BasicParticle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicParticle.h; sourceTree = "<group>"; };
-		230341B414FAF4B8006EC856 /* BasicParticle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BasicParticle.cpp; sourceTree = "<group>"; };
+		230341B414FAF4B8006EC856 /* BasicParticle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = BasicParticle.cpp; sourceTree = "<group>"; };
 		23310A3414AD91120001D4E3 /* CoreInput_PCInputState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreInput_PCInputState.h; sourceTree = "<group>"; };
 		23310A3714AD91220001D4E3 /* CoreInput_PCInputState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreInput_PCInputState.cpp; sourceTree = "<group>"; };
 		233BBC1214F4B11B00BB12FA /* Box2DContactListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DContactListener.cpp; sourceTree = "<group>"; };
