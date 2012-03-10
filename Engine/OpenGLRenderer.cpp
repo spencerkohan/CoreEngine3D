@@ -2565,7 +2565,7 @@ void OpenGLRenderer::SortRenderableGeometry3DList(RenderableObjectType type)
 			
 			if(pGeom->drawObject != NULL)
 			{
-				GU_InsertPositiveValueAsBits(&sortValue,allOnes,9,5);
+				GU_InsertPositiveValueAsBits(&sortValue,0,9,5);
 			}
 			else
 			{
@@ -5272,7 +5272,7 @@ bool LoadPNGImage(const char* fileName, int &outWidth, int &outHeight, bool &out
 
 bool RenderableGeometry3DCompare_SortValue(const RenderableGeometry3D& lhs, const RenderableGeometry3D& rhs)
 {
-	return lhs.sortValue <= rhs.sortValue;
+	return lhs.sortValue < rhs.sortValue;
 }
 
 
@@ -5281,7 +5281,7 @@ bool RenderableGeometry3DCompare_SortByZ(const RenderableGeometry3D& lhs, const 
 	const vec3* pPosLHS = mat4f_GetPos((f32*)lhs.worldMat);
 	const vec3* pPosRHS = mat4f_GetPos((f32*)rhs.worldMat);
 	
-	return pPosLHS->z <= pPosRHS->z;
+	return pPosLHS->z < pPosRHS->z;
 }
 
 
