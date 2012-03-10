@@ -856,13 +856,14 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 				{
 					pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
 					
+					if(pCurrRenderable == NULL)
+					{
+						COREDEBUG_PrintDebugMessage("Running out of tile renderables. Use SetTileCullingRange to increase the limit.");
+						continue;
+					}
+					
 					//TODO: do something better than this if possible
 					pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
-				}
-				
-				if(pCurrRenderable == NULL)
-				{
-					continue;
 				}
 
 				const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+baseX;
