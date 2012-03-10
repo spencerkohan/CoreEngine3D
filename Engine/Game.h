@@ -201,6 +201,7 @@ public:
 	void SetParallaxPosition(const vec3* pParallaxPos);
 	void SetParallaxScale(f32 parallaxScale);
 	void SetFollowCamTarget(const vec3* pFollowCamPos);
+	void ToggleTileVisibility(Tile* pTile, bool isVisible);
 	void ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIndex_Y,bool isVisible);
 	Layer* GetLayer(LevelLayer layer);
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
@@ -208,6 +209,7 @@ public:
 #endif
 protected:	//Only stuff that can be called from the game.cpp goes here
 	
+	void SetTileCullingRange(s32 cullingRange);
 	void ConstrainCameraToTiledLevel();
 	bool LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters);
 	void UpdateTiledLevelPosition(vec3* pPosition);
@@ -255,6 +257,8 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	
 	
 private:
+	inline void CullTile(Layer* layer, s32 x, s32 y);
+	
 	pugi::xml_document m_TMXDoc;
 	
 	CameraMode m_cameraMode;
@@ -295,6 +299,8 @@ private:
 	u32 m_currSongSource;
 	char* m_songPlaylist[GAME_MAX_SONGS_IN_PLAYLIST];
 	u32 m_numSongsInPlaylist;
+	
+	u32 m_cullingRange;
 	
 #if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
 	AVAudioPlayer* m_pAudioPlayer;

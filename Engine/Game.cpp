@@ -66,6 +66,8 @@ bool Game::Init()
 {
 	m_paused = false;
 	
+	m_cullingRange = 30;
+	
 	m_Box2D_PhysicsIsLocked = false;
 	
 	m_numTilesToDelete = 0;
@@ -303,24 +305,21 @@ void Game::Update(f32 timeElapsed)
 		const s32 indexY = pCurrTile->tilePos.y;
 		
 		Tile* pMainTile = &ARRAY2D(pMainLayer->tiles, indexX, indexY, pMainLayer->numTilesX);
+		ToggleTileVisibility(pMainTile,false);
 		
 		//Only destroy visible tiles
 		//This will also help with possible repeated tiles showing
 		//up in this list
-		if(pMainTile->isVisible)
+
+		Tile* pCollTile = &ARRAY2D(pCollLayer->tiles, indexX, indexY, pCollLayer->numTilesX);
+		if(pCollTile->pBody != NULL)
 		{
-			Tile* pCollTile = &ARRAY2D(pCollLayer->tiles, indexX, indexY, pCollLayer->numTilesX);
-			
-			pMainTile->isVisible = false;
-			if(pCollTile->pBody != NULL)
-			{
-				m_Box2D_pWorld->DestroyBody(pCollTile->pBody);
-				pCollTile->pBody = NULL;
-			}
-			
-			//Do special stuff according to your specific game
-			TileDestructionCallback(indexX, indexY, &pCurrTile->hitVel);
+			m_Box2D_pWorld->DestroyBody(pCollTile->pBody);
+			pCollTile->pBody = NULL;
 		}
+		
+		//Do special stuff according to your specific game
+		TileDestructionCallback(indexX, indexY, &pCurrTile->hitVel);
 	}
 	
 	m_numTilesToDelete = 0;
@@ -692,6 +691,33 @@ CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDes
 }
 
 
+void Game::CullTile(Layer* layer, s32 x, s32 y)
+{
+	Tile* pTile = &ARRAY2D(layer->tiles, x, y, layer->numTilesX);
+	if(pTile->tileID == -1)
+	{
+		return;
+	}
+	
+	//If there is a valid renderable, delete it
+	if(pTile->hRenderable.IsValid() == true)
+	{
+		RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+		
+		if(pCurrRenderable != NULL)
+		{
+			pCurrRenderable->DeleteObject();	
+		}
+		
+		pTile->hRenderable = CoreObjectHandle();
+	}
+}
+
+void Game::SetTileCullingRange(s32 cullingRange)
+{
+	m_cullingRange = cullingRange;
+}
+
 //TODO: OPTIMIZE! This is the slowest function in the whole game
 void Game::UpdateTiledLevelPosition(vec3* pPosition)
 {
@@ -744,115 +770,106 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		
 		const s32 numTilesX = pCurrLayer->numTilesX;
 		const s32 numTilesY = pCurrLayer->numTilesY;
+		
+		
+		const s32 tilePosX = (s32)(-pCurrLayer->position.x/GAME->GetTileSize());
+		
+		const s32 numScreenTilesX = (f32)GLRENDERER->screenWidth_points/GAME->GetTileSize();
+		
+		int xStart = ClampS32(tilePosX, 0, numTilesX);
+		int xEnd = ClampS32(tilePosX+numScreenTilesX+1, 0, numTilesX);
+		
+		assert(xEnd < numTilesX+1);
+		
+		const s32 tilePosY = (s32)(-pCurrLayer->position.y/GAME->GetTileSize());
+		
+		const s32 numScreenTilesY = (f32)GLRENDERER->screenHeight_points/GAME->GetTileSize();
+		
+		const s32 yStart = ClampS32(tilePosY, 0, numTilesY);
+		const s32 yEnd = ClampS32(tilePosY+numScreenTilesY+1, 0, numTilesY);
 
 		//If it's the TileObjectArt layer, just update the uniforms
-		if(i == (s32)LevelLayer_TileObjectArt)
+		
+		//If it's any other layer, do the whole delete/create tiles thing
+		
+		const s32 cullLoopStartX = MaxS32(xStart-m_cullingRange,0);
+		const s32 cullLoopEndX = MinS32(xEnd+m_cullingRange,numTilesX);
+		
+		const s32 cullLoopStartY = MaxS32(yStart-m_cullingRange,0);
+		const s32 cullLoopEndY = MinS32(yEnd+m_cullingRange,numTilesY);
+		
+		//CULLING
+		
+		//TOP AND BOTTOM
+		for(s32 y=cullLoopStartY; y<yStart; ++y)
 		{
-			for(int y=0; y<numTilesY; ++y)
+			for(s32 x=xStart; x<xEnd; ++x)
 			{
-				for(int x=0; x<numTilesX; ++x)
-				{
-					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, numTilesX);
-					if(pTile->tileID == -1)
-					{
-						continue;
-					}
-
-					RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
-					if(pCurrRenderable)
-					{
-						//TODO: do something better than this if possible
-						pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
-						
-						if(renderMaterial == MT_TextureAndFogColorWithTexcoordOffset)
-						{
-							pCurrRenderable->material.uniqueUniformValues[1] = (u8*)&pCurrLayer->fogColor;
-						}
-					}
-				}
+				CullTile(pCurrLayer,x,y);
 			}
 		}
-		//If it's any other layer, do the whole delete/create tiles thing
-		else
+		
+		for(s32 y=yEnd; y<cullLoopEndY; ++y)
 		{
-			for(int y=0; y<numTilesY; ++y)
+			for(s32 x=xStart; x<xEnd; ++x)
 			{
-				const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+m_tiledLevelDescription.halfTileDisplaySizeY+((s32)pCurrLayer->position.y);
-				
-				for(int x=0; x<numTilesX; ++x)
+				CullTile(pCurrLayer,x,y);
+			}
+		}
+		
+		//SIDES
+		for(s32 x=cullLoopStartX; x<xStart; ++x)
+		{
+			for(s32 y=0; y<numTilesY; ++y)
+			{
+				CullTile(pCurrLayer,x,y);
+			}
+		}
+		
+		for(s32 x=xEnd; x<cullLoopEndX; ++x)
+		{
+			for(s32 y=0; y<numTilesY; ++y)
+			{
+				CullTile(pCurrLayer,x,y);
+			}
+		}
+		
+		const s32 baseX = m_tiledLevelDescription.halfTileDisplaySizeX+((s32)pCurrLayer->position.x);
+		const s32 baseY = m_tiledLevelDescription.halfTileDisplaySizeY+((s32)pCurrLayer->position.y);
+		
+		for(s32 y=yStart; y<yEnd; ++y)
+		{
+			const s32 tileBasePosY = y*m_tiledLevelDescription.tileDisplaySizeY+baseY;
+	
+			for(s32 x=xStart; x<xEnd; ++x)
+			{
+				Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, numTilesX);
+				if(pTile->tileID == -1)
 				{
-					Tile* pTile = &ARRAY2D(pCurrLayer->tiles, x, y, numTilesX);
-					if(pTile->tileID == -1)
-					{
-						continue;
-					}
-					
-					const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+m_tiledLevelDescription.halfTileDisplaySizeX+((s32)pCurrLayer->position.x);
-					
-					
-					//If the tile is off screen, delete it
-					if(tileBasePosX < -m_tiledLevelDescription.halfTileDisplaySizeX
-					   || tileBasePosX > GLRENDERER->screenWidth_points+m_tiledLevelDescription.halfTileDisplaySizeX
-					   || tileBasePosY < -m_tiledLevelDescription.halfTileDisplaySizeY
-					   || tileBasePosY > GLRENDERER->screenHeight_points+m_tiledLevelDescription.halfTileDisplaySizeY
-					   )
-					{
-						//If there is a valid renderable, delete it
-						if(pTile->hRenderable.IsValid() == true)
-						{
-							RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
-
-							if(pCurrRenderable != NULL)
-							{
-								pCurrRenderable->DeleteObject();	
-							}
-							
-							pTile->hRenderable = CoreObjectHandle();
-						}
-					}
-					//If the tile is on screen, create it if it doesn't exist and update it
-					else
-					{
-						RenderableGeometry3D* pCurrRenderable = NULL;
-						
-						//Update existing renderable
-						if(pTile->hRenderable.IsValid() == true)
-						{
-							pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
-						}
-						//Create new renderable
-						else
-						{
-							pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
-						}
-						
-						if(pCurrRenderable == NULL)
-						{
-							continue;
-						}
-						
-						vec3* pCurrPos = mat4f_GetPos(pCurrRenderable->worldMat);
-						pCurrPos->x = 0.5f+tileBasePosX;
-						pCurrPos->y = 0.5f+tileBasePosY;
-
-						if(pTile->isVisible)
-						{
-							pCurrRenderable->material.flags |= RenderFlag_Visible;
-							
-							//TODO: do something better than this if possible
-							pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
-							
-							if(renderMaterial == MT_TextureAndFogColorWithTexcoordOffset)
-							{
-								pCurrRenderable->material.uniqueUniformValues[1] = (u8*)&pCurrLayer->fogColor;
-							}
-						}
-						else
-						{
-							pCurrRenderable->material.flags &= ~RenderFlag_Visible;
-						}
-					}
+					continue;
 				}
+				
+				RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+				//Create new renderable
+				
+				if(pCurrRenderable == NULL)
+				{
+					pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
+					
+					//TODO: do something better than this if possible
+					pCurrRenderable->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
+				}
+				
+				if(pCurrRenderable == NULL)
+				{
+					continue;
+				}
+
+				const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+baseX;
+				
+				vec3* pCurrPos = mat4f_GetPos(pCurrRenderable->worldMat);
+				pCurrPos->x = tileBasePosX;
+				pCurrPos->y = tileBasePosY;
 			}
 		}
 	}
@@ -1060,13 +1077,29 @@ SpawnableEntity* Game::GetSpawnableEntityByTiledUniqueID(u32 tiledUniqueID)
 }
 
 
+void Game::ToggleTileVisibility(Tile* pTile, bool isVisible)
+{
+	if(pTile != NULL && pTile->tileID != -1)
+	{
+		RenderableGeometry3D* pCurrRenderable = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(pTile->hRenderable);
+		if(pCurrRenderable != NULL)
+		{
+			if(isVisible)
+			{
+				pCurrRenderable->material.flags |= RenderFlag_Visible;
+			}
+			else
+			{
+				pCurrRenderable->material.flags &= ~RenderFlag_Visible;
+			}
+		}
+	}
+}
+								 
 void Game::ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIndex_Y,bool isVisible)
 {
 	Tile* pTile = &ARRAY2D(m_layers[levelLayer].tiles, tileIndex_X, tileIndex_Y, m_layers[levelLayer].numTilesX);
-	if(pTile != NULL && pTile->tileID != -1)
-	{
-		pTile->isVisible = isVisible;
-	}
+	ToggleTileVisibility(pTile,isVisible);
 }
 
 void Game::SetFollowCamTarget(const vec3* pFollowCamPos)
@@ -1184,6 +1217,18 @@ void Game::Box2D_SetGravity(f32 x, f32 y)
 
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
 {
+	
+	for(LevelLayer i=(LevelLayer)0; i<NumLevelLayers; ++i)
+	{
+		Layer* pCurrLayer = &m_layers[i];
+		
+		if(pCurrLayer->pLevelData != NULL)
+		{
+			delete[] pCurrLayer->pLevelData;
+		}
+		pCurrLayer->pLevelData = NULL;
+	}
+	
 	m_numTilesToDelete = 0;
 	
 	const u32 tileType = Hash("Tile");
@@ -1353,11 +1398,6 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			}
 			
 			Layer* pCurrLayer = &m_layers[currLayer];
-			if(pCurrLayer->pLevelData != NULL)
-			{
-				delete[] pCurrLayer->pLevelData;
-			}
-			pCurrLayer->pLevelData = NULL;
 			
 			const u32 numTiles = width*height;
 			
@@ -1530,7 +1570,6 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 					pTile->hRenderable = CoreObjectHandle();
 
 					pTile->tileID = ARRAY2D(pData, x, y, width);
-					pTile->isVisible = true;
 					ConvertTileID(&pTile->tileID, &pTile->pDesc);
 					
 					pTile->indexX = x;
@@ -1597,6 +1636,9 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						
 						RenderableGeometry3D* pGeom;
 						pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pGeom,RenderLayer_AlphaBlended2,MT_TextureOnlyWithTexcoordOffset,&pTile->texCoordOffset,true);
+						
+						//TODO: do something better than this if possible
+						pGeom->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
 					}
 				}
 			}

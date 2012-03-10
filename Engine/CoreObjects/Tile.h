@@ -42,7 +42,6 @@ public:
 	s32 tileID;
 	TileSetDescription* pDesc;
 	CoreObjectHandle hRenderable;
-	bool isVisible;
 	vec2 texCoordOffset;
 	s32 indexX;
 	s32 indexY;
