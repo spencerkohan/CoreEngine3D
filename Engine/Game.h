@@ -160,6 +160,7 @@ public:
 	virtual void ReloadLevel(){};
 	virtual void FinishedCurrentLevel(){};
 	virtual u32 Box2D_GetCollisionFlagsForTileIndex(s32 tileIndex){return 1<<CollisionFilter_Ground;}
+	virtual b2Body* Box2D_CreateBodyForTileIndex(s32 tileIndex, s32 posX, s32 posY);
 	virtual void TileDestructionCallback(s32 tileIndexX, s32 tileIndexY, const vec2* pHitVel){};
 #if defined (PLATFORM_IOS)
 	TouchInputIOS* m_pTouchInput;
@@ -195,6 +196,8 @@ public:
 	void DestroyTile(s32 index_x, s32 index_Y, const vec2* pVel);
 	f32 GetTileSize();
 	f32 GetHalfTileSize();
+	f32 GetTileSizeMeters(){return m_tileSizeMeters;}
+	f32 GetHalfTileSizeMeters(){return m_halfTileSizeMeters;}
 	f32 GetPixelsPerMeter();
 	const vec3* GetCameraPosition();
 	void SetCameraPosition(const vec3* pCamPos, f32 lerpTime);	//use with caution
@@ -301,6 +304,8 @@ private:
 	u32 m_numSongsInPlaylist;
 	
 	u32 m_cullingRange;
+	f32 m_tileSizeMeters;
+	f32 m_halfTileSizeMeters;
 	
 #if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
 	AVAudioPlayer* m_pAudioPlayer;

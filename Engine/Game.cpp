@@ -1216,6 +1216,35 @@ void Game::Box2D_SetGravity(f32 x, f32 y)
 	m_Box2D_pWorld->SetGravity(b2Vec2(x,y));
 }
 
+
+b2Body* Game::Box2D_CreateBodyForTileIndex(s32 tileIndex, s32 posX, s32 posY)
+{
+	const f32 halfTileSize = GetHalfTileSizeMeters();
+	
+	vec3 pos;
+	GetPositionFromTileIndices(posX, posY, &pos);
+	
+	b2BodyDef bodyDef;
+	bodyDef.type = b2_staticBody;
+	
+	b2FixtureDef fixtureDef;
+	fixtureDef.density = 1;
+	fixtureDef.friction = 0.4f;
+	b2PolygonShape polygonShape;
+	polygonShape.SetAsBox(halfTileSize,halfTileSize);
+	fixtureDef.shape = &polygonShape;
+	fixtureDef.filter.categoryBits = Box2D_GetCollisionFlagsForTileIndex(tileIndex);
+	fixtureDef.filter.maskBits = 0xFFFF;
+	
+	bodyDef.position.Set(pos.x/m_pixelsPerMeter, pos.y/m_pixelsPerMeter);
+	
+	b2Body* pBody = m_Box2D_pWorld->CreateBody(&bodyDef);
+	pBody->CreateFixture(&fixtureDef);
+	
+	return pBody;
+}
+
+
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
 {
 	
@@ -1243,9 +1272,11 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 	
 	m_levelHasCamRestraints = false;
 	
-	m_pixelsPerMeter = (f32)tileWidthPixels/tileSizeMeters;
+	m_tileSizeMeters = tileSizeMeters;
 	
-	const f32 halfTileSize = tileSizeMeters*0.5f;
+	m_pixelsPerMeter = (f32)tileWidthPixels/tileSizeMeters;
+
+	m_halfTileSizeMeters = tileSizeMeters*0.5f;
 	
 	m_numSpawnableEntities = 0;
 
@@ -1604,25 +1635,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						
 						pTile->SetEntityType(tileType);
 						
-						vec3 pos;
-						GetPositionFromTileIndices(x, y, &pos);
-						
-						b2BodyDef bodyDef;
-						bodyDef.type = b2_staticBody;
-						
-						b2FixtureDef fixtureDef;
-						fixtureDef.density = 1;
-						fixtureDef.friction = 0.4f;
-						b2PolygonShape polygonShape;
-						polygonShape.SetAsBox(halfTileSize,halfTileSize);
-						fixtureDef.shape = &polygonShape;
-						fixtureDef.filter.categoryBits = Box2D_GetCollisionFlagsForTileIndex(pTile->tileID);
-						fixtureDef.filter.maskBits = 0xFFFF;
-						
-						bodyDef.position.Set(pos.x/m_pixelsPerMeter, pos.y/m_pixelsPerMeter);
-						
-						pTile->pBody = m_Box2D_pWorld->CreateBody(&bodyDef);
-						pTile->pBody->CreateFixture(&fixtureDef);
+						pTile->pBody = Box2D_CreateBodyForTileIndex(pTile->tileID, x, y);
 						
 						pTile->pBody->SetUserData(pTile);
 					}
