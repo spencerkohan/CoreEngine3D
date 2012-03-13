@@ -5,6 +5,9 @@
       location = "group:../../CoreEngine3D(OSX).xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:PNG2BIN/PNG2BIN.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:FontToTexture/FontToTexture.xcodeproj">
    </FileRef>
    <FileRef

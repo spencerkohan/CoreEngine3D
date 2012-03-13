@@ -48,6 +48,26 @@ extern const color4f color4f_pink;
 
 extern const u32 PVRTEX_PIXELTYPE;			// pixel type is always in the last 16bits of the flags
 
+struct CoreImageHeader
+{
+	u32 dataSize; //how many bytes
+	u32 flags;	//for now just alpha or no
+	u32 width;
+	u32 height;
+	u32 temp0;
+	u32 temp1;
+	u32 temp2;
+	u32 temp3;
+	u32 temp4;
+	u32 temp5;
+	u32 temp6;
+	u32 temp7;
+	u32 temp8;
+	u32 temp9;
+	u32 temp10;
+	u32 temp11;
+};
+
 /*!***************************************************************************
  Describes the header of a PVR header-texture
  *****************************************************************************/

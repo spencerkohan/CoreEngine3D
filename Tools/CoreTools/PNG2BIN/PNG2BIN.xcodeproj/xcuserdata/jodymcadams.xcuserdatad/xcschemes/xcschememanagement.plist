@@ -4,15 +4,15 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>HashString.xcscheme_^#shared#^_</key>
+		<key>PNG2BIN.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>23EAA01B14DF6AB800F0B167</key>
+		<key>DD44AA34150FBC7A00960BCE</key>
 		<dict>
 			<key>primary</key>
 			<true/>

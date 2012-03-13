@@ -1,0 +1,226 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DD44AA3A150FBC7A00960BCE /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD44AA39150FBC7A00960BCE /* main.cpp */; };
+		DD44AA3C150FBC7A00960BCE /* PNG2BIN.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = DD44AA3B150FBC7A00960BCE /* PNG2BIN.1 */; };
+		DD44AA46150FBCF300960BCE /* libCoreEngine3D(OSX).a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD44AA45150FBCF300960BCE /* libCoreEngine3D(OSX).a */; };
+		DD44AA4C150FC6DE00960BCE /* libz.1.2.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DD44AA4B150FC6DE00960BCE /* libz.1.2.5.dylib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DD44AA33150FBC7A00960BCE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				DD44AA3C150FBC7A00960BCE /* PNG2BIN.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		DD44AA35150FBC7A00960BCE /* PNG2BIN */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PNG2BIN; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD44AA39150FBC7A00960BCE /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		DD44AA3B150FBC7A00960BCE /* PNG2BIN.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = PNG2BIN.1; sourceTree = "<group>"; };
+		DD44AA45150FBCF300960BCE /* libCoreEngine3D(OSX).a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libCoreEngine3D(OSX).a"; path = "../../../../../../Library/Developer/Xcode/DerivedData/CoreTools-gwwpditkjdcstkfcsvjylnkwyxky/Build/Products/Debug/libCoreEngine3D(OSX).a"; sourceTree = "<group>"; };
+		DD44AA4B150FC6DE00960BCE /* libz.1.2.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.5.dylib; path = usr/lib/libz.1.2.5.dylib; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DD44AA32150FBC7A00960BCE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD44AA4C150FC6DE00960BCE /* libz.1.2.5.dylib in Frameworks */,
+				DD44AA46150FBCF300960BCE /* libCoreEngine3D(OSX).a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DD44AA2A150FBC7A00960BCE = {
+			isa = PBXGroup;
+			children = (
+				DD44AA4B150FC6DE00960BCE /* libz.1.2.5.dylib */,
+				DD44AA45150FBCF300960BCE /* libCoreEngine3D(OSX).a */,
+				DD44AA38150FBC7A00960BCE /* PNG2BIN */,
+				DD44AA36150FBC7A00960BCE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DD44AA36150FBC7A00960BCE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DD44AA35150FBC7A00960BCE /* PNG2BIN */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DD44AA38150FBC7A00960BCE /* PNG2BIN */ = {
+			isa = PBXGroup;
+			children = (
+				DD44AA39150FBC7A00960BCE /* main.cpp */,
+				DD44AA3B150FBC7A00960BCE /* PNG2BIN.1 */,
+			);
+			path = PNG2BIN;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DD44AA34150FBC7A00960BCE /* PNG2BIN */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DD44AA3F150FBC7A00960BCE /* Build configuration list for PBXNativeTarget "PNG2BIN" */;
+			buildPhases = (
+				DD44AA31150FBC7A00960BCE /* Sources */,
+				DD44AA32150FBC7A00960BCE /* Frameworks */,
+				DD44AA33150FBC7A00960BCE /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PNG2BIN;
+			productName = PNG2BIN;
+			productReference = DD44AA35150FBC7A00960BCE /* PNG2BIN */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DD44AA2C150FBC7A00960BCE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
+			buildConfigurationList = DD44AA2F150FBC7A00960BCE /* Build configuration list for PBXProject "PNG2BIN" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = DD44AA2A150FBC7A00960BCE;
+			productRefGroup = DD44AA36150FBC7A00960BCE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DD44AA34150FBC7A00960BCE /* PNG2BIN */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DD44AA31150FBC7A00960BCE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD44AA3A150FBC7A00960BCE /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		DD44AA3D150FBC7A00960BCE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = ../../../../CoreEngine3D/;
+			};
+			name = Debug;
+		};
+		DD44AA3E150FBC7A00960BCE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = ../../../../CoreEngine3D/;
+			};
+			name = Release;
+		};
+		DD44AA40150FBC7A00960BCE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/CoreTools-gwwpditkjdcstkfcsvjylnkwyxky/Build/Products/Debug\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		DD44AA41150FBC7A00960BCE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../Library/Developer/Xcode/DerivedData/CoreTools-gwwpditkjdcstkfcsvjylnkwyxky/Build/Products/Debug\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DD44AA2F150FBC7A00960BCE /* Build configuration list for PBXProject "PNG2BIN" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD44AA3D150FBC7A00960BCE /* Debug */,
+				DD44AA3E150FBC7A00960BCE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DD44AA3F150FBC7A00960BCE /* Build configuration list for PBXNativeTarget "PNG2BIN" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD44AA40150FBC7A00960BCE /* Debug */,
+				DD44AA41150FBC7A00960BCE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DD44AA2C150FBC7A00960BCE /* Project object */;
+}
