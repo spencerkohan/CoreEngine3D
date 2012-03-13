@@ -24,7 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		23B39C4C14F21C410011CE9A /* libCoreEngine3D(OSX).a */ = {isa = PBXFileReference; lastKnownFileType = file; name = "libCoreEngine3D(OSX).a"; path = "../../../build/Release/libCoreEngine3D(OSX).a"; sourceTree = "<group>"; };
+		23B39C4C14F21C410011CE9A /* libCoreEngine3D(OSX).a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libCoreEngine3D(OSX).a"; path = "../../../build/Release/libCoreEngine3D(OSX).a"; sourceTree = "<group>"; };
 		23BAE23114DF7AAD007FC3C8 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 		23EAA01C14DF6AB800F0B167 /* HashString */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HashString; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -84,7 +84,7 @@
 		23EAA01314DF6AB700F0B167 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = 23EAA01614DF6AB700F0B167 /* Build configuration list for PBXProject "HashString" */;
 			compatibilityVersion = "Xcode 3.2";
