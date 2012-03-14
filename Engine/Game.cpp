@@ -1756,13 +1756,16 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			COREDEBUG_PrintDebugMessage("Layer: %s",layerName);
 			
 			//Create collision
-			/*if(strcmp(layerName,"Collision") == 0)
+			if(strcmp(layerName,"Collision") == 0)
 			{
 				for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
 				{
 					pugi::xml_node polylinePoints = object.child("polyline");
 					if(polylinePoints.empty() == false)
 					{
+						const f32 posX = (f32)atoi(object.attribute("x").value());
+						const f32 posY = (f32)atoi(object.attribute("y").value());
+						
 						pugi::xml_attribute points = polylinePoints.attribute("points");
 						const char* polyLineString = points.value();
 						printf("polyline: %s\n",points.value());
@@ -1786,11 +1789,11 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 								
 								if(leftNumber)
 								{
-									polyLinePoints[numPolyPoints].x = floatValue*unitConversionScale/m_pixelsPerMeter;
+									polyLinePoints[numPolyPoints].x = (posX+floatValue)*unitConversionScale/m_pixelsPerMeter;
 								}
 								else
 								{
-									polyLinePoints[numPolyPoints].y = -floatValue*unitConversionScale/m_pixelsPerMeter;
+									polyLinePoints[numPolyPoints].y = (posY+floatValue)*unitConversionScale/m_pixelsPerMeter;
 									++numPolyPoints;
 								}
 								
@@ -1816,6 +1819,18 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 							b2EdgeShape shape;
 							shape.Set(polyLinePoints[vertIDX], polyLinePoints[vertIDX+1]);
 							
+							if(vertIDX > 0)
+							{
+								shape.m_hasVertex0 = true;
+								shape.m_vertex0 = polyLinePoints[vertIDX-1];
+							}
+							
+							if(vertIDX < numPolyPoints-2)
+							{
+								shape.m_hasVertex3 = true;
+								shape.m_vertex3 = polyLinePoints[vertIDX+2];
+							}
+							
 							fixtureDef.shape = &shape;
 							fixtureDef.filter.categoryBits = 1 << CollisionFilter_Ground;
 							fixtureDef.filter.maskBits = 0xFFFF;
@@ -1829,7 +1844,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				}
 			}
 			//Create objects
-			else*/
+			else
 			{
 				for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
 				{
