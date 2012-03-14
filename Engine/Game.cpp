@@ -1265,6 +1265,52 @@ b2Body* Game::Box2D_CreateBodyForTileIndex(s32 tileIndex, s32 posX, s32 posY)
 }
 
 
+void Game::TMXStringToPoints(const char* valueString, f32 posX, f32 posY, b2Vec2* pOut_Points, u32* pOut_NumPoints)
+{
+	char buffer[64];
+	u32 bufferIndex;
+	
+	u32 numPoints = 0;
+	bufferIndex = 0;
+	bool leftNumber = true;
+	const s32 strLen = strlen(valueString);
+	for(u32 strIDX=0; strIDX<strLen+1; ++strIDX)
+	{
+		const char currChar = valueString[strIDX];
+		
+		if(currChar == ','
+		   || currChar == ' '
+		   || currChar == '"'
+		   || strIDX == strLen)
+		{
+			buffer[bufferIndex] = ' ';
+			
+			const f32 floatValue = atof(buffer);
+			
+			if(leftNumber)
+			{
+				pOut_Points[numPoints].x = (posX+floatValue)*m_unitConversionScale/m_pixelsPerMeter;
+			}
+			else
+			{
+				pOut_Points[numPoints].y = (posY+floatValue)*m_unitConversionScale/m_pixelsPerMeter;
+				++numPoints;
+			}
+			
+			bufferIndex = 0;
+			leftNumber = !leftNumber;
+		}
+		else
+		{
+			buffer[bufferIndex] = currChar;
+			++bufferIndex;
+		}
+	}
+	
+	*pOut_NumPoints = numPoints;
+}
+
+
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
 {
 	
@@ -1320,7 +1366,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 		m_tiledLevelDescription.halfTileDisplaySizeX = m_tiledLevelDescription.tileDisplaySizeX/2;
 		m_tiledLevelDescription.halfTileDisplaySizeY = m_tiledLevelDescription.tileDisplaySizeY/2;
 		
-		const f32 unitConversionScale = (f32)tileWidthPixels/(f32)mapTileSizeX;
+		m_unitConversionScale = (f32)tileWidthPixels/(f32)mapTileSizeX;
 		
 		m_numTileSetDescriptions = 0;
 		for (pugi::xml_node layer = map.child("tileset"); layer; layer = layer.next_sibling("tileset"),++m_numTileSetDescriptions)
@@ -1743,12 +1789,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 		
 		b2Vec2 polyLinePoints[64];
 		u32 numPolyPoints;
-		
-		char buffer[64];
-		u32 bufferIndex;
-		
-		const f32 halfTileSize = GetHalfTileSizeMeters();
-		
+	
 		for (pugi::xml_node layer = map.child("objectgroup"); layer; layer = layer.next_sibling("objectgroup"))
 		{
 			const char* layerName = layer.attribute("name").value();
@@ -1760,52 +1801,24 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			{
 				for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
 				{
-					pugi::xml_node polylinePoints = object.child("polyline");
-					if(polylinePoints.empty() == false)
+					const f32 posX = (f32)atoi(object.attribute("x").value());
+					const f32 posY = (f32)atoi(object.attribute("y").value());
+					
+					bool isPolygon = false;
+					
+					pugi::xml_node pointList = object.child("polyline");
+					if(pointList.empty() == true)
 					{
-						const f32 posX = (f32)atoi(object.attribute("x").value());
-						const f32 posY = (f32)atoi(object.attribute("y").value());
-						
-						pugi::xml_attribute points = polylinePoints.attribute("points");
+						pointList = object.child("polygon");
+						isPolygon = true;
+					}
+					
+					if(pointList.empty() == false)
+					{
+						pugi::xml_attribute points = pointList.attribute("points");
 						const char* polyLineString = points.value();
-						printf("polyline: %s\n",points.value());
 						
-						numPolyPoints = 0;
-						bufferIndex = 0;
-						bool leftNumber = true;
-						const s32 strLen = strlen(polyLineString);
-						for(u32 strIDX=0; strIDX<strLen+1; ++strIDX)
-						{
-							const char currChar = polyLineString[strIDX];
-							
-							if(currChar == ','
-							   || currChar == ' '
-							   || currChar == '"'
-							   || strIDX == strLen)
-							{
-								buffer[bufferIndex] = ' ';
-								
-								const f32 floatValue = atof(buffer);
-								
-								if(leftNumber)
-								{
-									polyLinePoints[numPolyPoints].x = (posX+floatValue)*unitConversionScale/m_pixelsPerMeter;
-								}
-								else
-								{
-									polyLinePoints[numPolyPoints].y = (posY+floatValue)*unitConversionScale/m_pixelsPerMeter;
-									++numPolyPoints;
-								}
-								
-								bufferIndex = 0;
-								leftNumber = !leftNumber;
-							}
-							else
-							{
-								buffer[bufferIndex] = currChar;
-								++bufferIndex;
-							}
-						}	
+						TMXStringToPoints(polyLineString, posX, posY, polyLinePoints, &numPolyPoints);	
 						
 						for(u32 vertIDX=0; vertIDX<numPolyPoints-1; ++vertIDX)
 						{
@@ -1840,6 +1853,35 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 							b2Body* pBody = Box2D_GetWorld()->CreateBody(&bodyDef);
 							pBody->CreateFixture(&fixtureDef);
 						}
+						
+						if(isPolygon == true && numPolyPoints > 2)
+						{
+							b2BodyDef bodyDef;
+							bodyDef.type = b2_staticBody;
+							
+							b2FixtureDef fixtureDef;
+							fixtureDef.density = 1;
+							fixtureDef.friction = 0.4f;
+							
+							b2EdgeShape shape;
+							shape.Set(polyLinePoints[numPolyPoints-1], polyLinePoints[0]);
+						
+							shape.m_hasVertex0 = true;
+							shape.m_vertex0 = polyLinePoints[numPolyPoints-2];
+
+
+							shape.m_hasVertex3 = true;
+							shape.m_vertex3 = polyLinePoints[1];
+							
+							fixtureDef.shape = &shape;
+							fixtureDef.filter.categoryBits = 1 << CollisionFilter_Ground;
+							fixtureDef.filter.maskBits = 0xFFFF;
+							
+							bodyDef.position.Set(0, 0);
+							
+							b2Body* pBody = Box2D_GetWorld()->CreateBody(&bodyDef);
+							pBody->CreateFixture(&fixtureDef);
+						}
 					}
 				}
 			}
@@ -1855,8 +1897,8 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 					
 					pCurrEnt->tiledUniqueID = atoi(object.attribute("uniqueID").value());
 					
-					const f32 x = (f32)atoi(object.attribute("x").value())*unitConversionScale;
-					const f32 y = (f32)atoi(object.attribute("y").value())*unitConversionScale;
+					const f32 x = (f32)atoi(object.attribute("x").value())*m_unitConversionScale;
+					const f32 y = (f32)atoi(object.attribute("y").value())*m_unitConversionScale;
 					
 					pCurrEnt->position.x = x;
 					pCurrEnt->position.y = y;
@@ -1884,8 +1926,8 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						pCurrEnt->tileID = -1;
 						pCurrEnt->pDesc = NULL;
 						
-						width = (f32)atoi(object.attribute("width").value())*unitConversionScale;
-						height = (f32)atoi(object.attribute("height").value())*unitConversionScale;
+						width = (f32)atoi(object.attribute("width").value())*m_unitConversionScale;
+						height = (f32)atoi(object.attribute("height").value())*m_unitConversionScale;
 						
 						pCurrEnt->position.x += width/2.0f;
 						pCurrEnt->position.y += height/2.0f;

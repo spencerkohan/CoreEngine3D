@@ -206,6 +206,7 @@ public:
 	void SetFollowCamTarget(const vec3* pFollowCamPos);
 	void ToggleTileVisibility(Tile* pTile, bool isVisible);
 	void ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIndex_Y,bool isVisible);
+	
 	Layer* GetLayer(LevelLayer layer);
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState* GetDeviceInputState();
@@ -260,6 +261,7 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	
 	
 private:
+	void TMXStringToPoints(const char* valueString, f32 posX, f32 posY, b2Vec2* pOut_Points, u32* pOut_NumPoints);
 	inline void CullTile(Layer* layer, s32 x, s32 y);
 	
 	pugi::xml_document m_TMXDoc;
@@ -306,6 +308,7 @@ private:
 	u32 m_cullingRange;
 	f32 m_tileSizeMeters;
 	f32 m_halfTileSizeMeters;
+	f32 m_unitConversionScale;
 	
 #if defined (PLATFORM_OSX) || defined (PLATFORM_IOS)
 	AVAudioPlayer* m_pAudioPlayer;
