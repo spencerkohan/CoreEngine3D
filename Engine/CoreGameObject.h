@@ -38,6 +38,7 @@ public:
 	virtual bool Box2D_GetLinkOffset(vec2* pOut_OffsetVec){return false;}
 	virtual f32 Box2D_GetInteractionInfluenceX(){return 1.0f;}
 	virtual f32 Box2D_GetInteractionInfluenceY(){return 1.0f;}
+	virtual void Box2D_HandleDetachmentFromType(u32 entityType){};
 	
 	virtual void CollisionResponseCallback(const Box2D_CollisionInfo& collInfo){};
 	
