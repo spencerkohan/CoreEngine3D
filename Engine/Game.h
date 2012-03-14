@@ -223,7 +223,7 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	void DeleteAllItemArt();	//Call to delete all the art in the list regardless
 	void DeleteAllItemSounds();
 	void ConvertTileID(s32* p_InOut_tileID, TileSetDescription** pOut_tileDesc);
-	CoreObjectHandle CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix);
+	void CreateRenderableTile(Tile* pTile, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix);
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState m_deviceInputState;
 #endif

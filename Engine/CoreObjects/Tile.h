@@ -15,6 +15,10 @@
 #include "../CoreGameObject.h"
 #include <Box2D/Box2D.h>
 
+const u8 TILE_FLIPPED_HORIZONTALLY_FLAG = 0x80;
+const u8 TILE_FLIPPED_VERTICALLY_FLAG   = 0x40;
+const u8 TILE_FLIPPED_DIAGONALLY_FLAG   = 0x20;
+
 struct TileSetDescription
 {
 	//Data
@@ -41,12 +45,14 @@ public:
 	
 	s32 tileID;
 	TileSetDescription* pDesc;
+	b2Body* pBody;	
 	CoreObjectHandle hRenderable;
 	vec2 texCoordOffset;
-	s32 indexX;
-	s32 indexY;
+	u16 indexX;
+	u16 indexY;
+	u8 flags;
+	u8 pad0;
 	
-	b2Body* pBody;
 private:
 	
 };

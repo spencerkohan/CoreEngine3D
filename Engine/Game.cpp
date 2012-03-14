@@ -663,23 +663,43 @@ void Game::DeleteAllItemSounds()
 }
 
 
-CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDesc, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix)
+void Game::CreateRenderableTile(Tile* pTile, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix)
 {
 	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
 	if(hRenderable.IsValid() == false)
 	{
-		return CoreObjectHandle();
+		return;
+	}
+	
+	TileSetDescription* pDesc = pTile->pDesc;
+	
+	vec3 scaleVec = {m_tiledLevelDescription.tileDisplaySizeX,m_tiledLevelDescription.tileDisplaySizeX,m_tiledLevelDescription.tileDisplaySizeX};
+	
+	if(pTile->flags & TILE_FLIPPED_HORIZONTALLY_FLAG)
+	{
+		scaleVec.x *= -1.0f;
+	}
+	
+	if(pTile->flags & TILE_FLIPPED_VERTICALLY_FLAG)
+	{
+		scaleVec.y *= -1.0f;
+	}
+	
+	if(pTile->flags & TILE_FLIPPED_DIAGONALLY_FLAG)
+	{
+		scaleVec.x *= -1.0f;
+		scaleVec.y *= -1.0f;
 	}
 	
 	f32 tileMat[16];
-	mat4f_LoadScale(tileMat, (f32)m_tiledLevelDescription.tileDisplaySizeX);
+	mat4f_LoadScaleFromVec(tileMat, &scaleVec);
 
 	u32 baseFlag = usesViewMatrix ? RenderFlagDefaults_2DTexture_AlphaBlended_UseView:RenderFlagDefaults_2DTexture_AlphaBlended;
 	
 	GLRENDERER->InitRenderableGeometry3D(*pGeom, pDesc->pModelData, material, &pDesc->loadedTextureID, tileMat, renderLayer, View_0, baseFlag|RenderFlag_Visible);
 	
-	const s32 tileID_X = tileID%pDesc->numTextureTilesX;
-	const s32 tileID_Y = tileID/pDesc->numTextureTilesX;
+	const s32 tileID_X = pTile->tileID%pDesc->numTextureTilesX;
+	const s32 tileID_Y = pTile->tileID/pDesc->numTextureTilesX;
 	
 	if(pOut_texCoordOffset != NULL)
 	{
@@ -687,7 +707,7 @@ CoreObjectHandle Game::CreateRenderableTile(s32 tileID, TileSetDescription* pDes
 		pOut_texCoordOffset->y = (f32)tileID_Y/(f32)pDesc->numTextureTilesY;
 	}
 	
-	return hRenderable;
+	pTile->hRenderable = hRenderable;
 }
 
 
@@ -854,7 +874,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 				
 				if(pCurrRenderable == NULL)
 				{
-					pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
+					CreateRenderableTile(pTile,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
 					
 					if(pCurrRenderable == NULL)
 					{
@@ -1609,6 +1629,11 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 					pTile->hRenderable = CoreObjectHandle();
 
 					pTile->tileID = ARRAY2D(pData, x, y, width);
+					pTile->flags = (pTile->tileID >> 24) & 0x000000FF;
+					if(pTile->flags != 0)
+					{
+						printf("flag: %d\n",pTile->flags);
+					}
 					ConvertTileID(&pTile->tileID, &pTile->pDesc);
 					
 					pTile->indexX = x;
@@ -1656,8 +1681,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						}
 						
 						RenderableGeometry3D* pGeom;
-						pTile->hRenderable = CreateRenderableTile(pTile->tileID,pTile->pDesc,&pGeom,RenderLayer_AlphaBlended2,MT_TextureOnlyWithTexcoordOffset,&pTile->texCoordOffset,true);
-						
+						CreateRenderableTile(pTile,&pGeom,RenderLayer_AlphaBlended2,MT_TextureOnlyWithTexcoordOffset,&pTile->texCoordOffset,false);
 						//TODO: do something better than this if possible
 						pGeom->material.uniqueUniformValues[0] = (u8*)&pTile->texCoordOffset;
 					}
