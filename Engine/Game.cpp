@@ -16,6 +16,7 @@
 #include "Box2DDebugDraw.h"
 
 #include "CoreObjects/CoreObjectFactories.h"
+#include "CoreObjects/CoreObjectTypes.h"
 
 #if defined (PLATFORM_WIN)
 #include <direct.h>
@@ -1965,41 +1966,53 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 					{
 						continue;
 					}
-					
-					const u32 scriptObjectType = Hash("ScriptObject");
-					const u32 collisionBoxType = Hash("CollisionBox");
-					const u32 objectGroupType = Hash("ObjectGroup");
-					const u32 soundPlayerType = Hash("SoundPlayerType");
-					const u32 tileAffectorType = Hash("TileAffector");
-					const u32 spawnerType = Hash("Spawner");
-					
-					if(pCurrEnt->type == scriptObjectType)
+
+					switch(pCurrEnt->type)
 					{
-						pCurrEnt->pObject = g_Factory_ScriptObject.CreateObject(pCurrEnt->type);
-					}
-					else if(pCurrEnt->type == collisionBoxType)
-					{
-						pCurrEnt->pObject = g_Factory_CollisionBox.CreateObject(pCurrEnt->type);
-					}
-					else if(pCurrEnt->type == objectGroupType)
-					{
-						pCurrEnt->pObject = g_Factory_ObjectGroup.CreateObject(pCurrEnt->type);
-					}
-					else if(pCurrEnt->type == tileAffectorType)
-					{
-						pCurrEnt->pObject = g_Factory_TileAffector.CreateObject(pCurrEnt->type);
-					}
-					else if(pCurrEnt->type == soundPlayerType)
-					{
-						pCurrEnt->pObject = g_Factory_SoundPlayer.CreateObject(pCurrEnt->type);
-					}
-					else if(pCurrEnt->type == spawnerType)
-					{
-						pCurrEnt->pObject = g_Factory_Spawner.CreateObject(pCurrEnt->type);
-					}
-					else
-					{
-						pCurrEnt->pObject = this->CreateObject(pCurrEnt->type);
+						case g_Type_ScriptObject:
+						{
+							pCurrEnt->pObject = g_Factory_ScriptObject.CreateObject(pCurrEnt->type);
+							
+							break;
+						}
+						case g_Type_CollisionBox:
+						{
+							pCurrEnt->pObject = g_Factory_CollisionBox.CreateObject(pCurrEnt->type);
+							
+							break;
+						}
+						case g_Type_ObjectGroup:
+						{
+							pCurrEnt->pObject = g_Factory_ObjectGroup.CreateObject(pCurrEnt->type);
+							
+							break;
+						}
+						
+						case g_Type_TileAffector:
+						{
+							pCurrEnt->pObject = g_Factory_TileAffector.CreateObject(pCurrEnt->type);
+							
+							break;
+						}
+						case g_Type_SoundPlayerType:
+						{
+							pCurrEnt->pObject = g_Factory_SoundPlayer.CreateObject(pCurrEnt->type);
+							
+							break;
+						}
+						case g_Type_Spawner:
+						{
+							pCurrEnt->pObject = g_Factory_Spawner.CreateObject(pCurrEnt->type);
+							
+							break;
+						}
+						default:
+						{
+							//If it's not a core game object then it's a custom one
+							pCurrEnt->pObject = this->CreateObject(pCurrEnt->type);
+							
+							break;
+						}
 					}
 				}
 			}

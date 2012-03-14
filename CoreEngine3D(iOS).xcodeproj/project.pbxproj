@@ -234,6 +234,7 @@
 		DD408FBE14DB5D100016BA1A /* CoreObjectFactories.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = CoreObjectFactories.cpp; path = CoreObjects/CoreObjectFactories.cpp; sourceTree = "<group>"; };
 		DD408FBF14DB5D100016BA1A /* CoreObjectFactories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoreObjectFactories.h; path = CoreObjects/CoreObjectFactories.h; sourceTree = "<group>"; };
 		DD805AA914D79E59006C6D10 /* Square_Tiled_32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Square_Tiled_32.h; sourceTree = "<group>"; };
+		DDA6C700151153B30035DE60 /* CoreObjectTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CoreObjectTypes.h; path = CoreObjects/CoreObjectTypes.h; sourceTree = "<group>"; };
 		DDA6F314149C19E10035A1BF /* libCoreEngine3D(iOS).a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libCoreEngine3D(iOS).a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDA6F49B149C1A920035A1BF /* ArrayUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArrayUtil.cpp; sourceTree = "<group>"; };
 		DDA6F49C149C1A920035A1BF /* ArrayUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayUtil.h; sourceTree = "<group>"; };
@@ -391,6 +392,7 @@
 				DD408FB714DB5BD00016BA1A /* CollisionBox.h */,
 				DD408FB814DB5BD00016BA1A /* ScriptObject.cpp */,
 				DD408FB914DB5BD00016BA1A /* ScriptObject.h */,
+				DDA6C700151153B30035DE60 /* CoreObjectTypes.h */,
 			);
 			name = CoreObjects;
 			sourceTree = "<group>";
