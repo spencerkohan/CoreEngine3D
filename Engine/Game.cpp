@@ -1755,9 +1755,10 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 
 			COREDEBUG_PrintDebugMessage("Layer: %s",layerName);
 			
-			for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
+			//Create collision
+			/*if(strcmp(layerName,"Collision") == 0)
 			{
-				if(strcmp(layerName,"Collision") == 0)
+				for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
 				{
 					pugi::xml_node polylinePoints = object.child("polyline");
 					if(polylinePoints.empty() == false)
@@ -1785,14 +1786,14 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 								
 								if(leftNumber)
 								{
-									polyLinePoints[numPolyPoints].x = floatValue*unitConversionScale;
+									polyLinePoints[numPolyPoints].x = floatValue*unitConversionScale/m_pixelsPerMeter;
 								}
 								else
 								{
-									polyLinePoints[numPolyPoints].y = floatValue*unitConversionScale;
+									polyLinePoints[numPolyPoints].y = -floatValue*unitConversionScale/m_pixelsPerMeter;
 									++numPolyPoints;
 								}
-		
+								
 								bufferIndex = 0;
 								leftNumber = !leftNumber;
 							}
@@ -1820,127 +1821,133 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 							fixtureDef.filter.maskBits = 0xFFFF;
 							
 							bodyDef.position.Set(0, 0);
-
+							
 							b2Body* pBody = Box2D_GetWorld()->CreateBody(&bodyDef);
 							pBody->CreateFixture(&fixtureDef);
 						}
 					}
 				}
-				
-				SpawnableEntity* pCurrEnt = &m_spawnableEntities[m_numSpawnableEntities];
-				++m_numSpawnableEntities;
-				
-				pCurrEnt->pObject = NULL;
-
-				pCurrEnt->tiledUniqueID = atoi(object.attribute("uniqueID").value());
-				
-				const f32 x = (f32)atoi(object.attribute("x").value())*unitConversionScale;
-				const f32 y = (f32)atoi(object.attribute("y").value())*unitConversionScale;
-				
-				pCurrEnt->position.x = x;
-				pCurrEnt->position.y = y;
-				
-				f32 width;
-				f32 height;
-				
-				pugi::xml_attribute gidAttrib = object.attribute("gid");
-				if(gidAttrib.empty() == false)
+			}
+			//Create objects
+			else*/
+			{
+				for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
 				{
-					pCurrEnt->tileID = gidAttrib.as_int();
-					ConvertTileID(&pCurrEnt->tileID, &pCurrEnt->pDesc);
+					SpawnableEntity* pCurrEnt = &m_spawnableEntities[m_numSpawnableEntities];
+					++m_numSpawnableEntities;
 					
-					width = GAME->GetTileSize();
-					height = GAME->GetTileSize();
+					pCurrEnt->pObject = NULL;
 					
-					//TODO: this might be wrong.  Will need more testing
-					pCurrEnt->position.x += width/2;
-					pCurrEnt->position.y -= height/2;
+					pCurrEnt->tiledUniqueID = atoi(object.attribute("uniqueID").value());
 					
-					GetTileIndicesFromPosition((vec2*)&pCurrEnt->position, &pCurrEnt->tileIndexX, &pCurrEnt->tileIndexY);
-				}
-				else
-				{
-					pCurrEnt->tileID = -1;
-					pCurrEnt->pDesc = NULL;
+					const f32 x = (f32)atoi(object.attribute("x").value())*unitConversionScale;
+					const f32 y = (f32)atoi(object.attribute("y").value())*unitConversionScale;
 					
-					width = (f32)atoi(object.attribute("width").value())*unitConversionScale;
-					height = (f32)atoi(object.attribute("height").value())*unitConversionScale;
+					pCurrEnt->position.x = x;
+					pCurrEnt->position.y = y;
 					
-					pCurrEnt->position.x += width/2.0f;
-					pCurrEnt->position.y += height/2.0f;
+					f32 width;
+					f32 height;
 					
-					pCurrEnt->tileIndexX = 0;
-					pCurrEnt->tileIndexY = 0;
-				}
-				
-				pCurrEnt->position.z = 0.0f;
-			
-				const char* typeString = object.attribute("type").value();
-				pCurrEnt->type = Hash(typeString);
-				
-				pCurrEnt->scale.x = width;
-				pCurrEnt->scale.y = height;
-				
-				//Find properties of the object
-				//TODO: not do this horrible thing
-				pCurrEnt->pProperties = object.child("properties");
-				
-				pCurrEnt->autospawn = true;
-				
-				for (pugi::xml_node property = pCurrEnt->pProperties.child("property"); property; property = property.next_sibling("property"))
-				{
-					const char* propNameString = property.attribute("name").value();
-					const char* valueString = property.attribute("value").value();
-					
-					if(strcmp(propNameString, "AutoSpawn") == 0)
+					pugi::xml_attribute gidAttrib = object.attribute("gid");
+					if(gidAttrib.empty() == false)
 					{
-						if(strcmp(valueString, "false") == 0)
+						pCurrEnt->tileID = gidAttrib.as_int();
+						ConvertTileID(&pCurrEnt->tileID, &pCurrEnt->pDesc);
+						
+						width = GAME->GetTileSize();
+						height = GAME->GetTileSize();
+						
+						//TODO: this might be wrong.  Will need more testing
+						pCurrEnt->position.x += width/2;
+						pCurrEnt->position.y -= height/2;
+						
+						GetTileIndicesFromPosition((vec2*)&pCurrEnt->position, &pCurrEnt->tileIndexX, &pCurrEnt->tileIndexY);
+					}
+					else
+					{
+						pCurrEnt->tileID = -1;
+						pCurrEnt->pDesc = NULL;
+						
+						width = (f32)atoi(object.attribute("width").value())*unitConversionScale;
+						height = (f32)atoi(object.attribute("height").value())*unitConversionScale;
+						
+						pCurrEnt->position.x += width/2.0f;
+						pCurrEnt->position.y += height/2.0f;
+						
+						pCurrEnt->tileIndexX = 0;
+						pCurrEnt->tileIndexY = 0;
+					}
+					
+					pCurrEnt->position.z = 0.0f;
+					
+					const char* typeString = object.attribute("type").value();
+					pCurrEnt->type = Hash(typeString);
+					
+					pCurrEnt->scale.x = width;
+					pCurrEnt->scale.y = height;
+					
+					//Find properties of the object
+					//TODO: not do this horrible thing
+					pCurrEnt->pProperties = object.child("properties");
+					
+					pCurrEnt->autospawn = true;
+					
+					for (pugi::xml_node property = pCurrEnt->pProperties.child("property"); property; property = property.next_sibling("property"))
+					{
+						const char* propNameString = property.attribute("name").value();
+						const char* valueString = property.attribute("value").value();
+						
+						if(strcmp(propNameString, "AutoSpawn") == 0)
 						{
-							pCurrEnt->autospawn = false;
+							if(strcmp(valueString, "false") == 0)
+							{
+								pCurrEnt->autospawn = false;
+							}
 						}
 					}
-				}
-		
-				
-				if(pCurrEnt->autospawn == false)
-				{
-					continue;
-				}
-				
-				const u32 scriptObjectType = Hash("ScriptObject");
-				const u32 collisionBoxType = Hash("CollisionBox");
-				const u32 objectGroupType = Hash("ObjectGroup");
-				const u32 soundPlayerType = Hash("SoundPlayerType");
-				const u32 tileAffectorType = Hash("TileAffector");
-				const u32 spawnerType = Hash("Spawner");
-				
-				if(pCurrEnt->type == scriptObjectType)
-				{
-					pCurrEnt->pObject = g_Factory_ScriptObject.CreateObject(pCurrEnt->type);
-				}
-				else if(pCurrEnt->type == collisionBoxType)
-				{
-					pCurrEnt->pObject = g_Factory_CollisionBox.CreateObject(pCurrEnt->type);
-				}
-				else if(pCurrEnt->type == objectGroupType)
-				{
-					pCurrEnt->pObject = g_Factory_ObjectGroup.CreateObject(pCurrEnt->type);
-				}
-				else if(pCurrEnt->type == tileAffectorType)
-				{
-					pCurrEnt->pObject = g_Factory_TileAffector.CreateObject(pCurrEnt->type);
-				}
-				else if(pCurrEnt->type == soundPlayerType)
-				{
-					pCurrEnt->pObject = g_Factory_SoundPlayer.CreateObject(pCurrEnt->type);
-				}
-				else if(pCurrEnt->type == spawnerType)
-				{
-					pCurrEnt->pObject = g_Factory_Spawner.CreateObject(pCurrEnt->type);
-				}
-				else
-				{
-					pCurrEnt->pObject = this->CreateObject(pCurrEnt->type);
+					
+					
+					if(pCurrEnt->autospawn == false)
+					{
+						continue;
+					}
+					
+					const u32 scriptObjectType = Hash("ScriptObject");
+					const u32 collisionBoxType = Hash("CollisionBox");
+					const u32 objectGroupType = Hash("ObjectGroup");
+					const u32 soundPlayerType = Hash("SoundPlayerType");
+					const u32 tileAffectorType = Hash("TileAffector");
+					const u32 spawnerType = Hash("Spawner");
+					
+					if(pCurrEnt->type == scriptObjectType)
+					{
+						pCurrEnt->pObject = g_Factory_ScriptObject.CreateObject(pCurrEnt->type);
+					}
+					else if(pCurrEnt->type == collisionBoxType)
+					{
+						pCurrEnt->pObject = g_Factory_CollisionBox.CreateObject(pCurrEnt->type);
+					}
+					else if(pCurrEnt->type == objectGroupType)
+					{
+						pCurrEnt->pObject = g_Factory_ObjectGroup.CreateObject(pCurrEnt->type);
+					}
+					else if(pCurrEnt->type == tileAffectorType)
+					{
+						pCurrEnt->pObject = g_Factory_TileAffector.CreateObject(pCurrEnt->type);
+					}
+					else if(pCurrEnt->type == soundPlayerType)
+					{
+						pCurrEnt->pObject = g_Factory_SoundPlayer.CreateObject(pCurrEnt->type);
+					}
+					else if(pCurrEnt->type == spawnerType)
+					{
+						pCurrEnt->pObject = g_Factory_Spawner.CreateObject(pCurrEnt->type);
+					}
+					else
+					{
+						pCurrEnt->pObject = this->CreateObject(pCurrEnt->type);
+					}
 				}
 			}
 		}
