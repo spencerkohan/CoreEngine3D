@@ -1676,10 +1676,6 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 
 					pTile->tileID = ARRAY2D(pData, x, y, width);
 					pTile->flags = (pTile->tileID >> 24) & 0x000000FF;
-					if(pTile->flags != 0)
-					{
-						printf("flag: %d\n",pTile->flags);
-					}
 					ConvertTileID(&pTile->tileID, &pTile->pDesc);
 					
 					pTile->indexX = x;
