@@ -1741,6 +1741,14 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			}
 		}
 		
+		b2Vec2 polyLinePoints[64];
+		u32 numPolyPoints;
+		
+		char buffer[64];
+		u32 bufferIndex;
+		
+		const f32 halfTileSize = GetHalfTileSizeMeters();
+		
 		for (pugi::xml_node layer = map.child("objectgroup"); layer; layer = layer.next_sibling("objectgroup"))
 		{
 			const char* layerName = layer.attribute("name").value();
@@ -1749,6 +1757,76 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			
 			for (pugi::xml_node object = layer.child("object"); object; object = object.next_sibling("object"))
 			{
+				if(strcmp(layerName,"Collision") == 0)
+				{
+					pugi::xml_node polylinePoints = object.child("polyline");
+					if(polylinePoints.empty() == false)
+					{
+						pugi::xml_attribute points = polylinePoints.attribute("points");
+						const char* polyLineString = points.value();
+						printf("polyline: %s\n",points.value());
+						
+						numPolyPoints = 0;
+						bufferIndex = 0;
+						bool leftNumber = true;
+						const s32 strLen = strlen(polyLineString);
+						for(u32 strIDX=0; strIDX<strLen+1; ++strIDX)
+						{
+							const char currChar = polyLineString[strIDX];
+							
+							if(currChar == ','
+							   || currChar == ' '
+							   || currChar == '"'
+							   || strIDX == strLen)
+							{
+								buffer[bufferIndex] = ' ';
+								
+								const f32 floatValue = atof(buffer);
+								
+								if(leftNumber)
+								{
+									polyLinePoints[numPolyPoints].x = floatValue*unitConversionScale;
+								}
+								else
+								{
+									polyLinePoints[numPolyPoints].y = floatValue*unitConversionScale;
+									++numPolyPoints;
+								}
+		
+								bufferIndex = 0;
+								leftNumber = !leftNumber;
+							}
+							else
+							{
+								buffer[bufferIndex] = currChar;
+								++bufferIndex;
+							}
+						}	
+						
+						for(u32 vertIDX=0; vertIDX<numPolyPoints-1; ++vertIDX)
+						{
+							b2BodyDef bodyDef;
+							bodyDef.type = b2_staticBody;
+							
+							b2FixtureDef fixtureDef;
+							fixtureDef.density = 1;
+							fixtureDef.friction = 0.4f;
+							
+							b2EdgeShape shape;
+							shape.Set(polyLinePoints[vertIDX], polyLinePoints[vertIDX+1]);
+							
+							fixtureDef.shape = &shape;
+							fixtureDef.filter.categoryBits = 1 << CollisionFilter_Ground;
+							fixtureDef.filter.maskBits = 0xFFFF;
+							
+							bodyDef.position.Set(0, 0);
+
+							b2Body* pBody = Box2D_GetWorld()->CreateBody(&bodyDef);
+							pBody->CreateFixture(&fixtureDef);
+						}
+					}
+				}
+				
 				SpawnableEntity* pCurrEnt = &m_spawnableEntities[m_numSpawnableEntities];
 				++m_numSpawnableEntities;
 				
