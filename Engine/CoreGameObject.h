@@ -32,6 +32,11 @@ class CoreGameObject: public CoreObject
 public:
 	virtual void SetPosition(const vec3* pPosition){}
 	virtual const vec3* GetPosition() const{return NULL;}
+	
+	virtual bool LoadResources(void* pSpawnStruct){return true;}
+	virtual bool PostResourcesLoaded(){return true;}
+	
+	//TODO: separate Box2D functionality out so you are not forced to have it
 	virtual b2Body* Box2D_GetBody(){return NULL;}
 	virtual b2Body* Box2D_GetBodyInRadius(const vec2* pCenterMeters, f32 radiusMeters){return NULL;}
 	virtual bool Box2D_GetAnchorOffset(vec2* pOut_OffsetVec){return false;}

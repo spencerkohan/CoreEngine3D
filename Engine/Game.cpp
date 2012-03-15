@@ -2044,6 +2044,29 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				pEnt->pObject->PostSpawnInit(pEnt);
 			}
 		}
+		
+		//Load all the objects resources!
+		//TODO: thread all of this resource stuff
+		
+		for(u32 i=0; i<m_numSpawnableEntities; ++i)
+		{
+			SpawnableEntity* pEnt = &m_spawnableEntities[i];
+			if(pEnt->pObject != NULL && pEnt->pObject->GetType() == CoreObjectType_CoreGameObject)
+			{
+				CoreGameObject* pGameObject = (CoreGameObject*)pEnt->pObject;
+				pGameObject->LoadResources(pEnt);
+			}
+		}
+
+		for(u32 i=0; i<m_numSpawnableEntities; ++i)
+		{
+			SpawnableEntity* pEnt = &m_spawnableEntities[i];
+			if(pEnt->pObject != NULL && pEnt->pObject->GetType() == CoreObjectType_CoreGameObject)
+			{
+				CoreGameObject* pGameObject = (CoreGameObject*)pEnt->pObject;
+				pGameObject->PostResourcesLoaded();
+			}
+		}
 	}
 	else
 	{

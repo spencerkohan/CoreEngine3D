@@ -96,13 +96,6 @@ bool Spawner::Init(u32 type)
 
 void Spawner::Update(f32 timeElapsed)
 {
-	if(m_isFirstUpdate == true)
-	{
-		m_isFirstUpdate = false;
-
-		return;
-	}
-
 	if(m_requiresTrigger)
 	{
 		return;
