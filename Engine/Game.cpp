@@ -336,8 +336,10 @@ s32 Game::AddSongToPlaylist(const char* songFilenameMP3)
 {
 	const u32 songID = m_numSongsInPlaylist;
 	
-	m_songPlaylist[songID] = new char[strlen(songFilenameMP3+1)];
+	m_songPlaylist[songID] = new char[strlen(songFilenameMP3)+1];
 	strcpy(m_songPlaylist[songID], songFilenameMP3);
+	
+	//printf("songname: %s\n",m_songPlaylist[songID]);
 	
 	++m_numSongsInPlaylist;
 	
@@ -352,6 +354,8 @@ std::string Game::GetPathToFile(const char* filename, bool fromEngine)
 
 	NSString* fileString = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
 	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
+	
+	assert(fullPath != nil);
 	
 	std::string pathString;
 	if(fullPath)
@@ -388,6 +392,8 @@ void Game::PlaySongByID(s32 songID, f32 volume, bool isLooping)
 	
 	NSString* fileString = [NSString stringWithCString:m_songPlaylist[songID] encoding:NSUTF8StringEncoding];
 	NSString *fullPath = [[NSBundle mainBundle] pathForResource:[fileString lastPathComponent] ofType:nil inDirectory:[fileString stringByDeletingLastPathComponent]];
+	assert(fullPath != nil);
+	
 	NSURL *soundURL = [NSURL fileURLWithPath:fullPath];
 	
 	//m_pAudioPlayer = CreateAudioPlayer(fullPath,@"",YES,1.0f);
