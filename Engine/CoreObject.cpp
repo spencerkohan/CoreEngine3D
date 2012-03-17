@@ -54,7 +54,7 @@ bool CoreObject::Init(u32 type)
 
 void CoreObject::Uninit()
 {
-	assert(m_markedForDeletion == true);
+	//assert(m_markedForDeletion == true);
 	
 	COREOBJECTMANAGER->RemoveObject(this);
 }

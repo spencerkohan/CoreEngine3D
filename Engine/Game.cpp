@@ -374,6 +374,16 @@ std::string Game::GetPathToFile(const char* filename, bool fromEngine)
 }
 
 
+void Game::StopSong()
+{
+	[m_pAudioPlayer stop];
+	[m_pAudioPlayer release];
+	
+	m_pAudioPlayer = nil;
+	
+	m_currSongID = -1;
+}
+
 void Game::PlaySongByID(s32 songID, f32 volume, bool isLooping)
 {
 	if(songID >= (s32)m_numSongsInPlaylist)

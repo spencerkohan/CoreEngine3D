@@ -92,6 +92,11 @@ public:
 	
 	void Clear()
 	{
+		for(u32 i=0; i<m_numObjects; ++i)
+		{
+			m_pObjectList[i].Uninit();
+		}
+		
 		for(u32 i=0; i<m_maxObjects; ++i)
 		{
 			m_pObjectList[i].m_markedForDeletion = false;

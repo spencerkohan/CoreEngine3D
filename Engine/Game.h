@@ -189,6 +189,7 @@ public:
 	void AddItemSound(ItemSoundDescription* pSoundDescription);
 	s32 AddSongToPlaylist(const char* songFilenameMP3);
 	void PlaySongByID(s32 songID, f32 volume, bool isLooping);
+	void StopSong();
 	std::string GetPathToFile(const char* filename, bool fromEngine=false);
 	void GetTileIndicesFromScreenPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
 	void GetTileIndicesFromPosition(const vec2* pPosition, u32* pOut_X, u32* pOut_Y);
