@@ -170,6 +170,7 @@ public:
 	MouseInputState m_mouseState;
 	KeyboardInputState m_keyboardState;
 #endif
+	virtual void ProcessMessage(u32 message){};	//Pass in a hash value
 	void Box2D_SetPhysicsIsLocked(bool isLocked);
 	void Box2D_TogglePhysicsDebug(bool allowPhysicsDebugDraw);
 	void ResetCamera();
