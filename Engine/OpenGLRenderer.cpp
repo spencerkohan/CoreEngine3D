@@ -3318,7 +3318,7 @@ void OpenGLRenderer::DRAW_DrawTexturedLine(DebugDrawMode drawMode, const vec3* p
 
 void OpenGLRenderer::DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color)
 {
-#ifdef _DEBUG
+#ifdef DEBUG_DRAW
 	//TODO: put safety check in here
 	const u32 numPoints = m_numDebugLinePoints[drawMode];
 	
@@ -3340,7 +3340,7 @@ void OpenGLRenderer::DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec
 
 void OpenGLRenderer::DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec3* p0, const vec3* p1, const vec4* color1, const vec4* color2)
 {
-#ifdef _DEBUG
+#ifdef DEBUG_DRAW
 	//TODO: put safety check in here
 	const u32 numPoints = m_numDebugLinePoints[drawMode];
 	
@@ -3362,7 +3362,7 @@ void OpenGLRenderer::DEBUGDRAW_DrawLineSegment(DebugDrawMode drawMode, const vec
 
 void OpenGLRenderer::DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color)
 {
-#ifdef _DEBUG
+#ifdef DEBUG_DRAW
 	if(m_numDebugDrawObjects[drawMode] == DEBUGDRAW_MAXDEBUGOBJECTS)
 	{
 		return;
@@ -3381,7 +3381,7 @@ void OpenGLRenderer::DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, mat4f matrix
 
 void OpenGLRenderer::DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color)
 {
-#ifdef _DEBUG
+#ifdef DEBUG_DRAW
 	if(m_numDebugDrawObjects[drawMode] == DEBUGDRAW_MAXDEBUGOBJECTS)
 	{
 		return;
@@ -3400,7 +3400,7 @@ void OpenGLRenderer::DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, mat4f matrix
 
 void OpenGLRenderer::DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, const vec3* pCenter, f32 radius, const vec4* color)
 {
-#ifdef _DEBUG
+#ifdef DEBUG_DRAW
 	mat4f scaleMat;
 	mat4f_LoadScale(scaleMat, radius);
 	CopyVec3(mat4f_GetPos(scaleMat),pCenter);
@@ -3412,7 +3412,7 @@ void OpenGLRenderer::DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, const vec3* 
 
 void OpenGLRenderer::DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, const vec3* pCenter, f32 radius, const vec4* color)
 {
-#ifdef _DEBUG
+#ifdef DEBUG_DRAW
 	mat4f scaleMat;
 	mat4f_LoadScale(scaleMat, radius);
 	CopyVec3(mat4f_GetPos(scaleMat),pCenter);
@@ -3424,7 +3424,7 @@ void OpenGLRenderer::DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, const vec3* 
 
 void OpenGLRenderer::DEBUGDRAW_DrawCylinder(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color)
 {
-#ifdef _DEBUG
+#ifdef DEBUG_DRAW
 	if(m_numDebugDrawObjects[drawMode] == DEBUGDRAW_MAXDEBUGOBJECTS)
 	{
 		return;

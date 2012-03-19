@@ -45,8 +45,9 @@ extern OpenGLRenderer* GLRENDERER;
 
 #define RENDERLOOP_ENABLED 1
 
-#define DEBUG_DRAW 1
-
+#if defined(DEBUG) || defined(_DEBUG)
+	#define DEBUG_DRAW 1
+#endif
 
 
 #define GAUSSIAN_NUMSAMPLES 6
