@@ -249,7 +249,13 @@ void OpenGLRenderer::Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 scre
     m_supportsMultisampling = m_supportsFeaturesFromiOS4 && processorCount > 1; //Hack to enable multi-sampling only on iPad 2
 #endif
     
-    CopyVec3(&m_clearColor, &vec3_zero);
+	SetClearColor(0, 0, 0);
+	
+#ifdef PLATFORM_IOS
+	glClearDepthf(1.0f);
+#else
+	glClearDepth(1.0f);
+#endif
     
     SetVec3(&m_gravityDir,0.0f,-1.0f,0.0f);
     
@@ -1099,6 +1105,8 @@ void OpenGLRenderer::SetClearColor(f32 r, f32 g, f32 b)
 	m_clearColor.x = r;
     m_clearColor.y = g;
     m_clearColor.z = b;
+	
+	glClearColor(m_clearColor.x,m_clearColor.y,m_clearColor.z,1.0);
 }
 
 
@@ -1181,12 +1189,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL) ;
     glDepthMask( GL_TRUE );
-    glClearColor(m_clearColor.x,m_clearColor.y,m_clearColor.z,1.0);
-#ifdef PLATFORM_IOS
-	glClearDepthf(1.0f);
-#else
-	glClearDepth(1.0f);
-#endif
+
     
 	
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
