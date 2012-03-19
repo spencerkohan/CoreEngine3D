@@ -799,6 +799,8 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 			SubScaledVec3_Self(&pCurrLayer->position,&parallaxDiffVec,(f32)(adjustedIndex-LevelLayer_Main1)*m_parallaxScale);
 		}
 		
+		//TODO: figure out the slight difference that makes the other game cull too much
+		
 		const s32 numTilesX = pCurrLayer->numTilesX;
 		const s32 numTilesY = pCurrLayer->numTilesY;
 		
@@ -807,8 +809,10 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		
 		const s32 numScreenTilesX = (f32)GLRENDERER->screenWidth_points/GAME->GetTileSize();
 		
-		int xStart = ClampS32(tilePosX, 0, numTilesX);
-		int xEnd = ClampS32(tilePosX+numScreenTilesX+2, 0, numTilesX);
+		//const s32 testCullingBuffer = 4;
+		
+		int xStart = ClampS32(tilePosX/*+testCullingBuffer*/, 0, numTilesX);
+		int xEnd = ClampS32(tilePosX+numScreenTilesX+1/*-testCullingBuffer*/, 0, numTilesX);
 		
 		assert(xEnd < numTilesX+1);
 		
@@ -816,12 +820,14 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		
 		const s32 numScreenTilesY = (f32)GLRENDERER->screenHeight_points/GAME->GetTileSize();
 		
-		const s32 yStart = ClampS32(tilePosY, 0, numTilesY);
-		const s32 yEnd = ClampS32(tilePosY+numScreenTilesY+1, 0, numTilesY);
+		const s32 yStart = ClampS32(tilePosY/*+testCullingBuffer*/, 0, numTilesY);
+		const s32 yEnd = ClampS32(tilePosY+numScreenTilesY+1/*-testCullingBuffer*/, 0, numTilesY);
 
 		//If it's the TileObjectArt layer, just update the uniforms
 		
 		//If it's any other layer, do the whole delete/create tiles thing
+		
+		
 		
 		const s32 cullLoopStartX = MaxS32(xStart-m_cullingRange,0);
 		const s32 cullLoopEndX = MinS32(xEnd+m_cullingRange,numTilesX);

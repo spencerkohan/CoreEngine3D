@@ -22,6 +22,12 @@ void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosit
 	RenderableGeometry3D* pRenderable = NULL;
 	m_hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(&pRenderable);
 	
+	if(pRenderable == NULL)
+	{
+		COREDEBUG_PrintDebugMessage("ERROR: Could not create renderable for particle!");
+		return;
+	}
+	
 	GLRENDERER->InitRenderableGeometry3D(pRenderable, pArtDesc->pModelData, pMaterial->renderMaterial, &pArtDesc->textureHandle, NULL, pSettings->renderLayer, View_0, pMaterial->renderFlags|RenderFlag_Visible);
 	pRenderable->material.uniqueUniformValues[0] = (u8*)&m_texcoordOffset;
 	pRenderable->material.uniqueUniformValues[1] = (u8*)&m_diffuseColor;
