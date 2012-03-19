@@ -396,7 +396,10 @@ typedef enum{
 	Uniform_Vec4,
 	Uniform_Mat3x3,
     Uniform_Mat4x4,
+	Uniform_NumTypes,
 } UniformType;
+
+extern const u32 g_UniformSizes[Uniform_NumTypes];
 
 typedef enum{
 	ProjMatType_Perspective,
@@ -451,12 +454,11 @@ typedef struct
 	u32 uniform_worldViewProjMat;
 	u32 uniform_camPos;//TODO: remove
 	UniformBlob uniforms_shared[MAX_SHARED_UNIFORM_VALUES];
-    UniformBlob uniforms_shared_const[MAX_SHARED_CONST_UNIFORM_VALUES];
 	u32 uniforms_unique[MAX_UNIQUE_UNIFORM_VALUES];
+	u8 uniforms_unique_data[256];	//cached data
 	s32 uniforms_unique_sizes[MAX_UNIQUE_UNIFORM_VALUES];
 	UniformType uniforms_unique_types[MAX_UNIQUE_UNIFORM_VALUES];
 	int numUniforms_shared;
-    int numUniforms_shared_const;
 	int numUniforms_unique;
 	u32* texture0;
 	u32* texture1;

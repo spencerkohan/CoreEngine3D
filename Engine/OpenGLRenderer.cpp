@@ -2679,9 +2679,10 @@ void OpenGLRenderer::CreateMaterials()
 		
 		//Zero out uniforms
 		g_Materials[i].numUniforms_shared = 0;
-        g_Materials[i].numUniforms_shared_const = 0;
 		g_Materials[i].numUniforms_unique = 0;
 		
+		memset(g_Materials[i].uniforms_unique_data, 0, 256);
+				
 		g_Materials[i].materialName = g_MaterialNames[i];
 	}
 	
@@ -4052,13 +4053,16 @@ void OpenGLRenderer::UploadSharedUniforms()
 
 void OpenGLRenderer::UploadUniqueUniforms(u8* const * pValuePointerArray)
 {
-	const Material* currMaterial = &g_Materials[m_lastUsedMaterial];
+	Material* currMaterial = &g_Materials[m_lastUsedMaterial];
 	
 	const int numUniforms = currMaterial->numUniforms_unique;
+	
+	u32 byteIndex = 0;
 	
 	for(int i=0; i<numUniforms; ++i)
 	{
 		const u8* pCurrValue = pValuePointerArray[i];
+		
 		const s32 uniformID = currMaterial->uniforms_unique[i];
 		
 		if (uniformID == -1 || pCurrValue == NULL)
@@ -4066,43 +4070,61 @@ void OpenGLRenderer::UploadUniqueUniforms(u8* const * pValuePointerArray)
 			continue;
 		}
 		
-		const GLsizei uniformSize = currMaterial->uniforms_unique_sizes[i];
+		const UniformType type = currMaterial->uniforms_unique_types[i];
 		
-		switch(currMaterial->uniforms_unique_types[i])
+		const s32 sizeOfData = g_UniformSizes[type];
+		
+#if defined(DEBUG) || defined (_DEBUG)
+		assert(byteIndex + sizeOfData < 256);	//Why are you uploading like 256 bytes of uniforms?
+		//Seriously that's like 4, 4x4 matrices
+#endif
+		void* pCachedData = (void*)&currMaterial->uniforms_unique_data[byteIndex];
+		
+		if(memcmp(pCurrValue, pCachedData, sizeOfData) == 0)
+		{
+			continue;
+		}
+		
+		//Cache values to check against later
+		memcpy(pCachedData, pCurrValue, sizeOfData);
+		byteIndex += sizeOfData;
+		
+		const GLsizei uniformCount = currMaterial->uniforms_unique_sizes[i];
+		switch(type)
 		{
 			case Uniform_Int:
 			{
-				glUniform1iv(uniformID,uniformSize,(s32*)pCurrValue);
+				glUniform1iv(uniformID,uniformCount,(s32*)pCachedData);
 				break;
 			}
 			case Uniform_Float:
 			{
-				glUniform1fv(uniformID,uniformSize,(f32*)pCurrValue);
+				glUniform1fv(uniformID,uniformCount,(f32*)pCachedData);
 				break;
 			}
 			case Uniform_Vec2:
 			{
-				glUniform2fv(uniformID,uniformSize,(f32*)pCurrValue);
+				glUniform2fv(uniformID,uniformCount,(f32*)pCachedData);
 				break;
 			}
 			case Uniform_Vec3:
 			{
-				glUniform3fv(uniformID,uniformSize,(f32*)pCurrValue);
+				glUniform3fv(uniformID,uniformCount,(f32*)pCachedData);
 				break;
 			}
 			case Uniform_Vec4:
 			{
-				glUniform4fv(uniformID,uniformSize,(f32*)pCurrValue);
+				glUniform4fv(uniformID,uniformCount,(f32*)pCachedData);
 				break;
 			}
             case Uniform_Mat3x3:
 			{
-				glUniformMatrix3fv(uniformID, uniformSize, GL_FALSE, (f32*)pCurrValue);
+				glUniformMatrix3fv(uniformID, uniformCount, GL_FALSE, (f32*)pCachedData);
 				break;
 			}
 			case Uniform_Mat4x4:
 			{
-				glUniformMatrix4fv(uniformID, uniformSize, GL_FALSE, (f32*)pCurrValue);
+				glUniformMatrix4fv(uniformID, uniformCount, GL_FALSE, (f32*)pCachedData);
 				break;
 			}
 			default:
@@ -4296,26 +4318,6 @@ void OpenGLRenderer::AddUniform_Shared(RenderMaterial renderMaterial, const char
 	g_Materials[renderMaterial].uniforms_shared[index].value.data = pData;
 	g_Materials[renderMaterial].uniforms_shared[index].size = amount;
 	++g_Materials[renderMaterial].numUniforms_shared;
-}
-
-
-void OpenGLRenderer::AddUniform_Shared_Const(RenderMaterial renderMaterial, const char* nameOfUniformInShader, UniformType uniformType, u8* pData, u32 amount)
-{
-	const int index = g_Materials[renderMaterial].numUniforms_shared_const;
-	g_Materials[renderMaterial].uniforms_shared_const[index].uniform = glGetUniformLocation(g_Materials[renderMaterial].shaderProgram,nameOfUniformInShader);
-	
-	if (g_Materials[renderMaterial].uniforms_shared_const[index].uniform == -1)
-	{
-		COREDEBUG_PrintDebugMessage("ERROR: addUniform_Shared_Const -> Unable to add uniform: %s for material %s!", nameOfUniformInShader,g_MaterialNames[renderMaterial]);
-		
-		//Return early and don't add this uniform
-		return;
-	}
-	
-	g_Materials[renderMaterial].uniforms_shared_const[index].value.type = uniformType;
-	g_Materials[renderMaterial].uniforms_shared_const[index].value.data = pData;
-	g_Materials[renderMaterial].uniforms_shared_const[index].size = amount;
-	++g_Materials[renderMaterial].numUniforms_shared_const;
 }
 
 
