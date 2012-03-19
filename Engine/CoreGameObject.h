@@ -33,9 +33,12 @@ public:
 	virtual void SetPosition(const vec3* pPosition){}
 	virtual const vec3* GetPosition() const{return NULL;}
 	
-	virtual bool LoadResources(void* pSpawnStruct){return true;}
-	virtual bool PostResourcesLoaded(){return true;}
-	
+    //This function will be called for each object but by the nature
+    //of how my loading functions work, you will never load the same
+    //texture, sound buffer, etc. more than once.  This method
+    //of loading art makes it super easy.
+	static bool LoadResourcesForType(u32 type){return true;}
+
 	//TODO: separate Box2D functionality out so you are not forced to have it
 	virtual b2Body* Box2D_GetBody(){return NULL;}
 	virtual b2Body* Box2D_GetBodyInRadius(const vec2* pCenterMeters, f32 radiusMeters){return NULL;}

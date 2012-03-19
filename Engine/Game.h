@@ -162,6 +162,7 @@ public:
 	virtual u32 Box2D_GetCollisionFlagsForTileIndex(s32 tileIndex){return 1<<CollisionFilter_Ground;}
 	virtual b2Body* Box2D_CreateBodyForTileIndex(s32 tileIndex, s32 posX, s32 posY);
 	virtual void TileDestructionCallback(s32 tileIndexX, s32 tileIndexY, const vec2* pHitVel){};
+    virtual void LoadResourcesForType(u32 type){}
 #if defined (PLATFORM_IOS)
 	TouchInputIOS* m_pTouchInput;
 #endif

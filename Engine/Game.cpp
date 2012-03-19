@@ -324,11 +324,6 @@ void Game::Update(f32 timeElapsed)
 	}
 	
 	m_numTilesToDelete = 0;
-
-	//Lazy so constantly load new resources
-	//It can't be THAT bad
-	LoadItemArt();
-	LoadItemSounds();
 }
 
 
@@ -543,7 +538,6 @@ void Game::LoadItemArt()
 		}
 		
 		const MaterialSettings* pMaterialSettings = pCurrArtDesc->materialSettings;
-
 		
 		//This will load the texture but if it's already loaded, it will do nothing
 		const bool loadedATexture = GLRENDERER->LoadTexture(pCurrArtDesc->textureFileName, pCurrArtDesc->imageType, &pCurrArtDesc->textureHandle, pMaterialSettings->textureFilterMode, pMaterialSettings->wrapModeU, pMaterialSettings->wrapModeV,pMaterialSettings->flipY);
@@ -2033,7 +2027,19 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				}
 			}
 		}
+        
+        //Load all the objects resources!
+		//TODO: thread all of this resource stuff
 		
+		for(u32 i=0; i<m_numSpawnableEntities; ++i)
+		{
+            SpawnableEntity* pEnt = &m_spawnableEntities[i];
+            GAME->LoadResourcesForType(pEnt->type);
+		}
+        
+        //Load all resources into memory
+        LoadItemArt();
+        LoadItemSounds();
 		
 		//All the objects have been created, now initialize them!
 		for(u32 i=0; i<m_numSpawnableEntities; ++i)
@@ -2046,35 +2052,13 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 		}
 		
 		//All the objects have been created, now do the post init!
+        //This is a good place to link objects together
 		for(u32 i=0; i<m_numSpawnableEntities; ++i)
 		{
 			SpawnableEntity* pEnt = &m_spawnableEntities[i];
 			if(pEnt->pObject != NULL)
 			{
 				pEnt->pObject->PostSpawnInit(pEnt);
-			}
-		}
-		
-		//Load all the objects resources!
-		//TODO: thread all of this resource stuff
-		
-		for(u32 i=0; i<m_numSpawnableEntities; ++i)
-		{
-			SpawnableEntity* pEnt = &m_spawnableEntities[i];
-			if(pEnt->pObject != NULL && pEnt->pObject->GetType() == CoreObjectType_CoreGameObject)
-			{
-				CoreGameObject* pGameObject = (CoreGameObject*)pEnt->pObject;
-				pGameObject->LoadResources(pEnt);
-			}
-		}
-
-		for(u32 i=0; i<m_numSpawnableEntities; ++i)
-		{
-			SpawnableEntity* pEnt = &m_spawnableEntities[i];
-			if(pEnt->pObject != NULL && pEnt->pObject->GetType() == CoreObjectType_CoreGameObject)
-			{
-				CoreGameObject* pGameObject = (CoreGameObject*)pEnt->pObject;
-				pGameObject->PostResourcesLoaded();
 			}
 		}
 	}
