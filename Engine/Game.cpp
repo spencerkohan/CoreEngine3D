@@ -27,6 +27,8 @@
 
 Game* GAME = NULL;
 
+void DrawFunc_DrawTile(void* pData);
+
 const MaterialSettings g_Game_BlobShadowSettings =
 {
 	GL_LINEAR,//GLuint			textureFilterMode;
@@ -674,6 +676,126 @@ void Game::DeleteAllItemSounds()
 }
 
 
+void DrawFunc_DrawTile(void* pData)
+{
+	Tile* pTile = (Tile*)pData;
+	
+	const TileSetDescription* pDesc = pTile->pDesc;
+	
+	static f32 tileVerts[20] = {
+		/*v:*/-0.5f, -0.5f, 0.0f, /*t:*/0.0f,0.0f, 
+		/*v:*/-0.5f,  0.5f, 0.0f, /*t:*/0.0f,0.5f,
+		/*v:*/ 0.5f, -0.5f, 0.0f, /*t:*/0.5f,0.0f,  
+		/*v:*/ 0.5f,  0.5f, 0.0f, /*t:*/0.5f,0.5f,
+	};
+	
+	const PrimitiveData* pVertData = &pDesc->pModelData->primitiveArray[0];
+	memcpy(tileVerts, pVertData->vertexData, pVertData->sizeOfVertexData);
+	
+	vec3* pos0 = (vec3*)&tileVerts[0];
+	vec3* pos1 = (vec3*)&tileVerts[5];
+	vec3* pos2 = (vec3*)&tileVerts[10];
+	vec3* pos3 = (vec3*)&tileVerts[15];
+	
+	const f32 scaleX = pTile->scale.x;
+	const f32 scaleY = pTile->scale.y;
+	
+	pos0->x *= scaleX;
+	pos1->x *= scaleX;
+	pos2->x *= scaleX;
+	pos3->x *= scaleX;
+	
+	pos0->y *= scaleY;
+	pos1->y *= scaleY;
+	pos2->y *= scaleY;
+	pos3->y *= scaleY;
+	
+	AddVec2_Self((vec2*)pos0, &pTile->position);
+	AddVec2_Self((vec2*)pos1, &pTile->position);
+	AddVec2_Self((vec2*)pos2, &pTile->position);
+	AddVec2_Self((vec2*)pos3, &pTile->position);
+	
+	const f32 screenWidthDiv2 = (f32)GLRENDERER->screenWidth_points/2.0f;
+	const f32 screenHeightDiv2 = (f32)GLRENDERER->screenHeight_points/2.0f;
+	
+	pos0->x = pos0->x/screenWidthDiv2-1.0f;
+	pos1->x = pos1->x/screenWidthDiv2-1.0f;
+	pos2->x = pos2->x/screenWidthDiv2-1.0f;
+	pos3->x = pos3->x/screenWidthDiv2-1.0f;
+	
+	pos0->y = -pos0->y/screenHeightDiv2+1.0f;
+	pos1->y = -pos1->y/screenHeightDiv2+1.0f;
+	pos2->y = -pos2->y/screenHeightDiv2+1.0f;
+	pos3->y = -pos3->y/screenHeightDiv2+1.0f;
+	
+	vec2* uv0 = (vec2*)&tileVerts[3];
+	vec2* uv1 = (vec2*)&tileVerts[8];
+	vec2* uv2 = (vec2*)&tileVerts[13];
+	vec2* uv3 = (vec2*)&tileVerts[18];
+	
+	AddVec2_Self(uv0, &pTile->texCoordOffset);
+	AddVec2_Self(uv1, &pTile->texCoordOffset);
+	AddVec2_Self(uv2, &pTile->texCoordOffset);
+	AddVec2_Self(uv3, &pTile->texCoordOffset);
+	
+	glEnableVertexAttribArray(ATTRIB_VERTEX);
+	glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, 20, pos0);
+	
+	glEnableVertexAttribArray(ATTRIB_TEXCOORD);
+	glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, 0, 20, uv0);
+	
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	
+	glDisableVertexAttribArray(ATTRIB_VERTEX);
+	glDisableVertexAttribArray(ATTRIB_TEXCOORD);
+}
+
+
+void Game::CreateRenderableTile_NEW(Tile* pTile, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material)
+{
+	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
+	if(hRenderable.IsValid() == false)
+	{
+		return;
+	}
+	
+	TileSetDescription* pDesc = pTile->pDesc;
+	
+	vec2 scaleVec = {m_tiledLevelDescription.tileDisplaySizeX,m_tiledLevelDescription.tileDisplaySizeX};
+	
+	if(pTile->flags & TILE_FLIPPED_HORIZONTALLY_FLAG)
+	{
+		scaleVec.x *= -1.0f;
+	}
+	
+	if(pTile->flags & TILE_FLIPPED_VERTICALLY_FLAG)
+	{
+		scaleVec.y *= -1.0f;
+	}
+	
+	if(pTile->flags & TILE_FLIPPED_DIAGONALLY_FLAG)
+	{
+		scaleVec.x *= -1.0f;
+		scaleVec.y *= -1.0f;
+	}
+	
+	CopyVec2(&pTile->scale,&scaleVec);
+	
+	const u32 baseFlag = RenderFlagDefaults_2DTexture_AlphaBlended;
+	
+	GLRENDERER->InitRenderableGeometry3D(*pGeom, DrawFunc_DrawTile, pTile, MT_WorldSpace_TextureOnly, &pDesc->loadedTextureID, NULL, renderLayer, View_0, baseFlag|RenderFlag_Visible);
+	
+	const s32 tileID_X = pTile->tileID%pDesc->numTextureTilesX;
+	const s32 tileID_Y = pTile->tileID/pDesc->numTextureTilesX;
+	
+	pTile->texCoordOffset.x = (f32)tileID_X/(f32)pDesc->numTextureTilesX;
+	pTile->texCoordOffset.y = (f32)tileID_Y/(f32)pDesc->numTextureTilesY;
+
+	
+	pTile->hRenderable = hRenderable;
+}
+
+
 void Game::CreateRenderableTile(Tile* pTile, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix)
 {
 	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
@@ -705,7 +827,7 @@ void Game::CreateRenderableTile(Tile* pTile, RenderableGeometry3D** pGeom, Rende
 	f32 tileMat[16];
 	mat4f_LoadScaleFromVec(tileMat, &scaleVec);
 
-	u32 baseFlag = usesViewMatrix ? RenderFlagDefaults_2DTexture_AlphaBlended_UseView:RenderFlagDefaults_2DTexture_AlphaBlended;
+	const u32 baseFlag = usesViewMatrix ? RenderFlagDefaults_2DTexture_AlphaBlended_UseView:RenderFlagDefaults_2DTexture_AlphaBlended;
 	
 	GLRENDERER->InitRenderableGeometry3D(*pGeom, pDesc->pModelData, material, &pDesc->loadedTextureID, tileMat, renderLayer, View_0, baseFlag|RenderFlag_Visible);
 	
@@ -891,8 +1013,8 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 				
 				if(pCurrRenderable == NULL)
 				{
-					CreateRenderableTile(pTile,&pCurrRenderable,renderLayer,renderMaterial,&pTile->texCoordOffset,false);
-					
+					CreateRenderableTile_NEW(pTile,&pCurrRenderable,renderLayer,renderMaterial);
+	
 					if(pCurrRenderable == NULL)
 					{
 						COREDEBUG_PrintDebugMessage("Running out of tile renderables. Use SetTileCullingRange to increase the limit.");
@@ -905,9 +1027,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 
 				const s32 tileBasePosX = x*m_tiledLevelDescription.tileDisplaySizeX+baseX;
 				
-				vec3* pCurrPos = mat4f_GetPos(pCurrRenderable->worldMat);
-				pCurrPos->x = tileBasePosX;
-				pCurrPos->y = tileBasePosY;
+				SetVec2(&pTile->position,tileBasePosX,tileBasePosY);
 			}
 		}
 	}
@@ -1529,7 +1649,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			{
 				case LevelLayer_Parallax4:
 				{
-					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					pCurrLayer->material = MT_WorldSpace_TextureOnly;
 					
 					/*pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
 					
@@ -1541,7 +1661,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				}
 				case LevelLayer_Parallax3:
 				{
-					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					pCurrLayer->material = MT_WorldSpace_TextureOnly;
 					
 					/*pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
 					
@@ -1553,7 +1673,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				}
 				case LevelLayer_Parallax2:
 				{
-					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					pCurrLayer->material = MT_WorldSpace_TextureOnly;
 					
 					/*pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
 					
@@ -1565,7 +1685,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				}
 				case LevelLayer_Parallax1:
 				{
-					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					pCurrLayer->material = MT_WorldSpace_TextureOnly;
 					
 					/*pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
 					
@@ -1577,7 +1697,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				}
 				case LevelLayer_Parallax0:
 				{
-					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					pCurrLayer->material = MT_WorldSpace_TextureOnly;
 					
 					/*pCurrLayer->material = MT_TextureAndFogColorWithTexcoordOffset;
 					
@@ -1591,7 +1711,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 				case LevelLayer_Main0:
 				case LevelLayer_Main1:
 				{
-					pCurrLayer->material = MT_TextureOnlyWithTexcoordOffset;
+					pCurrLayer->material = MT_WorldSpace_TextureOnly;
 					
 					break;
 				}

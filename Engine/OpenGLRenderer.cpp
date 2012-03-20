@@ -377,19 +377,6 @@ void OpenGLRenderer::ClearOneFrameGeometry()
 
 void OpenGLRenderer::SetRenderState(u32 renderFlags)
 {
-	if(renderFlags & RenderFlag_UseOrthographicProjection_NDC)
-	{
-		m_currProjMatType = ProjMatType_Orthographic_NDC;
-	}
-	else if(renderFlags & RenderFlag_UseOrthographicProjection_Points)
-	{
-		m_currProjMatType = ProjMatType_Orthographic_Points;
-	}
-	else
-	{
-		m_currProjMatType = ProjMatType_Perspective;
-	}
-
 	//Enable or disable depth writing based on the RenderFlag
 	const u32 currDepthTestValue = (renderFlags & RenderFlag_DisableDepthTest) | (renderFlags & RenderFlag_EnableDepthTest);
 	const u32 prevDepthTestValue = (m_renderStateFlags & RenderFlag_DisableDepthTest) | (m_renderStateFlags & RenderFlag_EnableDepthTest);
@@ -569,13 +556,20 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 		
 		//Draw the current object
 		
-		if (renderFlags & RenderFlag_IgnoreViewMatrix)
+		const Material* currMaterial = &g_Materials[m_lastUsedMaterial];
+		//If there's a matrix at all
+		if(currMaterial->uniform_worldViewProjMat != -1)
 		{
-			UploadWorldProjMatrix(pGeom->worldMat);
-		}
-		else
-		{
-			UploadWorldViewProjMatrix(pGeom->worldMat);
+			//Some objects ignore the view matrix
+			if (renderFlags & RenderFlag_IgnoreViewMatrix)
+			{
+				UploadWorldProjMatrix(pGeom->worldMat);
+			}
+			//Some use the view matrix
+			else
+			{
+				UploadWorldViewProjMatrix(pGeom->worldMat);
+			}
 		}
 		
 		SetRenderState(renderFlags);
@@ -2645,6 +2639,7 @@ void OpenGLRenderer::CreateMaterials()
 	const s32 VSH_TextureOnly = AddVertexShaderToList("Shaders/TextureOnly.vsh");
     const s32 VSH_TextureWithColor = AddVertexShaderToList("Shaders/TextureWithColor.vsh");
 	const s32 VSH_VertWithTexcoordOffset = AddVertexShaderToList("Shaders/VertWithTexcoordOffset.vsh");
+	const s32 VSH_WorldSpace_VertWithTexcoord = AddVertexShaderToList("Shaders/WorldSpace_VertWithTexcoord.vsh");
 	const s32 VSH_VertWithTexcoordAndOffsetTexcoord = AddVertexShaderToList("Shaders/VertWithTexcoordAndOffsetTexcoord.vsh");
 	const s32 VSH_VertWithOffsetTexcoordAndOffsetTexcoord = AddVertexShaderToList("Shaders/VertWithOffsetTexcoordAndOffsetTexcoord.vsh");
 	const s32 VSH_TextureOnlyWithTexcoordAndWorldOffset = AddVertexShaderToList("Shaders/TextureOnlyWithTexcoordAndWorldOffset.vsh");
@@ -2860,6 +2855,11 @@ void OpenGLRenderer::CreateMaterials()
 	if(CreateShaderProgram(VSH_VertWithTexcoordOffset,PS_TextureOnlySimple,attribs_VT,&g_Materials[MT_TextureOnlyWithTexcoordOffset].shaderProgram))
 	{
 		AddUniform_Unique(MT_TextureOnlyWithTexcoordOffset,"texCoordOffset",Uniform_Vec2,1);
+	}
+	
+	//MT_WorldSpace_TextureOnly
+	if(CreateShaderProgram(VSH_WorldSpace_VertWithTexcoord,PS_TextureOnlySimple,attribs_VT,&g_Materials[MT_WorldSpace_TextureOnly].shaderProgram))
+	{
 	}
 	 
     

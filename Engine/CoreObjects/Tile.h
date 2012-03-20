@@ -47,6 +47,8 @@ public:
 	TileSetDescription* pDesc;
 	b2Body* pBody;	
 	CoreObjectHandle hRenderable;
+	vec2 scale;
+	vec2 position;
 	vec2 texCoordOffset;
 	u16 indexX;
 	u16 indexY;

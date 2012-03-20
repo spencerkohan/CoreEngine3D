@@ -25,6 +25,7 @@ const char* g_MaterialNames[NumRenderMaterials] =
 	"MT_Animation_NewMethod3D",
 	"MT_TextureOnlyWithTexcoordOffset",
     "MT_TextureOnlyWithTexcoordOffsetDiscard",
+	"MT_WorldSpace_TextureOnly",
 	"MT_BasicPointSprite",
 	"MT_PointSpriteColorShine",
     "MT_VertColors",

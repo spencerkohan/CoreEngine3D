@@ -343,6 +343,15 @@ typedef enum {
 	VertexFormat_POD_Skinned,
 } VertexFormat;
 
+struct DrawFunctionStruct
+{
+	void (*setupDrawFunc)(void*);
+	void (*drawFunc)(void*);
+	void (*endDrawFunc)(void*);
+};
+
+//TODO: remove all the typedefs
+
 typedef struct
 {
 	u32 drawMethod;
@@ -441,7 +450,7 @@ typedef struct
 //UniformBlob
 typedef struct
 {
-	u32 uniform;
+	s32 uniform;
 	UniformValue value;
 	s32 size;
 } UniformBlob;
@@ -451,10 +460,10 @@ typedef struct
 typedef struct
 {
 	u32 shaderProgram;
-	u32 uniform_worldViewProjMat;
-	u32 uniform_camPos;//TODO: remove
+	s32 uniform_worldViewProjMat;//TODO: remove
+	s32 uniform_camPos;//TODO: remove
 	UniformBlob uniforms_shared[MAX_SHARED_UNIFORM_VALUES];
-	u32 uniforms_unique[MAX_UNIQUE_UNIFORM_VALUES];
+	s32 uniforms_unique[MAX_UNIQUE_UNIFORM_VALUES];
 	u8 uniforms_unique_data[256];	//cached data
 	s32 uniforms_unique_sizes[MAX_UNIQUE_UNIFORM_VALUES];
 	UniformType uniforms_unique_types[MAX_UNIQUE_UNIFORM_VALUES];

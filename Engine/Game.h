@@ -228,6 +228,7 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	void DeleteAllItemSounds();
 	void ConvertTileID(s32* p_InOut_tileID, TileSetDescription** pOut_tileDesc);
 	void CreateRenderableTile(Tile* pTile, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix);
+	void CreateRenderableTile_NEW(Tile* pTile, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material);
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState m_deviceInputState;
 #endif
