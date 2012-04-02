@@ -27,7 +27,16 @@
 
 Game* GAME = NULL;
 
-void DrawFunc_DrawTile(void* pData);
+static void DrawFunc_DrawTile_Init();
+static void DrawFunc_DrawTile_Uninit();
+static void DrawFunc_DrawTile(void* pData);
+
+static DrawFunctionStruct g_drawStruct_RenderTile = 
+{
+    DrawFunc_DrawTile_Init,
+    DrawFunc_DrawTile,
+    DrawFunc_DrawTile_Uninit,
+};
 
 const MaterialSettings g_Game_BlobShadowSettings =
 {
@@ -675,8 +684,21 @@ void Game::DeleteAllItemSounds()
 	m_numSoundDescriptionsToLoadWavsFor = 0;
 }
 
+static void DrawFunc_DrawTile_Init()
+{
+    GLRENDERER->DisableVertexBufferObjects();
+    
+    glEnableVertexAttribArray(ATTRIB_VERTEX);
+	glEnableVertexAttribArray(ATTRIB_TEXCOORD);
+}
 
-void DrawFunc_DrawTile(void* pData)
+static void DrawFunc_DrawTile_Uninit()
+{
+    glDisableVertexAttribArray(ATTRIB_VERTEX);
+	glDisableVertexAttribArray(ATTRIB_TEXCOORD);
+}
+
+static void DrawFunc_DrawTile(void* pData)
 {
 	Tile* pTile = (Tile*)pData;
 	
@@ -738,16 +760,11 @@ void DrawFunc_DrawTile(void* pData)
 	AddVec2_Self(uv2, &pTile->texCoordOffset);
 	AddVec2_Self(uv3, &pTile->texCoordOffset);
 	
-	glEnableVertexAttribArray(ATTRIB_VERTEX);
 	glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, 20, pos0);
-	
-	glEnableVertexAttribArray(ATTRIB_TEXCOORD);
+    
 	glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, 0, 20, uv0);
 	
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	
-	glDisableVertexAttribArray(ATTRIB_VERTEX);
-	glDisableVertexAttribArray(ATTRIB_TEXCOORD);
 }
 
 
@@ -783,7 +800,7 @@ void Game::CreateRenderableTile_NEW(Tile* pTile, RenderableGeometry3D** pGeom, R
 	
 	const u32 baseFlag = RenderFlagDefaults_2DTexture_AlphaBlended;
 	
-	GLRENDERER->InitRenderableGeometry3D(*pGeom, DrawFunc_DrawTile, pTile, MT_WorldSpace_TextureOnly, &pDesc->loadedTextureID, NULL, renderLayer, View_0, baseFlag|RenderFlag_Visible);
+	GLRENDERER->InitRenderableGeometry3D(*pGeom, &g_drawStruct_RenderTile, pTile, MT_WorldSpace_TextureOnly, &pDesc->loadedTextureID, NULL, renderLayer, View_0, baseFlag|RenderFlag_Visible);
 	
 	const s32 tileID_X = pTile->tileID%pDesc->numTextureTilesX;
 	const s32 tileID_Y = pTile->tileID/pDesc->numTextureTilesX;

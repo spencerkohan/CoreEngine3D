@@ -375,6 +375,30 @@ void OpenGLRenderer::ClearOneFrameGeometry()
 }
 
 
+void OpenGLRenderer::DisableVertexBufferObjects()
+{
+    //Do this to disable vertex array objects
+    if(m_supportsFeaturesFromiOS4)
+    {
+#ifdef PLATFORM_IOS
+        glBindVertexArrayOES(0);
+        
+#elif defined PLATFORM_WIN
+        glBindVertexArray(0);
+        
+#else
+        glBindVertexArrayAPPLE(0);	
+#endif
+    }
+    
+    //Disable Vertex Buffer
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    //Disable Index Buffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+
 void OpenGLRenderer::SetRenderState(u32 renderFlags)
 {
 	//Enable or disable depth writing based on the RenderFlag
@@ -497,7 +521,8 @@ void OpenGLRenderer::SetRenderState(u32 renderFlags)
 void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableObjectArray, u32 numRenderableObjects)
 {
 	u8* vertexData = NULL;
-	
+    DrawFunctionStruct* pLastDrawStruct = NULL;
+    void (*pLastDrawEnd)() = NULL;
 
 	for (u32 renderIDX = 0; renderIDX<numRenderableObjects; ++renderIDX)
 	{
@@ -573,38 +598,52 @@ void OpenGLRenderer::RenderLoop(u32 camViewIDX,RenderableGeometry3D* renderableO
 		}
 		
 		SetRenderState(renderFlags);
-		
-		if(pGeom->drawObject != NULL
-		   && pGeom->drawFunc != NULL)
+        
+        void* pDrawObject = pGeom->drawObject;
+        DrawFunctionStruct* pDrawStruct = pGeom->pDrawStruct;
+        
+		if(pDrawObject != NULL
+           && pDrawStruct != NULL)
 		{
-			//Do this to disable vertex array objects
-			if(m_supportsFeaturesFromiOS4)
-			{
-#ifdef PLATFORM_IOS
-				glBindVertexArrayOES(0);
-				
-#elif defined PLATFORM_WIN
-				glBindVertexArray(0);
-				
-#else
-				glBindVertexArrayAPPLE(0);	
-#endif
-			}
-			
-			//Disable Vertex Buffer
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			
-			//Disable Index Buffer
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-			
-			
-			//Draw!
-			pGeom->drawFunc(pGeom->drawObject);
-			
-			vertexData = NULL;
+            //We're drawing custom objects now, so
+            //we gotta NULL this out
+            vertexData = NULL;
+            
+            //If this draw struct is different from the last
+            if(pDrawStruct != pLastDrawStruct)
+            {
+                //Struct changed, so uninit
+                if(pLastDrawEnd != NULL)
+                {
+                    pLastDrawEnd();
+                }
+                
+                //Save the last draw end function
+                pLastDrawEnd = pGeom->pDrawStruct->endDrawFunc;
+                
+                //Struct changed, so save the new one
+                pLastDrawStruct = pGeom->pDrawStruct;
+                
+                //Init the new drawfunc
+                pDrawStruct->initDrawFunc();
+            }
+            
+            //Draw the object
+            pDrawStruct->drawFunc(pDrawObject);
 		}
 		else
 		{
+            //uninit the leftover custom draw object
+            if(pLastDrawEnd != NULL)
+            {
+                pLastDrawEnd();
+                pLastDrawEnd = NULL;
+            }
+            
+            //We're drawing normal objects now, so
+            //we gotta NULL this out
+            pLastDrawStruct = NULL;
+ 
 			const ModelData* pModelData = pGeom->pModel;
 			
 			for(unsigned int primIDX=0; primIDX<pModelData->numPrimitives; ++primIDX)
@@ -2477,9 +2516,9 @@ void OpenGLRenderer::InitRenderableGeometry3D_Shared(RenderableGeometry3D* rende
 	}
 }
 
-void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, void (*drawFunc)(void*), void* drawObject, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
+void OpenGLRenderer::InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, DrawFunctionStruct* pDrawStruct, void* drawObject, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags)
 {
-	renderableObject->drawFunc = drawFunc;
+	renderableObject->pDrawStruct = pDrawStruct;
 	renderableObject->drawObject = drawObject;
 	
 	InitRenderableGeometry3D_Shared(renderableObject,materialID,customTexture,matrix4x4,renderLayer,viewFlags,renderFlags);

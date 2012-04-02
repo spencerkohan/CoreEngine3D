@@ -345,9 +345,9 @@ typedef enum {
 
 struct DrawFunctionStruct
 {
-	void (*setupDrawFunc)(void*);
+	void (*initDrawFunc)();
 	void (*drawFunc)(void*);
-	void (*endDrawFunc)(void*);
+	void (*endDrawFunc)();
 };
 
 //TODO: remove all the typedefs
@@ -596,7 +596,7 @@ public:
 	union
 	{
 		ModelData* pModel;  //4 bytes
-		void (*drawFunc)(void*);
+		DrawFunctionStruct* pDrawStruct;
 	};
 	void* drawObject;  //4 bytes
 	RenderableMaterial material;

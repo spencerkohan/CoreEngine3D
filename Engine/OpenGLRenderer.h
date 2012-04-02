@@ -192,7 +192,7 @@ public:
 	void UpdateParticleQueues(f32 timeElapsed);
 	void UpdateTrails(f32 timeElapsed);
 	void InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, ModelData* pModel, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
-	void InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, void (*drawFunc)(void*), void* drawObject, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
+	void InitRenderableGeometry3D(RenderableGeometry3D* renderableObject, DrawFunctionStruct* pDrawStruct, void* drawObject, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
 	void InitRenderableSceneObject3D(RenderableSceneObject3D* renderableObject, RenderableScene3D* pScene, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
 	void InitRenderableSceneObject3D_Simple(RenderableSceneObject3D* renderableObject, RenderableScene3D* pScene, mat4f matrix4x4, u32 viewFlags);
 	void SortRenderableGeometry3DList(RenderableObjectType type);
@@ -225,7 +225,7 @@ public:
 	void DEBUGDRAW_DrawCircleXY(DebugDrawMode drawMode, const vec3* pCenter, f32 radius, const vec4* color);
 	void DEBUGDRAW_DrawCircleXZ(DebugDrawMode drawMode, const vec3* pCenter, f32 radius, const vec4* color);
 	void DEBUGDRAW_DrawCylinder(DebugDrawMode drawMode, mat4f matrix4x4, const vec4* color);
-	
+	void DisableVertexBufferObjects();
 	//public member variables
 	s32 screenWidth_points;
 	s32 screenHeight_points;
