@@ -109,6 +109,10 @@ public:
 	
 	T* CreateObject(u32 type)
 	{
+        if(m_numObjects > 600)
+        {
+            COREDEBUG_PrintDebugMessage("Gettin closer");
+        }
 		if(m_numObjects == m_maxObjects)
 		{
 			COREDEBUG_PrintDebugMessage("INSANE ERROR: You can't make any more objects!");

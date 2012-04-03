@@ -157,6 +157,12 @@ void CoreObjectManager::UpdateHandle(CoreObject* pCoreObject)
 
 void CoreObjectManager::RemoveObject(CoreObject* pCoreObject)
 {
+    if(m_activeEntryCount)
+    {
+        COREDEBUG_PrintDebugMessage("INSANE ERROR: Tried to remove an object when there are no used handles.");
+        return;
+    }
+    
 #if COREOBJECTMANAGER_DEBUG
 	assert(pCoreObject->m_markedForDeletion == true);
 #endif
