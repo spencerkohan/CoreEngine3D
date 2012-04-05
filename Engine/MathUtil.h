@@ -21,8 +21,8 @@ f32 ClampF(f32 n, f32 clampMin, f32 clampMax);
 f32 MaxF(f32 l, f32 r);
 s32 MaxS32(int l, int r);
 s32 MinS32(int l, int r);
-s32 MaxU32(unsigned int l, unsigned int r);
-s32 MinU32(unsigned int l, unsigned int r);
+u32 MaxU32(unsigned int l, unsigned int r);
+u32 MinU32(unsigned int l, unsigned int r);
 f32 MinF(f32 l, f32 r); 
 void SwapS32(s32* l, s32* r);
 

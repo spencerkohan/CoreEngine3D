@@ -59,7 +59,7 @@ s32 MinS32(int l, int r)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-s32 MaxU32(unsigned int l, unsigned int r)
+u32 MaxU32(unsigned int l, unsigned int r)
 {
 	return l>r?l:r;
 }
@@ -67,7 +67,7 @@ s32 MaxU32(unsigned int l, unsigned int r)
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-s32 MinU32(unsigned int l, unsigned int r)
+u32 MinU32(unsigned int l, unsigned int r)
 {
 	return l<r?l:r;
 }

@@ -15,6 +15,9 @@
 #include "stddef.h" //for NULL -_-
 #include "ArrayUtil.h"
 #include <cassert>
+#include "MathUtil.h"
+
+#include <boost/thread.hpp> 
 
 class CoreObjectManager;
 extern CoreObjectManager* COREOBJECTMANAGER;
@@ -65,6 +68,7 @@ public:
 		m_numObjects = 0;
 		m_maxObjects = 0;
 		m_objectsCanUpdate = true;
+        m_objectUpdateIsThreaded = false;
 	}
 	
 	
@@ -133,6 +137,16 @@ public:
 		
 		return NULL;
 	}
+    
+    void UpdateObjectSubList(u32 listStart, u32 num, f32 timeElapsed)
+    {
+        //Update remaining objects
+        for(u32 i=listStart; i<num; ++i)
+        {
+            T* pCurrObject = &m_pObjectList[i];
+            pCurrObject->Update(timeElapsed);
+        }
+    }
 	
 
 	//Returns true if an object was deleted in case you need
@@ -181,12 +195,62 @@ public:
 
 		if(m_objectsCanUpdate)
 		{
-			//Update remaining objects
-			for(u32 i=0; i<m_numObjects; ++i)
-			{
-				T* pCurrObject = &m_pObjectList[i];
-				pCurrObject->Update(timeElapsed);
-			}
+            if(m_objectUpdateIsThreaded == true)
+            {
+                //Update using boost threads
+                
+                const u32 maxThreads = 4;
+                u32 numThreads = 0;
+                boost::thread* pThread[maxThreads];
+
+                //We want to process at least 50 at a time if we can, and if we
+                //can do more, great!
+                const u32 numObjectsPerThread = MaxU32(50,m_numObjects/maxThreads);
+                
+                u32 numObjectsRemaining = m_numObjects;
+                u32 processIndex = 0;
+                
+                //Keep going while there are objects to process
+                while(numObjectsRemaining > 0)
+                {
+                    //If we hit max threads, process all the rest, else process the num per thread we decided
+                    const u32 numToProcess = ((numThreads+1) == maxThreads) ? numObjectsRemaining : MinU32(numObjectsPerThread,numObjectsRemaining);
+                    
+                    //Process a batch of objects and save a thread
+                    pThread[numThreads] = new boost::thread(&CoreObjectFactory<T>::UpdateObjectSubList,this,processIndex,numToProcess,timeElapsed);
+                    
+                    ++numThreads;
+                    
+                    //Count how many we just processed
+                    processIndex += numToProcess;
+                    
+                    //Decrement how many are left
+                    numObjectsRemaining -= numToProcess;
+                }
+                
+                //Join all the threads
+                for(u32 i=0; i<numThreads; ++i)
+                {
+                    pThread[i]->join();
+                }
+                
+                //Delete the threads I guess?
+                for(u32 i=0; i<numThreads; ++i)
+                {
+                    delete pThread[i];
+                }
+            }
+            else
+            {
+                //Update normally
+                
+                //Update remaining objects
+                for(u32 i=0; i<m_numObjects; ++i)
+                {
+                    T* pCurrObject = &m_pObjectList[i];
+                    pCurrObject->Update(timeElapsed);
+                }
+            }
 		}
 		
 		return deletedSomething;
@@ -208,12 +272,19 @@ public:
 	{
 		m_objectsCanUpdate = objectsCanUpdate;
 	}
+    
+    void SetObjectUpdateIsThreaded(bool objectUpdateIsThreaded)
+    {
+        m_objectUpdateIsThreaded = objectUpdateIsThreaded;
+    }
+    
 	//private:
 
 	T* m_pObjectList;
 	u32 m_numObjects;
 	u32 m_maxObjects;
 	bool m_objectsCanUpdate;
+    bool m_objectUpdateIsThreaded;
 };
 
 
