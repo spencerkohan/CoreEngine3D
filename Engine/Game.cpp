@@ -1340,6 +1340,11 @@ void Game::Box2D_ResetWorld()
 		delete m_Box2D_pWorld;
 		m_Box2D_pWorld = NULL;
 	}
+    
+    if(m_Box2D_pContactListener != NULL)
+	{
+		delete m_Box2D_pContactListener;
+	}
 	
 	Box2D_Init(m_Box2D_ContinuousPhysicsEnabled,m_Box2D_allowObjectsToSleep);	
 }
