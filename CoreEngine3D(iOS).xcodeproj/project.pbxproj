@@ -43,6 +43,7 @@
 		DD0C294F14F80E9E002EE89F /* Box2DUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD0C294E14F80E9D002EE89F /* Box2DUtil.cpp */; };
 		DD15B2FE1501B39900B065B0 /* Spawner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD15B2FC1501B39900B065B0 /* Spawner.cpp */; };
 		DD15B2FF1501B39900B065B0 /* Spawner.h in Headers */ = {isa = PBXBuildFile; fileRef = DD15B2FD1501B39900B065B0 /* Spawner.h */; };
+		DD1BAFEF152D690500789966 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1BAFEE152D690500789966 /* boost.framework */; };
 		DD25DC6A14E1D6EB000ACF15 /* ObjectGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD25DC6814E1D6EB000ACF15 /* ObjectGroup.cpp */; };
 		DD25DC6B14E1D6EB000ACF15 /* ObjectGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = DD25DC6914E1D6EB000ACF15 /* ObjectGroup.h */; };
 		DD25DC7114E1E308000ACF15 /* SoundPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD25DC6D14E1E307000ACF15 /* SoundPlayer.cpp */; };
@@ -219,6 +220,7 @@
 		DD0C294E14F80E9D002EE89F /* Box2DUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DUtil.cpp; sourceTree = "<group>"; };
 		DD15B2FC1501B39900B065B0 /* Spawner.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Spawner.cpp; path = CoreObjects/Spawner.cpp; sourceTree = "<group>"; };
 		DD15B2FD1501B39900B065B0 /* Spawner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Spawner.h; path = CoreObjects/Spawner.h; sourceTree = "<group>"; };
+		DD1BAFEE152D690500789966 /* boost.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = boost.framework; path = Engine/boost.framework; sourceTree = "<group>"; };
 		DD25DC6814E1D6EB000ACF15 /* ObjectGroup.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = ObjectGroup.cpp; path = CoreObjects/ObjectGroup.cpp; sourceTree = "<group>"; };
 		DD25DC6914E1D6EB000ACF15 /* ObjectGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = ObjectGroup.h; path = CoreObjects/ObjectGroup.h; sourceTree = "<group>"; };
 		DD25DC6D14E1E307000ACF15 /* SoundPlayer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = SoundPlayer.cpp; path = CoreObjects/SoundPlayer.cpp; sourceTree = "<group>"; };
@@ -365,6 +367,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD1BAFEF152D690500789966 /* boost.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,6 +403,7 @@
 		DDA6F309149C19E10035A1BF = {
 			isa = PBXGroup;
 			children = (
+				DD1BAFEE152D690500789966 /* boost.framework */,
 				DDA6F498149C1A920035A1BF /* Engine */,
 				DDA6F319149C19E10035A1BF /* CoreEngine3D(iOS) */,
 				DDA6F315149C19E10035A1BF /* Products */,
@@ -907,7 +911,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -936,7 +940,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					PLATFORM_IOS,
@@ -959,10 +963,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/CoreEngine3D.dst;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Engine\"",
+				);
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreEngine3D(iOS)/CoreEngine3D-Prefix.pch";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../Library/Developer/Xcode/DerivedData/PhysicsAIGame-ddeuqkqvtiipiwcknknqidfjquuh/Build/Products/Debug-iphoneos\"",
@@ -978,7 +987,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/CoreEngine3D.dst;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Engine\"",
+				);
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreEngine3D(iOS)/CoreEngine3D-Prefix.pch";
@@ -988,6 +1001,7 @@
 					PLATFORM_IOS,
 					"$(inherited)",
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../Library/Developer/Xcode/DerivedData/PhysicsAIGame-ddeuqkqvtiipiwcknknqidfjquuh/Build/Products/Debug-iphoneos\"",

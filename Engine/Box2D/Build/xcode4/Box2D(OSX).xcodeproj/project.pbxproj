@@ -890,7 +890,7 @@
 		80FF01C9141C3D980059E59D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = 80FF01CC141C3D980059E59D /* Build configuration list for PBXProject "Box2D(OSX)" */;
 			compatibilityVersion = "Xcode 3.2";
