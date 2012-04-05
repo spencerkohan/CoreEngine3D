@@ -108,6 +108,12 @@ bool Game::Init()
 		CopyVec3(&m_layers[i].position,&vec3_zero);
 		m_layers[i].pLevelData = NULL;
 	}
+    
+    for(u32 i=0; i<m_numTileSetDescriptions; ++i)
+	{
+		TileSetDescription* pDesc = &m_tileSetDescriptions[i];
+		pDesc->loadedTextureID = 0;
+	}
 	
 	//Register the common models people will use
 	GLRENDERER->RegisterModel(&g_Square1x1_modelData);
@@ -546,7 +552,7 @@ void Game::LoadItemArt()
 		ItemArtDescription* pCurrArtDesc = m_pArtDescriptionsToLoadTexturesFor[i];
 		if(pCurrArtDesc == NULL)
 		{
-			//Why is someone added NULL art descriptions?
+			//Why is someone adding NULL art descriptions?
 			continue;
 		}
 		
@@ -1555,7 +1561,6 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			std::string textureFileName(pDesc->textureFileName);
 			std::string texFilenameWithPath(path+textureFileName);
 			
-			pDesc->loadedTextureID = 0;
 			GLRENDERER->LoadTexture(texFilenameWithPath.c_str(), ImageType_PNG, &pDesc->loadedTextureID, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,true);
 			
 			//Do some useful calculations
