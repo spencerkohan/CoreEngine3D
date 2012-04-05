@@ -1509,8 +1509,6 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 
 	std::string filenameWithPath(path+filename);
 	
-	m_TMXDoc.reset();
-	
 	pugi::xml_parse_result result = m_TMXDoc.load_file(GetPathToFile(filenameWithPath.c_str()).c_str());
 	
 	if(result)
