@@ -3234,7 +3234,6 @@ bool OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
 			
 			break;
 		}
-        //TODO: fix memory leak in ImageType_PNG
         case ImageType_PNG:
         {
 			int width,height;
@@ -3274,6 +3273,8 @@ bool OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
 				}
 				
 				glBindTexture(GL_TEXTURE_2D, 0);
+                
+                free(textureImage);
 			}
 			else
 			{
