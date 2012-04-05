@@ -3216,6 +3216,7 @@ bool OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
 	
     switch (imageType)
     {
+        //case ImageType_PNG:
 		case ImageType_TGA:
 		{
 			*pGLTexture = SOIL_load_OGL_texture
@@ -3223,7 +3224,7 @@ bool OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
 			filePath.c_str(),
 			 SOIL_LOAD_AUTO,
 			 SOIL_CREATE_NEW_ID,
-			 SOIL_FLAG_INVERT_Y
+			 flipY?0:SOIL_FLAG_INVERT_Y
 			 );
 			
 			if(*pGLTexture == 0)
@@ -3233,6 +3234,7 @@ bool OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
 			
 			break;
 		}
+        //TODO: fix memory leak in ImageType_PNG
         case ImageType_PNG:
         {
 			int width,height;
@@ -3279,7 +3281,7 @@ bool OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
 			}
             
             break;
-        }   
+        }
         case ImageType_PVR:
         {
             //[self loadTextureFromFile:pGLTexture :fileName :filterMode: wrapModeU: wrapModeV];
