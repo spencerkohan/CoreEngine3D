@@ -117,7 +117,6 @@ bool CoreObjectManager::AddObject(CoreObject *pCoreObject)
 	return true;
 }
 
-
 CoreObject* CoreObjectManager::GetObjectByHandle(CoreObjectHandle handle)
 {
 	const s32 index = handle.m_index;
@@ -130,9 +129,11 @@ CoreObject* CoreObjectManager::GetObjectByHandle(CoreObjectHandle handle)
 	{
 		return NULL;
 	}
-	
+    
+    CoreObject* pObject = m_entries[index].m_pObject;
+	   
 	//Return the pointer to the object
-	return m_entries[index].m_pObject;
+	return pObject;
 }
 
 

@@ -51,7 +51,7 @@ void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosit
 	m_currSpinAngle = 0.0f;
 	m_lifeTimer = rand_FloatRange(pSettings->lifetimeMin,pSettings->lifetimeMax);
 	
-	SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,0.0f);
+	SetVec4(&m_diffuseColor,1.0f,1.0f,1.0f,1.0f);
 	CopyVec4(&m_diffuseColorStart,&vec4_one);
 	
 	switch (texIndex)
@@ -124,17 +124,24 @@ u32 BasicParticle::GetCategoryFlags()
 
 void BasicParticle::Update(f32 timeElapsed)
 {
-	RenderableGeometry3D* pGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(m_hRenderable);
-	if(pGeom == NULL)
+    RenderableGeometry3D* pGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(m_hRenderable);
+    
+    if(pGeom == NULL)
 	{
 		return;
 	}
-	
+    
 	m_lifeTimer -= timeElapsed;
 	
 	const f32 breakableAlpha = ClampF(m_lifeTimer/0.15f,0.0f,1.0f);
-	ScaleVec4(&m_diffuseColor,&m_diffuseColorStart,breakableAlpha);
-	
+    
+    ScaleVec4(&m_diffuseColor,&m_diffuseColorStart,breakableAlpha);
+    
+    if(m_lifeTimer <= 0.0f)
+	{
+		this->DeleteObject();
+	}
+    
 	vec3* pPos = mat4f_GetPos(pGeom->worldMat);
 	
 	if(m_pBody != NULL)
@@ -198,15 +205,6 @@ void BasicParticle::AddVelocity(const vec3* pVelAdd)
 
 
 void BasicParticle::UpdateHandle()	//Call when the memory location changes
-{
-	RenderableGeometry3D* pGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(m_hRenderable);
-	if(pGeom == NULL)
-	{
-		return;
-	}
-	
-	pGeom->material.uniqueUniformValues[0] = (u8*)&m_texcoordOffset;
-	pGeom->material.uniqueUniformValues[1] = (u8*)&m_diffuseColor;
-	
+{	
 	CoreObject::UpdateHandle();
 }

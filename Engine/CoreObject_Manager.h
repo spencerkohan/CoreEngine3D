@@ -16,6 +16,7 @@
 #include "ArrayUtil.h"
 #include <cassert>
 #include "MathUtil.h"
+#include <memory>
 
 #include <boost/thread.hpp> 
 
@@ -71,7 +72,6 @@ public:
         m_objectUpdateIsThreaded = false;
 	}
 	
-	
 	void Sort(bool (*compareFunc)(const T& lhs, const T& rhs))
 	{
 		Array_InsertionSort(m_pObjectList, m_numObjects, compareFunc);
@@ -113,10 +113,6 @@ public:
 	
 	T* CreateObject(u32 type)
 	{
-        if(m_numObjects > 600)
-        {
-            COREDEBUG_PrintDebugMessage("Gettin closer");
-        }
 		if(m_numObjects == m_maxObjects)
 		{
 			COREDEBUG_PrintDebugMessage("INSANE ERROR: You can't make any more objects!");
@@ -218,6 +214,7 @@ public:
                     const u32 numToProcess = ((numThreads+1) == maxThreads) ? numObjectsRemaining : MinU32(numObjectsPerThread,numObjectsRemaining);
                     
                     //Process a batch of objects and save a thread
+                    //s8* threadMemLoc = m_pThreadMemory + numThreads*sizeof(boost::thread)/sizeof(s8);
                     boost::thread* newThread = new boost::thread(&CoreObjectFactory<T>::UpdateObjectSubList,this,processIndex,numToProcess,timeElapsed);
                     
                     threadGroup.add_thread(newThread);
@@ -279,6 +276,7 @@ public:
 	u32 m_maxObjects;
 	bool m_objectsCanUpdate;
     bool m_objectUpdateIsThreaded;
+    //s8* m_pThreadMemory;
 };
 
 
