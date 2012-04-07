@@ -41,6 +41,8 @@
 
 #include "CoreObject_Manager.h"
 
+#include <vector>
+
 class Game;
 extern Game* GAME;
 
@@ -148,6 +150,12 @@ struct TileDestructionData
 	vec2 hitVel;
 };
 
+struct CollisionLineSegment
+{
+    vec2* pPoints;
+    u32 numPoints;
+};
+
 
 class Game
 {
@@ -209,7 +217,8 @@ public:
 	void SetFollowCamTarget(const vec3* pFollowCamPos);
 	void ToggleTileVisibility(Tile* pTile, bool isVisible);
 	void ToggleTileVisibility(LevelLayer levelLayer,u32 tileIndex_X,u32 tileIndex_Y,bool isVisible);
-	
+	bool TiledLevel_GetGroundPos(vec3* pOut_GroundPos, const vec3* pPos);
+    
 	Layer* GetLayer(LevelLayer layer);
 #if defined (PLATFORM_IOS) || defined (PLATFORM_ANDROID)
 	DeviceInputState* GetDeviceInputState();
@@ -265,7 +274,7 @@ protected:	//Only stuff that can be called from the game.cpp goes here
 	
 	
 private:
-	void TMXStringToPoints(const char* valueString, f32 posX, f32 posY, b2Vec2* pOut_Points, u32* pOut_NumPoints);
+	void TMXStringToPoints(const char* valueString, f32 posX, f32 posY, vec2* pOut_Points, u32* pOut_NumPoints);
 	inline void CullTile(Layer* layer, s32 x, s32 y);
 	
 	pugi::xml_document m_TMXDoc;
@@ -327,6 +336,8 @@ private:
 
 	TileDestructionData m_tilesToDelete[GAME_MAX_STORED_DELETABLE_TILES];
 	s32 m_numTilesToDelete;
+    
+    std::vector<CollisionLineSegment> m_collisionLineSegments;
 };
 
 #endif

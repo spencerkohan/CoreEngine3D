@@ -2689,6 +2689,7 @@ void OpenGLRenderer::CreateMaterials()
 	const s32 PP_BlendUsingTexture = AddPixelShaderToList("Shaders/BlendUsingTexture.fsh");
 	const s32 PP_PureColor = AddPixelShaderToList("Shaders/PureColor.fsh");
     const s32 PS_TextureOnlySimple = AddPixelShaderToList("Shaders/TextureOnlySimple.fsh");
+    const s32 PS_TextureAlphaAndDiffuseColor = AddPixelShaderToList("Shaders/TextureAlphaAndDiffuseColor.fsh");
     const s32 PS_TextureOnlyDiscard = AddPixelShaderToList("Shaders/TextureOnlyDiscard.fsh");
     const s32 PS_TextureAndDiffuseColor = AddPixelShaderToList("Shaders/TextureAndDiffuseColor.fsh");
     const s32 PS_TextureAndDiffuseColorDiscard = AddPixelShaderToList("Shaders/TextureAndDiffuseColorDiscard.fsh");
@@ -2858,6 +2859,12 @@ void OpenGLRenderer::CreateMaterials()
 	{
 		AddUniform_Unique(MT_TextureAndDiffuseColor,"inputColor",Uniform_Vec4,1);
 	}
+    
+    //MT_TextureAlphaAndDiffuseColor
+	if(CreateShaderProgram(VSH_VertWithColorInputAndTexture,PS_TextureAlphaAndDiffuseColor,attribs_VT,&g_Materials[MT_TextureAlphaAndDiffuseColor].shaderProgram))
+	{
+		AddUniform_Unique(MT_TextureAlphaAndDiffuseColor,"inputColor",Uniform_Vec4,1);
+	}
      
 	
     //MT_TextureAndDiffuseColorWithTexcoordOffsetDiscard
@@ -2873,6 +2880,13 @@ void OpenGLRenderer::CreateMaterials()
 	{
 		AddUniform_Unique(MT_TextureAndDiffuseColorWithTexcoordOffset,"texCoordOffset",Uniform_Vec2,1);
 		AddUniform_Unique(MT_TextureAndDiffuseColorWithTexcoordOffset,"inputColor",Uniform_Vec4,1);
+	}
+    
+    //MT_TextureAlphaAndDiffuseColorWithTexcoordOffset
+	if(CreateShaderProgram(VSH_VertWithColorInputWithTexcoordOffset,PS_TextureAlphaAndDiffuseColor,attribs_VT,&g_Materials[MT_TextureAlphaAndDiffuseColorWithTexcoordOffset].shaderProgram))
+	{
+		AddUniform_Unique(MT_TextureAlphaAndDiffuseColorWithTexcoordOffset,"texCoordOffset",Uniform_Vec2,1);
+		AddUniform_Unique(MT_TextureAlphaAndDiffuseColorWithTexcoordOffset,"inputColor",Uniform_Vec4,1);
 	}
      
 	

@@ -14,6 +14,7 @@
 #include "base64.h"
 #include "Hash.h"
 #include "Box2DDebugDraw.h"
+#include "Box2DUtil.h"
 
 #include "CoreObjects/CoreObjectFactories.h"
 #include "CoreObjects/CoreObjectTypes.h"
@@ -201,6 +202,11 @@ void Game::CleanUp()
 			delete[] m_layers[i].tiles;
 		}
 	}
+    
+    for(u32 i=0; i<m_collisionLineSegments.size(); ++i)
+    {
+        delete[] m_collisionLineSegments[i].pPoints;
+    }
 	
 	for(u32 i=0; i<m_numTileSetDescriptions; ++i)
 	{
@@ -1430,7 +1436,7 @@ b2Body* Game::Box2D_CreateBodyForTileIndex(s32 tileIndex, s32 posX, s32 posY)
 }
 
 
-void Game::TMXStringToPoints(const char* valueString, f32 posX, f32 posY, b2Vec2* pOut_Points, u32* pOut_NumPoints)
+void Game::TMXStringToPoints(const char* valueString, f32 posX, f32 posY, vec2* pOut_Points, u32* pOut_NumPoints)
 {
 	char buffer[64];
 	u32 bufferIndex;
@@ -1454,11 +1460,11 @@ void Game::TMXStringToPoints(const char* valueString, f32 posX, f32 posY, b2Vec2
 			
 			if(leftNumber)
 			{
-				pOut_Points[numPoints].x = (posX+floatValue)*m_unitConversionScale/m_pixelsPerMeter;
+				pOut_Points[numPoints].x = (posX+floatValue)*m_unitConversionScale;
 			}
 			else
 			{
-				pOut_Points[numPoints].y = (posY+floatValue)*m_unitConversionScale/m_pixelsPerMeter;
+				pOut_Points[numPoints].y = (posY+floatValue)*m_unitConversionScale;
 				++numPoints;
 			}
 			
@@ -1476,9 +1482,62 @@ void Game::TMXStringToPoints(const char* valueString, f32 posX, f32 posY, b2Vec2
 }
 
 
+bool Game::TiledLevel_GetGroundPos(vec3* pOut_GroundPos, const vec3* pPos)
+{
+    //TODO: make this run faster
+    
+    //NOTE: this assumes all your points are in left to right order
+    
+    //Loop through all the collision on the ground
+    for(u32 i=0; i<m_collisionLineSegments.size()-1; ++i)
+    {
+        CollisionLineSegment* pSegment = &m_collisionLineSegments[i];
+        
+        //If we are farther than the entire segment, skip this segment
+        vec2* pVecLast = &pSegment->pPoints[pSegment->numPoints-1];
+        if(pPos->x > pVecLast->x)
+        {
+            continue;
+        }
+        
+        for(u32 vertIDX=0; vertIDX<pSegment->numPoints; ++vertIDX)
+        {
+            vec2* pVec0 = &pSegment->pPoints[vertIDX];
+            vec2* pVec1 = &pSegment->pPoints[vertIDX+1];
+            
+            if(pPos->x < pVec0->x || pPos->x > pVec1->x)
+            {
+                continue;
+            }            
+            
+            const f32 vertDistX = pVec1->x - pVec0->x;
+            const f32 posDistX = pPos->x - pVec0->x;
+            
+            const f32 lerpT = posDistX/vertDistX;
+            
+            vec2 lerpVec;
+            LerpVec2(&lerpVec,pVec0,pVec1,lerpT);
+            pOut_GroundPos->x = lerpVec.x;
+            pOut_GroundPos->y = lerpVec.y;
+            pOut_GroundPos->z = 0.0f;
+            
+            return true;
+        }
+    }
+    
+    //Failure...
+    return false;
+}
+
+
 bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidthPixels, f32 tileSizeMeters)
 {
-	
+	for(u32 i=0; i<m_collisionLineSegments.size(); ++i)
+    {
+        delete[] m_collisionLineSegments[i].pPoints;
+    }
+    m_collisionLineSegments.clear();
+    
 	for(LevelLayer i=(LevelLayer)0; i<NumLevelLayers; ++i)
 	{
 		Layer* pCurrLayer = &m_layers[i];
@@ -1945,7 +2004,7 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 			}
 		}
 		
-		b2Vec2 polyLinePoints[64];
+		vec2 polyLinePoints[64];
 		u32 numPolyPoints;
 	
 		for (pugi::xml_node layer = map.child("objectgroup"); layer; layer = layer.next_sibling("objectgroup"))
@@ -1976,8 +2035,29 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 						pugi::xml_attribute points = pointList.attribute("points");
 						const char* polyLineString = points.value();
 						
-						TMXStringToPoints(polyLineString, posX, posY, polyLinePoints, &numPolyPoints);	
-						
+						TMXStringToPoints(polyLineString, posX, posY, polyLinePoints, &numPolyPoints);
+                        
+                        //Create a new line segment for use with shadows, etc.
+                        CollisionLineSegment newLineSeg;
+                        newLineSeg.numPoints = numPolyPoints;
+                        newLineSeg.pPoints = new vec2[numPolyPoints];
+                        
+                        //Process all the points
+                        for(u32 vertIDX=0; vertIDX<numPolyPoints; ++vertIDX)
+						{
+                            vec2* pVec = &polyLinePoints[vertIDX];
+                            
+                            //Copy the line version transformation for use with
+                            //fancy things like shadows
+                            CopyVec2(&newLineSeg.pPoints[vertIDX],pVec);
+                            
+                            //Convert the point for box2D physics
+                            ScaleVec2_Self(pVec,1.0f/m_pixelsPerMeter);
+                        }
+                        
+                        //Save the line segment
+                        m_collisionLineSegments.push_back(newLineSeg);
+                        
 						for(u32 vertIDX=0; vertIDX<numPolyPoints-1; ++vertIDX)
 						{
 							b2BodyDef bodyDef;
@@ -1988,18 +2068,18 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 							fixtureDef.friction = 0.4f;
 							
 							b2EdgeShape shape;
-							shape.Set(polyLinePoints[vertIDX], polyLinePoints[vertIDX+1]);
+							shape.Set(AsBox2DVec2(polyLinePoints[vertIDX]), AsBox2DVec2(polyLinePoints[vertIDX+1]));
 							
 							if(vertIDX > 0)
 							{
 								shape.m_hasVertex0 = true;
-								shape.m_vertex0 = polyLinePoints[vertIDX-1];
+								shape.m_vertex0 = AsBox2DVec2(polyLinePoints[vertIDX-1]);
 							}
 							
 							if(vertIDX < numPolyPoints-2)
 							{
 								shape.m_hasVertex3 = true;
-								shape.m_vertex3 = polyLinePoints[vertIDX+2];
+								shape.m_vertex3 = AsBox2DVec2(polyLinePoints[vertIDX+2]);
 							}
 							
 							fixtureDef.shape = &shape;
@@ -2022,14 +2102,14 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
 							fixtureDef.friction = 0.4f;
 							
 							b2EdgeShape shape;
-							shape.Set(polyLinePoints[numPolyPoints-1], polyLinePoints[0]);
+							shape.Set(AsBox2DVec2(polyLinePoints[numPolyPoints-1]), AsBox2DVec2(polyLinePoints[0]));
 						
 							shape.m_hasVertex0 = true;
-							shape.m_vertex0 = polyLinePoints[numPolyPoints-2];
+							shape.m_vertex0 = AsBox2DVec2(polyLinePoints[numPolyPoints-2]);
 
 
 							shape.m_hasVertex3 = true;
-							shape.m_vertex3 = polyLinePoints[1];
+							shape.m_vertex3 = AsBox2DVec2(polyLinePoints[1]);
 							
 							fixtureDef.shape = &shape;
 							fixtureDef.filter.categoryBits = 1 << CollisionFilter_Ground;

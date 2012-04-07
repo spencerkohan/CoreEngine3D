@@ -12,3 +12,8 @@ vec2* AsVec2(const b2Vec2& box2DVec)
 {
 	return (vec2*)&box2DVec;
 }
+
+const b2Vec2& AsBox2DVec2(const vec2& vec0)
+{
+    return (b2Vec2&)vec0;
+}

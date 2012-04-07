@@ -178,6 +178,8 @@
 		DDA6C705151155980035DE60 /* CoreObjectTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6C702151155980035DE60 /* CoreObjectTypes.h */; };
 		DDA6C706151155980035DE60 /* Tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDA6C703151155980035DE60 /* Tile.cpp */; };
 		DDA6C707151155980035DE60 /* Tile.h in Headers */ = {isa = PBXBuildFile; fileRef = DDA6C704151155980035DE60 /* Tile.h */; };
+		DDC893791530EB620091EB0E /* Box2DUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDC893771530EB610091EB0E /* Box2DUtil.cpp */; };
+		DDC8937A1530EB620091EB0E /* Box2DUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = DDC893781530EB620091EB0E /* Box2DUtil.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -357,6 +359,8 @@
 		DDA6C702151155980035DE60 /* CoreObjectTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreObjectTypes.h; sourceTree = "<group>"; };
 		DDA6C703151155980035DE60 /* Tile.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Tile.cpp; sourceTree = "<group>"; };
 		DDA6C704151155980035DE60 /* Tile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tile.h; sourceTree = "<group>"; };
+		DDC893771530EB610091EB0E /* Box2DUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DUtil.cpp; sourceTree = "<group>"; };
+		DDC893781530EB620091EB0E /* Box2DUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DUtil.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -453,6 +457,8 @@
 		23FCBBCB14A1E09A00C5EA7C /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				DDC893771530EB610091EB0E /* Box2DUtil.cpp */,
+				DDC893781530EB620091EB0E /* Box2DUtil.h */,
 				233BBC1214F4B11B00BB12FA /* Box2DContactListener.cpp */,
 				233BBC1314F4B11B00BB12FA /* Box2DContactListener.h */,
 				23DEF8EE14F1A4CA00985385 /* Box2DDebugDraw.cpp */,
@@ -764,6 +770,7 @@
 				239760D11501F4EB001E7DF0 /* Spawner.h in Headers */,
 				DDA6C705151155980035DE60 /* CoreObjectTypes.h in Headers */,
 				DDA6C707151155980035DE60 /* Tile.h in Headers */,
+				DDC8937A1530EB620091EB0E /* Box2DUtil.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -895,6 +902,7 @@
 				230341B514FAF4B8006EC856 /* BasicParticle.cpp in Sources */,
 				239760D01501F4EB001E7DF0 /* Spawner.cpp in Sources */,
 				DDA6C706151155980035DE60 /* Tile.cpp in Sources */,
+				DDC893791530EB620091EB0E /* Box2DUtil.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

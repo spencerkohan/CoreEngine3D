@@ -13,5 +13,6 @@
 #include "MathTypes.h"
 
 vec2* AsVec2(const b2Vec2& box2DVec);
+const b2Vec2& AsBox2DVec2(const vec2& vec0);
 
 #endif
