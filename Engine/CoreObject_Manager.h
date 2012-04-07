@@ -201,7 +201,8 @@ public:
                 
                 const u32 maxThreads = 4;
                 u32 numThreads = 0;
-                boost::thread* pThread[maxThreads];
+                
+                boost::thread_group threadGroup;
 
                 //We want to process at least 50 at a time if we can, and if we
                 //can do more, great!
@@ -217,7 +218,9 @@ public:
                     const u32 numToProcess = ((numThreads+1) == maxThreads) ? numObjectsRemaining : MinU32(numObjectsPerThread,numObjectsRemaining);
                     
                     //Process a batch of objects and save a thread
-                    pThread[numThreads] = new boost::thread(&CoreObjectFactory<T>::UpdateObjectSubList,this,processIndex,numToProcess,timeElapsed);
+                    boost::thread* newThread = new boost::thread(&CoreObjectFactory<T>::UpdateObjectSubList,this,processIndex,numToProcess,timeElapsed);
+                    
+                    threadGroup.add_thread(newThread);
                     
                     ++numThreads;
                     
@@ -228,17 +231,8 @@ public:
                     numObjectsRemaining -= numToProcess;
                 }
                 
-                //Join all the threads
-                for(u32 i=0; i<numThreads; ++i)
-                {
-                    pThread[i]->join();
-                }
-                
-                //Delete the threads I guess?
-                for(u32 i=0; i<numThreads; ++i)
-                {
-                    delete pThread[i];
-                }
+                threadGroup.join_all();
+
             }
             else
             {
