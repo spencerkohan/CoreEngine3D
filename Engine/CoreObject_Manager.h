@@ -16,9 +16,6 @@
 #include "ArrayUtil.h"
 #include <cassert>
 #include "MathUtil.h"
-#include <memory>
-
-#include <boost/thread.hpp> 
 
 class CoreObjectManager;
 extern CoreObjectManager* COREOBJECTMANAGER;
@@ -69,7 +66,6 @@ public:
 		m_numObjects = 0;
 		m_maxObjects = 0;
 		m_objectsCanUpdate = true;
-        m_objectUpdateIsThreaded = false;
 	}
 	
 	void Sort(bool (*compareFunc)(const T& lhs, const T& rhs))
@@ -190,58 +186,14 @@ public:
 		}
 
 		if(m_objectsCanUpdate)
-		{
-            if(m_objectUpdateIsThreaded == true)
+		{ 
+            //Update remaining objects
+            for(u32 i=0; i<m_numObjects; ++i)
             {
-                //Update using boost threads
-                
-                const u32 maxThreads = 4;
-                u32 numThreads = 0;
-                
-                boost::thread_group threadGroup;
-
-                //We want to process at least 50 at a time if we can, and if we
-                //can do more, great!
-                const u32 numObjectsPerThread = MaxU32(50,m_numObjects/maxThreads);
-                
-                u32 numObjectsRemaining = m_numObjects;
-                u32 processIndex = 0;
-                
-                //Keep going while there are objects to process
-                while(numObjectsRemaining > 0)
-                {
-                    //If we hit max threads, process all the rest, else process the num per thread we decided
-                    const u32 numToProcess = ((numThreads+1) == maxThreads) ? numObjectsRemaining : MinU32(numObjectsPerThread,numObjectsRemaining);
-                    
-                    //Process a batch of objects and save a thread
-                    //s8* threadMemLoc = m_pThreadMemory + numThreads*sizeof(boost::thread)/sizeof(s8);
-                    boost::thread* newThread = new boost::thread(&CoreObjectFactory<T>::UpdateObjectSubList,this,processIndex,numToProcess,timeElapsed);
-                    
-                    threadGroup.add_thread(newThread);
-                    
-                    ++numThreads;
-                    
-                    //Count how many we just processed
-                    processIndex += numToProcess;
-                    
-                    //Decrement how many are left
-                    numObjectsRemaining -= numToProcess;
-                }
-                
-                threadGroup.join_all();
-
+                T* pCurrObject = &m_pObjectList[i];
+                pCurrObject->Update(timeElapsed);
             }
-            else
-            {
-                //Update normally
-                
-                //Update remaining objects
-                for(u32 i=0; i<m_numObjects; ++i)
-                {
-                    T* pCurrObject = &m_pObjectList[i];
-                    pCurrObject->Update(timeElapsed);
-                }
-            }
+            
 		}
 		
 		return deletedSomething;
@@ -264,19 +216,12 @@ public:
 		m_objectsCanUpdate = objectsCanUpdate;
 	}
     
-    void SetObjectUpdateIsThreaded(bool objectUpdateIsThreaded)
-    {
-        m_objectUpdateIsThreaded = objectUpdateIsThreaded;
-    }
-    
 	//private:
 
 	T* m_pObjectList;
 	u32 m_numObjects;
 	u32 m_maxObjects;
 	bool m_objectsCanUpdate;
-    bool m_objectUpdateIsThreaded;
-    //s8* m_pThreadMemory;
 };
 
 

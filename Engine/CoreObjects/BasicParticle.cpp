@@ -19,24 +19,24 @@ void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosit
 	ItemArtDescription* pArtDesc = pSettings->pItemArt;
 	const MaterialSettings* pMaterial = pArtDesc->materialSettings;
 	
-	RenderableGeometry3D* pRenderable = NULL;
-	m_hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(&pRenderable);
+	RenderableGeometry3D* pGeom = NULL;
+	m_hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(&pGeom);
 	
-	if(pRenderable == NULL)
+	if(pGeom == NULL)
 	{
 		COREDEBUG_PrintDebugMessage("ERROR: Could not create renderable for particle!");
 		return;
 	}
 	
-	GLRENDERER->InitRenderableGeometry3D(pRenderable, pArtDesc->pModelData, pMaterial->renderMaterial, &pArtDesc->textureHandle, NULL, pSettings->renderLayer, View_0, pMaterial->renderFlags|RenderFlag_Visible);
-	pRenderable->material.uniqueUniformValues[0] = (u8*)&m_texcoordOffset;
-	pRenderable->material.uniqueUniformValues[1] = (u8*)&m_diffuseColor;
+	GLRENDERER->InitRenderableGeometry3D(pGeom, pArtDesc->pModelData, pMaterial->renderMaterial, &pArtDesc->textureHandle, NULL, pSettings->renderLayer, View_0, pMaterial->renderFlags|RenderFlag_Visible);
+	pGeom->material.uniqueUniformValues[0] = (u8*)&m_texcoordOffset;
+	pGeom->material.uniqueUniformValues[1] = (u8*)&m_diffuseColor;
 	
 	m_radius = rand_FloatRange(pSettings->radiusMin, pSettings->radiusMax);
 	
-	mat4f_LoadScale(pRenderable->worldMat, m_radius);
+	mat4f_LoadScale(pGeom->worldMat, m_radius);
 	
-	vec3* pPos = mat4f_GetPos(pRenderable->worldMat);
+	vec3* pPos = mat4f_GetPos(pGeom->worldMat);
 	CopyVec3(pPos, pPosition);
 	CopyVec3(&m_position,pPosition);
 	
@@ -207,4 +207,8 @@ void BasicParticle::AddVelocity(const vec3* pVelAdd)
 void BasicParticle::UpdateHandle()	//Call when the memory location changes
 {	
 	CoreObject::UpdateHandle();
+    
+    RenderableGeometry3D* pGeom = (RenderableGeometry3D*)COREOBJECTMANAGER->GetObjectByHandle(m_hRenderable);
+    pGeom->material.uniqueUniformValues[0] = (u8*)&m_texcoordOffset;
+	pGeom->material.uniqueUniformValues[1] = (u8*)&m_diffuseColor;
 }

@@ -23,8 +23,6 @@
 #include <stdlib.h>
 #endif
 
-#include <boost/thread.hpp>  
-
 #define ENGINE_PATH "Engine/" 
 
 Game* GAME = NULL;
@@ -2192,10 +2190,9 @@ bool Game::LoadTiledLevel(std::string& path, std::string& filename, u32 tileWidt
         
         //Loads sounds in a separate thread while loading textures
         //in the main thread.
-        boost::thread loadSoundThread(&Game::LoadItemSounds,this);  
+        LoadItemSounds();  
         LoadItemArt();
-        loadSoundThread.join();
-		
+        
 		//All the objects have been created, now initialize them!
         //This is a good place to start looping sounds, etc.
 		for(u32 i=0; i<m_numSpawnableEntities; ++i)
