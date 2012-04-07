@@ -107,7 +107,7 @@ bool Game::Init()
 		m_layers[i].pLevelData = NULL;
 	}
     
-    for(u32 i=0; i<m_numTileSetDescriptions; ++i)
+    for(u32 i=0; i<GAME_MAX_TILESET_DESCRIPTIONS; ++i)
 	{
 		TileSetDescription* pDesc = &m_tileSetDescriptions[i];
 		pDesc->loadedTextureID = 0;
