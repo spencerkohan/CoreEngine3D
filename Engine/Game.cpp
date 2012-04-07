@@ -952,7 +952,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		
 		const s32 tilePosX = (s32)(-pCurrLayer->position.x/GAME->GetTileSize());
 		
-		const s32 numScreenTilesX = (f32)GLRENDERER->screenWidth_points/GAME->GetTileSize();
+		const s32 numScreenTilesX = (f32)GLRENDERER->screenWidth_points/GAME->GetTileSize()+0.5f;
 		
 		//const s32 testCullingBuffer = 4;
 		
@@ -963,7 +963,7 @@ void Game::UpdateTiledLevelPosition(vec3* pPosition)
 		
 		const s32 tilePosY = (s32)(-pCurrLayer->position.y/GAME->GetTileSize());
 		
-		const s32 numScreenTilesY = (f32)GLRENDERER->screenHeight_points/GAME->GetTileSize();
+		const s32 numScreenTilesY = (f32)GLRENDERER->screenHeight_points/GAME->GetTileSize()+0.5f;
 		
 		const s32 yStart = ClampS32(tilePosY/*+testCullingBuffer*/, 0, numTilesY);
 		const s32 yEnd = ClampS32(tilePosY+numScreenTilesY+1/*-testCullingBuffer*/, 0, numTilesY);
