@@ -7,6 +7,62 @@
 #include "matrix.h"
 
 
+
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+void mat4f_LoadScaledYAxisShear(f32* pOut_matrix,f32 radians,f32 scale)
+{
+    const f32 sinrad = sinf(radians)*scale;
+    
+    pOut_matrix[0] = scale;
+	pOut_matrix[1] = sinrad;
+	pOut_matrix[2] = 0.0f;
+	pOut_matrix[3] = 0.0f;
+	
+	pOut_matrix[4] = 0.0f;
+	pOut_matrix[5] = scale;
+	pOut_matrix[6] = 0.0f;
+	pOut_matrix[7] = 0.0f;
+	
+	pOut_matrix[8] = 0.0f;
+	pOut_matrix[9] = 0.0f;
+	pOut_matrix[10] = scale;
+	pOut_matrix[11] = 0.0f;	
+    
+	pOut_matrix[12] = 0.0f;
+	pOut_matrix[13] = 0.0f;
+	pOut_matrix[14] = 0.0f;
+	pOut_matrix[15] = 1.0f;
+}
+
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+void mat4f_LoadYAxisShear(f32* pOut_matrix,f32 radians)
+{
+    const f32 sinrad = sinf(radians);
+    
+    pOut_matrix[0] = 1.0f;
+	pOut_matrix[1] = sinrad;
+	pOut_matrix[2] = 0.0f;
+	pOut_matrix[3] = 0.0f;
+	
+	pOut_matrix[4] = 0.0f;
+	pOut_matrix[5] = 1.0f;
+	pOut_matrix[6] = 0.0f;
+	pOut_matrix[7] = 0.0f;
+	
+	pOut_matrix[8] = 0.0f;
+	pOut_matrix[9] = 0.0f;
+	pOut_matrix[10] = 1.0f;
+	pOut_matrix[11] = 0.0f;	
+    
+	pOut_matrix[12] = 0.0f;
+	pOut_matrix[13] = 0.0f;
+	pOut_matrix[14] = 0.0f;
+	pOut_matrix[15] = 1.0f;
+}
+
+
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 void mat4f_LoadIdentity(mat4f pOut_matrix)
@@ -360,8 +416,8 @@ void mat4f_SetLookAtPos(mat4f pInOut_matrix,const vec3* camPos)
 //----------------------------------------------------------------------------
 void mat4f_LoadZRotation_IgnoreTranslation(mat4f pOut_matrix, f32 radians)
 {
-    f32 cosrad = cosf(radians);
-	f32 sinrad = sinf(radians);
+    const f32 cosrad = cosf(radians);
+	const f32 sinrad = sinf(radians);
 	
 	pOut_matrix[0] = cosrad;
 	pOut_matrix[1] = sinrad;
@@ -384,8 +440,8 @@ void mat4f_LoadZRotation_IgnoreTranslation(mat4f pOut_matrix, f32 radians)
 //----------------------------------------------------------------------------
 void mat4f_LoadScaledZRotation(mat4f pOut_matrix, f32 radians, f32 scale)
 {
-	f32 cosrad = cosf(radians)*scale;
-	f32 sinrad = sinf(radians)*scale;
+	const f32 cosrad = cosf(radians)*scale;
+	const f32 sinrad = sinf(radians)*scale;
 	
 	pOut_matrix[0] = cosrad;
 	pOut_matrix[1] = sinrad;
@@ -413,8 +469,8 @@ void mat4f_LoadScaledZRotation(mat4f pOut_matrix, f32 radians, f32 scale)
 //----------------------------------------------------------------------------
 void mat4f_LoadScaledYRotation(mat4f pOut_matrix, f32 radians, f32 scale)
 {
-	f32 cosrad = cosf(radians)*scale;
-	f32 sinrad = sinf(radians)*scale;
+	const f32 cosrad = cosf(radians)*scale;
+	const f32 sinrad = sinf(radians)*scale;
 	
 	pOut_matrix[0] = cosrad;
 	pOut_matrix[1] = 0.0f;
@@ -442,8 +498,8 @@ void mat4f_LoadScaledYRotation(mat4f pOut_matrix, f32 radians, f32 scale)
 //----------------------------------------------------------------------------
 void mat4f_LoadScaledYRotation_IgnoreTranslation(mat4f pOut_matrix, f32 radians, f32 scale)
 {
-	f32 cosrad = cosf(radians)*scale;
-	f32 sinrad = sinf(radians)*scale;
+	const f32 cosrad = cosf(radians)*scale;
+	const f32 sinrad = sinf(radians)*scale;
 	
 	pOut_matrix[0] = cosrad;
 	pOut_matrix[1] = 0.0f;
@@ -466,8 +522,8 @@ void mat4f_LoadScaledYRotation_IgnoreTranslation(mat4f pOut_matrix, f32 radians,
 //----------------------------------------------------------------------------
 void mat4f_LoadScaledXRotation(mat4f pOut_matrix, f32 radians, f32 scale)
 {
-	f32 cosrad = cosf(radians)*scale;
-	f32 sinrad = sinf(radians)*scale;
+	const f32 cosrad = cosf(radians)*scale;
+	const f32 sinrad = sinf(radians)*scale;
 	
 	pOut_matrix[0] = scale;
 	pOut_matrix[1] = 0.0f;
@@ -495,8 +551,8 @@ void mat4f_LoadScaledXRotation(mat4f pOut_matrix, f32 radians, f32 scale)
 //----------------------------------------------------------------------------
 void mat4f_LoadScaledXRotation_IgnoreTranslation(mat4f pOut_matrix,f32 radians,f32 scale)
 {
-    f32 cosrad = cosf(radians)*scale;
-	f32 sinrad = sinf(radians)*scale;
+    const f32 cosrad = cosf(radians)*scale;
+	const f32 sinrad = sinf(radians)*scale;
 	
 	pOut_matrix[0] = scale;
 	pOut_matrix[1] = 0.0f;
@@ -519,8 +575,8 @@ void mat4f_LoadScaledXRotation_IgnoreTranslation(mat4f pOut_matrix,f32 radians,f
 //----------------------------------------------------------------------------
 void mat4f_LoadScaledZRotationFromVec_IgnoreTranslation(mat4f pOut_matrix, f32 radians, const vec3* v)
 {
-	f32 cosrad = cosf(radians);
-	f32 sinrad = sinf(radians);
+	const f32 cosrad = cosf(radians);
+	const f32 sinrad = sinf(radians);
 	
 	pOut_matrix[0] = cosrad*v->x;
 	pOut_matrix[1] = sinrad*v->x;
@@ -543,8 +599,8 @@ void mat4f_LoadScaledZRotationFromVec_IgnoreTranslation(mat4f pOut_matrix, f32 r
 //----------------------------------------------------------------------------
 void mat4f_LoadScaledZRotation_IgnoreTranslation(mat4f pOut_matrix, f32 radians, f32 scale)
 {
-    f32 cosrad = cosf(radians)*scale;
-	f32 sinrad = sinf(radians)*scale;
+    const f32 cosrad = cosf(radians)*scale;
+	const f32 sinrad = sinf(radians)*scale;
 	
 	pOut_matrix[0] = cosrad;
 	pOut_matrix[1] = sinrad;

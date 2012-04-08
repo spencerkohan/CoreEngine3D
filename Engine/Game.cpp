@@ -1482,7 +1482,7 @@ void Game::TMXStringToPoints(const char* valueString, f32 posX, f32 posY, vec2* 
 }
 
 
-bool Game::TiledLevel_GetGroundPos(vec3* pOut_GroundPos, const vec3* pPos)
+bool Game::TiledLevel_GetGroundPos(vec3* pOut_GroundPos, vec3* pOut_GroundNormal, const vec3* pPos)
 {
     //TODO: make this run faster
     
@@ -1510,8 +1510,17 @@ bool Game::TiledLevel_GetGroundPos(vec3* pOut_GroundPos, const vec3* pPos)
                 continue;
             }            
             
-            const f32 vertDistX = pVec1->x - pVec0->x;
+            vec2 distVec;
+            SubVec2(&distVec, pVec1, pVec0);
+            
+            const f32 vertDistX = distVec.x;
             const f32 posDistX = pPos->x - pVec0->x;
+            
+            TryNormalizeVec2_Self(&distVec);
+            
+            pOut_GroundNormal->x = distVec.y;
+            pOut_GroundNormal->y = -distVec.x;
+            pOut_GroundNormal->z = 0.0f;
             
             const f32 lerpT = posDistX/vertDistX;
             
