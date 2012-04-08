@@ -1523,11 +1523,9 @@ bool Game::TiledLevel_GetGroundPos(vec3* pOut_GroundPos, vec3* pOut_GroundNormal
             pOut_GroundNormal->z = 0.0f;
             
             const f32 lerpT = posDistX/vertDistX;
-            
-            vec2 lerpVec;
-            LerpVec2(&lerpVec,pVec0,pVec1,lerpT);
-            pOut_GroundPos->x = lerpVec.x;
-            pOut_GroundPos->y = lerpVec.y;
+
+            pOut_GroundPos->x = pPos->x;
+            pOut_GroundPos->y = Lerp(pVec0->y,pVec1->y,lerpT);
             pOut_GroundPos->z = 0.0f;
             
             return true;
