@@ -1482,6 +1482,36 @@ void Game::TMXStringToPoints(const char* valueString, f32 posX, f32 posY, vec2* 
 }
 
 
+void Game::TiledLevel_DeleteObjectIfOffscreen_X(CoreObject* pObject, vec3* pPos, f32 scale, f32 distToCheck)
+{
+    Layer* pLayerDesc = &m_layers[LevelLayer_Main1];
+
+    const f32 posX = pPos->x;
+    
+    const f32 deleteXMin = -pLayerDesc->position.x - scale - distToCheck;
+    const f32 deleteXMax = -pLayerDesc->position.x + GLRENDERER->screenWidth_points + scale + distToCheck;
+    
+    if(posX < deleteXMin || posX > deleteXMax)
+    {
+        pObject->DeleteObject();
+    }
+}
+
+void Game::TiledLevel_DeleteObjectIfOffscreen_Y(CoreObject* pObject, vec3* pPos, f32 scale, f32 distToCheck)
+{
+    Layer* pLayerDesc = &m_layers[LevelLayer_Main1];
+    
+    const f32 posY = pPos->y;
+    
+    const f32 deleteYMin = -pLayerDesc->position.y - scale - distToCheck;
+    const f32 deleteYMax = -pLayerDesc->position.y + GLRENDERER->screenHeight_points + scale + distToCheck;
+    
+    if(posY < deleteYMin || posY > deleteYMax)
+    {
+        pObject->DeleteObject();
+    }
+}
+
 bool Game::TiledLevel_GetGroundPos(vec3* pOut_GroundPos, vec3* pOut_GroundNormal, const vec3* pPos)
 {
     //TODO: make this run faster

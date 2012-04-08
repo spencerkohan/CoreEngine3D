@@ -173,6 +173,9 @@ void BasicParticle::Update(f32 timeElapsed)
 	{
 		this->DeleteObject();
 	}
+    
+    GAME->TiledLevel_DeleteObjectIfOffscreen_X(this,pPos,m_radius,0.0f);
+    GAME->TiledLevel_DeleteObjectIfOffscreen_Y(this,pPos,m_radius,0.0f);
 }
 
 
