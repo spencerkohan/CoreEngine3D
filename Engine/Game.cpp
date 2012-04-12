@@ -1546,16 +1546,28 @@ bool Game::TiledLevel_GetGroundPos(vec3* pOut_GroundPos, vec3* pOut_GroundNormal
             const f32 vertDistX = distVec.x;
             const f32 posDistX = pPos->x - pVec0->x;
             
+            const f32 lerpT = posDistX/vertDistX;
+            pOut_GroundPos->y = Lerp(pVec0->y,pVec1->y,lerpT);
+            
+            //If this position ends up being above
+            //pPos then it is not valid.
+            if(pOut_GroundPos->y < pPos->y)
+            {
+                //Return false because we're not
+                //going to find anything better.
+                return false;
+            }
+            
             TryNormalizeVec2_Self(&distVec);
             
             pOut_GroundNormal->x = distVec.y;
             pOut_GroundNormal->y = -distVec.x;
             pOut_GroundNormal->z = 0.0f;
             
-            const f32 lerpT = posDistX/vertDistX;
+            
 
             pOut_GroundPos->x = pPos->x;
-            pOut_GroundPos->y = Lerp(pVec0->y,pVec1->y,lerpT);
+            
             pOut_GroundPos->z = 0.0f;
             
             return true;

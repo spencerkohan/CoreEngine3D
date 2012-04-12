@@ -232,6 +232,17 @@ void GamePadJoystick::Update(const vec2* pTouchPos)
     vec2 distVec;
     SubVec2(&distVec,pTouchPos,&stickCenter);
     
+    if(stickMode == JoystickMode_TouchRelative
+       && insideStickArea)
+    {
+        value.x = distVec.x;
+        value.y = distVec.y;
+        
+        CopyVec2(&stickCenter, &stickJoystickPos);
+        
+        return;
+    }
+    
     //Only move stick around if the user is touching inside the stick area, else
     //prevent it from moving but still use the input
     
@@ -437,6 +448,10 @@ void GamePadJoystick::Update(const vec2* pTouchPos)
             
             break;
         }
+        default:
+        {
+            break;
+        }
     }
     
     
@@ -563,9 +578,12 @@ void GamePad::Update()
                 {
                     pJoystick->touchIndex = i;
                     //[self SetLeftStickCenter:&posCurr];
+                    
+                    if(pJoystick->stickMode == JoystickMode_TouchRelative)
+                    {
+                        CopyVec2(&pJoystick->stickCenter, &posCurr);
+                    }
                 }  
-                
-                
             }
                 //fall through
             case TouchState_Stationary:

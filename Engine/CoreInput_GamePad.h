@@ -64,6 +64,7 @@ enum JoystickMode
     JoystickMode_SquareAnalog,
     JoystickMode_NonAnalog,
     JoystickMode_DPAD,
+    JoystickMode_TouchRelative,
 };
 
 
