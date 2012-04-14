@@ -8,6 +8,7 @@ CoreObjectFactory<SoundPlayer> g_Factory_SoundPlayer;
 CoreObjectFactory<TileAffector> g_Factory_TileAffector;
 CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_Normal;
 CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_UI;
+CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_Light;
 CoreObjectFactory<RenderableSceneObject3D> g_Factory_RenderableSceneObject;
 CoreObjectFactory<BasicParticle> g_Factory_BasicParticle;
 CoreObjectFactory<Spawner> g_Factory_Spawner;
@@ -21,6 +22,7 @@ void CoreObjectFactories_Init()
 	g_Factory_TileAffector.Init(8);
 	g_Factory_SoundPlayer.Init(16);
 	g_Factory_Geometry_Normal.Init(2048);
+    g_Factory_Geometry_Light.Init(64);  //Light limited to 64 objects for now
 	g_Factory_Geometry_UI.Init(64);
 	g_Factory_RenderableSceneObject.Init(64);
 	g_Factory_BasicParticle.Init(512);
@@ -42,12 +44,17 @@ void CoreObjectFactories_Update(f32 timeElapsed)
 	
 	if(g_Factory_Geometry_Normal.UpdateObjectList(timeElapsed))
 	{
-		GLRENDERER->ForceRenderablesNeedSorting_Normal();
+		GLRENDERER->ForceRenderablesNeedSorting(RenderableObjectType_Normal);
 	}
 	
 	if(g_Factory_Geometry_UI.UpdateObjectList(timeElapsed))
 	{
-		GLRENDERER->ForceRenderablesNeedSorting_UI();
+		GLRENDERER->ForceRenderablesNeedSorting(RenderableObjectType_UI);
+	}
+    
+    if(g_Factory_Geometry_Light.UpdateObjectList(timeElapsed))
+	{
+		GLRENDERER->ForceRenderablesNeedSorting(RenderableObjectType_Light);
 	}
 	
 	g_Factory_RenderableSceneObject.UpdateObjectList(timeElapsed);

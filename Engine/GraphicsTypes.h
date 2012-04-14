@@ -494,13 +494,20 @@ typedef enum
 }FadeState;
 
 
+enum ColorBufferType
+{
+    ColorBufferType_Normal,
+    ColorBufferType_Texture,
+};
+
 //RenderTarget	
 typedef struct
 {
-	u32 texture;
 	u32 width;
 	u32 height;
-	u32 FBO;
+    u32 colorBuffer;
+    u32 depthBuffer;
+	u32 frameBuffer;
 } RenderTarget;
 
 

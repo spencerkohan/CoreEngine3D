@@ -568,7 +568,7 @@ void Game::LoadItemArt()
 		//If we loaded a texture, we should force a resort for optimum performance
 		if(loadedATexture == true)
 		{
-			GLRENDERER->ForceRenderablesNeedSorting_Normal();
+			GLRENDERER->ForceRenderablesNeedSorting(RenderableObjectType_All);
 		}
         
         //Store the descriptions we've loaded
@@ -782,7 +782,7 @@ static void DrawFunc_DrawTile(void* pData)
 
 void Game::CreateRenderableTile_NEW(Tile* pTile, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material)
 {
-	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
+	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D(RenderableObjectType_Normal,pGeom);
 	if(hRenderable.IsValid() == false)
 	{
 		return;
@@ -827,7 +827,7 @@ void Game::CreateRenderableTile_NEW(Tile* pTile, RenderableGeometry3D** pGeom, R
 
 void Game::CreateRenderableTile(Tile* pTile, RenderableGeometry3D** pGeom, RenderLayer renderLayer, RenderMaterial material, vec2* pOut_texCoordOffset, bool usesViewMatrix)
 {
-	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(pGeom);
+	CoreObjectHandle hRenderable = GLRENDERER->CreateRenderableGeometry3D(RenderableObjectType_Normal,pGeom);
 	if(hRenderable.IsValid() == false)
 	{
 		return;

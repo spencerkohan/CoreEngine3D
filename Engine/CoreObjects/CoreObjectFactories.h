@@ -18,6 +18,7 @@ extern CoreObjectFactory<TileAffector> g_Factory_TileAffector;
 extern CoreObjectFactory<BasicParticle> g_Factory_BasicParticle;
 extern CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_Normal;
 extern CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_UI;
+extern CoreObjectFactory<RenderableGeometry3D> g_Factory_Geometry_Light;
 extern CoreObjectFactory<RenderableSceneObject3D> g_Factory_RenderableSceneObject;
 extern CoreObjectFactory<Spawner> g_Factory_Spawner;
 

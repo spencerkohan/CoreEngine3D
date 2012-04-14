@@ -190,7 +190,7 @@ void CoreUI_Button::Init(u32 width, u32 height, CoreUI_AttachSide attachSide, s3
 	}
 	
 	RenderableGeometry3D* pGeom = NULL;
-	m_handle_r3D_button = GLRENDERER->CreateRenderableGeometry3D_UI(&pGeom);
+	m_handle_r3D_button = GLRENDERER->CreateRenderableGeometry3D(RenderableObjectType_Normal,&pGeom);
 	
 	GLRENDERER->InitRenderableGeometry3D(pGeom, &g_Square1x1_modelData, MT_TextureAndDiffuseColor, textureHandle, NULL, RenderLayer_UI, View_0, RenderFlagDefaults_2DTexture_NoAlpha);
 	

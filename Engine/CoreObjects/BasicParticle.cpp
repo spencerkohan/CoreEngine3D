@@ -20,7 +20,7 @@ void BasicParticle::InitParticle(ParticleSettings *pSettings, const vec3* pPosit
 	const MaterialSettings* pMaterial = pArtDesc->materialSettings;
 	
 	RenderableGeometry3D* pGeom = NULL;
-	m_hRenderable = GLRENDERER->CreateRenderableGeometry3D_Normal(&pGeom);
+	m_hRenderable = GLRENDERER->CreateRenderableGeometry3D(RenderableObjectType_Normal,&pGeom);
 	
 	if(pGeom == NULL)
 	{

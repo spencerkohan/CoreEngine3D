@@ -161,33 +161,6 @@ void OpenGLRenderer::Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 scre
 {
 	GLRENDERER = this;
 
-#ifdef PLATFORM_IOS
-	u32 framebuffer;
-	glGenFramebuffers(1, &framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	
-	u32 colorRenderbuffer;
-	glGenRenderbuffers(1, &colorRenderbuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-	
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB565, screenWidthPixels, screenHeightPixels);
-	
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
-	
-	u32 depthRenderbuffer;
-	glGenRenderbuffers(1, &depthRenderbuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, screenWidthPixels, screenHeightPixels);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
-	
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER) ;
-	if(status != GL_FRAMEBUFFER_COMPLETE) {
-		NSLog(@"failed to make complete framebuffer object %x", status);
-	}
-#else
-	
-#endif
-	
 	PrintOpenGLError("At init!");
 	
 	mat4f_LoadIdentity(m_identityMat);
@@ -351,6 +324,15 @@ void OpenGLRenderer::Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 scre
 	PrintOpenGLError("Initialized Renderer");
 
 	m_numTexturedLines_saved = 0;
+
+    
+    //For post processing abilities
+    
+    //Fill out a render target for lights
+    m_renderTarget_Lights.width = screenWidth_pixels/4;
+    m_renderTarget_Lights.height = screenHeightPixels/4;
+    CreateFrameBuffer(&m_renderTarget_Lights.frameBuffer, &m_renderTarget_Lights.colorBuffer, true, NULL, false, ColorBufferType_Texture, m_renderTarget_Lights.width, m_renderTarget_Lights.height);
+    
 }
 
 
@@ -1503,8 +1485,13 @@ void OpenGLRenderer::Render(f32 timeElapsed)
         }
 		//TODO: one day if we have multiple viewports, we'll have to link cameras to viewports
 #if RENDERLOOP_ENABLED
-		RenderLoop(camViewIDX,g_Factory_Geometry_Normal.m_pObjectList,g_Factory_Geometry_Normal.m_numObjects);
 		
+        RenderLoop(camViewIDX,g_Factory_Geometry_Normal.m_pObjectList,g_Factory_Geometry_Normal.m_numObjects);
+        
+        SetRenderTarget(&m_renderTarget_Lights);
+        RenderLoop(camViewIDX,g_Factory_Geometry_Light.m_pObjectList,g_Factory_Geometry_Light.m_numObjects);
+        SetRenderTarget(NULL);
+        
 		for(u32 i=0; i<m_numAnimatedPods; ++i)
 		{
 			DrawAnimatedPOD(&m_animatedPODs[i]);
@@ -1552,7 +1539,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
             
             const f32 finalFade = Lerp(0.0f,m_pauseFinalFade,fadeT);
 			SetVec4(&m_fadeColor,0.0f,0.0f,0.0f,finalFade);
-			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
+			PostProcess(PPMT_PureColor,NULL,PPDrawArea_FullScreen,NULL,NULL,NULL);
 			
             
 			break;
@@ -1560,7 +1547,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
         case FadeState_WaitingForFadeIn:
         {
             SetVec4(&m_fadeColor,0.0f,0.0f,0.0f,m_pauseFinalFade);
-			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
+			PostProcess(PPMT_PureColor,NULL,PPDrawArea_FullScreen,NULL,NULL,NULL);
 			
             
             if (m_pauseRequestedFadeIn == true)
@@ -1584,7 +1571,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
             
             const f32 finalFade = Lerp(0.0f,m_pauseFinalFade,fadeT);
 			SetVec4(&m_fadeColor,0.0f,0.0f,0.0f,finalFade);
-			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
+			PostProcess(PPMT_PureColor,NULL,PPDrawArea_FullScreen,NULL,NULL,NULL);
 			
 			
 			break;
@@ -1615,7 +1602,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			const f32 fadeT = m_currFlashTime/m_totalFlashTime;
             
 			SetVec4(&m_fadeColor,m_flashColor.x,m_flashColor.y,m_flashColor.z,fadeT);
-			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
+			PostProcess(PPMT_PureColor,NULL,PPDrawArea_FullScreen,NULL,NULL,NULL);
 			
             
 			break;
@@ -1631,7 +1618,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			const f32 fadeT = m_currFlashTime/m_totalFlashTime;
             
 			SetVec4(&m_fadeColor,m_flashColor.x,m_flashColor.y,m_flashColor.z,fadeT);
-			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
+			PostProcess(PPMT_PureColor,NULL,PPDrawArea_FullScreen,NULL,NULL,NULL);
 			
 			
 			break;
@@ -1661,7 +1648,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			CopyVec3((vec3*)&m_fadeColor,&m_fadeToScreenColor);
 			m_fadeColor.w = fadeT;
 			
-			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
+			PostProcess(PPMT_PureColor,NULL,PPDrawArea_FullScreen,NULL,NULL,NULL);
 			
 			
 			break;
@@ -1671,7 +1658,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
             CopyVec3((vec3*)&m_fadeColor,&m_fadeToScreenColor);
 			m_fadeColor.w = 1.0f;
 			
-			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
+			PostProcess(PPMT_PureColor,NULL,PPDrawArea_FullScreen,NULL,NULL,NULL);
 			
             
             if (m_requestedFadeIn == true)
@@ -1698,7 +1685,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 			CopyVec3((vec3*)&m_fadeColor,&m_fadeToScreenColor);
 			m_fadeColor.w = fadeT;
 			
-			PostProcess(PPMT_PureColor,&m_screenTarget,PPDrawArea_FullScreen,NULL,NULL,NULL);
+			PostProcess(PPMT_PureColor,NULL,PPDrawArea_FullScreen,NULL,NULL,NULL);
 			
 			
 			break;
@@ -2063,16 +2050,6 @@ void OpenGLRenderer::RegisterModel(ModelData* pModelData)
 	PrintOpenGLError("End of Register Model");
 }
 
-
-CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D_Normal(RenderableGeometry3D** pOut_Geom)
-{
-	return CreateRenderableGeometry3D(RenderableObjectType_Normal,pOut_Geom);
-}
-
-CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D_UI(RenderableGeometry3D** pOut_Geom)
-{
-	return CreateRenderableGeometry3D(RenderableObjectType_UI,pOut_Geom);
-}
 
 CoreObjectHandle OpenGLRenderer::CreateRenderableGeometry3D(RenderableObjectType renderableType, RenderableGeometry3D** pOut_Geom)
 {
@@ -3062,16 +3039,43 @@ void OpenGLRenderer::SetScreenFadeColor(vec3* screenFadeColor)
 	CopyVec3(&m_fadeToScreenColor,screenFadeColor);
 }
 
-
-void OpenGLRenderer::ForceRenderablesNeedSorting_Normal()
+void OpenGLRenderer::ForceRenderablesNeedSorting(RenderableObjectType renderableType)
 {
-	m_renderableObject3DsNeedSorting_Normal = true;
+    switch(renderableType)
+    {
+        case RenderableObjectType_Normal:
+        {
+            m_renderableObject3DsNeedSorting_Normal = true;
+            
+            break;
+        }
+        case RenderableObjectType_UI:
+        {
+            m_renderableObject3DsNeedSorting_UI = true;
+            
+            break;
+        }
+        case RenderableObjectType_Light:
+        {
+            m_renderableObject3DsNeedSorting_Light = true;
+            
+            break;
+        }
+        case RenderableObjectType_All:
+        {
+            m_renderableObject3DsNeedSorting_Normal = true;
+            m_renderableObject3DsNeedSorting_UI = true;
+            m_renderableObject3DsNeedSorting_Light = true;
+            
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
 }
 
-void OpenGLRenderer::ForceRenderablesNeedSorting_UI()
-{
-	m_renderableObject3DsNeedSorting_UI = true;
-}
 
 
 //Only for normal objects, not UI
@@ -3607,9 +3611,8 @@ void Draw_Matrix()
 
 void OpenGLRenderer::PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PostProcessDrawArea drawArea, u32* texture0, u32* texture1, u32* texture2)
 {
-	//TODO: comment this back in later when we want to use post processing
-	//[self setRenderTarget:renderTarget];
-	
+    SetRenderTarget(renderTarget);
+    
 	//Set up textures to be used
 	g_Materials[ppMaterial].texture0 = texture0;
 	g_Materials[ppMaterial].texture1 = texture1;
@@ -3679,9 +3682,73 @@ void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 }
 
 
-bool OpenGLRenderer::CreateRenderTarget(RenderTarget* renderTarget, u32 FBO, u32 width, u32 height)
+bool OpenGLRenderer::CreateFrameBuffer(u32* pOut_FrameBuffer, u32* pInOut_colorBufferOrTexture, bool createColorBuffer, u32* pInOut_depthBuffer, bool createDepthBuffer, ColorBufferType colorBufferType, u32 width, u32 height)
 {
-	return false;
+    //Create a new frame buffer
+	glGenFramebuffers(1, pOut_FrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, *pOut_FrameBuffer);
+
+    //Probably want a color buffer no matter what
+    
+    //Create/Attach color buffer
+    switch(colorBufferType)
+    {
+        case ColorBufferType_Normal:
+        {
+            //Create a color render buffer
+            if(createColorBuffer)
+            {
+                glGenRenderbuffers(1, pInOut_colorBufferOrTexture);
+                glBindRenderbuffer(GL_RENDERBUFFER, *pInOut_colorBufferOrTexture);
+                
+                glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, width, height);
+            }
+            
+            //Attach it to the frame buffer
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, *pInOut_colorBufferOrTexture);
+            
+            break;
+        }
+        case ColorBufferType_Texture:
+        {
+            //Create texture
+            if(createColorBuffer)
+            {
+                //Create a texture to hold the color data
+                glGenTextures(1, pInOut_colorBufferOrTexture);
+                glBindTexture(GL_TEXTURE_2D, *pInOut_colorBufferOrTexture);
+                
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+            }
+            
+            
+            //Attach the texture to the frame buffer
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *pInOut_colorBufferOrTexture, 0);
+            
+            break;
+        }
+    }
+    
+    
+    //If this is NULL, we don't want a depth buffer at all
+    if(pInOut_depthBuffer != NULL)
+    {
+        //Create a depth buffer
+        if(createDepthBuffer == true)
+        {
+            glGenRenderbuffers(1, pInOut_depthBuffer);
+            glBindRenderbuffer(GL_RENDERBUFFER, *pInOut_depthBuffer);
+            
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);
+        }
+        
+        //Attach the depth buffer to the frame buffer
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *pInOut_depthBuffer);
+    }
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
+    return true;
 }
 
 
@@ -4001,26 +4068,20 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 }
 
 
-void OpenGLRenderer::SetRenderTarget(RenderTarget* renderTarget)
+void OpenGLRenderer::SetRenderTarget(RenderTarget* pRenderTarget)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, renderTarget->FBO);
-	
-	if(renderTarget == &m_screenTarget)
-	{
-		glBindRenderbuffer(GL_RENDERBUFFER, renderTarget->texture);
-		
-		//Attach the render buffer to the frame buffer
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderTarget->texture);		
-	}
-	else
-	{
-		glBindTexture(GL_TEXTURE_2D, renderTarget->texture);
-		
-		//Attach the texture to the frame buffer
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTarget->texture, 0);
-	}
-	
-	glViewport(0, 0, renderTarget->width, renderTarget->height);
+    if(pRenderTarget == NULL)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, screenWidth_pixels, screenHeight_pixels);
+        
+        return;
+    }
+    else
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, pRenderTarget->frameBuffer);
+        glViewport(0, 0, pRenderTarget->width, pRenderTarget->height);
+    }
 }
 
 
@@ -4431,50 +4492,6 @@ CPVRTModelPOD* OpenGLRenderer::LoadPOD(const char* fileName)
 	
 	return NULL;
 }
-
-
-/*void OpenGLRenderer::AddRenderableScene3DToList(RenderableScene3D* pRenderableScene)
-{
-	for(u32 i=0; i<pRenderableScene->numGeom; ++i)
-	{
-		RenderableGeometry3D* pGeom = &pRenderableScene->pGeom[i];
-		
-		if (!(pGeom->flags & RenderFlag_Initialized))
-		{
-			//assert(0);
-			//NSLog(@"Insane Error: addRenderableObject3D -> You can't add an uninitialized RenderableObject3D to the renderer!");
-			
-			return;
-		}
-		
-		if(pGeom->renderLayer == RenderLayer_UI)
-		{
-			if(m_numRenderableUIObjects < MAX_RENDERABLE_UI_OBJECTS)
-			{
-				m_renderableUIList[m_numRenderableUIObjects++] = pGeom;
-				
-				m_renderableUINeedSorting = true;
-			}
-			else
-			{
-				NSLog(@"Insane Error: AddRenderableScene3DToList -> You tried to add more than MAX_RENDERABLE_UI_OBJECTS!  Added nothing.");
-			}
-		}
-		else
-		{
-			if(m_numRenderableGeom3Ds < MAX_RENDERABLE_3D_OBJECTS)
-			{
-				m_renderableGeometry3DList[m_numRenderableGeom3Ds++] = pGeom;
-				
-				m_renderableObject3DsNeedSorting = true;
-			}
-			else
-			{
-				NSLog(@"Insane Error: AddRenderableScene3DToList -> You tried to add more than MAX_RENDERABLE_3D_OBJECTS!  Added nothing.");
-			}
-		}
-	}
-}*/
 
 
 

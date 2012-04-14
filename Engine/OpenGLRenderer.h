@@ -84,7 +84,9 @@ extern OpenGLRenderer* GLRENDERER;
 enum RenderableObjectType
 {
 	RenderableObjectType_Normal,
+    RenderableObjectType_Light,
 	RenderableObjectType_UI,
+    RenderableObjectType_All,
 	RenderableObjectType_Num,
 };
 
@@ -167,6 +169,7 @@ public:
 	void Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 screenWidthPoints, u32 screenHeightPoints);
 	bool InitSceneFromPOD(RenderableScene3D* pScene, CPVRTModelPOD* pPod, u32 viewFlags, const char* relativePath);
 	void CleanUp();
+    CoreObjectHandle CreateRenderableGeometry3D(RenderableObjectType renderableType,RenderableGeometry3D** pOut_Geom);
 	void LoadParticleAtlas(const char* filename);
 	bool GetFadeFinished();
 	void ClearOneFrameGeometry();
@@ -185,8 +188,6 @@ public:
 	bool LoadTextureFromData(u32* out_textureName,const void* data,u32 texWidth, u32 texHeight, u32 format, u32 type, u32 filterMode, u32 wrapModeU, u32 wrapModeV);
 	bool UpdateTextureFromData(u32* out_textureName, const void* data, u32 texWidth, u32 texHeight, u32 format, u32 type);
 	void RegisterModel(ModelData* pModelData);
-	CoreObjectHandle CreateRenderableGeometry3D_Normal(RenderableGeometry3D** pOut_Geom);
-	CoreObjectHandle CreateRenderableGeometry3D_UI(RenderableGeometry3D** pOut_Geom);
 	void AddParticleToQueue(Particle3D* pParticle, vec3* pPosition, vec3* pCallbackPos, ParticleBuckets particleBucket);
 	void SpawnParticles(vec3* pPosition, const vec3* pColor, const ParticleSettings* particleSettings, s32 numParticles);
 	void UpdateParticleQueues(f32 timeElapsed);
@@ -209,8 +210,7 @@ public:
 	void DeleteTexture(u32* pTextureID);
 	void ClearParticles();
 	void SetScreenFadeColor(vec3* screenFadeColor);
-	void ForceRenderablesNeedSorting_Normal();
-	void ForceRenderablesNeedSorting_UI();
+	void ForceRenderablesNeedSorting(RenderableObjectType renderableType);
 	
 	void FlashScreen(const vec3* pColor, f32 timeInSeconds);
 	void ShakeScreen(f32 shakeAmount,f32 shakeSpeed, f32 shakeTime);
@@ -238,14 +238,14 @@ private:
 	
 	//private functions
 	void InitRenderableGeometry3D_Shared(RenderableGeometry3D* renderableObject, RenderMaterial materialID, u32* customTexture, mat4f matrix4x4, RenderLayer renderLayer, u32 viewFlags, u32 renderFlags);
-	CoreObjectHandle CreateRenderableGeometry3D(RenderableObjectType renderableType,RenderableGeometry3D** pOut_Geom);
+	
 	void SortRenderablesWithMaterialByZ(RenderMaterial materialID);
 	void SortRenderablesInLayerRangeByZ(RenderLayer layerBegin, RenderLayer layerEnd);
 	void SetMaterial(RenderMaterial material);
 	void DeleteScene(RenderableScene3D* pScene);
 	void PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PostProcessDrawArea drawArea, u32* texture0, u32* texture1, u32* texture2);
 	void PrintOpenGLError(const char* callerName);
-	bool CreateRenderTarget(RenderTarget* renderTarget, u32 FBO, u32 width, u32 height);
+    bool CreateFrameBuffer(u32* pOut_FrameBuffer, u32* pInOut_colorBufferOrTexture, bool createColorBuffer, u32* pInOut_depthBuffer, bool createDepthBuffer, ColorBufferType colorBufferType, u32 width, u32 height);
 	bool CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderIndex, AttributeFlags attribs, u32* out_resultProgram);
 	void SetRenderTarget(RenderTarget* renderTarget);
 	void UploadWorldViewProjMatrix(const f32* pWorldMat); //only call after setMaterial
@@ -280,11 +280,10 @@ private:
 	s32 m_numPixelShaders;
 	s32 backingWidth;
 	s32 backingHeight;
-	RenderTarget m_screenTarget;
+
 	vec3 m_camPos[NumCameraViews];
-	// The OpenGL names for the framebuffer and renderbuffer used to render to this view
-	u32 viewFrameBuffer, colorRenderbuffer, depthRenderbuffer, msaaFramebuffer,msaaRenderBuffer,msaaDepthBuffer;
-	u32 m_postProcessDefaultVertShader;
+    
+    u32 m_postProcessDefaultVertShader;
 	f32 m_gaussianWeights[GAUSSIAN_NUMSAMPLES];
 	f32 m_accumulatedTime;
 	f32* m_view[NumCameraViews];
@@ -309,7 +308,7 @@ private:
 	u32 m_currViewIndex;
 	bool m_renderableObject3DsNeedSorting_UI;
 	bool m_renderableObject3DsNeedSorting_Normal;
-	bool m_renderableUINeedSorting;
+    bool m_renderableObject3DsNeedSorting_Light;
 	u32 m_glBufferCount;
 	u32 m_glTotalBufferSize;
 	u32 m_glTotalTextureSize;
@@ -368,6 +367,8 @@ private:
 	char* m_pArtPath;
 	f32 m_identityMat[16];
 	vec3 m_lightPos;
+    
+    RenderTarget m_renderTarget_Lights;
 	
 	RenderLayer m_sortRenderablesLayerStart;
 	RenderLayer m_sortRenderablesLayerEnd;
