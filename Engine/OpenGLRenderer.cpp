@@ -350,23 +350,23 @@ void OpenGLRenderer::Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 scre
     
     //Create screen render target
     m_renderTarget_Screen.width = screenWidth_pixels;
-    m_renderTarget_Screen.height = screenHeightPixels;
+    m_renderTarget_Screen.height = screenHeight_pixels;
     m_renderTarget_Screen.frameBuffer = 0;    
     
     //Create normal render target
-    m_renderTarget_Normal.width = screenWidth_pixels;
-    m_renderTarget_Normal.height = screenHeightPixels;
+    /*m_renderTarget_Normal.width = 320;
+    m_renderTarget_Normal.height = 240;
     CreateFrameBuffer(&m_renderTarget_Normal.frameBuffer, &m_renderTarget_Normal.colorBuffer, true, NULL, false, ColorBufferType_Texture, m_renderTarget_Normal.width, m_renderTarget_Normal.height);
     
     //Create down sampled render target A
     m_renderTarget_DownsampleA.width = screenWidth_pixels/4;
-    m_renderTarget_DownsampleA.height = screenHeightPixels/4;
+    m_renderTarget_DownsampleA.height = screenHeight_pixels/4;
     CreateFrameBuffer(&m_renderTarget_DownsampleA.frameBuffer, &m_renderTarget_DownsampleA.colorBuffer, true, NULL, false, ColorBufferType_Texture, m_renderTarget_DownsampleA.width, m_renderTarget_DownsampleA.height);
     
     //Create down sampled render target B
     m_renderTarget_DownsampleB.width = screenWidth_pixels/4;
-    m_renderTarget_DownsampleB.height = screenHeightPixels/4;
-    CreateFrameBuffer(&m_renderTarget_DownsampleB.frameBuffer, &m_renderTarget_DownsampleB.colorBuffer, true, NULL, false, ColorBufferType_Texture, m_renderTarget_DownsampleB.width, m_renderTarget_DownsampleB.height);
+    m_renderTarget_DownsampleB.height = screenHeight_pixels/4;
+    CreateFrameBuffer(&m_renderTarget_DownsampleB.frameBuffer, &m_renderTarget_DownsampleB.colorBuffer, true, NULL, false, ColorBufferType_Texture, m_renderTarget_DownsampleB.width, m_renderTarget_DownsampleB.height);*/
     
 }
 
@@ -1507,7 +1507,7 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 #if RENDERLOOP_ENABLED
         
         //Set normal render target
-        SetRenderTarget(NULL);
+        //SetRenderTarget(&m_renderTarget_Normal);
         
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL) ;
@@ -1526,10 +1526,19 @@ void OpenGLRenderer::Render(f32 timeElapsed)
         
         //Draw all the normal stuff
         RenderLoop(m_currViewIndex,g_Factory_Geometry_Normal.m_pObjectList,g_Factory_Geometry_Normal.m_numObjects);
+
+        //Seriously?
+#if defined(Platform_IOS)
+        m_postProcessFlipper = true;
+#else
+        m_postProcessFlipper = false;
+#endif
         
+       // glDisable(GL_DEPTH_TEST);
+        //PostProcess(PPMT_Copy, NULL, PPDrawArea_FullScreen, &m_renderTarget_Normal.colorBuffer, NULL, NULL);
 		
         //TODO: move UI
-		//RenderLoop(0,g_Factory_Geometry_UI.m_pObjectList,g_Factory_Geometry_UI.m_numObjects);
+		RenderLoop(0,g_Factory_Geometry_UI.m_pObjectList,g_Factory_Geometry_UI.m_numObjects);
         
         //Set lights render target
         //SetRenderTarget(&m_renderTarget_Lights);
@@ -1739,8 +1748,8 @@ void OpenGLRenderer::Render(f32 timeElapsed)
     
 
     //Disable depth test
-	glEnable ( GL_DEPTH_TEST );
-	
+	glDisable( GL_DEPTH_TEST );
+    
 	//Disable depth write
 	glDepthMask( GL_FALSE );
 	
@@ -2765,7 +2774,7 @@ void OpenGLRenderer::CreateMaterials()
     //PPMT_Trippin
 	if(CreateShaderProgram(VSH_FullScreenQuad,PS_Trippin,attribs_VT,&g_Materials[PPMT_Trippin].shaderProgram))
 	{
-        AddUniform_Shared(PPMT_PureColor,"accumulatedTime",Uniform_Float,(u8*)&m_accumulatedTime,1);
+        AddUniform_Shared(PPMT_Trippin,"accumulatedTime",Uniform_Float,(u8*)&m_accumulatedTime,1);
 	}
 
 	
@@ -3566,12 +3575,7 @@ void OpenGLRenderer::SetMaterial(RenderMaterial material)
 	}
 	
 	glUseProgram(program);
-	
-	
-	//Upload camPos (TODO: don't put this here)
-	glUniform3f(currMaterial->uniform_camPos, m_camPos[m_currViewIndex].x,m_camPos[m_currViewIndex].y,m_camPos[m_currViewIndex].z);
-	
-	
+
 	//Set the textures
 	SetTexture(currMaterial->texture0,0);
     SetTexture(currMaterial->texture1,1);
@@ -3587,7 +3591,7 @@ void OpenGLRenderer::SetMaterial(RenderMaterial material)
 }
 
 
-void Draw_FSQuad(bool flipped)
+/*void Draw_FSQuad(bool flipped)
 {
 	// update attribute values
 	glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVertices);
@@ -3597,6 +3601,9 @@ void Draw_FSQuad(bool flipped)
 	glEnableVertexAttribArray(ATTRIB_TEXCOORD);
 	
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    glDisableVertexAttribArray(ATTRIB_TEXCOORD);
+    glDisableVertexAttribArray(ATTRIB_VERTEX);
 }
 
 
@@ -3608,6 +3615,8 @@ void Draw_TLQuad(bool flipped)
 	
     //Perform post processing by rendering a full screen quad with the given input texture
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    glDisableVertexAttribArray(ATTRIB_VERTEX);
 }
 
 
@@ -3619,6 +3628,8 @@ void Draw_TRQuad(bool flipped)
 	
     //Perform post processing by rendering a full screen quad with the given input texture
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    glDisableVertexAttribArray(ATTRIB_VERTEX);
 }
 
 
@@ -3630,6 +3641,8 @@ void Draw_BLQuad(bool flipped)
 	
     //Perform post processing by rendering a full screen quad with the given input texture
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    glDisableVertexAttribArray(ATTRIB_VERTEX);
 }
 
 
@@ -3641,7 +3654,9 @@ void Draw_BRQuad(bool flipped)
 	
     //Perform post processing by rendering a full screen quad with the given input texture
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-}
+    
+    glDisableVertexAttribArray(ATTRIB_VERTEX);
+}*/
 
 
 void Draw_Matrix()
@@ -3656,9 +3671,9 @@ void Draw_Matrix()
     glDrawArrays(GL_LINES, 0, 6);
 }
 
-void OpenGLRenderer::PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PostProcessDrawArea drawArea, u32* texture0, u32* texture1, u32* texture2)
+void OpenGLRenderer::PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PPDrawArea drawArea, u32* texture0, u32* texture1, u32* texture2)
 {
-    SetRenderTarget(renderTarget);
+    //SetRenderTarget(renderTarget);
     
 	//Set up textures to be used
 	g_Materials[ppMaterial].texture0 = texture0;
@@ -3667,37 +3682,47 @@ void OpenGLRenderer::PostProcess(RenderMaterial ppMaterial, RenderTarget* render
 	
 	//Set material like normal
 	SetMaterial(ppMaterial);
-	UploadProjMatrix(m_projMats[ProjMatType_Orthographic_NDC]);
-	
+    UploadProjMatrix(m_projMats[ProjMatType_Orthographic_NDC]);
+
 	//Upload uniforms for this post process
 	//TODO: remove this later if there are some that share the same uniforms
 	UploadSharedUniforms();
 	
+    const bool textureIsUsed = texture0 != NULL || texture1 != NULL || texture2 != NULL;
+    
+    if(textureIsUsed)
+    {
+        glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, 0, 0, m_postProcessFlipper?squareTexCoord_Flipped:squareTexCoord_Normal);
+        glEnableVertexAttribArray(ATTRIB_TEXCOORD);
+    }
+    
 	//Draw a full screen quad
 	switch (drawArea) {
 		case PPDrawArea_FullScreen:
 		{
-			Draw_FSQuad(m_postProcessFlipper);
+			glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVertices);
+            glEnableVertexAttribArray(ATTRIB_VERTEX);
+            
 			break;
 		}
 		case PPDrawArea_TopLeft:
 		{
-			Draw_TLQuad(m_postProcessFlipper);
+			//Draw_TLQuad(m_postProcessFlipper);
 			break;
 		}
 		case PPDrawArea_TopRight:
 		{
-			Draw_TRQuad(m_postProcessFlipper);
+			//Draw_TRQuad(m_postProcessFlipper);
 			break;
 		}
 		case PPDrawArea_BottomLeft:
 		{
-			Draw_BLQuad(m_postProcessFlipper);
+			//Draw_BLQuad(m_postProcessFlipper);
 			break;
 		}
 		case PPDrawArea_BottomRight:
 		{
-			Draw_BRQuad(m_postProcessFlipper);
+			//Draw_BRQuad(m_postProcessFlipper);
 			break;
 		}
 		default:
@@ -3707,7 +3732,17 @@ void OpenGLRenderer::PostProcess(RenderMaterial ppMaterial, RenderTarget* render
 	}
     
     m_postProcessFlipper = !m_postProcessFlipper;
+    
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    /*if(textureIsUsed)
+    {
+        glDisableVertexAttribArray(ATTRIB_TEXCOORD);
+    }
+    
+    glDisableVertexAttribArray(ATTRIB_VERTEX);*/
 }
+
 
 void OpenGLRenderer::PrintOpenGLFrameBufferStatus(bool printSuccess)
 {
@@ -3828,6 +3863,7 @@ bool OpenGLRenderer::CreateFrameBuffer(u32* pOut_FrameBuffer, u32* pInOut_colorB
                 glBindRenderbuffer(GL_RENDERBUFFER, *pInOut_colorBufferOrTexture);
                 PrintOpenGLError("FrameBufferError");
                 
+                //TODO: confirm this works
 #if defined(PLATFORM_IOS)
                 glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, width, height);
                 PrintOpenGLError("FrameBufferError");
@@ -3855,15 +3891,15 @@ bool OpenGLRenderer::CreateFrameBuffer(u32* pOut_FrameBuffer, u32* pInOut_colorB
                 glBindTexture(GL_TEXTURE_2D, *pInOut_colorBufferOrTexture);
                 PrintOpenGLError("FrameBufferError");
                 
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                 
                 PrintOpenGLError("FrameBufferError");
 
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
                 
                 PrintOpenGLError("FrameBufferError");
             }

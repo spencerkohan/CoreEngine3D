@@ -476,13 +476,13 @@ typedef struct
 	const char* materialName;
 } Material;
 
-typedef enum{
+enum PPDrawArea{
 	PPDrawArea_FullScreen,
 	PPDrawArea_TopLeft,
 	PPDrawArea_TopRight,
 	PPDrawArea_BottomLeft,
 	PPDrawArea_BottomRight,
-}PostProcessDrawArea;
+};
 
 //FadeState
 typedef enum

@@ -243,7 +243,7 @@ private:
 	void SortRenderablesInLayerRangeByZ(RenderLayer layerBegin, RenderLayer layerEnd);
 	void SetMaterial(RenderMaterial material);
 	void DeleteScene(RenderableScene3D* pScene);
-	void PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PostProcessDrawArea drawArea, u32* texture0, u32* texture1, u32* texture2);
+	void PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PPDrawArea drawArea, u32* texture0, u32* texture1, u32* texture2);
 	void PrintOpenGLError(const char* callerName);
     void PrintOpenGLFrameBufferStatus(bool printSuccess);
     bool CreateFrameBuffer(u32* pOut_FrameBuffer, u32* pInOut_colorBufferOrTexture, bool createColorBuffer, u32* pInOut_depthBuffer, bool createDepthBuffer, ColorBufferType colorBufferType, u32 width, u32 height);
@@ -392,11 +392,7 @@ bool RenderableGeometry3DCompare_SortValue(const RenderableGeometry3D& lhs, cons
 void PackFloat16(float myFloat, float* out_x, float* out_y);
 float UnpackFloat16(float x, float y);
 void DoubleRenderTarget_Flip(DoubleRenderTarget* doubleRenderTarget);
-void Draw_FSQuad(bool flipped);
-void Draw_TLQuad(bool flipped);
-void Draw_TRQuad(bool flipped);
-void Draw_BLQuad(bool flipped);
-void Draw_BRQuad(bool flipped);
+
 void Draw_Matrix();
 
 #endif
