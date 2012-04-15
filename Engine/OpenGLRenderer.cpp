@@ -114,19 +114,35 @@ const GLfloat squareVertices[] = {
 };
 
 //Verts for drawing a 2D square
+const GLfloat squareTexCoord_Normal[] = {
+	0.0f, 0.0f,
+	1.0f, 0.0f,
+	0.0f, 1.0f,
+	1.0f, 1.0f,
+};
+
+//Verts for drawing a 2D square
+const GLfloat squareTexCoord_Flipped[] = {
+	0.0f, 1.0f,
+	1.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 0.0f,
+};
+
+//Verts for drawing a 2D square
 const GLfloat squareVerticesTR[] = {
 	0.0f, 0.0f,
-	1.0f,  0.0f,
-	0.0f,  1.0f,
-	1.0f,   1.0f,
+	1.0f, 0.0f,
+	0.0f, 1.0f,
+	1.0f, 1.0f,
 };
 
 //Verts for drawing a 2D square
 const GLfloat squareVerticesTL[] = {
 	-1.0f, 1.0f,
 	0.0f,  1.0f,
-	-1.0f,  0.0f,
-	0.0f,   0.0f,
+	-1.0f, 0.0f,
+	0.0f,  0.0f,
 };
 
 //Verts for drawing a 2D square
@@ -160,6 +176,10 @@ static u32 texture_pointSpriteAtlas = 0;
 void OpenGLRenderer::Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 screenWidthPoints, u32 screenHeightPoints)
 {
 	GLRENDERER = this;
+    
+    m_postProcessFlipper = false;
+    
+    m_clearColorPulseTimer = 0.0f;
 
 	PrintOpenGLError("At init!");
 	
@@ -328,10 +348,25 @@ void OpenGLRenderer::Init(u32 screenWidthPixels, u32 screenHeightPixels,u32 scre
     
     //For post processing abilities
     
-    //Fill out a render target for lights
-    m_renderTarget_Lights.width = screenWidth_pixels/4;
-    m_renderTarget_Lights.height = screenHeightPixels/4;
-    CreateFrameBuffer(&m_renderTarget_Lights.frameBuffer, &m_renderTarget_Lights.colorBuffer, true, NULL, false, ColorBufferType_Texture, m_renderTarget_Lights.width, m_renderTarget_Lights.height);
+    //Create screen render target
+    m_renderTarget_Screen.width = screenWidth_pixels;
+    m_renderTarget_Screen.height = screenHeightPixels;
+    m_renderTarget_Screen.frameBuffer = 0;    
+    
+    //Create normal render target
+    m_renderTarget_Normal.width = screenWidth_pixels;
+    m_renderTarget_Normal.height = screenHeightPixels;
+    CreateFrameBuffer(&m_renderTarget_Normal.frameBuffer, &m_renderTarget_Normal.colorBuffer, true, NULL, false, ColorBufferType_Texture, m_renderTarget_Normal.width, m_renderTarget_Normal.height);
+    
+    //Create down sampled render target A
+    m_renderTarget_DownsampleA.width = screenWidth_pixels/4;
+    m_renderTarget_DownsampleA.height = screenHeightPixels/4;
+    CreateFrameBuffer(&m_renderTarget_DownsampleA.frameBuffer, &m_renderTarget_DownsampleA.colorBuffer, true, NULL, false, ColorBufferType_Texture, m_renderTarget_DownsampleA.width, m_renderTarget_DownsampleA.height);
+    
+    //Create down sampled render target B
+    m_renderTarget_DownsampleB.width = screenWidth_pixels/4;
+    m_renderTarget_DownsampleB.height = screenHeightPixels/4;
+    CreateFrameBuffer(&m_renderTarget_DownsampleB.frameBuffer, &m_renderTarget_DownsampleB.colorBuffer, true, NULL, false, ColorBufferType_Texture, m_renderTarget_DownsampleB.width, m_renderTarget_DownsampleB.height);
     
 }
 
@@ -1140,7 +1175,7 @@ void OpenGLRenderer::SetSortRenderablesByZ(bool sortRenderablesByZ, RenderLayer 
 
 
 void OpenGLRenderer::Render(f32 timeElapsed)
-{
+{   
 	for (int i=0; i<5; ++i)
     {
         m_currTextureInTextureUnit[i] = 0;
@@ -1197,17 +1232,6 @@ void OpenGLRenderer::Render(f32 timeElapsed)
         m_screenShakerT_Y = -1.0f;
         m_screenShakerSpeed_Y *= -1.0f;
     }
-    
-    //TODO: comment this back in later when we want to use post processing
-    //[self setRenderTarget: &m_screenTarget];
-	
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL) ;
-    glDepthMask( GL_TRUE );
-
-    
-	
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     
 	if (!paused)
 	{
@@ -1448,15 +1472,16 @@ void OpenGLRenderer::Render(f32 timeElapsed)
     //Reset renderstate flags
     m_renderStateFlags = 0;
 	
-	for (u32 camViewIDX=0; camViewIDX<NumCameraViews; ++camViewIDX)
+	//for (u32 camViewIDX=0; camViewIDX<NumCameraViews; ++camViewIDX)
 	{	
 		//Set what camera we're currently rendering with
-		m_currViewIndex = camViewIDX;
+		//m_currViewIndex = camViewIDX;
+        
+        m_currViewIndex = 0;
 		
 		//Create view projection matrices once per view
 		for(u32 i=0; i<NumProjMatTypes; ++i)
 		{
-            
             if (m_screenShakeTimer > 0.0f)
             {
                 m_screenShakeTimer -= timeElapsed;
@@ -1477,49 +1502,57 @@ void OpenGLRenderer::Render(f32 timeElapsed)
                 mat4f_Multiply(m_viewProjMats[m_currViewIndex][i],m_projMats[i], m_view[m_currViewIndex]);
             }
 		}
-		
-		glDepthMask( GL_TRUE );
-        if(camViewIDX > 0)
-        {
-            glClear(GL_DEPTH_BUFFER_BIT);
-        }
+        
 		//TODO: one day if we have multiple viewports, we'll have to link cameras to viewports
 #if RENDERLOOP_ENABLED
-		
-        RenderLoop(camViewIDX,g_Factory_Geometry_Normal.m_pObjectList,g_Factory_Geometry_Normal.m_numObjects);
         
-        SetRenderTarget(&m_renderTarget_Lights);
-        RenderLoop(camViewIDX,g_Factory_Geometry_Light.m_pObjectList,g_Factory_Geometry_Light.m_numObjects);
+        //Set normal render target
         SetRenderTarget(NULL);
         
-		for(u32 i=0; i<m_numAnimatedPods; ++i)
-		{
-			DrawAnimatedPOD(&m_animatedPODs[i]);
-			
-		}
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL) ;
+        glDepthMask( GL_TRUE );
+        
+        m_clearColorPulseTimer += timeElapsed;
+        if(m_clearColorPulseTimer > 1.0f)
+        {
+            m_clearColorPulseTimer = 0.0f;
+        }
+        
+        //Clear normal render target using pulse color
+        SetClearColor(m_clearColorPulseTimer, 0, 0);
+        
+        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+        
+        //Draw all the normal stuff
+        RenderLoop(m_currViewIndex,g_Factory_Geometry_Normal.m_pObjectList,g_Factory_Geometry_Normal.m_numObjects);
+        
 		
-		for(u32 i=0; i<g_Factory_RenderableSceneObject.m_numObjects; ++i)
-		{
-			RenderableSceneObject3D* pSceneObj = &g_Factory_RenderableSceneObject.m_pObjectList[i];
-			if(pSceneObj->visible)
-			{
-				DrawSceneObject(pSceneObj);
-				
-			}
-		}
-		
-		RenderLoop(0,g_Factory_Geometry_UI.m_pObjectList,g_Factory_Geometry_UI.m_numObjects);
-		
+        //TODO: move UI
+		//RenderLoop(0,g_Factory_Geometry_UI.m_pObjectList,g_Factory_Geometry_UI.m_numObjects);
+        
+        //Set lights render target
+        //SetRenderTarget(&m_renderTarget_Lights);
+        
+        //Clear the lights target to black
+        //SetClearColor(0, 0, 0);
+        //glClear(GL_COLOR_BUFFER_BIT);
+        
+        //glDisable(GL_DEPTH_TEST);
+        
+        //Draw the lights
+        //RenderLoop(m_currViewIndex,g_Factory_Geometry_Light.m_pObjectList,g_Factory_Geometry_Light.m_numObjects);
+        
 #endif        
 	}
 	
 	
 	RenderEffects();
-	
-    
-    glEnable(GL_BLEND);
     
     glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    
     
     //Normal blending
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1711,8 +1744,6 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 	//Disable depth write
 	glDepthMask( GL_FALSE );
 	
-	//Disable culling
-	glDisable(GL_CULL_FACE);
     
 	//DRAW DEBUG LINES
 	
@@ -1866,22 +1897,22 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 	
 #endif
     
-	/*if (parentView.drawMatrices)
-	 {	
-	 m_currProjMatType = ProjMatType_Perspective;
+	//if (parentView.drawMatrices)
+	 //{	
+	 //m_currProjMatType = ProjMatType_Perspective;
 	 
-	 [self setMaterial: MT_VertColors];
+	 //[self setMaterial: MT_VertColors];
 	 
-	 for (u32 renderIndex=0; renderIndex<m_numRenderableObject3Ds; ++renderIndex)
-	 {
-	 const RenderableObject3D* pCurrRenderableObject3D = m_renderableObject3DList[renderIndex];
-	 if(pCurrRenderableObject3D->flags & RenderFlag_Visible)
-	 {
-	 [self uploadWorldViewProjMatrix:pCurrRenderableObject3D->worldMat];		
-	 Draw_matrix();
-	 }
-	 }
-	 }*/
+	 //for (u32 renderIndex=0; renderIndex<m_numRenderableObject3Ds; ++renderIndex)
+	 //{
+	 //const RenderableObject3D* pCurrRenderableObject3D = m_renderableObject3DList[renderIndex];
+	 //if(pCurrRenderableObject3D->flags & RenderFlag_Visible)
+	 //{
+	 //[self uploadWorldViewProjMatrix:pCurrRenderableObject3D->worldMat];		
+	 //Draw_matrix();
+	 //}
+	// }
+	 //}
     
 #if DEBUG_DRAWPARTICLESASLINESTRIP
     //HACK: Draw particles in CameraView0
@@ -1915,26 +1946,28 @@ void OpenGLRenderer::Render(f32 timeElapsed)
 #endif
     
 	
-	/* if (ENABLE_MULTISAMPLING)
-	 {
-	 glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE, viewFrameBuffer);
-	 glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE,  msaaFramebuffer);
-	 glResolveMultisampleFramebufferAPPLE();
+	// if (ENABLE_MULTISAMPLING)
+	 //{
+	 //glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE, viewFrameBuffer);
+	 //glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE,  msaaFramebuffer);
+	 //glResolveMultisampleFramebufferAPPLE();
 	 
-	 const GLenum discards[]  = {GL_COLOR_ATTACHMENT0,GL_DEPTH_ATTACHMENT};
-	 glDiscardFramebufferEXT(GL_READ_FRAMEBUFFER_APPLE,2,discards);
+	 //const GLenum discards[]  = {GL_COLOR_ATTACHMENT0,GL_DEPTH_ATTACHMENT};
+	 //glDiscardFramebufferEXT(GL_READ_FRAMEBUFFER_APPLE,2,discards);
 	 
-	 glBindRenderbuffer(GL_RENDERBUFFER, viewFrameBuffer);
-	 }
-	 else
-	 {
-	 const u32 discards[]  = {GL_DEPTH_ATTACHMENT};
-	 glDiscardFramebufferEXT(GL_FRAMEBUFFER,1,discards);
-	 }*/
+	 //glBindRenderbuffer(GL_RENDERBUFFER, viewFrameBuffer);
+	 //}
+	 //else
+	 //{
+	 //const u32 discards[]  = {GL_DEPTH_ATTACHMENT};
+	 //glDiscardFramebufferEXT(GL_FRAMEBUFFER,1,discards);
+	 //}
 	
 	
 	//dump contents of buffer into the presentRenderBuffer and show on the screen
 	//[context presentRenderbuffer:GL_RENDERBUFFER];
+    
+    
 }
 
 
@@ -2678,6 +2711,8 @@ void OpenGLRenderer::CreateMaterials()
     const s32 PS_TextureWithColor = AddPixelShaderToList("Shaders/TextureWithColor.fsh");
 	const s32 PS_MultiplyTwoSamples = AddPixelShaderToList("Shaders/MultiplyTwoSamples.fsh");
 	
+    const s32 PS_Trippin = AddPixelShaderToList("Shaders/Trippin.fsh");
+    
 	//const s32 PS_SkinnedFragShader = AddPixelShaderToList("Shaders/SkinnedFragShader.fsh");
 	
 	//const s32 PS_TextureAndFogColorWithMipMapBlur = AddPixelShaderToList("Shaders/TextureAndFogColorWithMipmapBlur.fsh");
@@ -2700,24 +2735,39 @@ void OpenGLRenderer::CreateMaterials()
 				
 		g_Materials[i].materialName = g_MaterialNames[i];
 	}
+    
+    const AttributeFlags attribs_V = (AttributeFlags) (ATTRIBFLAG_VERTEX);
+	const AttributeFlags attribs_VT = (AttributeFlags) (ATTRIBFLAG_VERTEX | ATTRIBFLAG_TEXCOORD);
+	const AttributeFlags attribs_VTC = AttributeFlags (ATTRIBFLAG_VERTEX | ATTRIBFLAG_TEXCOORD | ATTRIBFLAG_COLOR);
+    const AttributeFlags attribs_VC = (AttributeFlags) (ATTRIBFLAG_VERTEX | ATTRIBFLAG_COLOR);
+	//const AttributeFlags attribs_skinned_simple = (AttributeFlags) (ATTRIBFLAG_VERTEX | ATTRIBFLAG_TEXCOORD | ATTRIBFLAG_BONEINDEX | ATTRIBFLAG_BONEWEIGHT);
 	
 	//-- Create post process materials --
-	
-	const AttributeFlags ppAttribs = (AttributeFlags) (ATTRIBFLAG_VERTEX);
-    
+
 	//PPMT_BlendUsingTexture
-	if(CreateShaderProgram(VSH_FullScreenQuad,PP_BlendUsingTexture,ppAttribs,&g_Materials[PPMT_BlendUsingTexture].shaderProgram))
+	if(CreateShaderProgram(VSH_FullScreenQuad,PP_BlendUsingTexture,attribs_VT,&g_Materials[PPMT_BlendUsingTexture].shaderProgram))
 	{
 		
 	}
-	 
 	
 	//PPMT_PureColor
-	if(CreateShaderProgram(VSH_FullScreenQuadNoTexcoord,PP_PureColor,ppAttribs,&g_Materials[PPMT_PureColor].shaderProgram))
+	if(CreateShaderProgram(VSH_FullScreenQuadNoTexcoord,PP_PureColor,attribs_V,&g_Materials[PPMT_PureColor].shaderProgram))
 	{
 		AddUniform_Shared(PPMT_PureColor,"color",Uniform_Vec4,(u8*)&m_fadeColor.x,1);
 	}
 	 
+    //PPMT_Copy
+	if(CreateShaderProgram(VSH_FullScreenQuad,PS_TextureOnlySimple,attribs_VT,&g_Materials[PPMT_Copy].shaderProgram))
+	{
+		
+	}
+    
+    //PPMT_Trippin
+	if(CreateShaderProgram(VSH_FullScreenQuad,PS_Trippin,attribs_VT,&g_Materials[PPMT_Trippin].shaderProgram))
+	{
+        AddUniform_Shared(PPMT_PureColor,"accumulatedTime",Uniform_Float,(u8*)&m_accumulatedTime,1);
+	}
+
 	
 	/*attribute highp   vec3 inVertex;
 	 attribute mediump vec3 inNormal;
@@ -2728,14 +2778,9 @@ void OpenGLRenderer::CreateMaterials()
 	 attribute mediump vec4 inBoneWeights;
 	 */
 	
-    const AttributeFlags attribs_V = (AttributeFlags) (ATTRIBFLAG_VERTEX);
-	const AttributeFlags attribs_VT = (AttributeFlags) (ATTRIBFLAG_VERTEX | ATTRIBFLAG_TEXCOORD);
-	const AttributeFlags attribs_VTC = AttributeFlags (ATTRIBFLAG_VERTEX | ATTRIBFLAG_TEXCOORD | ATTRIBFLAG_COLOR);
-    const AttributeFlags attribs_VC = (AttributeFlags) (ATTRIBFLAG_VERTEX | ATTRIBFLAG_COLOR);
-	//const AttributeFlags attribs_skinned_simple = (AttributeFlags) (ATTRIBFLAG_VERTEX | ATTRIBFLAG_TEXCOORD | ATTRIBFLAG_BONEINDEX | ATTRIBFLAG_BONEWEIGHT);
+   
 	
     //MT_VertColors
-	//TODO: ppAttribs... what?
 
 	if(CreateShaderProgram(VSH_VertColors,PS_Colors,attribs_VC,&g_Materials[MT_VertColors].shaderProgram))
 	{
@@ -3033,6 +3078,10 @@ void OpenGLRenderer::ClearParticles()
     }
 }
 
+void OpenGLRenderer::SetScreenFramebuffer(u32 framebuffer)
+{
+    m_renderTarget_Screen.frameBuffer = framebuffer;
+}
 
 void OpenGLRenderer::SetScreenFadeColor(vec3* screenFadeColor)
 {
@@ -3279,10 +3328,11 @@ bool OpenGLRenderer::LoadTexture(const char* fileName,ImageType imageType, u32* 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapModeU);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapModeV);
 				
+                //TODO: use RGBA8 for the first type parameter?
 				s32 type = hasAlpha?GL_RGBA:GL_RGB;
 				
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-				glTexImage2D(GL_TEXTURE_2D, 0, type, width,height, 0, type, GL_UNSIGNED_BYTE, textureImage);
+				glTexImage2D(GL_TEXTURE_2D, 0, type, width, height, 0, type, GL_UNSIGNED_BYTE, textureImage);
 				
 				//Generate Maps
 				if (filterMode == GL_LINEAR_MIPMAP_LINEAR || filterMode == GL_LINEAR_MIPMAP_NEAREST)
@@ -3537,23 +3587,20 @@ void OpenGLRenderer::SetMaterial(RenderMaterial material)
 }
 
 
-void Draw_FSQuad()
+void Draw_FSQuad(bool flipped)
 {
 	// update attribute values
 	glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVertices);
 	glEnableVertexAttribArray(ATTRIB_VERTEX);
     
-    glDisableVertexAttribArray(ATTRIB_TEXCOORD);
-	
-    //Perform post processing by rendering a full screen quad with the given input texture
-	//es2time1=CACurrentMediaTime();
+    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, 0, 0, flipped?squareTexCoord_Flipped:squareTexCoord_Normal);
+	glEnableVertexAttribArray(ATTRIB_TEXCOORD);
 	
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	//es2time2=CACurrentMediaTime();
 }
 
 
-void Draw_TLQuad()
+void Draw_TLQuad(bool flipped)
 {
 	// update attribute values
 	glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVerticesTL);
@@ -3564,7 +3611,7 @@ void Draw_TLQuad()
 }
 
 
-void Draw_TRQuad()
+void Draw_TRQuad(bool flipped)
 {
 	// update attribute values
 	glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVerticesTR);
@@ -3575,7 +3622,7 @@ void Draw_TRQuad()
 }
 
 
-void Draw_BLQuad()
+void Draw_BLQuad(bool flipped)
 {
 	// update attribute values
 	glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVerticesBL);
@@ -3586,7 +3633,7 @@ void Draw_BLQuad()
 }
 
 
-void Draw_BRQuad()
+void Draw_BRQuad(bool flipped)
 {
 	// update attribute values
 	glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVerticesBR);
@@ -3630,37 +3677,94 @@ void OpenGLRenderer::PostProcess(RenderMaterial ppMaterial, RenderTarget* render
 	switch (drawArea) {
 		case PPDrawArea_FullScreen:
 		{
-			Draw_FSQuad();
+			Draw_FSQuad(m_postProcessFlipper);
 			break;
 		}
 		case PPDrawArea_TopLeft:
 		{
-			Draw_TLQuad();
+			Draw_TLQuad(m_postProcessFlipper);
 			break;
 		}
 		case PPDrawArea_TopRight:
 		{
-			Draw_TRQuad();
+			Draw_TRQuad(m_postProcessFlipper);
 			break;
 		}
 		case PPDrawArea_BottomLeft:
 		{
-			Draw_BLQuad();
+			Draw_BLQuad(m_postProcessFlipper);
 			break;
 		}
 		case PPDrawArea_BottomRight:
 		{
-			Draw_BRQuad();
+			Draw_BRQuad(m_postProcessFlipper);
 			break;
 		}
 		default:
 		{
 			//NSLog(@"Error: Unsupported PostProcessDrawArea selected.");
 		}
-			
 	}
+    
+    m_postProcessFlipper = !m_postProcessFlipper;
 }
 
+void OpenGLRenderer::PrintOpenGLFrameBufferStatus(bool printSuccess)
+{
+    const GLenum frameBufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    
+    switch (frameBufferStatus)
+    {
+        case GL_FRAMEBUFFER_COMPLETE:
+        {
+            if(printSuccess)
+            {
+                 COREDEBUG_PrintDebugMessage("SUCCESS! -> CreateFrameBuffer: Frame buffer created successfully!");
+            }
+           
+            break;
+        }
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+        {
+            COREDEBUG_PrintDebugMessage("INSANE ERROR! -> CreateFrameBuffer: Frame buffer has incomplete attachment!");
+            break;
+        }
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+        {
+            COREDEBUG_PrintDebugMessage("INSANE ERROR! -> CreateFrameBuffer: Frame buffer missing attachment!");
+            break;
+        }
+#if defined (PLATFORM_IOS)
+        case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+        {
+            COREDEBUG_PrintDebugMessage("INSANE ERROR! -> CreateFrameBuffer: Frame buffer has incomplete dimensions!");
+            break;
+        }
+#endif
+            
+#if defined(PLATFORM_OSX) || defined(PLATFORM_WIN)
+        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+        {
+            COREDEBUG_PrintDebugMessage("INSANE ERROR! -> CreateFrameBuffer: Frame buffer has incomplete draw buffer!");
+            
+            break;
+        }
+        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+        {
+            COREDEBUG_PrintDebugMessage("INSANE ERROR! -> CreateFrameBuffer: Frame buffer has incomplete read buffer!");
+            
+            break;
+        }
+#endif
+        case GL_FRAMEBUFFER_UNSUPPORTED:
+        {
+            COREDEBUG_PrintDebugMessage("INSANE ERROR! -> CreateFrameBuffer: Frame buffer is unsupported!");
+            break;
+        }
+        default:
+            break;
+    }
+}
 
 void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 {
@@ -3677,8 +3781,25 @@ void OpenGLRenderer::PrintOpenGLError(const char* callerName)
 		COREDEBUG_PrintDebugMessage("GL error: %d (0x%4x)", errCode, errCode);
 #endif
 		
-		assert(0);
+		//assert(0);
 	}
+}
+
+
+void OpenGLRenderer::SetRenderTarget(RenderTarget* pRenderTarget)
+{
+    if(pRenderTarget == NULL)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_renderTarget_Screen.frameBuffer);
+        glViewport(0, 0, m_renderTarget_Screen.width, m_renderTarget_Screen.height);
+    }
+    else
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, pRenderTarget->frameBuffer);
+        glViewport(0, 0, pRenderTarget->width, pRenderTarget->height);
+    }
+    
+    PrintOpenGLFrameBufferStatus(false);
 }
 
 
@@ -3686,7 +3807,10 @@ bool OpenGLRenderer::CreateFrameBuffer(u32* pOut_FrameBuffer, u32* pInOut_colorB
 {
     //Create a new frame buffer
 	glGenFramebuffers(1, pOut_FrameBuffer);
+    PrintOpenGLError("FrameBufferError");
+    
 	glBindFramebuffer(GL_FRAMEBUFFER, *pOut_FrameBuffer);
+    PrintOpenGLError("FrameBufferError");
 
     //Probably want a color buffer no matter what
     
@@ -3699,13 +3823,23 @@ bool OpenGLRenderer::CreateFrameBuffer(u32* pOut_FrameBuffer, u32* pInOut_colorB
             if(createColorBuffer)
             {
                 glGenRenderbuffers(1, pInOut_colorBufferOrTexture);
-                glBindRenderbuffer(GL_RENDERBUFFER, *pInOut_colorBufferOrTexture);
+                PrintOpenGLError("FrameBufferError");
                 
+                glBindRenderbuffer(GL_RENDERBUFFER, *pInOut_colorBufferOrTexture);
+                PrintOpenGLError("FrameBufferError");
+                
+#if defined(PLATFORM_IOS)
+                glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, width, height);
+                PrintOpenGLError("FrameBufferError");
+#else
                 glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, width, height);
+                PrintOpenGLError("FrameBufferError");
+#endif
             }
             
             //Attach it to the frame buffer
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, *pInOut_colorBufferOrTexture);
+            PrintOpenGLError("FrameBufferError");
             
             break;
         }
@@ -3716,14 +3850,28 @@ bool OpenGLRenderer::CreateFrameBuffer(u32* pOut_FrameBuffer, u32* pInOut_colorB
             {
                 //Create a texture to hold the color data
                 glGenTextures(1, pInOut_colorBufferOrTexture);
-                glBindTexture(GL_TEXTURE_2D, *pInOut_colorBufferOrTexture);
+                PrintOpenGLError("FrameBufferError");
                 
+                glBindTexture(GL_TEXTURE_2D, *pInOut_colorBufferOrTexture);
+                PrintOpenGLError("FrameBufferError");
+                
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                
+                PrintOpenGLError("FrameBufferError");
+
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+                
+                PrintOpenGLError("FrameBufferError");
             }
             
             
             //Attach the texture to the frame buffer
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *pInOut_colorBufferOrTexture, 0);
+            PrintOpenGLError("FrameBufferError");
             
             break;
         }
@@ -3737,16 +3885,26 @@ bool OpenGLRenderer::CreateFrameBuffer(u32* pOut_FrameBuffer, u32* pInOut_colorB
         if(createDepthBuffer == true)
         {
             glGenRenderbuffers(1, pInOut_depthBuffer);
+            PrintOpenGLError("FrameBufferError");
             glBindRenderbuffer(GL_RENDERBUFFER, *pInOut_depthBuffer);
+            PrintOpenGLError("FrameBufferError");
             
             glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);
+            PrintOpenGLError("FrameBufferError");
         }
         
         //Attach the depth buffer to the frame buffer
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *pInOut_depthBuffer);
+        PrintOpenGLError("FrameBufferError");
     }
     
+    PrintOpenGLFrameBufferStatus(true);
+    
+    glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    
+    PrintOpenGLError("FrameBufferError");
     
     return true;
 }
@@ -4065,23 +4223,6 @@ bool OpenGLRenderer::CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderI
 	PrintOpenGLError("After creating shader program.");
 	
 	return true;
-}
-
-
-void OpenGLRenderer::SetRenderTarget(RenderTarget* pRenderTarget)
-{
-    if(pRenderTarget == NULL)
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, screenWidth_pixels, screenHeight_pixels);
-        
-        return;
-    }
-    else
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, pRenderTarget->frameBuffer);
-        glViewport(0, 0, pRenderTarget->width, pRenderTarget->height);
-    }
 }
 
 

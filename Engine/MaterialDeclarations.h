@@ -37,6 +37,8 @@ typedef enum
 	MT_ScrollingTextureWithScrollingMult,
 	PPMT_BlendUsingTexture,
 	PPMT_PureColor,
+    PPMT_Copy,
+    PPMT_Trippin,
 	NumRenderMaterials,			//Number of materials
 }RenderMaterial;
 

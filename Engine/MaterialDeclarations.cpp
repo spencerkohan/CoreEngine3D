@@ -38,5 +38,7 @@ const char* g_MaterialNames[NumRenderMaterials] =
 	"MT_ScrollingTextureWithScrollingMult",
 	"PPMT_BlendUsingTexture",
 	"PPMT_PureColor",
+    "PPMT_Copy",
+    "PPMT_Trippin",
 };
 

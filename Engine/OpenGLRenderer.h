@@ -211,7 +211,7 @@ public:
 	void ClearParticles();
 	void SetScreenFadeColor(vec3* screenFadeColor);
 	void ForceRenderablesNeedSorting(RenderableObjectType renderableType);
-	
+	void SetScreenFramebuffer(u32 framebuffer);
 	void FlashScreen(const vec3* pColor, f32 timeInSeconds);
 	void ShakeScreen(f32 shakeAmount,f32 shakeSpeed, f32 shakeTime);
 	bool LoadTexture(const char* fileName,ImageType imageType, u32* pGLTexture, u32 filterMode, u32 wrapModeU, u32 wrapModeV, bool flipY = false);
@@ -245,6 +245,7 @@ private:
 	void DeleteScene(RenderableScene3D* pScene);
 	void PostProcess(RenderMaterial ppMaterial, RenderTarget* renderTarget, PostProcessDrawArea drawArea, u32* texture0, u32* texture1, u32* texture2);
 	void PrintOpenGLError(const char* callerName);
+    void PrintOpenGLFrameBufferStatus(bool printSuccess);
     bool CreateFrameBuffer(u32* pOut_FrameBuffer, u32* pInOut_colorBufferOrTexture, bool createColorBuffer, u32* pInOut_depthBuffer, bool createDepthBuffer, ColorBufferType colorBufferType, u32 width, u32 height);
 	bool CreateShaderProgram(s32 vertexShaderIndex, s32 pixelShaderIndex, AttributeFlags attribs, u32* out_resultProgram);
 	void SetRenderTarget(RenderTarget* renderTarget);
@@ -368,10 +369,17 @@ private:
 	f32 m_identityMat[16];
 	vec3 m_lightPos;
     
-    RenderTarget m_renderTarget_Lights;
+    RenderTarget m_renderTarget_Normal;
+    RenderTarget m_renderTarget_DownsampleA;
+    RenderTarget m_renderTarget_DownsampleB;
+    RenderTarget m_renderTarget_Screen;
 	
 	RenderLayer m_sortRenderablesLayerStart;
 	RenderLayer m_sortRenderablesLayerEnd;
+    
+    f32 m_clearColorPulseTimer;
+    
+    bool m_postProcessFlipper;
 };
 
 
@@ -384,11 +392,11 @@ bool RenderableGeometry3DCompare_SortValue(const RenderableGeometry3D& lhs, cons
 void PackFloat16(float myFloat, float* out_x, float* out_y);
 float UnpackFloat16(float x, float y);
 void DoubleRenderTarget_Flip(DoubleRenderTarget* doubleRenderTarget);
-void Draw_FSQuad();
-void Draw_TLQuad();
-void Draw_TRQuad();
-void Draw_BLQuad();
-void Draw_BRQuad();
+void Draw_FSQuad(bool flipped);
+void Draw_TLQuad(bool flipped);
+void Draw_TRQuad(bool flipped);
+void Draw_BLQuad(bool flipped);
+void Draw_BRQuad(bool flipped);
 void Draw_Matrix();
 
 #endif
